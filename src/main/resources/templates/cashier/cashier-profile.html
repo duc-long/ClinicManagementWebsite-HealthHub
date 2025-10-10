@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>View Profile - HealHub</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { background-color: #f6f7fb; }
+        .container-wide { max-width: 1000px; }
+        .card { border-radius: 1rem; box-shadow: 0 2px 12px #0001; }
+        .profile-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .section-card { border-left: 4px solid #007bff; }
+        .info-row { display: flex; justify-content: space-between; padding: 4px 0; }
+        .info-row label { font-weight: 600; width: 150px; }
+        .info-row p { margin: 0; flex: 1; text-align: right; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-primary" href="cashier-dashboard.html">
+            <i class="fa-solid fa-cash-register me-2"></i>HealHub Cashier
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-outline-primary btn-sm" href="#">
+                <i class="fa-solid fa-calendar me-1"></i>Appointments</a>
+            <a class="btn btn-outline-primary btn-sm" href="#">
+                <i class="fa-solid fa-credit-card me-1"></i>Payments</a>
+            <a class="btn btn-outline-secondary btn-sm" href="#">
+                <i class="fa-solid fa-user me-1"></i>Profile</a>
+            <a class="btn btn-outline-danger btn-sm" href="#">
+                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
+        </div>
+    </div>
+</nav>
+
+<main class="container container-wide py-4">
+    <div class="card profile-header">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="h3 mb-2" ></h1>
+                    <p class="mb-1">Cashier ID: CS001 | Employee ID: EMP001</p>
+                    <p class="mb-0">Email: tranthib@healhub.com | Phone: +84 987 654 321</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="profile-edit.html" class="btn btn-light btn-sm">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-3">
+        <!-- Personal Info -->
+        <div class="col-md-6">
+            <div class="card section-card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fa-solid fa-user me-2 text-primary"></i>Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-row"><label>Full Name</label><p>Tran Thi B</p></div>
+                    <div class="info-row"><label>Date of Birth</label><p>March 20, 1990</p></div>
+                    <div class="info-row"><label>Gender</label><p>Female</p></div>
+                    <div class="info-row"><label>Employee ID</label><p>EMP001</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="col-md-6">
+            <div class="card section-card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fa-solid fa-phone me-2 text-success"></i>Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-row"><label>Email Address</label><p>tranthib@healhub.com</p></div>
+                    <div class="info-row"><label>Phone Number</label><p>+84 987 654 321</p></div>
+                    <div class="info-row"><label>Emergency Contact</label><p>Nguyen Van A (Husband) - +84 123 456 789</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-3">
+        <!-- Address -->
+        <div class="col-md-6">
+            <div class="card section-card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fa-solid fa-map-marker-alt me-2 text-info"></i>Address</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-row"><label>Home Address</label><p>456 Nguyen Hue Street, District 1, Ho Chi Minh City</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employment -->
+        <div class="col-md-6">
+            <div class="card section-card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fa-solid fa-briefcase me-2 text-warning"></i>Employment</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-row"><label>Position</label><p>Cashier</p></div>
+                    <div class="info-row"><label>Department</label><p>Finance</p></div>
+                    <div class="info-row"><label>Start Date</label><p>January 15, 2023</p></div>
+                    <div class="info-row"><label>Status</label><p><span class="badge bg-success">Active</span></p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="../assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
