@@ -16,4 +16,7 @@ public class AppointmentService {
     public List<Appointment> findAll() {
         return appointmentRepository.findAll();
     }
+    public Appointment findById(int id) {
+        return appointmentRepository.findById(id).get();
+    }
 }

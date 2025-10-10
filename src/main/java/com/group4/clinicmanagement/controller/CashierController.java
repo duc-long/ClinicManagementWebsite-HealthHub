@@ -76,4 +76,10 @@ public class CashierController {
         return "cashier/view-appointment-list";
     }
 
+    @GetMapping(value = "/view-appointment-detail/{id}")
+    public String viewAppointmentDetail(@PathVariable("id") int id, Model model) {
+        model.addAttribute("appointment", appointmentService.findById(id));
+        return "cashier/view-appointment-detail";
+    }
+
 }
