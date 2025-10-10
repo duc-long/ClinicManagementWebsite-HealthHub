@@ -1,0 +1,277 @@
+/*!*body {*!*/
+/*!*    font-family: 'Lexend', sans-serif;*!*/
+/*!*    background: white;*!*/
+/*!*}*!*/
+
+/*!*.page-container {*!*/
+/*!*    width: 100%;*!*/
+/*!*    height: 1282px;*!*/
+/*!*    position: relative;*!*/
+/*!*    overflow: hidden;*!*/
+/*!*    background: white;*!*/
+/*!*    display: flex;*!*/
+/*!*    justify-content: center;*!*/
+/*!*    align-items: center;*!*/
+/*!*}*!*/
+
+/*!*.profile-card {*!*/
+/*!*    width: 1120px;*!*/
+/*!*    height: 1045px;*!*/
+/*!*    left: 50%;*!*/
+/*!*    transform: translateX(-50%);*!*/
+/*!*    top: 160px;*!*/
+/*!*    position: absolute;*!*/
+/*!*    background: white;*!*/
+/*!*    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);*!*/
+/*!*    border-radius: 20px;*!*/
+/*!*}*!*/
+
+/*body {*/
+/*    font-family: 'Lexend', sans-serif;*/
+/*    background: white;*/
+/*}*/
+
+/*.page-container {*/
+/*    width: 100%;*/
+/*    height: 100vh; !* chiếm toàn màn hình *!*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    background: white;*/
+/*}*/
+
+/*.profile-card {*/
+/*    width: 1120px;*/
+/*    max-width: 95%;*/
+/*    background: white;*/
+/*    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);*/
+/*    border-radius: 20px;*/
+/*    padding: 40px 60px;*/
+/*    position: relative; !* giữ nguyên cho nội bộ *!*/
+/*}*/
+/*.profile-title {*/
+/*    width: 423px;*/
+/*    height: 65px;*/
+/*    left: 50%;*/
+/*    transform: translateX(-50%);*/
+/*    top: 50px;*/
+/*    position: absolute;*/
+/*    text-align: center;*/
+/*    color: #009BAB;*/
+/*    font-size: 52px;*/
+/*    font-weight: 600;*/
+/*    line-height: 60px;*/
+/*}*/
+
+/*.avatar {*/
+/*    width: 170px;*/
+/*    height: 170px;*/
+/*    left: 50%;*/
+/*    transform: translateX(-50%);*/
+/*    top: 150px;*/
+/*    position: absolute;*/
+/*    background: #D9D9D9;*/
+/*    border-radius: 90px;*/
+/*}*/
+
+/*.label {*/
+/*    position: absolute;*/
+/*    color: #009BAB;*/
+/*    font-size: 16px;*/
+/*    font-weight: 400;*/
+/*}*/
+
+/*.value {*/
+/*    position: absolute;*/
+/*    color: #9D9D9D;*/
+/*    font-size: 20px;*/
+/*    font-weight: 400;*/
+/*}*/
+
+/*.username-label { left: 255px; top: 524px; }*/
+/*.username-value { left: 278px; top: 569px; }*/
+
+/*.name-label { left: 825px; top: 524px; }*/
+/*.name-value { left: 848px; top: 569px; }*/
+
+/*.email-label { left: 255px; top: 647px; }*/
+/*.email-value { left: 278px; top: 692px; }*/
+
+/*.gender-label { left: 825px; top: 647px; }*/
+/*.gender-value { left: 848px; top: 692px; }*/
+
+/*.phone-label { left: 255px; top: 766px; }*/
+/*.phone-value { left: 278px; top: 811px; }*/
+
+/*.address-label { left: 825px; top: 766px; }*/
+/*.address-value { left: 848px; top: 811px; }*/
+
+/*.btn {*/
+/*    width: 305px;*/
+/*    height: 60px;*/
+/*    position: absolute;*/
+/*    border-radius: 15px;*/
+/*}*/
+
+/*.change-profile {*/
+/*    left: 330px;*/
+/*    top: 940px;*/
+/*    background: #009BAB;*/
+/*}*/
+
+/*.change-password {*/
+/*    left: 805px;*/
+/*    top: 940px;*/
+/*    background: #D5BE0E;*/
+/*}*/
+
+/*.delete-account {*/
+/*    left: 566px;*/
+/*    top: 1057px;*/
+/*    background: rgba(199, 76, 76, 0.73);*/
+/*    width: 307px;*/
+/*}*/
+
+/*.btn-label {*/
+/*    position: absolute;*/
+/*    height: 33px;*/
+/*    text-align: center;*/
+/*    color: white;*/
+/*    font-size: 30px;*/
+/*    font-weight: 600;*/
+/*    line-height: 22px;*/
+/*}*/
+
+/*.change-profile-label { left: 350px; top: 957px; width: 265px; }*/
+/*.change-password-label { left: 825px; top: 957px; width: 271px; }*/
+/*.delete-account-label { left: 580px; top: 1075px; width: 279px; }*/
+
+/* ===== Base ===== */
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: "Lexend", sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+}
+
+/* ===== Center the card ===== */
+.page-container{
+    min-height: 100vh;              /* chiếm đủ chiều cao màn hình */
+    display: flex;
+    justify-content: center;        /* giữa ngang */
+    align-items: center;            /* giữa dọc */
+    padding: 24px;                  /* đệm mép màn hình */
+}
+
+/* ===== Card ===== */
+.profile-card{
+    width: 1120px;
+    max-width: 100%;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.25);
+    padding: 32px 32px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 cột cho phần info */
+    gap: 20px 40px;
+    text-align: left;
+}
+
+/* ===== Title & Avatar ===== */
+.profile-title{
+    grid-column: 1 / -1;            /* trải ngang cả card */
+    text-align: center;
+    color: #009BAB;
+    font-weight: 600;
+    font-size: clamp(32px, 4vw, 52px);
+    margin: 8px 0 0;
+}
+
+.avatar{
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    margin: 20px 0 12px;
+}
+
+/* ===== Info grid (dùng chính .info hiện có) ===== */
+.info{
+    grid-column: 1 / -1;            /* info nằm dưới avatar, chiếm full hàng */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 cột: trái / phải */
+    gap: 16px 40px;
+    margin-top: 8px;
+}
+
+.info .label{
+    color: #009BAB;
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.info .value{
+    color: #9D9D9D;
+    font-size: 22px;
+    font-weight: 400;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.group-info{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 50px;
+}
+
+/* ===== Nút ===== */
+.btn { display: none; }
+
+.btn-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    transition: transform .05s ease, opacity .2s ease;
+}
+
+.btn-label:active {
+    transform: translateY(1px);
+}
+
+/* Màu */
+.change-profile-label   { background: #009BAB; }
+.change-password-label  { background: #D5BE0E; }
+.delete-account-label   { background: rgba(199,76,76,0.73); }
+
+/* Bố cục nút */
+.button-row {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.change-profile-label,
+.change-password-label {
+    width: 260px;
+}
+
+.delete-account-label {
+    width: 300px;
+}
+
+
