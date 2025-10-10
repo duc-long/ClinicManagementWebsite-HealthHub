@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    </div>
+</head>
+<body>
+<div th:fragment="navBar">
+    <div style="width: 100%; height: 150px; left: 0px; top: 0px; position: absolute; background: white"></div>
+    <div style="width: 85px; height: 35px; left: 1195px; top: 57px; position: absolute; background: #009BAB; border-radius: 20px"></div>
+    <div style="width: 80px; left: 1090px; top: 63px; position: absolute; text-align: center; color: #009BAB; font-size: 16px; font-family: Lexend; font-weight: 600; line-height: 22px; word-wrap: break-word">About us</div>
+    <div style="width: 282px; height: 33px; left: 160px; top: 49px; position: absolute; text-align: center; color: #009BAB; font-size: 52px; font-family: Lexend; font-weight: 600; line-height: 22px; word-wrap: break-word">HealthHub</div>
+    <div style="width: 97px; left: 968px; top: 63px; position: absolute; text-align: center; color: #009BAB; font-size: 16px; font-family: Lexend; font-weight: 600; line-height: 22px; word-wrap: break-word">Specialty</div>
+    <a style="width: 67px; left: 876px; top: 63px; position: absolute; text-align: center; color: #009BAB; font-size: 16px; font-family: Lexend; font-weight: 600; line-height: 22px; word-wrap: break-word"
+       th:href="@{/healthhub/list-doctor}">Doctors</a>
+    <div style="width: 185px; left: 666px; top: 63px; position: absolute; text-align: center; color: #009BAB; font-size: 16px; font-family: Lexend; font-weight: 600; line-height: 22px; word-wrap: break-word">Book an appointment</div>
+    <div style="width: 56px; left: 1210px; top: 63px; position: absolute; text-align: center; color: white; font-size: 16px; font-family: Lexend; font-weight: 600; line-height: 22px; word-wrap: break-word">Login</div>
+</div>
+
+<div th:fragment="js">
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</div>
+</body>
+</html>
