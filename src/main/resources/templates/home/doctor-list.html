@@ -4,7 +4,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Doctor List - HealHub</title>
-
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <style>
             body { background-color: #f6f7fb; }
@@ -19,7 +18,7 @@
     <body>
         <nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-primary" th:href="@{/guest}"><i class="fa-solid fa-heart-pulse me-2"></i>HealHub</a>
+                <a class="navbar-brand fw-bold text-primary" th:href="@{/healthhub/home}"><i class="fa-solid fa-heart-pulse me-2"></i>HealHub</a>
                 <div class="d-flex align-items-center gap-2">
                     <a class="btn btn-outline-primary btn-sm" href="doctor-list.html"><i class="fa-solid fa-user-doctor me-1"></i>Find Doctors</a>
                     <a class="btn btn-outline-secondary btn-sm" href="doctor-search.html"><i class="fa-solid fa-search me-1"></i>Search</a>
@@ -37,7 +36,7 @@
             <div class="row g-4" id="doctor-list">
                 <th:block th:each="doctor, iterStat : ${doctors}">
                     <div class="col-md-6 col-lg-4 doctor-card-wrapper"
-                         th:classappend="${iterStat.index} >= 8 ? 'd-none' : ''">
+                         th:classappend="${iterStat.index} >= 6 ? 'd-none' : ''">
                         <div class="card doctor-card h-100">
                             <div class="card-body text-center">
                                 <div class="mb-3">
@@ -63,8 +62,8 @@
 
         </main>
         <script>
-            let visibleCount = 8;
-            const pageSize = 8;
+            let visibleCount = 6;
+            const pageSize = 6;
 
             function showMoreDoctors() {
                 const hiddenCards = document.querySelectorAll('.doctor-card-wrapper.d-none');
@@ -81,6 +80,6 @@
             }
         </script>
 
-        <script src="../assets/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
     </body>
 </html>
