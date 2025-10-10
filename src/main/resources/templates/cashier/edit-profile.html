@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Profile - HealHub</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { background-color: #f6f7fb; }
+        .container-wide { max-width: 1000px; }
+        .card { border-radius: 1rem; box-shadow: 0 2px 12px #0001; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-primary" href="cashier-dashboard.html"><i class="fa-solid fa-cash-register me-2"></i>HealHub Cashier</a>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-outline-primary btn-sm" href="appointment-management.html"><i class="fa-solid fa-calendar me-1"></i>Appointments</a>
+            <a class="btn btn-outline-primary btn-sm" href="payment-management.html"><i class="fa-solid fa-credit-card me-1"></i>Payments</a>
+            <a class="btn btn-outline-secondary btn-sm" href="profile-management.html"><i class="fa-solid fa-user me-1"></i>Profile</a>
+            <a class="btn btn-outline-danger btn-sm" href="logout.html"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
+        </div>
+    </div>
+</nav>
+<main class="container container-wide py-4">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h1 class="h4 mb-0"><i class="fa-solid fa-user-edit me-2"></i>Edit Profile</h1>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/cashier/edit-profile/{id}(id=${userDTO.id})}" method="post" th:object="${userDTO}">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" required th:field="*{fullName}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Date of Birth *</label>
+                        <input type="date" class="form-control" value="1990-03-20" required>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Gender *</label>
+                        <select class="form-select" th:field="*{gender}" required>
+                            <option th:value="1" th:text="'Male'"></option>
+                            <option th:value="2" th:text="'Female'"></option>
+                            <option th:value="0" th:text="'Other'"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Employee ID</label>
+                        <input type="text" class="form-control" value="EMP001" readonly>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" class="form-control" value="tranthib@healhub.com" required th:field="*{email}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" class="form-control" value="+84 987 654 321" required th:field="*{phone}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Home Address *</label>
+                    <textarea class="form-control" rows="2" required>456 Nguyen Hue Street, District 1, Ho Chi Minh City</textarea>
+                </div>
+
+<!--                <div class="row g-3">-->
+<!--                    <div class="col-md-6">-->
+<!--                        <label class="form-label">Emergency Contact Name *</label>-->
+<!--                        <input type="text" class="form-control" value="Nguyen Van A" required>-->
+<!--                    </div>-->
+<!--                    <div class="col-md-6">-->
+<!--                        <label class="form-label">Emergency Contact Phone *</label>-->
+<!--                        <input type="tel" class="form-control" value="+84 123 456 789" required>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <div class="mb-3">-->
+<!--                    <label class="form-label">Relationship to Emergency Contact</label>-->
+<!--                    <input type="text" class="form-control" value="Husband">-->
+<!--                </div>-->
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success">Update Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<script src="../assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
