@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Doctor Search - HealHub</title>
+        <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        <style>
+            body { background-color: #f6f7fb; }
+            .container-wide { max-width: 1200px; }
+            .card { border-radius: 1rem; box-shadow: 0 2px 12px #0001; }
+            .search-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+            .filter-card { background: white; }
+            .doctor-result { border-left: 4px solid #007bff; }
+            .specialty-badge { font-size: 0.8rem; }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-primary" href="index.html"><i class="fa-solid fa-heart-pulse me-2"></i>HealHub</a>
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-outline-primary btn-sm" href="doctor-list.html"><i class="fa-solid fa-user-doctor me-1"></i>Find Doctors</a>
+                    <a class="btn btn-outline-secondary btn-sm" href="doctor-search.html"><i class="fa-solid fa-search me-1"></i>Search</a>
+                    <a class="btn btn-primary btn-sm" href="patient-registration.html"><i class="fa-solid fa-user-plus me-1"></i>Register</a>
+                </div>
+            </div>
+        </nav>
+        <main class="container container-wide py-4">
+            <div class="card search-card p-4 mb-4">
+                <h1 class="h3 mb-3"><i class="fa-solid fa-search me-2"></i>Find the Right Doctor</h1>
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Search by Name</label>
+                            <input type="text" class="form-control" placeholder="Doctor's name...">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Specialty</label>
+                            <select class="form-select">
+                                <option value="">All Specialties</option>
+                                <option value="cardiology">Cardiology</option>
+                                <option value="neurology">Neurology</option>
+                                <option value="pediatrics">Pediatrics</option>
+                                <option value="dermatology">Dermatology</option>
+                                <option value="orthopedics">Orthopedics</option>
+                                <option value="gynecology">Gynecology</option>
+                                <option value="oncology">Oncology</option>
+                                <option value="psychiatry">Psychiatry</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Location</label>
+                            <select class="form-select">
+                                <option value="">All Locations</option>
+                                <option value="floor1">Floor 1 - Emergency</option>
+                                <option value="floor2">Floor 2 - Cardiology</option>
+                                <option value="floor3">Floor 3 - Neurology</option>
+                                <option value="floor4">Floor 4 - Pediatrics</option>
+                                <option value="floor5">Floor 5 - Surgery</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Experience (Years)</label>
+                            <select class="form-select">
+                                <option value="">Any Experience</option>
+                                <option value="1-5">1-5 years</option>
+                                <option value="5-10">5-10 years</option>
+                                <option value="10-15">10-15 years</option>
+                                <option value="15+">15+ years</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Availability</label>
+                            <select class="form-select">
+                                <option value="">Any Time</option>
+                                <option value="morning">Morning (8AM-12PM)</option>
+                                <option value="afternoon">Afternoon (12PM-5PM)</option>
+                                <option value="evening">Evening (5PM-8PM)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-light btn-lg"><i class="fa-solid fa-search me-2"></i>Search Doctors</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card filter-card p-3">
+                        <h6 class="fw-bold mb-3">Filters</h6>
+                        <div class="mb-3">
+                            <label class="form-label small">Gender</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="male">
+                                <label class="form-check-label small" for="male">Male</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="female">
+                                <label class="form-check-label small" for="female">Female</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">Languages</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="vietnamese">
+                                <label class="form-check-label small" for="vietnamese">Vietnamese</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="english">
+                                <label class="form-check-label small" for="english">English</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">Rating</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rating5">
+                                <label class="form-check-label small" for="rating5">★★★★★ (5 stars)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rating4">
+                                <label class="form-check-label small" for="rating4">★★★★☆ (4+ stars)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Search Results (12 doctors found)</h5>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm" style="width: auto;">
+                                <option>Sort by Name</option>
+                                <option>Sort by Experience</option>
+                                <option>Sort by Rating</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card doctor-result p-3 mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <i class="fa-solid fa-user-doctor text-primary" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="mb-1">Dr. Nguyen Van A</h6>
+                                <p class="text-muted small mb-1">Cardiologist • 15 years experience</p>
+                                <div class="mb-2">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary specialty-badge me-1">Heart Disease</span>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary specialty-badge">Hypertension</span>
+                                </div>
+                                <p class="small text-muted mb-0">Floor 2, Room 201 • Available today</p>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="mb-1">
+                                    <span class="text-warning">★★★★★</span>
+                                    <span class="small text-muted">(4.8)</span>
+                                </div>
+                                <div class="small text-muted">128 reviews</div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <a href="doctor-profile.html?id=1" class="btn btn-outline-primary btn-sm">View Profile</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card doctor-result p-3 mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <i class="fa-solid fa-user-doctor text-success" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="mb-1">Dr. Tran Thi B</h6>
+                                <p class="text-muted small mb-1">Neurologist • 12 years experience</p>
+                                <div class="mb-2">
+                                    <span class="badge bg-success bg-opacity-10 text-success specialty-badge me-1">Brain Disorders</span>
+                                    <span class="badge bg-success bg-opacity-10 text-success specialty-badge">Epilepsy</span>
+                                </div>
+                                <p class="small text-muted mb-0">Floor 3, Room 301 • Available tomorrow</p>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="mb-1">
+                                    <span class="text-warning">★★★★☆</span>
+                                    <span class="small text-muted">(4.6)</span>
+                                </div>
+                                <div class="small text-muted">95 reviews</div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <a href="doctor-profile.html?id=2" class="btn btn-outline-primary btn-sm">View Profile</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card doctor-result p-3 mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <i class="fa-solid fa-user-doctor text-info" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="mb-1">Dr. Le Van C</h6>
+                                <p class="text-muted small mb-1">Pediatrician • 18 years experience</p>
+                                <div class="mb-2">
+                                    <span class="badge bg-info bg-opacity-10 text-info specialty-badge me-1">Child Health</span>
+                                    <span class="badge bg-info bg-opacity-10 text-info specialty-badge">Vaccination</span>
+                                </div>
+                                <p class="small text-muted mb-0">Floor 4, Room 401 • Available today</p>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="mb-1">
+                                    <span class="text-warning">★★★★★</span>
+                                    <span class="small text-muted">(4.9)</span>
+                                </div>
+                                <div class="small text-muted">156 reviews</div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <a href="doctor-profile.html?id=3" class="btn btn-outline-primary btn-sm">View Profile</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button class="btn btn-outline-primary">Load More Results</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

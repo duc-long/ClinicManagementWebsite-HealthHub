@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Doctor List - HealHub</title>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        <style>
+            body { background-color: #f6f7fb; }
+            .container-wide { max-width: 1200px; }
+            .card { border-radius: 1rem; box-shadow: 0 2px 12px #0001; }
+            .doctor-card { transition: transform 0.2s; }
+            .doctor-card:hover { transform: translateY(-2px); }
+            .specialty-badge { font-size: 0.8rem; }
+        </style>
+        <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    </head>
+    <body>
+        <nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-primary" th:href="@{/guest}"><i class="fa-solid fa-heart-pulse me-2"></i>HealHub</a>
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-outline-primary btn-sm" href="doctor-list.html"><i class="fa-solid fa-user-doctor me-1"></i>Find Doctors</a>
+                    <a class="btn btn-outline-secondary btn-sm" href="doctor-search.html"><i class="fa-solid fa-search me-1"></i>Search</a>
+                    <a class="btn btn-primary btn-sm" href="patient-registration.html"><i class="fa-solid fa-user-plus me-1"></i>Register</a>
+                </div>
+            </div>
+        </nav>
+        <main class="container container-wide py-4">
+            <div class="d-flex align-items-center mb-4">
+                <h1 class="h3 mb-0 me-3"><i class="fa-solid fa-user-doctor text-primary me-2"></i>Our Doctors</h1>
+                <span th:text=" ${doctors.size()} + ' Doctors Available' " class="badge bg-primary fw-normal text-light">
+</span>
+            </div>
+
+            <div class="row g-4" id="doctor-list">
+                <th:block th:each="doctor, iterStat : ${doctors}">
+                    <div class="col-md-6 col-lg-4 doctor-card-wrapper"
+                         th:classappend="${iterStat.index} >= 8 ? 'd-none' : ''">
+                        <div class="card doctor-card h-100">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="fa-solid fa-user-doctor text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title" th:text="${doctor.user.fullName}">Doctor Name</h5>
+                                <p class="text-muted mb-2" th:text="${doctor.specialty}">Specialty</p>
+                                <p class="card-text small text-muted" th:text="${doctor.yearsExperience + ' years experience'}"></p>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{/doctor-profile(id=${doctor.doctorId})}" class="btn btn-outline-primary btn-sm">View Profile</a>
+                                    <a th:href="@{/department-doctor-list(dept=${doctor.department.departmentId})}" class="btn btn-outline-secondary btn-sm">Department</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+
+
+            <div class="text-center mt-4">
+                <button class="btn btn-outline-primary" onclick="showMoreDoctors()" id="btn-show-more">Show More</button>
+            </div>
+
+        </main>
+        <script>
+            let visibleCount = 8;
+            const pageSize = 8;
+
+            function showMoreDoctors() {
+                const hiddenCards = document.querySelectorAll('.doctor-card-wrapper.d-none');
+
+                for (let i = 0; i < pageSize && i < hiddenCards.length; i++) {
+                    hiddenCards[i].classList.remove('d-none');
+                    visibleCount++;
+                }
+
+
+                if (document.querySelectorAll('.doctor-card-wrapper.d-none').length === 0) {
+                    document.getElementById('btn-show-more').style.display = 'none';
+                }
+            }
+        </script>
+
+        <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
