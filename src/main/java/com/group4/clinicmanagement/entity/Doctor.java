@@ -40,4 +40,6 @@ public class Doctor {
     private String bio;
     private Boolean profileVisibility = true;
     private LocalDateTime createdAt;
+
+
 }
