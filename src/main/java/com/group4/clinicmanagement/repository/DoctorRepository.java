@@ -1,4 +1,4 @@
-package com.group4.clinicmanagement.repositories;
+package com.group4.clinicmanagement.repository;
 
 import com.group4.clinicmanagement.entity.Doctor;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,9 +1,8 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.entity.Patient;
-import com.group4.clinicmanagement.repositories.DoctorRepository;
-import com.group4.clinicmanagement.repositories.PatientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.group4.clinicmanagement.repository.DoctorRepository;
+import com.group4.clinicmanagement.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 
 @Service
