@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "Doctor")
@@ -40,4 +41,7 @@ public class Doctor {
     private String bio;
     private Boolean profileVisibility = true;
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DoctorDailySlot> dailySlots;
 }
