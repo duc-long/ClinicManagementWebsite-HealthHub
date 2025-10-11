@@ -35,6 +35,4 @@ public class DoctorService {
     public Doctor findDoctorById(int id) {
         return doctorRepositories.getDoctorByDoctorId(id);
     }
-
-
 }

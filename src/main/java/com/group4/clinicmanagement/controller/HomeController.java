@@ -6,16 +6,13 @@ import com.group4.clinicmanagement.service.DoctorService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
 
 @Controller
-@RequestMapping(value = "/healthhub")
+@RequestMapping(value = "/home")
 public class HomeController {
 
     private final DoctorService doctorService;
@@ -24,7 +21,7 @@ public class HomeController {
         this.doctorService = doctorService;
     }
 
-    @GetMapping(value = "/home")
+    @GetMapping
     public String guestHome(Model model) {
         return "home/HomeGuest";
     }
@@ -57,8 +54,11 @@ public class HomeController {
         return "home/doctor-search";
     }
 
-    @PostMapping(value = "/view-details-doctor")
-    public String viewDetailDoctor(Model model, @RequestParam(name = "doctorId") String doctorId) {
-        return "home/doctor-view-details-doctor";
+    @GetMapping(value = "/doctor-profile/{doctorId}")
+    public String viewDetailDoctor(Model model, @PathVariable(name = "doctorId") int doctorId) {
+        Doctor doctor = doctorService.findDoctorById(doctorId);
+        model.addAttribute("doctor", doctor);
+        return "home/doctor-profile";
     }
+
 }

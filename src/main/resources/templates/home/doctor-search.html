@@ -46,7 +46,7 @@
 <main class="container container-wide py-4">
     <div class="card search-card p-4 mb-4">
         <h1 class="h3 mb-3"><i class="fa-solid fa-search me-2"></i>Search</h1>
-        <form th:action="@{/healthhub/search-doctor}" method="post">
+        <form th:action="@{/home/search-doctor}" method="post">
             <div class="row g-4 justify-content-center align-items-end">
                 <div class="col-md-4">
                     <label class="form-label">Specialty</label>
@@ -84,18 +84,17 @@
                         <h5 class="mb-1" th:text="*{doctor.user.fullName}"></h5>
                         <div class="mb-2">
                             <span class="badge bg-primary bg-opacity-10 text-white specialty-badge me-1" th:text="${doctor.specialty}"></span>
-                            <span class="badge bg-primary bg-opacity-10 text-white specialty-badge" th:text="${doctor.yearsExperience + ' years experience'}"></span>
                         </div>
                     </div>
                     <div class="col-md-4 text-center">
-                        <a href="#" class="btn btn-outline-primary btn-sm">View Profile</a>
+                        <a th:href="@{/home/doctor-profile/{doctorId}(doctorId=${doctor.doctorId})}" class="btn btn-outline-primary btn-sm">View Profile</a>
                     </div>
                 </div>
             </div>
 
-            <div class="text-center mt-4 ">
-                <button class="btn btn-outline-primary" >Load More Results</button>
-            </div>
+<!--            <div class="text-center mt-4 ">-->
+<!--                <button class="btn btn-outline-primary" >Load More Results</button>-->
+<!--            </div>-->
         </div>
     </div>
 </main>
