@@ -48,7 +48,7 @@ public class PatientService {
             throw new RuntimeException("User not found");
         }
 
-        User user = (User) userRepository.findUserByUsername(username)
+        User user = userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         int updatedPatient = patientRepository.updateAddress(user.getUserId(), patientUserDTO.getAddress());

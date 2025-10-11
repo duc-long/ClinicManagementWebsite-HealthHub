@@ -137,7 +137,11 @@ body {
 }
 
 .delete-account-label {
-    width: 300px;
+    width: 260px;
 }
 
+.view-medical-record {
+    width: 820px;
+    background: #0f5132;
+}
 

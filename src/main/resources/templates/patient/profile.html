@@ -53,10 +53,10 @@
         </div>
 
         <div class="button-row">
-            <form th:action="@{/patient/edit-profile}" method="post">
-                <input type="hidden" name="username" th:value="*{username}"/>
-                <button class="btn-label change-profile-label" type="submit">Change profile</button>
-            </form>
+            <button class="btn-label view-medical-record" type="submit">View medical records</button>
+        </div>
+        <div class="button-row">
+            <a th:href="@{/patient/edit-profile}" class="btn-label change-profile-label">Change profile</a>
             <div class="btn-label change-password-label">Change password</div>
             <div class="btn-label delete-account-label">Delete account</div>
         </div>

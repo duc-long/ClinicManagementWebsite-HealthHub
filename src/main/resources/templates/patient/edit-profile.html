@@ -30,7 +30,7 @@
         <div class="info">
             <div class="group-info">
                 <div class="label">Username</div>
-                <input type="text" th:field="*{username}" readonly class="input"/>
+                <input type="text" th:field="*{username}" disabled readonly class="input"/>
             </div>
             <div class="group-info">
                 <div class="label">Name</div>
@@ -58,7 +58,7 @@
         </div>
 
         <div class="button-row">
-            <a th:href="@{/patient/profile/{username}(username=*{username})}" class="btn-label cancel">Cancel</a>
+            <a th:href="@{/patient/profile}" class="btn-label cancel">Cancel</a>
             <button type="submit" class="btn-label save">Save</button>
         </div>
     </form>
