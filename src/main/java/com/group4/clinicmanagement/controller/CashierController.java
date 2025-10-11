@@ -17,14 +17,16 @@ public class CashierController {
     CashierService cashierService;
     AppointmentService appointmentService;
 
-    public CashierController(CashierService cashierService,  AppointmentService appointmentService) {
+    private final int id = 18;
+
+    public CashierController(CashierService cashierService) {
         this.cashierService = cashierService;
         this.appointmentService = appointmentService;
 
     }
 
-    @GetMapping(value = "/view-profile/{id}")
-    public String viewProfile(@PathVariable("id") int id, Model model) {
+    @GetMapping(value = "/view-profile")
+    public String viewProfile( Model model) {
         User user = cashierService.findUserById(id);
 
         UserDTO userDTO = new UserDTO();
@@ -36,9 +38,9 @@ public class CashierController {
         model.addAttribute("userDTO", userDTO);
         return "cashier/view-profile";
     }
+    @GetMapping("/edit-profile")
+    public String showEditForm( Model model) {
 
-    @GetMapping("/edit-profile/{id}")
-    public String showEditForm(@PathVariable int id, Model model) {
         User user = cashierService.findUserById(id);
 
         UserDTO dto = new UserDTO();
@@ -51,9 +53,9 @@ public class CashierController {
         model.addAttribute("userDTO", dto);
         return "cashier/edit-profile";
     }
+    @PostMapping(value = "/edit-profile")
+    public String editProfile(@ModelAttribute("userDTO") UserDTO dto) {
 
-    @PostMapping(value = "/edit-profile/{id}")
-    public String editProfile(@ModelAttribute("userDTO") UserDTO dto, @PathVariable("id") int id) {
         User user = cashierService.findUserById(id);
 
         user.setFullName(dto.getFullName());
