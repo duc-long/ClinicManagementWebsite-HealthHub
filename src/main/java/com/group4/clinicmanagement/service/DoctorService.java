@@ -1,7 +1,7 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.entity.Doctor;
-import com.group4.clinicmanagement.repositories.DoctorRepository;
+import com.group4.clinicmanagement.repository.DoctorRepository;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -2,17 +2,13 @@ package com.group4.clinicmanagement.controller;
 
 import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.entity.Appointment;
-import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.User;
-import com.group4.clinicmanagement.repositories.AppointmentRepository;
 import com.group4.clinicmanagement.service.AppointmentService;
 import com.group4.clinicmanagement.service.CashierService;
-import com.group4.clinicmanagement.service.DoctorService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller

@@ -1,7 +1,7 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.entity.Appointment;
-import com.group4.clinicmanagement.repositories.AppointmentRepository;
+import com.group4.clinicmanagement.repository.AppointmentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
