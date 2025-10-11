@@ -27,8 +27,9 @@ public class CashierController {
 
     }
 
-    @GetMapping(value = "/view-profile/{id}")
-    public String viewProfile(@PathVariable("id") int id, Model model) {
+    @GetMapping(value = "/view-profile")
+    public String viewProfile( Model model) {
+        int id = 18;
         User user = cashierService.findUserById(id);
 
         UserDTO userDTO = new UserDTO();
@@ -86,6 +87,7 @@ public class CashierController {
         }
         model.addAttribute("today", today);
         model.addAttribute("todayAppointments", todayAppointments);
+
         return "cashier/view-appointment-list";
     }
 

@@ -23,6 +23,6 @@ public class AppointmentService {
     }
 
     public List<Appointment> findByStatusIn(List<Integer> statuses) {
-        return appointmentRepository.findByStatusIn(statuses);
+        return appointmentRepository.findByStatusValueIn(statuses);
     }
 }

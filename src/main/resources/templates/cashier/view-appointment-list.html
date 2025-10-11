@@ -31,11 +31,11 @@
         <a class="navbar-brand fw-bold text-primary" href="cashier-dashboard.html"><i
                 class="fa-solid fa-cash-register me-2"></i>HealHub Cashier</a>
         <div class="d-flex align-items-center gap-2">
-            <a class="btn btn-outline-primary btn-sm" href="appointment-management.html"><i
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/cashier/view-appointment-list}" ><i
                     class="fa-solid fa-calendar me-1"></i>Appointments</a>
-            <a class="btn btn-outline-primary btn-sm" href="payment-management.html"><i
+            <a class="btn btn-outline-primary btn-sm" th:href="@{#}" ><i
                     class="fa-solid fa-credit-card me-1"></i>Payments</a>
-            <a class="btn btn-outline-secondary btn-sm" href="profile-management.html"><i
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/cashier/view-profile}" ><i
                     class="fa-solid fa-user me-1"></i>Profile</a>
             <a class="btn btn-outline-danger btn-sm" href="logout.html"><i
                     class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
@@ -79,17 +79,16 @@
                             <div th:text="${appointment.appointmentDate}"></div>
                         </td>
                         <td>
-                             <span th:switch="${appointment.status}">
-                                 <span th:case="0" class="badge bg-secondary">Pending</span>
-                                 <span th:case="1" class="badge bg-success">Confirmed</span>
-                                 <span th:case="2" class="badge bg-danger">Cancelled</span>
-                                 <span th:case="3" class="badge bg-primary">Completed</span>
-                                 <span th:case="4" class="badge bg-warning text-dark">No Show</span>
-                                 <span th:case="5" class="badge bg-info text-dark">Checked In</span>
-                                 <span th:case="*" class="badge bg-dark">Unknown</span>
-                             </span>
+                            <span th:switch="${appointment.status.name()}">
+                                <span th:case="'PENDING'" class="badge bg-secondary">Pending</span>
+                                <span th:case="'CONFIRMED'" class="badge bg-success">Confirmed</span>
+                                <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
+                                <span th:case="'COMPLETED'" class="badge bg-primary">Completed</span>
+                                <span th:case="'NO_SHOW'" class="badge bg-warning text-dark">No Show</span>
+                                <span th:case="'CHECKED_IN'" class="badge bg-info text-dark">Checked In</span>
+                                <span th:case="*" class="badge bg-dark">Unknown</span>
+                            </span>
                         </td>
-
                         <td>
                             <a th:href="@{/cashier/view-appointment-detail/{id}(id=${appointment.appointmentId})}" class="btn btn-sm btn-outline-primary">View
                                 Detail</a>

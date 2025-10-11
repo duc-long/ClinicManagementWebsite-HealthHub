@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
-    List<Appointment> findByStatusIn(List<Integer> statuses);
+    List<Appointment> findByStatusValueIn(List<Integer> statuses);
 }
 
