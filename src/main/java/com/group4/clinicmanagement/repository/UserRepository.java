@@ -22,10 +22,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
                                 @Param("gender") Integer gender);
 
     Optional<User> findUserByUsername(String username);
-
+    Optional<User> findByUserId(int userId);
     @Modifying
     @Query("UPDATE User u SET u.avatar = :filename WHERE u.username = :username")
     void updateAvatarFilename(@Param("username") String username,
                               @Param("filename") String filename);
-
+    
 }
