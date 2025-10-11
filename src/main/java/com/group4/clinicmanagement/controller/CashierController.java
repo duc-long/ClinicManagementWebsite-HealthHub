@@ -68,7 +68,7 @@ public class CashierController {
         user.setGender(dto.getGender());
 
         cashierService.save(user);
-        return "redirect:/cashier/view-profile/" + id;
+        return "redirect:/cashier/view-profile";
     }
 
     @GetMapping(value = "/view-appointment-list")
