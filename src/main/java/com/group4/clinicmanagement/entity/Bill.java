@@ -1,4 +1,5 @@
 package com.group4.clinicmanagement.entity;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

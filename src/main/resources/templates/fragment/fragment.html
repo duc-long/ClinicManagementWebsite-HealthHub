@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</div>
+
+<div th:fragment="navBar">
+    <nav class="navbar navbar-expand-lg bg-white border-bottom py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary fs-2" th:href="@{/healthhub/home}">HealthHub</a>
+            <div class="d-flex align-items-center gap-4">
+                <a class="text-primary text-decoration-none fw-semibold" href="#">About us</a>
+                <a class="text-primary text-decoration-none fw-semibold" th:href="@{/healthhub/list-doctor}">Doctors</a>
+                <a class="text-primary text-decoration-none fw-semibold" href="#">Specialty</a>
+                <a class="text-primary text-decoration-none fw-semibold" href="#">Book an appointment</a>
+                <a class="btn btn-primary btn-sm text-white fw-semibold px-3" href="#">Login</a>
+            </div>
+        </div>
+    </nav>
+</div>
+
+
+<div th:fragment="js">
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</div>
+
+</html>
