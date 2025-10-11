@@ -74,11 +74,7 @@ public class CashierController {
     @GetMapping(value = "/view-appointment-list")
     public String viewListAppointment(Model model) {
         LocalDate today = LocalDate.now();
-        List<Integer> statuses = Arrays.asList(
-                AppointmentStatus.CONFIRMED.getValue(),
-                AppointmentStatus.CHECKED_IN.getValue()
-        );
-        List<Appointment> appointments = appointmentService.findByStatusIn(statuses);
+        List<Appointment> appointments = appointmentService.findByStatus(AppointmentStatus.CHECKED_IN.getValue());
         List<Appointment> todayAppointments = new ArrayList<>();
 
         for (Appointment appointment : appointments) {

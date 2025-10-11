@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Appointment List - HealHub</title>
-    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
@@ -14,7 +14,6 @@
         .container-wide {
             max-width: 1200px;
         }
-
         .card {
             border-radius: 1rem;
             box-shadow: 0 2px 12px #0001;
@@ -45,9 +44,7 @@
 <main class="container container-wide py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0"><i class="fa-solid fa-calendar me-2 text-primary"></i>Appointment List for <span th:text="${today}"></span></h1>
-
     </div>
-
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
@@ -100,6 +97,6 @@
         </div>
     </div>
 </main>
-<script src="../assets/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

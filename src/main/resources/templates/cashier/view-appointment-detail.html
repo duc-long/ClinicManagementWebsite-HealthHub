@@ -65,7 +65,7 @@
                 </span>
             </div>
             <div>
-                <a th:if="${appointment.statusValue == 1}"
+                <a th:if="${appointment.statusValue == 5}"
                    th:href="@{#}"
                    class="btn btn-warning btn-sm">
                     <i class="fa-solid fa-receipt me-1"></i> Create Payment
@@ -89,25 +89,20 @@
                         <span class="fw-semibold text-secondary">Full Name</span>
                         <span th:text="${appointment.patient.getUser().fullName}">Nguyễn Văn A</span>
                     </div>
-
                     <div class="d-flex justify-content-between border-bottom py-2">
                         <span class="fw-semibold text-secondary">Patient ID</span>
                         <span th:text="${appointment.patient.patientId}">P001</span>
                     </div>
-
                     <div class="d-flex justify-content-between border-bottom py-2">
                         <span class="fw-semibold text-secondary">Gender</span>
                         <span th:text="${appointment.patient.getUser().gender}"></span>
                     </div>
-
                     <div class="d-flex justify-content-between border-bottom py-2">
                         <span class="fw-semibold text-secondary">Phone Number</span>
-                        <span th:text="${appointment.patient.getUser().phone}">+84 987 654 321</span>
+                        <span th:text="${appointment.patient.getUser().phone}"></span>
                     </div>
                 </div>
             </div>
-
-
             <!-- 🩺 Doctor Information -->
             <div class="card section-card mt-3">
                 <div class="card-header bg-white">
@@ -121,25 +116,16 @@
                         <span class="fw-semibold text-secondary">Doctor Name</span>
                         <span th:text="${appointment.doctor.getUser().fullName}">Dr. John Smith</span>
                     </div>
-
                     <div class="d-flex justify-content-between border-bottom py-2">
                         <span class="fw-semibold text-secondary">Specialty</span>
                         <span th:text="${appointment.doctor.specialty}">Cardiology</span>
                     </div>
-
-<!--                    <div class="d-flex justify-content-between border-bottom py-2">-->
-<!--                        <span class="fw-semibold text-secondary">Room</span>-->
-<!--                        <span>Room 201</span>-->
-<!--                    </div>-->
-
                     <div class="d-flex justify-content-between border-bottom py-2">
                         <span class="fw-semibold text-secondary">Phone</span>
-                        <span th:text="${appointment.doctor.getUser().phone}">+84 912 345 678</span>
+                        <span th:text="${appointment.doctor.getUser().phone}"></span>
                     </div>
                 </div>
             </div>
-
-
             <!-- 📋 Appointment Details -->
             <div class="card section-card mt-3">
                 <div class="card-header bg-white">
@@ -153,15 +139,9 @@
                         <span class="fw-semibold text-secondary">Appointment Type</span>
                         <span>Consultation</span>
                     </div>
-
-                    <div class="d-flex justify-content-between border-bottom py-2">
-                        <span class="fw-semibold text-secondary">Duration</span>
-                        <span>30 minutes</span>
-                    </div>
-
                     <div class="d-flex justify-content-between border-bottom py-2">
                         <span class="fw-semibold text-secondary">Reason for Visit</span>
-                        <span th:text="${appointment.notes}">Chest pain and shortness of breath</span>
+                        <span th:text="${appointment.notes}"></span>
                     </div>
 
                     <div class="d-flex justify-content-between border-bottom py-2">

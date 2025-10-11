@@ -22,7 +22,7 @@ public class AppointmentService {
         return appointmentRepository.findById(id).get();
     }
 
-    public List<Appointment> findByStatusIn(List<Integer> statuses) {
-        return appointmentRepository.findByStatusValueIn(statuses);
+    public List<Appointment> findByStatus(Integer status) {
+        return appointmentRepository.findByStatusValueOrderByDoctor_DoctorIdAsc(status);
     }
 }
