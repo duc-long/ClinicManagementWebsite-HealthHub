@@ -21,7 +21,7 @@ public class Appointment {
     private Integer appointmentId;
 
     @ManyToOne
-    @JoinColumn(name = "patient_id", nullable = false)
+    @JoinColumn(name = "patient_id", nullable = true)
     private Patient patient;
 
     @ManyToOne
@@ -35,19 +35,16 @@ public class Appointment {
     @Column(nullable = false)
     private LocalDate appointmentDate;
 
-    // ✅ Trường lưu trong DB
     @Column(name = "status", nullable = false)
     private Integer statusValue;
 
-    // ✅ Enum dùng trong code
     @Transient
     private AppointmentStatus status;
 
     private String notes;
     private String cancelReason;
     private LocalDateTime createdAt;
-
-    // ✅ Tự động ánh xạ status <--> statusValue
+    private Integer queueNumber;
     @PostLoad
     public void fillStatusEnum() {
         this.status = AppointmentStatus.fromInt(this.statusValue);
