@@ -1,7 +1,7 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.entity.Doctor;
-import com.group4.clinicmanagement.repository.DoctorRepositories;
+import com.group4.clinicmanagement.repository.DoctorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,31 +9,31 @@ import java.util.List;
 @Service
 public class DoctorService {
 
-    private DoctorRepositories doctorRepositories;
+    private DoctorRepository doctorRepository;
 
-    public DoctorService(DoctorRepositories doctorRepositories) {
-        this.doctorRepositories = doctorRepositories;
+    public DoctorService(DoctorRepository doctorRepository) {
+        this.doctorRepository = doctorRepository;
     }
 
     public List<Doctor> findAllDoctors() {
-        return doctorRepositories.findAll();
+        return doctorRepository.findAll();
     }
 
     public List<String> findAllDistinctSpecialties() {
-        return doctorRepositories.findAllDistinctSpecialties();
+        return doctorRepository.findAllDistinctSpecialties();
     }
 
     public List<Doctor> findDoctorByNameAndSpecialty(String name, String specialty) {
-        return doctorRepositories.findDoctorByNameAndSpecialty(name, specialty);
+        return doctorRepository.findDoctorByNameAndSpecialty(name, specialty);
 
     }
 
     public Doctor findDoctorById(int id) {
-        return doctorRepositories.getDoctorByDoctorId(id);
+        return doctorRepository.getDoctorByDoctorId(id);
     }
 
     public List<Doctor> getDoctorBySpecialtyIgnoreCase(String specialty) {
-        return doctorRepositories.getDoctorBySpecialtyIgnoreCase(specialty);
+        return doctorRepository.getDoctorBySpecialtyIgnoreCase(specialty);
     }
 
 

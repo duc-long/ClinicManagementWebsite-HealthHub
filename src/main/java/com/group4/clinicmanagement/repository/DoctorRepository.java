@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DoctorRepositories extends JpaRepository<Doctor, Integer> {
+public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     @Query("SELECT DISTINCT d.specialty FROM Doctor d")
     List<String> findAllDistinctSpecialties();
 
