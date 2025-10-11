@@ -9,11 +9,15 @@ import java.util.List;
 
 @Service
 public class AppointmentService {
+
     private final AppointmentRepository appointmentRepository;
+
+
 
     public AppointmentService(AppointmentRepository appointmentRepository) {
         this.appointmentRepository = appointmentRepository;
     }
+
 
     public List<Appointment> findAllByPatientId(int patientId) {
         return appointmentRepository.findAllByPatient_PatientId(patientId);
@@ -35,4 +39,15 @@ public class AppointmentService {
         int count = appointmentRepository.countByAppointmentDate(date);
         return count < 5; // accept make appointment 5 times per day
     }
+
+    public List<Appointment> getAllAppointments() {
+        return appointmentRe
+        pository.findAll();
+    }
+
+    public Appointment getById(Integer id) {
+        return appointmentRepository.findById(id).orElse(null);
+    }
+
+
 }
