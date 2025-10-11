@@ -69,7 +69,7 @@ body {
 }
 
 .info .value {
-    color: #9D9D9D;
+    color: #2f2f2f;
     font-size: 22px;
     font-weight: 400;
     margin-left: 20px;
@@ -141,7 +141,22 @@ body {
 }
 
 .view-medical-record {
+    background: #ffffff;
+    display: grid;  /* Sử dụng grid thay vì flex */
+    grid-template-columns: repeat(3, 1fr);  /* Chia thành 3 cột đều */
+    gap: 10px;  /* Khoảng cách giữa các cột */
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+    border-radius: 10px;
     width: 820px;
-    background: #0f5132;
+    margin-bottom: 15px;
+}
+
+.medical-record-link p {
+    margin: 0;
+    font-size: 18px; /* Kích thước chữ */
+    font-weight: 600;
+    color: #252525;
+    text-align: center; /* Căn giữa nội dung trong mỗi cột */
 }
 

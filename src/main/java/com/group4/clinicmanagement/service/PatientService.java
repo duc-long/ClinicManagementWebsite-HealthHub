@@ -26,10 +26,6 @@ public class PatientService {
         this.userRepository = userRepository;
     }
 
-    public List<PatientUserDTO> getAllPatients() {
-        return patientRepository.fetchPatientWithUserInfo();
-    }
-
     public Optional<PatientUserDTO> getPatientsByUsername(String username) {
         return patientRepository.fetchPatientWithUserInfoByUsername(username);
     }
