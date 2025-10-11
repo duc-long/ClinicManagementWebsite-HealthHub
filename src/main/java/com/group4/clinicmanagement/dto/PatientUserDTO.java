@@ -16,4 +16,5 @@ public class PatientUserDTO {
     private String phone;
     private Integer genderValue;
     private String address;
+    private String avatarFilename;
 }

@@ -15,12 +15,12 @@ import java.util.Optional;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Integer> {
     @Query("SELECT new com.group4.clinicmanagement.dto.PatientUserDTO(" +
-            "u.username, u.fullName, u.email, u.phone, u.genderValue, p.address) " +
+            "u.username, u.fullName, u.email, u.phone, u.genderValue, p.address, u.avatar) " +
             "FROM Patient p JOIN p.user u")
     List<PatientUserDTO> fetchPatientWithUserInfo();
 
     @Query("SELECT new com.group4.clinicmanagement.dto.PatientUserDTO(" +
-            "u.username, u.fullName, u.email, u.phone, u.genderValue, p.address) " +
+            "u.username, u.fullName, u.email, u.phone, u.genderValue, p.address, u.avatar) " +
             "FROM Patient p JOIN p.user u" +
             " WHERE u.username = :username")
     Optional<PatientUserDTO> fetchPatientWithUserInfoByUsername(@Param("username") String username);

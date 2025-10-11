@@ -15,7 +15,10 @@
 
 
         <div class="profile-title">Profile</div>
-        <div class="avatar"></div>
+        <img th:src="${patient.avatarFilename != null} ? '/images/avatars/' + ${patient.avatarFilename} : '/images/avatars/default-avatar.png'"
+             class="avatar"
+             id="avatarPreview"
+             alt="Avatar"/>
 
 
         <div class="info">
@@ -50,7 +53,10 @@
         </div>
 
         <div class="button-row">
-            <div class="btn-label change-profile-label">Change profile</div>
+            <form th:action="@{/patient/edit-profile}" method="post">
+                <input type="hidden" name="username" th:value="*{username}"/>
+                <button class="btn-label change-profile-label" type="submit">Change profile</button>
+            </form>
             <div class="btn-label change-password-label">Change password</div>
             <div class="btn-label delete-account-label">Delete account</div>
         </div>

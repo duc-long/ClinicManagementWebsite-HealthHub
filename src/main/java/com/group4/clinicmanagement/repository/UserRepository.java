@@ -21,6 +21,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
                                 @Param("phone") String phone,
                                 @Param("gender") Integer gender);
 
-    Optional<Object> findUserByUsername(String username);
+    Optional<User> findUserByUsername(String username);
+
+    @Modifying
+    @Query("UPDATE User u SET u.avatar = :filename WHERE u.username = :username")
+    void updateAvatarFilename(@Param("username") String username,
+                              @Param("filename") String filename);
 
 }
