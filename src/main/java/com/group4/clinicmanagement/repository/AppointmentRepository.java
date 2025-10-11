@@ -14,5 +14,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
 
     // get the number of appointment in a day
     int countByAppointmentDate(@Param("date") LocalDate date);
-
+    List<Appointment> findByStatusValueOrderByDoctor_DoctorIdAsc(Integer status);
 }

@@ -85,5 +85,8 @@ public class PatientService {
                 throw new RuntimeException("Upload avatar failed", e);
             }
         }
+
+
+
     }
 }

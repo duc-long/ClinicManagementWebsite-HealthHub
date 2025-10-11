@@ -4,14 +4,14 @@ import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
 import org.springframework.stereotype.Service;
 
+
 import java.time.LocalDate;
+
 import java.util.List;
 
 @Service
 public class AppointmentService {
-
     private final AppointmentRepository appointmentRepository;
-
 
 
     public AppointmentService(AppointmentRepository appointmentRepository) {
@@ -48,5 +48,16 @@ public class AppointmentService {
         return appointmentRepository.findById(id).orElse(null);
     }
 
+    public List<Appointment> findAll() {
+        return appointmentRepository.findAll();
+    }
+
+    public Appointment findById(int id) {
+        return appointmentRepository.findById(id).get();
+    }
+
+    public List<Appointment> findByStatus(Integer status) {
+        return appointmentRepository.findByStatusValueOrderByDoctor_DoctorIdAsc(status);
+    }
 
 }

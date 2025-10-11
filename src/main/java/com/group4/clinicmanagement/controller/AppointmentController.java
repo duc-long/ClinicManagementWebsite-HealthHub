@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.controller;
 
+
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.entity.User;
@@ -21,11 +22,11 @@ import java.util.List;
 public class AppointmentController {
     private final AppointmentService appointmentService;
     private final UserRepository userRepository;
-    
+
     public AppointmentController(AppointmentService appointmentService, UserRepository userRepository) {
         this.appointmentService = appointmentService;
         this.userRepository = userRepository;
-    }   
+    }
 
     @RequestMapping("/appointment-list")
     public String appointmentPage(Model model, HttpSession session) {
@@ -81,7 +82,7 @@ public class AppointmentController {
     @Transactional
     @PostMapping("/make-appointment")
     public String doMakeAppointment(@ModelAttribute("appointment") Appointment appointment,
-                                  HttpSession session, Model model) {
+                                    HttpSession session, Model model) {
 //        User currentUser = (User) session.getAttribute("user");
         LocalDate date = appointment.getAppointmentDate();
 
@@ -147,4 +148,5 @@ public class AppointmentController {
         appointmentService.saveAppointment(existing);
         return "redirect:/appointment/appointment-list";
     }
+
 }

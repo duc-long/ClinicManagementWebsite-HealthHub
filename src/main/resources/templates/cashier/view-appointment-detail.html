@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Appointment Detail - HealHub</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background-color: #f6f7fb;
+        }
+
+        .container-wide {
+            max-width: 1000px;
+        }
+
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px #0001;
+        }
+
+        .appointment-header {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+        }
+
+        .section-card {
+            border-left: 4px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-primary" href="#"><i
+                class="fa-solid fa-cash-register me-2"></i>HealHub Cashier</a>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/cashier/view-appointment-list}" ><i
+                    class="fa-solid fa-calendar me-1"></i>Appointments</a>
+            <a class="btn btn-outline-primary btn-sm" th:href="@{#}" ><i
+                    class="fa-solid fa-credit-card me-1"></i>Payments</a>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/cashier/view-profile}" ><i
+                    class="fa-solid fa-user me-1"></i>Profile</a>
+            <a class="btn btn-outline-danger btn-sm" href="logout.html"><i
+                    class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
+        </div>
+    </div>
+</nav>
+<main class="container container-wide py-4">
+    <div class="card appointment-header">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h4 mb-2">Appointment Detail</h1>
+            </div>
+            <div>
+                 <span th:switch="${appointment.status.name()}">
+                    <span th:case="'PENDING'" class="badge bg-secondary">Pending</span>
+                    <span th:case="'CONFIRMED'" class="badge bg-success">Confirmed</span>
+                    <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
+                    <span th:case="'COMPLETED'" class="badge bg-primary">Completed</span>
+                    <span th:case="'NO_SHOW'" class="badge bg-warning text-dark">No Show</span>
+                    <span th:case="'CHECKED_IN'" class="badge bg-info text-dark">Checked In</span>
+                    <span th:case="*" class="badge bg-dark">Unknown</span>
+                </span>
+            </div>
+            <div>
+                <a th:if="${appointment.statusValue == 5}"
+                   th:href="@{#}"
+                   class="btn btn-warning btn-sm">
+                    <i class="fa-solid fa-receipt me-1"></i> Create Payment
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-3">
+        <div class="col-md-12">
+            <!-- 🩺 Patient Information -->
+            <div class="card section-card mt-3">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-user me-2 text-primary"></i>
+                        Patient Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Full Name</span>
+                        <span th:text="${appointment.patient.getUser().fullName}">Nguyễn Văn A</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Patient ID</span>
+                        <span th:text="${appointment.patient.patientId}">P001</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Gender</span>
+                        <span th:text="${appointment.patient.getUser().gender}"></span>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Phone Number</span>
+                        <span th:text="${appointment.patient.getUser().phone}"></span>
+                    </div>
+                </div>
+            </div>
+            <!-- 🩺 Doctor Information -->
+            <div class="card section-card mt-3">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-user-doctor me-2 text-success"></i>
+                        Doctor Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Doctor Name</span>
+                        <span th:text="${appointment.doctor.getUser().fullName}">Dr. John Smith</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Specialty</span>
+                        <span th:text="${appointment.doctor.specialty}">Cardiology</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Phone</span>
+                        <span th:text="${appointment.doctor.getUser().phone}"></span>
+                    </div>
+                </div>
+            </div>
+            <!-- 📋 Appointment Details -->
+            <div class="card section-card mt-3">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-clipboard-list me-2 text-info"></i>
+                        Appointment Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Appointment Type</span>
+                        <span>Consultation</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Reason for Visit</span>
+                        <span th:text="${appointment.notes}"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Appointment Date</span>
+                        <span th:text="${appointment.appointmentDate}">2025-10-11</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</main>
+<script src="../assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Appointment List - HealHub</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background-color: #f6f7fb;
+        }
+
+        .container-wide {
+            max-width: 1200px;
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px #0001;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-primary" href="#"><i
+                class="fa-solid fa-cash-register me-2"></i>HealHub Cashier</a>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/cashier/view-appointment-list}" ><i
+                    class="fa-solid fa-calendar me-1"></i>Appointments</a>
+            <a class="btn btn-outline-primary btn-sm" th:href="@{#}" ><i
+                    class="fa-solid fa-credit-card me-1"></i>Payments</a>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/cashier/view-profile}" ><i
+                    class="fa-solid fa-user me-1"></i>Profile</a>
+            <a class="btn btn-outline-danger btn-sm" href="logout.html"><i
+                    class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
+        </div>
+    </div>
+</nav>
+<main class="container container-wide py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0"><i class="fa-solid fa-calendar me-2 text-primary"></i>Appointment List for <span th:text="${today}"></span></h1>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="appointment : ${todayAppointments}">
+                        <td>
+                            <div>
+                                <div class="fw-bold" th:text="${appointment.patient.getUser().fullName}"></div>
+                                <small class="text-muted" th:text="${appointment.patient.patientId}"></small>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="fw-bold" th:text="${appointment.doctor.getUser().fullName}"></div>
+                                <small class="text-muted" th:text="${appointment.doctor.specialty}"></small>
+                            </div>
+                        </td>
+                        <td>
+                            <div th:text="${appointment.appointmentDate}"></div>
+                        </td>
+                        <td>
+                            <span th:switch="${appointment.status.name()}">
+                                <span th:case="'PENDING'" class="badge bg-secondary">Pending</span>
+                                <span th:case="'CONFIRMED'" class="badge bg-success">Confirmed</span>
+                                <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
+                                <span th:case="'COMPLETED'" class="badge bg-primary">Completed</span>
+                                <span th:case="'NO_SHOW'" class="badge bg-warning text-dark">No Show</span>
+                                <span th:case="'CHECKED_IN'" class="badge bg-info text-dark">Checked In</span>
+                                <span th:case="*" class="badge bg-dark">Unknown</span>
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/cashier/view-appointment-detail/{id}(id=${appointment.appointmentId})}" class="btn btn-sm btn-outline-primary">View
+                                Detail</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
