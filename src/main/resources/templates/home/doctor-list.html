@@ -53,38 +53,38 @@
         <a class="btn btn-outline-secondary btn-sm me-2" th:href="@{/healthhub/search-doctor}"><i class="fa-solid fa-search me-2"></i>Search</a>
     </div>
     <div th:if="${doctors.isEmpty()}">
-
+        <h1></h1>
     </div>
-    <div class="row g-4" id="doctor-list">
-        <th:block th:each="doctor, iterStat : ${doctors}">
-            <div class="col-md-6 col-lg-4 doctor-card-wrapper"
-                 th:classappend="${iterStat.index} >= 6 ? 'd-none' : ''">
-                <div class="card doctor-card h-100">
-                    <div class="card-body text-center">
-                        <div class="mb-3">
-                            <i class="fa-solid fa-user-doctor text-primary" style="font-size: 3rem;"></i>
-                        </div>
-                        <h5 class="card-title" th:text="${doctor.user.fullName}">Doctor Name</h5>
-                        <p class="text-muted mb-2" th:text="${doctor.specialty}">Specialty</p>
-                        <p class="card-text small text-muted"
-                           th:text="${doctor.yearsExperience + ' years experience'}"></p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <a th:href="@{/doctor-profile(id=${doctor.doctorId})}"
-                               class="btn btn-outline-primary btn-sm">View Profile</a>
-                            <a th:href="@{/department-doctor-list(dept=${doctor.department.departmentId})}"
-                               class="btn btn-outline-secondary btn-sm">Department</a>
+
+    <div th:if="${!doctors.isEmpty()}">
+        <div class="row g-4" id="doctor-list">
+            <th:block th:each="doctor, iterStat : ${doctors}">
+                <div class="col-md-6 col-lg-4 doctor-card-wrapper"
+                     th:classappend="${iterStat.index} >= 6 ? 'd-none' : ''">
+                    <div class="card doctor-card h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fa-solid fa-user-doctor text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="card-title" th:text="${doctor.user.fullName}">Doctor Name</h5>
+                            <p class="text-muted mb-2" th:text="${doctor.specialty}">Specialty</p>
+                            <p class="card-text small text-muted"
+                               th:text="${doctor.yearsExperience + ' years experience'}"></p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a th:href="@{/doctor-profile(id=${doctor.doctorId})}"
+                                   class="btn btn-outline-primary btn-sm">View Profile</a>
+                                <a th:href="@{/department-doctor-list(dept=${doctor.department.departmentId})}"
+                                   class="btn btn-outline-secondary btn-sm">Department</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </th:block>
+            </th:block>
+        </div>
     </div>
-
-
     <div class="text-center mt-4" th:if="${doctors.size()>6}" >
         <button class="btn btn-outline-primary" onclick="showMoreDoctors()" id="btn-show-more">Show More</button>
     </div>
-
 </main>
 <script>
     let visibleCount = 6;
