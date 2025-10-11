@@ -1,0 +1,162 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Lexend", sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+}
+
+/* ===== Center the card ===== */
+.page-container {
+    min-height: 100vh; /* chiếm đủ chiều cao màn hình */
+    display: flex;
+    justify-content: center; /* giữa ngang */
+    align-items: center; /* giữa dọc */
+    padding: 24px; /* đệm mép màn hình */
+}
+
+/* ===== Card ===== */
+.profile-card {
+    width: 1120px;
+    max-width: 100%;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+    padding: 32px 32px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 cột cho phần info */
+    gap: 20px 40px;
+    text-align: left;
+}
+
+/* ===== Title & Avatar ===== */
+.profile-title {
+    grid-column: 1 / -1; /* trải ngang cả card */
+    text-align: center;
+    color: #009BAB;
+    font-weight: 600;
+    font-size: clamp(32px, 4vw, 52px);
+    margin: 8px 0 0;
+}
+
+.avatar {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    margin: 20px 0 12px;
+}
+
+/* ===== Info grid (dùng chính .info hiện có) ===== */
+.info {
+    grid-column: 1 / -1; /* info nằm dưới avatar, chiếm full hàng */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 cột: trái / phải */
+    gap: 16px 40px;
+    margin-top: 8px;
+}
+
+.info .label {
+    color: #009BAB;
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.info .value {
+    color: #2f2f2f;
+    font-size: 22px;
+    font-weight: 400;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.group-info {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 50px;
+}
+
+/* ===== Nút ===== */
+.btn {
+    display: none;
+}
+
+.btn-label {
+    all: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+    transition: transform .05s ease, opacity .2s ease;
+}
+
+.btn-label:active {
+    transform: translateY(1px);
+}
+
+/* Màu */
+.change-profile-label {
+    background: #009BAB;
+}
+
+.change-password-label {
+    background: #D5BE0E;
+}
+
+.delete-account-label {
+    background: rgba(199, 76, 76, 0.73);
+}
+
+/* Bố cục nút */
+.button-row {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.change-profile-label,
+.change-password-label {
+    width: 260px;
+}
+
+.delete-account-label {
+    width: 260px;
+}
+
+.view-medical-record {
+    background: #ffffff;
+    display: grid;  /* Sử dụng grid thay vì flex */
+    grid-template-columns: repeat(3, 1fr);  /* Chia thành 3 cột đều */
+    gap: 10px;  /* Khoảng cách giữa các cột */
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+    border-radius: 10px;
+    width: 820px;
+    margin-bottom: 15px;
+}
+
+.medical-record-link p {
+    margin: 0;
+    font-size: 18px; /* Kích thước chữ */
+    font-weight: 600;
+    color: #252525;
+    text-align: center; /* Căn giữa nội dung trong mỗi cột */
+}
+
