@@ -46,7 +46,7 @@
                     <p class="mb-1">Phone: <span th:text="${userDTO.phone}"></span></p>
                 </div>
                 <div class="col-md-4 text-end">
-                    <a th:href="@{/cashier/edit-profile/{id}(id=${userDTO.id})}" class="btn btn-light btn-sm">Edit Profile</a>
+                    <a th:href="@{/cashier/edit-profile}" class="btn btn-light btn-sm">Edit Profile</a>
                 </div>
             </div>
         </div>
@@ -61,8 +61,7 @@
                 </div>
                 <div class="card-body">
                     <div class="info-row"><label>Full Name</label><p th:text="${userDTO.fullName}"></p></div>
-                    <div class="info-row"><label>Date of Birth</label><p>asd</p></div>
-                    <div class="info-row"><label>Gender</label><p th:text="${userDTO.gender == 1 ? 'Male' : (userDTO.gender == 2 ? 'Female' : 'Unknown')}"></p></div>
+                    <div class="info-row"><label>Gender</label><p th:text="${userDTO.getGender()}"></p></div>
                 </div>
             </div>
         </div>
@@ -81,34 +80,6 @@
         </div>
     </div>
 
-    <div class="row g-4 mt-3">
-        <!-- Address -->
-        <div class="col-md-6">
-            <div class="card section-card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fa-solid fa-map-marker-alt me-2 text-info"></i>Address</h5>
-                </div>
-                <div class="card-body">
-                    <div class="info-row"><label>Home Address</label><p>456 Nguyen Hue Street, District 1, Ho Chi Minh City</p></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Employment -->
-        <div class="col-md-6">
-            <div class="card section-card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fa-solid fa-briefcase me-2 text-warning"></i>Employment</h5>
-                </div>
-                <div class="card-body">
-                    <div class="info-row"><label>Position</label><p>Cashier</p></div>
-                    <div class="info-row"><label>Department</label><p>Finance</p></div>
-                    <div class="info-row"><label>Start Date</label><p>January 15, 2023</p></div>
-                    <div class="info-row"><label>Status</label><p><span class="badge bg-success">Active</span></p></div>
-                </div>
-            </div>
-        </div>
-    </div>
 </main>
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
     </body>

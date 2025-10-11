@@ -18,6 +18,7 @@ public class CashierService {
         return cashierRepositories.getReferenceById(id);
     }
 
+    @Transactional
     public void save(User user) {
         cashierRepositories.save(user);
     }

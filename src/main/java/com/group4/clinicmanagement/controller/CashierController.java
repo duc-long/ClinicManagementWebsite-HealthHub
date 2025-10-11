@@ -48,8 +48,10 @@ public class CashierController {
     }
     @PostMapping(value = "/edit-profile")
     public String editProfile(@ModelAttribute("userDTO") UserDTO dto) {
-
         User user = cashierService.findUserById(id);
+
+        System.out.println("Before update: " + user.getGender());
+        System.out.println("Form value: " + dto.getGender());
 
         user.setFullName(dto.getFullName());
         user.setEmail(dto.getEmail());
@@ -57,6 +59,9 @@ public class CashierController {
         user.setGender(dto.getGender());
 
         cashierService.save(user);
-        return "redirect:/cashier/view-profile/" + id;
+
+        System.out.println("After update (in memory): " + user.getGender());
+        return "redirect:/cashier/view-profile";
     }
+
 }
