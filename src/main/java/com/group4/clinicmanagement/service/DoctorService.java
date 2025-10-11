@@ -2,10 +2,6 @@ package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.repository.DoctorRepositories;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +20,7 @@ public class DoctorService {
     }
 
     public List<String> findAllDistinctSpecialties() {
-    return   doctorRepositories.findAllDistinctSpecialties();
+        return doctorRepositories.findAllDistinctSpecialties();
     }
 
     public List<Doctor> findDoctorByNameAndSpecialty(String name, String specialty) {
@@ -35,4 +31,10 @@ public class DoctorService {
     public Doctor findDoctorById(int id) {
         return doctorRepositories.getDoctorByDoctorId(id);
     }
+
+    public List<Doctor> getDoctorBySpecialtyIgnoreCase(String specialty) {
+        return doctorRepositories.getDoctorBySpecialtyIgnoreCase(specialty);
+    }
+
+
 }

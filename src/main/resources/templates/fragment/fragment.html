@@ -1,17 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="css">
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
 </div>
 
 <div th:fragment="navBar">
+    <style>
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+    </style>
     <nav class="navbar navbar-expand-lg bg-white border-bottom py-3">
         <div class="container">
             <a class="navbar-brand fw-bold text-primary fs-2" th:href="@{/home}">HealthHub</a>
             <div class="d-flex align-items-center gap-4">
-                <a class="text-primary text-decoration-none fw-semibold" href="#">About us</a>
                 <a class="text-primary text-decoration-none fw-semibold" th:href="@{/home/list-doctor}">Doctors</a>
-                <a class="text-primary text-decoration-none fw-semibold" href="#">Specialty</a>
+                <div class="dropdown">
+                    <a class="dropdown-toggle text-primary text-decoration-none fw-semibold"
+                       id="dropdownSpecialty" data-bs-toggle="dropdown" aria-expanded="false">
+                        Specialty
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
+                        <li th:each="s : ${specialties}"><a class="dropdown-item" th:href="@{/home/specialty/{specialty}(specialty=${s})}" th:text="${s}"></a></li>
+                    </ul>
+                </div>
                 <a class="text-primary text-decoration-none fw-semibold" href="#">Book an appointment</a>
                 <a class="btn btn-primary btn-sm text-white fw-semibold px-3" href="#">Login</a>
             </div>

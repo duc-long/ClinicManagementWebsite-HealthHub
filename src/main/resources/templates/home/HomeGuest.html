@@ -1,170 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Figma Export</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-          rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HealthHub - Home</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f6f7fb;
+        }
 
+        .card-img-overlay {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 0.5rem;
+        }
+
+    </style>
 </head>
 <body>
-<div style="width: 100%; height: 2812px; position: relative; background: white; overflow: hidden">
-    <img style="width: 265px; height: 350px; left: 160px; top: 1750px; position: absolute"
-         src="https://placehold.co/265x350"/>
-    <img style="width: 265px; height: 350px; left: 445px; top: 1750px; position: absolute"
-         src="https://placehold.co/265x350"/>
-    <div style="width: 265px; height: 50px; left: 160px; top: 2050px; position: absolute; background: rgba(0, 155, 171, 0.66)"></div>
-    <img style="width: 265px; height: 350px; left: 730px; top: 1750px; position: absolute"
-         src="https://placehold.co/265x350"/>
-    <img style="width: 265px; height: 350px; left: 1015px; top: 1750px; position: absolute"
-         src="https://placehold.co/265x350"/>
-    <div style="left: 227px; top: 2062px; position: absolute; color: white; font-size: 20px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Dr. DangPHH
+
+<!-- NAVBAR -->
+<div th:replace="~{fragment/fragment :: navBar}"></div>
+
+<!-- HERO BANNER -->
+<section class="container py-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h1 class="text-primary fw-bold mb-3">FPT’s Trusted Healthcare System</h1>
+            <p class="text-muted">HealthHub features five specialties: Cardiology, Internal Medicine, OB-GYN,
+                Orthopedics, and Pediatrics – giving you more choices and consistent care.</p>
+        </div>
+        <div class="col-md-6 text-center">
+            <img src="https://placehold.co/600x400" alt="Hero Image" class="img-fluid rounded">
+        </div>
     </div>
-    <div style="width: 265px; height: 50px; left: 445px; top: 2050px; position: absolute; background: rgba(0, 155, 171, 0.66)"></div>
-    <div style="left: 512px; top: 2062px; position: absolute; color: white; font-size: 20px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Dr. VinhNHT
+</section>
+
+<!-- ACTION BUTTONS BOX -->
+<section class="container py-4">
+    <div class="card p-5 shadow text-center border-primary border-1">
+        <div class="d-flex justify-content-center gap-4 flex-wrap">
+            <a th:href="@{/home/search-doctor}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5" style="width: 380px;">
+                <i class="fa-solid fa-user-doctor me-2"></i>Find A Doctors
+            </a>
+            <a href="#"
+               class="btn btn-outline-primary btn-lg px-4 py-3 fs-5"
+               style="width: 380px;">
+                <i class="fa-solid fa-star me-2"></i>View Feedback
+            </a>
+            <a href="#" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5" style="width: 380px;">
+                <i class="fa-solid fa-calendar-check me-2"></i>Book Appointment
+            </a>
+        </div>
     </div>
-    <div style="width: 265px; height: 50px; left: 730px; top: 2050px; position: absolute; background: rgba(0, 155, 171, 0.66)"></div>
-    <div style="left: 797px; top: 2062px; position: absolute; color: white; font-size: 20px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Dr. LongNVD
-    </div>
-    <div style="width: 265px; height: 50px; left: 1015px; top: 2050px; position: absolute; background: rgba(0, 155, 171, 0.66)"></div>
-    <div style="left: 1082px; top: 2062px; position: absolute; color: white; font-size: 20px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Dr. TanNV
-    </div>
-    <div style="left: 657px; top: 1617px; position: absolute; color: #009BAB; font-size: 32px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Doctors
-    </div>
-    <img style="width: 100%; height: 600px; top: 150px; position: absolute" src="https://placehold.co/1440x600"/>
-    <div style="width: 416px; height: 214px; left: 160px; top: 293px; position: absolute; color: #00749B; font-size: 45px; font-family: Lexend; font-weight: 600; line-height: 67px; word-wrap: break-word">
-        FPT’s Trusted Healthcare System
-    </div>
+</section>
 
 
-    <div th:replace="~{fragment/fragment :: navBar}"></div>
+<!-- DOCTORS SECTION -->
+<section class="container py-5">
+    <h2 class="text-center text-primary fw-bold mb-4">Our Doctors</h2>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+        <div class="col" th:each="doctor : ${doctors}">
+            <div class="position-relative rounded overflow-hidden">
+                <img src="https://placehold.co/300x350?text=Doctor"
+                     class="img-fluid"
+                     alt="Doctor Image"
+                     style="height: 350px; object-fit: cover; width: 100%;">
+                <div class="position-absolute bottom-0 start-0 w-100 px-3 py-2 bg-info bg-opacity-75 text-white text-start">
+                    <strong th:text="${doctor.user.fullName}">Dr. Name</strong><br>
+                    <small th:text="${doctor.specialty}">Doctor's Title</small>
+                </div>
+            </div>
+        </div>
 
+    </div>
+</section>
 
-    <div style="width: 1120px; height: 200px; left: 160px; top: 650px; position: absolute; background: white; box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25); border-radius: 20px; outline: 1px rgba(0, 0, 0, 0.05) solid"></div>
-    <div style="width: 835px; height: 50px; left: 255px; top: 681px; position: absolute; background: #F3F4F7; border-radius: 10px"></div>
-    <div style="left: 330px; top: 696px; position: absolute; color: #BEBFC2; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Search doctors, specialties
+<section class="container py-5">
+    <div class="row align-items-center g-4">
+        <!-- LEFT CONTENT -->
+        <div class="col-md-4">
+            <h2 class="text-primary fw-bold mb-3">Our Specialties</h2>
+            <p class="text-muted">
+                HealthHub provides a wide range of medical specialties and expert care teams, ensuring every patient receives trusted, personalized treatment using modern technology and evidence-based practices.
+            </p>
+            <div class="dropdown">
+                <a class="dropdown-toggle text-primary text-decoration-none fw-semibold"
+                   id="dropdownSpecialty" data-bs-toggle="dropdown" aria-expanded="false">
+                    Specialty
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
+                    <li th:each="s : ${specialties}"><a class="dropdown-item" th:href="@{/home/specialty/{specialty}(specialty=${s})}" th:text="${s}"></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RIGHT SPECIALTY CARDS -->
+        <div class="col-md-8">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card text-white border-0 position-relative">
+                        <img src="https://placehold.co/360x240" class="card-img" alt="General Internal Medicine">
+                        <div class="card-img-overlay d-flex align-items-end" style="background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);">
+                            <h5 class="card-title fw-bold">Cardiology</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card text-white border-0 position-relative">
+                        <img src="https://placehold.co/360x240" class="card-img" alt="Obstetrics & Gynaecology">
+                        <div class="card-img-overlay d-flex align-items-end" style="background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);">
+                            <h5 class="card-title fw-bold">Neurology</h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- Add more specialties below -->
+            </div>
+        </div>
     </div>
-    <div style="width: 50px; height: 50px; left: 1121px; top: 681px; position: absolute; background: #009BAB; border-radius: 10px"></div>
-    <div style="width: 265px; height: 50px; left: 255px; top: 761px; position: absolute; background: #009BAB; border-radius: 30px"></div>
-    <div style="width: 265px; height: 50px; left: 587px; top: 761px; position: absolute; background: #009BAB; border-radius: 30px"></div>
-    <div style="width: 265px; height: 50px; left: 920px; top: 761px; position: absolute; background: #009BAB; border-radius: 30px"></div>
-    <div style="width: 25px; height: 23.55px; left: 285px; top: 696px; position: absolute; background: #009BAB"></div>
-    <div style="width: 25px; height: 23.55px; left: 1134px; top: 696px; position: absolute; background: white"></div>
-    <div style="left: 329px; top: 776px; position: absolute; color: white; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Search doctors
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-primary text-white py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h4 class="fw-bold">HealthHub</h4>
+                <p>FPT’s Trusted Healthcare System</p>
+                <p><i class="fa fa-map-marker-alt me-2"></i>666 Nguyen Van Cu, Can Tho</p>
+                <p><i class="fa fa-phone me-2"></i>+84 123 456 789</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6 class="fw-bold">Links</h6>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/home/list-doctor}" class="text-white text-decoration-none">Doctor</a></li>
+                    <li><a href="#" class="text-white text-decoration-none">Appointment</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
-    <div style="left: 650px; top: 773px; position: absolute; color: white; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Search specialties
-    </div>
-    <div style="width: 220px; left: 966px; top: 776px; position: absolute; color: white; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Book an appointment
-    </div>
-    <img style="width: 360px; height: 240px; left: 540px; top: 1050px; position: absolute; border-radius: 20px"
-         src="https://placehold.co/360x240"/>
-    <img style="width: 360px; height: 240px; left: 920px; top: 1050px; position: absolute; border-radius: 20px"
-         src="https://placehold.co/360x240"/>
-    <img style="width: 360px; height: 240px; left: 160px; top: 1310px; position: absolute; border-radius: 20px"
-         src="https://placehold.co/360x240"/>
-    <img style="width: 360px; height: 240px; left: 540px; top: 1310px; position: absolute; border-radius: 20px"
-         src="https://placehold.co/360x240"/>
-    <img style="width: 360px; height: 240px; left: 920px; top: 1310px; position: absolute; border-radius: 20px"
-         src="https://placehold.co/360x240"/>
-    <div style="left: 563px; top: 1242px; position: absolute; color: white; font-size: 20px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Cardiology
-    </div>
-    <div style="left: 942px; top: 1242px; position: absolute; color: white; font-size: 20px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        General Internal Medicine
-    </div>
-    <div style="left: 942px; top: 1498px; position: absolute; color: white; font-size: 20px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Pediatrics
-    </div>
-    <div style="left: 563px; top: 1498px; position: absolute; color: white; font-size: 20px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Orthopedics
-    </div>
-    <div style="width: 254px; height: 20px; left: 183px; top: 1498px; position: absolute; color: white; font-size: 20px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Obstetrics & Gynecology
-    </div>
-    <div style="left: 633px; top: 930px; position: absolute; color: #009BAB; font-size: 32px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Specialties
-    </div>
-    <div style="left: 160px; top: 1060px; position: absolute; color: #009BAB; font-size: 32px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Introduction
-    </div>
-    <div style="width: 337px; height: 130px; left: 160px; top: 1112px; position: absolute; color: #BEBFC2; font-size: 16px; font-family: Lexend; font-weight: 500; word-wrap: break-word">
-        HealthHub features five specialties: Cardiology, General Internal Medicine, Obstetrics & Gynecology (OB-GYN),
-        Orthopedics, and Pediatrics, giving you more choices and consistently excellent service.
-    </div>
-    <div style="width: 100%; height: 250px; left: 0px; top: 2562px; position: absolute; background: #009BAB"></div>
-    <div style="width: 358px; height: 30px; left: 922px; top: 2653px; position: absolute; background: #009BAB; border-radius: 20px; border: 1px white solid"></div>
-    <div style="width: 75px; height: 30px; left: 1205px; top: 2653px; position: absolute; background: #A5F5FE; border-radius: 20px; border: 1px #A5F5FE solid"></div>
-    <div style="left: 730px; top: 2598px; position: absolute; color: white; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Specialty
-    </div>
-    <div style="left: 925px; top: 2618px; position: absolute; color: white; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Follow our updates
-    </div>
-    <div style="left: 1210px; top: 2657px; position: absolute; color: #009BAB; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Register
-    </div>
-    <div style="left: 941px; top: 2657px; position: absolute; color: #BEBFC2; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Your email address
-    </div>
-    <div style="left: 730px; top: 2628px; position: absolute; color: white; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Doctor
-    </div>
-    <div style="left: 730px; top: 2658px; position: absolute; color: white; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Book an appointment
-    </div>
-    <div style="left: 730px; top: 2688px; position: absolute; color: white; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        Contact
-    </div>
-    <div style="left: 257px; top: 2658px; position: absolute; color: white; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        +84 123 456 789
-    </div>
-    <div style="left: 256px; top: 2688px; position: absolute; color: white; font-size: 16px; font-family: Lexend; font-weight: 400; word-wrap: break-word">
-        666 Nguyen Van Cu, Can Tho
-    </div>
-    <div style="width: 282px; height: 33px; left: 253px; top: 2607px; position: absolute; text-align: center; color: white; font-size: 52px; font-family: Lexend; font-weight: 600; line-height: 22px; word-wrap: break-word">
-        HealthHub
-    </div>
-    <div style="width: 100%; height: 250px; left: 0px; top: 2222px; position: absolute; background: white"></div>
-    <div style="left: 1121px; top: 2300px; position: absolute; color: #009BAB; font-size: 30px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        600
-    </div>
-    <div style="width: 115px; height: 0px; left: 1090px; top: 2347px; position: absolute; outline: 1px #009BAB solid; outline-offset: -0.50px"></div>
-    <div style="left: 1106px; top: 2356px; position: absolute; color: #009BAB; font-size: 20px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Patients
-    </div>
-    <div style="left: 636px; top: 2180px; position: absolute; color: #009BAB; font-size: 32px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Overview
-    </div>
-    <div style="width: 282px; height: 33px; left: 255px; top: 2325px; position: absolute; text-align: center; color: #009BAB; font-size: 52px; font-family: Lexend; font-weight: 600; line-height: 22px; word-wrap: break-word">
-        HealthHub
-    </div>
-    <div style="left: 756px; top: 2300px; position: absolute; color: #009BAB; font-size: 30px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        5
-    </div>
-    <div style="width: 115px; height: 0px; left: 707px; top: 2347px; position: absolute; outline: 1px #009BAB solid; outline-offset: -0.50px"></div>
-    <div style="left: 713px; top: 2356px; position: absolute; color: #009BAB; font-size: 20px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Specialties
-    </div>
-    <div style="left: 949px; top: 2300px; position: absolute; color: #009BAB; font-size: 30px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        6
-    </div>
-    <div style="width: 115px; height: 0px; left: 900px; top: 2347px; position: absolute; outline: 1px #009BAB solid; outline-offset: -0.50px"></div>
-    <div style="left: 920px; top: 2356px; position: absolute; color: #009BAB; font-size: 20px; font-family: Lexend; font-weight: 600; word-wrap: break-word">
-        Doctors
-    </div>
-</div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
