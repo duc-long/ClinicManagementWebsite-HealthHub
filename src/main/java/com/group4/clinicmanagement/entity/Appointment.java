@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.entity;
 
+import com.group4.clinicmanagement.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Appointment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer appointmentId;
@@ -33,11 +35,32 @@ public class Appointment {
     @Column(nullable = false)
     private LocalDate appointmentDate;
 
-    private Integer status; // 0=pending,1=confirmed,...
+    // ✅ Trường lưu trong DB
+    @Column(name = "status", nullable = false)
+    private Integer statusValue;
+
+    // ✅ Enum dùng trong code
+    @Transient
+    private AppointmentStatus status;
+
     private String notes;
     private String cancelReason;
     private Integer queueNumber;
     private LocalDateTime createdAt;
+
+    // ✅ Tự động ánh xạ status <--> statusValue
+    @PostLoad
+    public void fillStatusEnum() {
+        this.status = AppointmentStatus.fromInt(this.statusValue);
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void fillStatusValue() {
+        if (this.status != null) {
+            this.statusValue = this.status.getValue();
+        }
+    }
 
     @Override
     public String toString() {
