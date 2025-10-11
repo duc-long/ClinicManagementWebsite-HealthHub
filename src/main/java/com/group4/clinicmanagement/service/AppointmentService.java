@@ -13,10 +13,16 @@ public class AppointmentService {
     public AppointmentService(AppointmentRepository appointmentRepository) {
         this.appointmentRepository = appointmentRepository;
     }
+
     public List<Appointment> findAll() {
         return appointmentRepository.findAll();
     }
+
     public Appointment findById(int id) {
         return appointmentRepository.findById(id).get();
+    }
+
+    public List<Appointment> findByStatusIn(List<Integer> statuses) {
+        return appointmentRepository.findByStatusIn(statuses);
     }
 }

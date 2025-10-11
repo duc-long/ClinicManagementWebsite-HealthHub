@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Appointment List - HealHub</title>
-    <link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
@@ -44,7 +44,7 @@
 </nav>
 <main class="container container-wide py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0"><i class="fa-solid fa-calendar me-2 text-primary"></i>Appointment List</h1>
+        <h1 class="h3 mb-0"><i class="fa-solid fa-calendar me-2 text-primary"></i>Appointment List for <span th:text="${today}"></span></h1>
 
     </div>
 
@@ -62,7 +62,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="appointment : ${appointments}">
+                    <tr th:each="appointment : ${todayAppointments}">
                         <td>
                             <div>
                                 <div class="fw-bold" th:text="${appointment.patient.getUser().fullName}"></div>

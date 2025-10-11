@@ -3,12 +3,16 @@ package com.group4.clinicmanagement.controller;
 import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.service.AppointmentService;
 import com.group4.clinicmanagement.service.CashierService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -17,7 +21,7 @@ public class CashierController {
     CashierService cashierService;
     AppointmentService appointmentService;
 
-    public CashierController(CashierService cashierService,  AppointmentService appointmentService) {
+    public CashierController(CashierService cashierService, AppointmentService appointmentService) {
         this.cashierService = cashierService;
         this.appointmentService = appointmentService;
 
@@ -66,9 +70,22 @@ public class CashierController {
     }
 
     @GetMapping(value = "/view-appointment-list")
-    public String viewListAppoimnent(Model model) {
-        List<Appointment> appointments = appointmentService.findAll();
-        model.addAttribute("appointments", appointmentService.findAll());
+    public String viewListAppointment(Model model) {
+        LocalDate today = LocalDate.now();
+        List<Integer> statuses = Arrays.asList(
+                AppointmentStatus.CONFIRMED.getValue(),
+                AppointmentStatus.CHECKED_IN.getValue()
+        );
+        List<Appointment> appointments = appointmentService.findByStatusIn(statuses);
+        List<Appointment> todayAppointments = new ArrayList<>();
+
+        for (Appointment appointment : appointments) {
+            if (appointment.getAppointmentDate().isEqual(today)) {
+                todayAppointments.add(appointment);
+            }
+        }
+        model.addAttribute("today", today);
+        model.addAttribute("todayAppointments", todayAppointments);
         return "cashier/view-appointment-list";
     }
 

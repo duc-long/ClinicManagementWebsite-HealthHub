@@ -36,6 +36,7 @@ public class Appointment {
     private Integer status; // 0=pending,1=confirmed,...
     private String notes;
     private String cancelReason;
+    private Integer queueNumber;
     private LocalDateTime createdAt;
 
     @Override

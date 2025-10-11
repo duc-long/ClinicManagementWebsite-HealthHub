@@ -47,9 +47,9 @@
     <div class="card appointment-header">
         <div class="card-body d-flex justify-content-between align-items-center">
             <div>
-                <h1 class="h4 mb-2">Consultation</h1>
+                <h1 class="h4 mb-2">Appointment Detail</h1>
             </div>
-            <div class="text-end">
+            <div>
                  <span th:switch="${appointment.status}">
                      <span th:case="0" class="badge bg-secondary">Pending</span>
                      <span th:case="1" class="badge bg-success">Confirmed</span>
@@ -60,84 +60,113 @@
                      <span th:case="*" class="badge bg-dark">Unknown</span>
                  </span>
             </div>
+            <div>
+                <a th:if="${appointment.status == 1}"
+                   th:href="@{#}"
+                   class="btn btn-warning btn-sm">
+                    <i class="fa-solid fa-receipt me-1"></i> Create Payment
+                </a>
+            </div>
         </div>
     </div>
 
     <div class="row g-4 mt-3">
         <div class="col-md-12">
-            <div class="card section-card">
+            <!-- 🩺 Patient Information -->
+            <div class="card section-card mt-3">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fa-solid fa-user me-2 text-primary"></i>Patient Information</h5>
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-user me-2 text-primary"></i>
+                        Patient Information
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Full Name</label>
-                            <p class="form-control-plaintext" th:text="${appointment.patient.getUser().fullName}" ></p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold" >Patient ID</label>
-                            <p class="form-control-plaintext" th:text="${appointment.patient.patientId}"></p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Date of Birth</label>
-                            <p class="form-control-plaintext">January 15, 1985</p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Phone Number</label>
-                            <p class="form-control-plaintext" th:text="${appointment.patient.getUser().phone}"></p>
-                        </div>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Full Name</span>
+                        <span th:text="${appointment.patient.getUser().fullName}">Nguyễn Văn A</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Patient ID</span>
+                        <span th:text="${appointment.patient.patientId}">P001</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Gender</span>
+                        <span th:text="${appointment.patient.getUser().gender}"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Phone Number</span>
+                        <span th:text="${appointment.patient.getUser().phone}">+84 987 654 321</span>
                     </div>
                 </div>
             </div>
 
+
+            <!-- 🩺 Doctor Information -->
             <div class="card section-card mt-3">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fa-solid fa-user-doctor me-2 text-success"></i>Doctor Information</h5>
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-user-doctor me-2 text-success"></i>
+                        Doctor Information
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Doctor Name</label>
-                            <p class="form-control-plaintext" th:text="${appointment.doctor.getUser().fullName}"></p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Specialty</label>
-                            <p class="form-control-plaintext" th:text="${appointment.doctor.specialty}"></p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Room</label>
-                            <p class="form-control-plaintext">Room 201</p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Phone</label>
-                            <p class="form-control-plaintext" th:text="${appointment.doctor.getUser().phone}">+84 987 654 321</p>
-                        </div>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Doctor Name</span>
+                        <span th:text="${appointment.doctor.getUser().fullName}">Dr. John Smith</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Specialty</span>
+                        <span th:text="${appointment.doctor.specialty}">Cardiology</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Room</span>
+                        <span>Room 201</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Phone</span>
+                        <span th:text="${appointment.doctor.getUser().phone}">+84 912 345 678</span>
                     </div>
                 </div>
             </div>
 
+
+            <!-- 📋 Appointment Details -->
             <div class="card section-card mt-3">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fa-solid fa-clipboard-list me-2 text-info"></i>Appointment Details</h5>
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-clipboard-list me-2 text-info"></i>
+                        Appointment Details
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Appointment Type</label>
-                            <p class="form-control-plaintext">Consultation</p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Duration</label>
-                            <p class="form-control-plaintext">30 minutes</p>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Reason for Visit</label>
-                            <p class="form-control-plaintext" th:text="${appointment.notes}">Chest pain and shortness of breath</p>
-                        </div>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Appointment Type</span>
+                        <span>Consultation</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Duration</span>
+                        <span>30 minutes</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Reason for Visit</span>
+                        <span th:text="${appointment.notes}">Chest pain and shortness of breath</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="fw-semibold text-secondary">Appointment Date</span>
+                        <span th:text="${appointment.appointmentDate}">2025-10-11</span>
                     </div>
                 </div>
             </div>
+
         </div>
 
 
