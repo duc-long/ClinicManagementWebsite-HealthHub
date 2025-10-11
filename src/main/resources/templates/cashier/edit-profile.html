@@ -25,9 +25,9 @@
             <i class="fa-solid fa-cash-register me-2"></i>HealHub Cashier
         </a>
         <div class="d-flex align-items-center gap-2">
-            <a class="btn btn-outline-primary btn-sm" href="#"><i class="fa-solid fa-calendar me-1"></i>Appointments</a>
+            <a class="btn btn-outline-primary btn-sm"  th:href="@{/cashier/view-appointment-list}"><i class="fa-solid fa-calendar me-1"></i>Appointments</a>
             <a class="btn btn-outline-primary btn-sm" href="#"><i class="fa-solid fa-credit-card me-1"></i>Payments</a>
-            <a class="btn btn-outline-secondary btn-sm" href="#"><i class="fa-solid fa-user me-1"></i>Profile</a>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/cashier/view-profile}"><i class="fa-solid fa-user me-1"></i>Profile</a>
             <a class="btn btn-outline-danger btn-sm" href="#"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
         </div>
     </div>

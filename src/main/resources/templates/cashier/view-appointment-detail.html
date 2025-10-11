@@ -33,12 +33,16 @@
 <body>
 <nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold text-primary" th:href="@{#}" ><i
+        <a class="navbar-brand fw-bold text-primary" href="#"><i
                 class="fa-solid fa-cash-register me-2"></i>HealHub Cashier</a>
         <div class="d-flex align-items-center gap-2">
-            <a class="btn btn-outline-secondary btn-sm" th:href="@{/cashier/view-profile}"><i
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/cashier/view-appointment-list}" ><i
+                    class="fa-solid fa-calendar me-1"></i>Appointments</a>
+            <a class="btn btn-outline-primary btn-sm" th:href="@{#}" ><i
+                    class="fa-solid fa-credit-card me-1"></i>Payments</a>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/cashier/view-profile}" ><i
                     class="fa-solid fa-user me-1"></i>Profile</a>
-            <a class="btn btn-outline-danger btn-sm" th:href="@{#}" ><i
+            <a class="btn btn-outline-danger btn-sm" href="logout.html"><i
                     class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
         </div>
     </div>
