@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 public class MedicalRecordListDTO {
+    private Integer recordId;
     private String diagnosis;
     private LocalDateTime createdAt;
     private String doctorFullName;

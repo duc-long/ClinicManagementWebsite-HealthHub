@@ -6,9 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "LabResult")
+@Table(name = "labresult")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,6 +26,9 @@ public class LabResult {
     @ManyToOne
     @JoinColumn(name = "technician_id", nullable = false)
     private User technician;
+
+    @OneToMany(mappedBy = "labResult")
+    private List<LabImage> labImages;
 
     @Column(columnDefinition = "TEXT")
     private String resultText;

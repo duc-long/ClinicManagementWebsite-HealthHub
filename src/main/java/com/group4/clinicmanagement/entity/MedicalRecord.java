@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "medicalrecord")
@@ -28,6 +29,15 @@ public class MedicalRecord {
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
+
+    @OneToMany(mappedBy = "medicalRecord")
+    private List<VitalSigns> vitalSigns;
+
+    @OneToMany(mappedBy = "medicalRecord")
+    private List<LabRequest> labRequests;
+
+    @OneToMany(mappedBy = "medicalRecord")
+    private List<Prescription> prescriptions;
 
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
