@@ -12,9 +12,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.beans.Transient;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Controller
@@ -58,7 +60,6 @@ public class AppointmentController {
     @GetMapping("/detail/{id}")
     public String viewAppointmentDetail(@PathVariable("id") int id, Model model, HttpSession session) {
 //        User currentUser = (User) session.getAttribute("user");
-
         User currentUser = userRepository.findByUserId(11).orElse(null);
         if (currentUser == null) {
             return "redirect:/login";
@@ -82,22 +83,32 @@ public class AppointmentController {
     @Transactional
     @PostMapping("/make-appointment")
     public String doMakeAppointment(@ModelAttribute("appointment") Appointment appointment,
-                                    HttpSession session, Model model) {
+                                    HttpSession session, Model model,
+                                    RedirectAttributes redirectAttributes) {
 //        User currentUser = (User) session.getAttribute("user");
-        LocalDate date = appointment.getAppointmentDate();
-
-        if (!appointmentService.canBookAppointment(date)) {
-            model.addAttribute("errorMessage", "❌ The clinic already has 10 appointments for " + date);
-            return "patient/appointment-dashboard";
-        }
-
-
         Patient p = new Patient();
         p.setPatientId(11);
+
+
+        // check span in the same day
+        if (!appointmentService.canBookAppointment(p.getPatientId())) {
+            redirectAttributes.addFlashAttribute("message", "❌ You already limit book an appointment. \nPlease choose another day.");
+            return "redirect:/appointment/appointment-list";
+        }
+
         appointment.setPatient(p);
 
         appointment.setStatus(AppointmentStatus.PENDING);
-        appointmentService.saveAppointment(appointment);
+        Appointment isCreateAppointment = appointmentService.saveAppointment(appointment);
+
+        if (isCreateAppointment != null) {
+            System.out.println("success");
+            redirectAttributes.addFlashAttribute("message", "Create Appointment Successfully");
+        } else {
+            System.out.println("fail");
+            redirectAttributes.addFlashAttribute("message", "Failed to create Appointment Successfully");
+            return "redirect:/appointment/appointment-list";
+        }
 
         return "redirect:/appointment/appointment-list";
     }

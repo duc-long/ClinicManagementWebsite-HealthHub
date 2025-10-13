@@ -2,6 +2,7 @@ package com.group4.clinicmanagement.controller;
 
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.service.DoctorService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +20,11 @@ public class HomeController {
     }
 
     @GetMapping
-    public String guestHome(Model model) {
+    public String guestHome(Model model, HttpSession session) {
         List<Doctor> doctors = doctorService.findAllDoctors();
         model.addAttribute("doctors", doctors);
         List<String> specialties = doctorService.findAllDistinctSpecialties();
-        model.addAttribute("specialties", specialties);
+        session.setAttribute("specialties", specialties);
         return "home/HomeGuest";
     }
 

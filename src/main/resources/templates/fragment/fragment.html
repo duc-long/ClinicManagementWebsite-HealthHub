@@ -21,7 +21,7 @@
                         Specialty
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
-                        <li th:each="s : ${specialties}"><a class="dropdown-item" th:href="@{/home/specialty/{specialty}(specialty=${s})}" th:text="${s}"></a></li>
+                        <li th:each="s : ${session.specialties}"><a class="dropdown-item" th:href="@{/home/specialty/{specialty}(specialty=${s})}" th:text="${s}"></a></li>
                     </ul>
                 </div>
                 <a class="text-primary text-decoration-none fw-semibold" th:href="@{/appointment/appointment-list}">Book an appointment</a>
@@ -31,6 +31,26 @@
     </nav>
 </div>
 
+
+<footer th:fragment="footer" class="bg-primary text-white py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h4 class="fw-bold">HealthHub</h4>
+                <p>FPT’s Trusted Healthcare System</p>
+                <p><i class="fa fa-map-marker-alt me-2"></i>666 Nguyen Van Cu, Can Tho</p>
+                <p><i class="fa fa-phone me-2"></i>+84 123 456 789</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h6 class="fw-bold">Links</h6>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/home/list-doctor}" class="text-white text-decoration-none">Doctor</a></li>
+                    <li><a href="#" class="text-white text-decoration-none">Appointment</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
 
 <div th:fragment="js">
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>

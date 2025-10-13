@@ -43,14 +43,33 @@
             padding: 10px;
         }
 
-        .container {
+        .appointment-form {
             max-width: 700px;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 9999;
         }
     </style>
 </head>
 
 <body>
-<div class="container py-5">
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
+<!-- Toast Container -->
+<div class="toast-container">
+    <div id="toastMessage" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                ✅ Message sent successfully!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+<div class="container py-5 appointment-form">
     <h2 class="text-center mb-4">🩺 Book a New Appointment</h2>
     <p class="text-center text-muted mb-5">Choose your preferred date and provide your reason for visiting.</p>
 

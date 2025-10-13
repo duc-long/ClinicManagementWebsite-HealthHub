@@ -43,6 +43,8 @@ public class Appointment {
 
     private String notes;
     private String cancelReason;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
     private Integer queueNumber;
     @PostLoad

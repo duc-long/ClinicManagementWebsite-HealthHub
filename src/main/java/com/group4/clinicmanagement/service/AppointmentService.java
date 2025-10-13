@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Service
@@ -35,9 +37,10 @@ public class AppointmentService {
         appointmentRepository.deleteById(appointmentId);
     }
 
-    public boolean canBookAppointment(LocalDate date) {
-        int count = appointmentRepository.countByAppointmentDate(date);
-        return count < 5; // accept make appointment 5 times per day
+    public boolean canBookAppointment(int patientId) {
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        int count = appointmentRepository.countAppointmentsInDay(patientId, today);
+        return count < 2; // accept make appointment 5 times per day
     }
 
     public List<Appointment> getAllAppointments() {
