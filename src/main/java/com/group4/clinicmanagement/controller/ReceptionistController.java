@@ -35,7 +35,7 @@ public class ReceptionistController {
                 user.getFullName(),
                 user.getEmail(),
                 user.getPhone(),
-                user.getGender() != null ? user.getGender().getValue() : 0,
+                user.getGender(),
                 user.getUserId()
         );
 
@@ -52,7 +52,7 @@ public class ReceptionistController {
                 user.getFullName(),
                 user.getEmail(),
                 user.getPhone(),
-                user.getGender() != null ? user.getGender().getValue() : 0,
+                user.getGender(),
                 user.getUserId()
         );
 
@@ -66,7 +66,7 @@ public class ReceptionistController {
         receptionist.setFullName(dto.getFullName());
         receptionist.setEmail(dto.getEmail());
         receptionist.setPhone(dto.getPhone());
-        receptionist.setGender(Gender.fromInt(dto.getGender()));
+        receptionist.setGender(dto.getGender());
 
         receptionistService.save(receptionist);
 

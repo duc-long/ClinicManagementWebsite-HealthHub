@@ -23,4 +23,14 @@ public enum Gender {
         }
         return UNKNOWN;
     }
+
+    public String toDisplay() {
+        if (this == Gender.MALE) {
+            return "Male";
+        } else if (this == Gender.FEMALE) {
+            return "Female";
+        }
+        return "Unknow";
+
+    }
 }

@@ -61,7 +61,7 @@
                 </div>
                 <div class="card-body">
                     <div class="info-row"><label>Full Name</label><p th:text="${userDTO.fullName}"></p></div>
-                    <div class="info-row"><label>Gender</label><p th:text="${userDTO.getGender()}"></p></div>
+                    <div class="info-row"><label>Gender</label><p th:text="${userDTO.gender.toDisplay()}"></p></div>
                 </div>
             </div>
         </div>
