@@ -65,11 +65,17 @@
 
                 <div class="mb-3">
                     <label class="form-label">Gender</label>
-                    <select class="form-select" th:field="*{gender}">
-                        <option value="0" th:selected="${receptionist.gender == 0}">Unknown</option>
-                        <option value="1" th:selected="${receptionist.gender == 1}">Male</option>
-                        <option value="2" th:selected="${receptionist.gender == 2}">Female</option>
-                    </select>
+                    <form th:object="${userDTO}" method="post" action="...">
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select id="gender" class="form-select" th:field="*{gender}" required>
+                                <option th:value="1" th:selected="${userDTO.gender == 1}">Male</option>
+                                <option th:value="2" th:selected="${userDTO.gender == 2}">Female</option>
+                                <option th:value="0" th:selected="${userDTO.gender == 0}">Other</option>
+                            </select>
+                        </div>
+                    </form>
+
                 </div>
 
                 <div class="d-flex justify-content-between">

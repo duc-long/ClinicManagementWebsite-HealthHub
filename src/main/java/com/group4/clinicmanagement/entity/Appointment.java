@@ -44,6 +44,7 @@ public class Appointment {
     private String notes;
     private String cancelReason;
     private LocalDateTime createdAt;
+    @Column(name="queue_number")
     private Integer queueNumber;
     @PostLoad
     public void fillStatusEnum() {

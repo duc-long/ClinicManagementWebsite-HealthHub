@@ -22,7 +22,7 @@ public class CashierController {
     CashierService cashierService;
     AppointmentService appointmentService;
 
-    private final int id = 18;
+    private final int id = 4;
 
     public CashierController(CashierService cashierService, AppointmentService appointmentService) {
         this.cashierService = cashierService;
