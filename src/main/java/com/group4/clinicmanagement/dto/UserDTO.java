@@ -1,29 +1,23 @@
 
 package com.group4.clinicmanagement.dto;
 
+import com.group4.clinicmanagement.enums.Gender;
+
 public class UserDTO {
     private String fullName;
     private String email;
     private String phone;
-    private int gender;
+    private Gender gender;
     private int id;
 
     public UserDTO() {
     }
 
-    public UserDTO(String fullName, String email, String phone, int gender, int id) {
+    public UserDTO(String fullName, String email, String phone, Gender gender, int id) {
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.gender = gender;
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
         this.id = id;
     }
 
@@ -43,6 +37,14 @@ public class UserDTO {
         this.email = email;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     public String getPhone() {
         return phone;
     }
@@ -51,11 +53,11 @@ public class UserDTO {
         this.phone = phone;
     }
 
-    public int getGender() {
-        return gender;
+    public int getId() {
+        return id;
     }
 
-    public void setGender(int gender) {
-        this.gender = gender;
+    public void setId(int id) {
+        this.id = id;
     }
 }
