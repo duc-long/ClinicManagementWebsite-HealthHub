@@ -21,6 +21,7 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
             " WHERE u.username = :username")
     Optional<PatientUserDTO> fetchPatientWithUserInfoByUsername(@Param("username") String username);
 
+
     @Modifying
     @Transactional
     @Query("UPDATE Patient p SET p.address = :address, p.updatedAt = CURRENT_TIMESTAMP " +

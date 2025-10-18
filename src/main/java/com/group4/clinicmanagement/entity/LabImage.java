@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "LabImage")
+@Table(name = "Labimage")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -15,7 +15,7 @@
 
 
         <div class="profile-title">Profile</div>
-        <img th:src="${patient.avatarFilename != null} ? '/images/avatars/' + ${patient.avatarFilename} : '/images/avatars/default-avatar.png'"
+        <img th:src="${patient.avatarFilename != null ? '/images/avatars/' + patient.avatarFilename : '/images/avatars/default-avatar.png'}"
              class="avatar"
              id="avatarPreview"
              alt="Avatar"/>
@@ -58,12 +58,26 @@
             <div class="btn-label delete-account-label">Delete account</div>
         </div>
 
-        <div class="button-row" th:each="record : ${medicalRecords}">
-            <a href="" class="btn-label view-medical-record medical-record-link">
-                <p th:text="${record.diagnosis}">Diagnosis</p>
-                <p th:text="${record.createdAt}">Created At</p>
-                <p th:text="${record.doctorFullName}">Doctor</p>
-            </a>
+        <div class="profile-title-medical">List medical records</div>
+        <div class="medical-records-list">
+            <div th:each="record : ${medicalRecords}">
+                <a th:href="@{/patient/medical-records/{recordId}(recordId=${record.recordId})}"
+                   class="btn-label-medical-record view-medical-record medical-record-link">
+                    <div class="result-row">
+                        <div class="result-label">Diagnosis</div>
+                        <div class="result-value" th:text="${record.diagnosis}"></div>
+                    </div>
+                    <div class="result-row">
+                        <div class="result-label">Day</div>
+                        <div class="result-value"
+                             th:text="${#temporals.format(record.createdAt, 'HH:mm dd/MM/yyyy')}"></div>
+                    </div>
+                    <div class="result-row">
+                        <div class="result-label">Doctor</div>
+                        <div class="result-value" th:text="${record.doctorFullName}"></div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 </div>
