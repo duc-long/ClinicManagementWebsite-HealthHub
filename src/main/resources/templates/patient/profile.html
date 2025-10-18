@@ -36,10 +36,10 @@
             </div>
             <div class="group-info">
                 <div class="label gender-label">Gender</div>
-                <div class="value gender-value" th:switch="*{genderValue}">
+                <div class="value gender-value" th:switch="*{gender?.value}">
                     <span th:case="1">Male</span>
                     <span th:case="2">Female</span>
-                    <span th:case="*">Other</span>
+                    <span th:case="*">Unknow</span>
                 </div>
             </div>
             <div class="group-info">
