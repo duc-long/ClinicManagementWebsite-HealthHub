@@ -1,0 +1,111 @@
+.profile-title-feedback {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #009BAB;
+    font-weight: 500;
+    font-size: clamp(32px, 4vw, 42px);
+    margin: 30px 0 0;
+}
+.feedback-container {
+    padding: 40px;
+    background: #f8f9fc;
+}
+
+.feedback-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #008080;
+}
+
+.feedback-average {
+    text-align: center;
+    margin: 10px 0 30px;
+}
+
+.stars {
+    display: inline-block;
+}
+
+/*.star {*/
+/*    font-size: 50px;*/
+/*    color: #ccc;*/
+/*}*/
+
+.star {
+    font-size: 50px;
+    color: #ccc;
+    position: relative;
+    display: inline-block;
+}
+
+.star.filled {
+    color: #f1c40f;
+}
+
+/* 25% sao */
+.star.quarter::after {
+    content: '\2605';
+    color: #f1c40f;
+    position: absolute;
+    left: 0;
+    width: 25%;
+    overflow: hidden;
+}
+
+.star.half::after {
+    content: '\2605';
+    color: #f1c40f;
+    position: absolute;
+    margin-left: -42px;
+    width: 25px;
+    overflow: hidden;
+}
+
+/* 75% sao */
+.star.three-quarter::after {
+    content: '\2605';
+    color: #f1c40f;
+    position: absolute;
+    left: 0;
+    width: 75%;
+    overflow: hidden;
+}
+
+.average-score {
+    font-size: 22px;
+    font-weight: bold;
+    color: #008080;
+    margin-top: 5px;
+}
+
+.feedback-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.feedback-item {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.feedback-name {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.feedback-comment {
+    color: #007878;
+    font-size: 20px;
+}
+

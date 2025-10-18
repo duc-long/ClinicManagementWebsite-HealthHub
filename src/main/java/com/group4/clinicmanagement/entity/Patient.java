@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "Patient")
@@ -22,6 +23,11 @@ public class Patient {
     @JoinColumn(name = "patient_id")
     private User user;
 
+    @OneToMany(mappedBy = "patient")
+    private List<MedicalRecord> medicalRecords;
+
+    @OneToMany(mappedBy = "patient")
+    private List<Feedback> feedbacks;
 
     private LocalDate dateOfBirth;
 

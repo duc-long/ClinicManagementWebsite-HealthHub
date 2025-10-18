@@ -26,7 +26,7 @@ public class Feedback {
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
-    private Double rating; // 1–5
+    private Float rating; // 1–5
     private String comment;
 
     @Column(name = "created_at")

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HealthHub - Home</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/assets/css/home.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -42,7 +43,8 @@
 <section class="container py-4">
     <div class="card p-5 shadow text-center border-primary border-1">
         <div class="d-flex justify-content-center gap-4 flex-wrap">
-            <a th:href="@{/home/search-doctor}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5" style="width: 380px;">
+            <a th:href="@{/home/search-doctor}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5"
+               style="width: 380px;">
                 <i class="fa-solid fa-user-doctor me-2"></i>Find A Doctors
             </a>
             <a href="#"
@@ -84,7 +86,8 @@
         <div class="col-md-4">
             <h2 class="text-primary fw-bold mb-3">Our Specialties</h2>
             <p class="text-muted">
-                HealthHub provides a wide range of medical specialties and expert care teams, ensuring every patient receives trusted, personalized treatment using modern technology and evidence-based practices.
+                HealthHub provides a wide range of medical specialties and expert care teams, ensuring every patient
+                receives trusted, personalized treatment using modern technology and evidence-based practices.
             </p>
             <div class="dropdown">
                 <a class="dropdown-toggle text-primary text-decoration-none fw-semibold"
@@ -92,7 +95,9 @@
                     Specialty
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
-                    <li th:each="s : ${specialties}"><a class="dropdown-item" th:href="@{/home/specialty/{specialty}(specialty=${s})}" th:text="${s}"></a></li>
+                    <li th:each="s : ${specialties}"><a class="dropdown-item"
+                                                        th:href="@{/home/specialty/{specialty}(specialty=${s})}"
+                                                        th:text="${s}"></a></li>
                 </ul>
             </div>
         </div>
@@ -103,7 +108,8 @@
                 <div class="col-md-6">
                     <div class="card text-white border-0 position-relative">
                         <img src="https://placehold.co/360x240" class="card-img" alt="General Internal Medicine">
-                        <div class="card-img-overlay d-flex align-items-end" style="background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);">
+                        <div class="card-img-overlay d-flex align-items-end"
+                             style="background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);">
                             <h5 class="card-title fw-bold">Cardiology</h5>
                         </div>
                     </div>
@@ -111,7 +117,8 @@
                 <div class="col-md-6">
                     <div class="card text-white border-0 position-relative">
                         <img src="https://placehold.co/360x240" class="card-img" alt="Obstetrics & Gynaecology">
-                        <div class="card-img-overlay d-flex align-items-end" style="background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);">
+                        <div class="card-img-overlay d-flex align-items-end"
+                             style="background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);">
                             <h5 class="card-title fw-bold">Neurology</h5>
                         </div>
                     </div>
@@ -121,6 +128,76 @@
         </div>
     </div>
 </section>
+
+<!--<div class="profile-title-feedback">Feedback</div>-->
+<!--<div class="feedback-list">-->
+<!--    <div th:each="feedback : ${feedbacks}">-->
+<!--        <div class="feedback-item">-->
+<!--            &lt;!&ndash; Hiển thị rating sao &ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="feedback-rating">&ndash;&gt;-->
+<!--&lt;!&ndash;                <span class="rating-stars">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span th:each="i : ${#numbers.sequence(1, 5)}"&ndash;&gt;-->
+<!--&lt;!&ndash;                          th:classappend="${i <= feedback.rating ? 'star filled' : 'star'}">&#9733;</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                </span>&ndash;&gt;-->
+<!--&lt;!&ndash;                <span th:text="'Rating: ' + ${feedback.rating} + ' / 5'"></span>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+
+<!--            <a href="#"-->
+<!--               class="btn-label-medical-record view-medical-record medical-record-link">-->
+<!--                <div class="result-row">-->
+<!--                    <div class="result-label" th:text="${feedback.patientName}"></div>-->
+<!--                    <div class="result-value" th:text="${feedback.diagnosis}"></div>-->
+<!--                    <div class="result-value" th:text="'Rating: ' + ${feedback.rating} + ' / 5.0'"></div>-->
+<!--                    <div class="result-value" th:text="${feedback.feedbackDate}"></div>-->
+<!--                    <div class="result-value" th:text="${feedback.comment}"></div>-->
+<!--                </div>-->
+<!--            </a>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<div class="feedback-container">
+    <div class="profile-title-feedback">Feedback</div>
+
+    <!-- Trung bình đánh giá -->
+    <div class="feedback-average">
+        <div class="stars">
+            <span th:each="i : ${#numbers.sequence(1, 5)}"
+                  th:classappend="${i <= T(java.lang.Math).floor(averageRating) ? 'star filled' : (i - averageRating <= 0.5 ? 'star half' : 'star')}"
+                  class="star">&#9733;</span>
+        </div>
+        <div class="average-score" th:text="${#numbers.formatDecimal(averageRating, 1, 1)} + ' / 5.0'"></div>
+    </div>
+
+    <!-- Danh sách feedback -->
+    <div class="feedback-list">
+        <div class="feedback-item" th:each="feedback : ${feedbacks}">
+            <div class="feedback-header">
+                <div class="feedback-name" th:text="${feedback.patientName}">Patient Name</div>
+                <div class="feedback-rating">
+                    <span th:text="${#numbers.formatDecimal(feedback.rating, 1, 1)} + ' / 5.0'"></span>
+                    <span class="stars">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}"
+                              th:classappend="${i <= T(java.lang.Math).floor(feedback.rating) ? 'star filled' : (i - feedback.rating <= 0.5 && i > feedback.rating ? 'star half' : 'star')}"
+                              class="star">&#9733;</span>
+                    </span>
+                </div>
+            </div>
+            <div class="feedback-comment" th:text="${feedback.comment}">Comment text</div>
+            <div class="feedback-details">
+                <div>
+                    <strong>Diagnosis:</strong>
+                    <span th:text="${feedback.diagnosis}">Diagnosis text</span>
+                </div>
+                <div>
+                    <strong>Date:</strong>
+                    <span th:text="${#temporals.format(feedback.recordCreatedAt, 'dd/MM/yyyy')}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- FOOTER -->
 <footer class="bg-primary text-white py-5">
