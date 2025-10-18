@@ -1,10 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const toastEl = document.getElementById("toastMessage");
-    const toastBody = toastEl.querySelector(".toast-body").innerText.trim();
+    console.log("✅ Toast script loaded");
 
-    // if message not null -> show toast
-    if (toastBody !== "") {
-        const toast = new bootstrap.Toast(toastEl, {delay: 3000});
-        toast.show();
+    const toastEl = document.getElementById("message");
+    if (!toastEl) {
+        console.warn("❌ Không tìm thấy #message trong DOM");
+        return;
     }
-})
+
+    const toastBody = toastEl.querySelector(".toast-body").innerText.trim();
+    const messageType = toastEl.dataset.type;
+    console.log("📩 messageType:", messageType);
+    console.log("📨 message:", toastBody);
+
+    // Nếu có message thì show
+    if (toastBody !== "") {
+        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+        toast.show();
+        console.log("🎉 Toast hiển thị thành công");
+    } else {
+        console.warn("⚠️ Không có nội dung message để hiển thị");
+    }
+});

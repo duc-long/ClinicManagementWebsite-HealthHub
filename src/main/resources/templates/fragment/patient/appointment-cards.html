@@ -19,11 +19,11 @@
             <hr>
             <p class="text-muted mb-2">🩺 Notes: <span th:text="${a.notes != null ? a.notes : '—'}"></span></p>
             <div class="d-flex gap-2 flex-wrap mt-2">
-                <a th:href="@{/appointment/detail/{id}(id=${a.appointmentId})}"
+                <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View Detail</a>
                 <a th:href="@{/feedback/add/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-success"><i class="bi bi-chat-heart"></i> Feedback</a>
-                <a th:href="@{/appointment/rebook/{id}(id=${a.appointmentId})}"
+                <a th:href="@{/patient/appointment/rebook/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-repeat"></i> Rebook</a>
             </div>
         </div>
@@ -52,11 +52,11 @@
             <hr>
             <p class="text-muted mb-2">🩺 Reason: <span th:text="${a.notes}"></span></p>
             <div class="d-flex gap-2 flex-wrap">
-                <a th:href="@{/appointment/detail/{id}(id=${a.appointmentId})}"
+                <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>
-                <a th:href="@{/appointment/edit/{id}(id=${a.appointmentId})}"
+                <a th:href="@{/patient/appointment/edit/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i> Edit</a>
-                <a th:href="@{/appointment/cancel/{id}(id=${a.appointmentId})}"
+                <a th:href="@{/patient/appointment/cancel/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i> Cancel</a>
             </div>
         </div>
@@ -82,9 +82,9 @@
                 <span th:text="${a.cancelReason != null ? a.cancelReason : 'No reason provided'}"></span>
             </p>
             <div class="d-flex gap-2 flex-wrap">
-                <a th:href="@{/appointment/detail/{id}(id=${a.appointmentId})}"
+                <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View Detail</a>
-                <a th:href="@{/appointment/rebook/{id}(id=${a.appointmentId})}"
+                <a th:href="@{/patient/appointment/rebook/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-success"><i class="bi bi-calendar-plus"></i> Rebook</a>
             </div>
         </div>
@@ -120,7 +120,7 @@
             </p>
 
             <div class="d-flex gap-2 flex-wrap mt-2">
-                <a th:href="@{/appointment/detail/{id}(id=${a.appointmentId})}"
+                <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> Detail</a>
                 <a th:href="@{/payment/invoice/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-success"><i class="bi bi-receipt"></i> Invoice</a>

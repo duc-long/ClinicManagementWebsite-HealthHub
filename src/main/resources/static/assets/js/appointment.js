@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
 
             // fetch fragment
-            fetch(`/appointment/view?type=${type}`)
+            fetch(`/patient/appointment/view?type=${type}`)
                 .then(res => {
                     if (!res.ok) throw new Error(res.statusText);
                     return res.text();
