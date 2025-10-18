@@ -24,7 +24,7 @@
         <main class="container container-wide py-4">
             <div class="d-flex align-items-center mb-4">
                 <i class="fa-solid fa-heart-pulse fa-2x text-primary me-2"></i>
-                <h1 class="h3 mb-0 me-3" th:text="${specialty} + '  Department'"></h1>
+                <h1 class="h3 mb-0 me-3" th:text="${departmentName} + '  Department'"></h1>
                 <span th:text=" ${doctors.size()} + ' Doctors Available' " class="badge bg-primary bg-opacity-10 text-white fw-normal align-middle" style="margin-top: 8px;">8 Doctors Available</span>
             </div>
 
@@ -32,7 +32,7 @@
                 <div class="col-md-12">
                     <div class="card p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0" th:text="${specialty} + ' Specialists'"></h5>
+                            <h5 class="mb-0" th:text="${departmentName} + ' Specialists'"></h5>
                         </div>
 
                         <div class="row g-3">
@@ -42,7 +42,7 @@
                                         <div class="mb-3">
                                             <i class="fa-solid fa-user-doctor text-primary" style="font-size: 3rem;"></i>
                                         </div>
-                                        <h5 class="card-title" th:text="${doctor.user.fullName}"></h5>
+                                        <h5 class="card-title" th:text="${doctor.fullName}"></h5>
                                         <div class="mb-3">
                                             <span class="badge bg-primary bg-opacity-10 text-white specialty-badge me-1" th:text="${doctor.specialty}"></span>
                                         </div>

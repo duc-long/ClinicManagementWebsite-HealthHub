@@ -27,7 +27,7 @@
                         <i class="fa-solid fa-user-doctor" style="font-size: 4rem; opacity: 0.9;"></i>
                     </div>
                     <div class="col-md-6">
-                        <h1 class="h3 mb-2" th:text="${doctor.user.fullName}"></h1>
+                        <h1 class="h3 mb-2" th:text="${doctor.fullName}"></h1>
                         <p class="h5 mb-3 " th:text="${doctor.specialty}"></p>
                         <div class="mb-3">
                             <span class="badge bg-light text-dark specialty-badge me-2" th:text="${doctor.yearsExperience + ' years experience'}"></span>
@@ -41,7 +41,7 @@
                     <div class="card p-4 mb-4">
                         <div class="d-flex align-items-center mb-3">
                             <i class="fa-solid fa-user me-2 text-primary"></i>
-                            <h5 class="mb-0" th:text="'About ' + ${doctor.user.fullName}"></h5>
+                            <h5 class="mb-0" th:text="'About ' + ${doctor.fullName}"></h5>
                         </div>
                         <p class="mb-3" th:text="${doctor.bio}"></p>
                         </div>
@@ -62,11 +62,11 @@
                         </h5>
                         <div class="mb-2">
                             <i class="fa-solid fa-phone me-2 text-muted"></i>
-                            <span th:text="${doctor.user.phone}"></span>
+                            <span th:text="${doctor.phone}"></span>
                         </div>
                         <div class="mb-2">
                             <i class="fa-solid fa-envelope me-2 text-muted"></i>
-                            <span th:text="${doctor.user.email}"></span>
+                            <span th:text="${doctor.email}"></span>
                         </div>
                     </div>
                 </div>

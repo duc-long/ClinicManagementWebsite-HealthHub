@@ -18,10 +18,10 @@
                 <div class="dropdown">
                     <a class="dropdown-toggle text-primary text-decoration-none fw-semibold"
                        id="dropdownSpecialty" data-bs-toggle="dropdown" aria-expanded="false">
-                        Specialty
+                        Departments
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
-                        <li th:each="s : ${specialties}"><a class="dropdown-item" th:href="@{/home/specialty/{specialty}(specialty=${s})}" th:text="${s}"></a></li>
+                        <li th:each="s : ${departments}"><a class="dropdown-item" th:href="@{/home/department/{departmentName}(departmentName=${s.name})}" th:text="${s.name}"></a></li>
                     </ul>
                 </div>
                 <a class="text-primary text-decoration-none fw-semibold" th:href="@{/appointment/appointment-list}">Book an appointment</a>
