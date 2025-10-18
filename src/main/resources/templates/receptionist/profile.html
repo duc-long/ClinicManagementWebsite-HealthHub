@@ -7,14 +7,46 @@
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { background-color: #f6f7fb; }
-        .container-wide { max-width: 700px; margin: auto; }
-        .card { border-radius: 1rem; box-shadow: 0 2px 12px #0001; }
-        .profile-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .info-row label { font-weight: 600; width: 140px; }
-        .info-row p { margin: 0; flex: 1; text-align: right; }
-        .alert { margin-bottom: 1rem; }
+        body {
+            background-color: #f6f7fb;
+        }
+
+        .container-wide {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px #0001;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-row label {
+            font-weight: 600;
+            width: 140px;
+        }
+
+        .info-row p {
+            margin: 0;
+            flex: 1;
+            text-align: right;
+        }
+
+        .alert {
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -76,11 +108,11 @@
                 <div class="info-row">
                     <label>Gender:</label>
                     <p>
-                        <span th:switch="${receptionist.gender}">
-                            <span th:case="1">Male</span>
-                            <span th:case="2">Female</span>
-                            <span th:case="*">Unknown</span>
-                        </span>
+        <span th:switch="${receptionist.gender?.value}">
+            <span th:case="1">Male</span>
+            <span th:case="2">Female</span>
+            <span th:case="*">Unknown</span>
+        </span>
                     </p>
                 </div>
             </div>

@@ -46,6 +46,7 @@ public class Appointment {
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
+    @Column(name="queue_number")
     private Integer queueNumber;
     @PostLoad
     public void fillStatusEnum() {

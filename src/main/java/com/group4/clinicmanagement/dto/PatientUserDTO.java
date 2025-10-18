@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.dto;
 
+import com.group4.clinicmanagement.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ public class PatientUserDTO {
     private String fullName;
     private String email;
     private String phone;
-    private Integer genderValue;
+    private Gender gender;
     private String address;
     private String avatarFilename;
 }

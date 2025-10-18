@@ -1,18 +1,19 @@
 package com.group4.clinicmanagement.entity;
 
+import com.group4.clinicmanagement.enums.RecordStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "medicalrecord")
+@Table(name = "MedicalRecord")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class MedicalRecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer recordId;
@@ -26,17 +27,41 @@ public class MedicalRecord {
     private Appointment appointment;
 
     @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
-
-    @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
-    private String diagnosis;
-    private String notes;
-    private Integer status; // 0=open,1=closed
-    private LocalDateTime
-            createdAt;
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor;
 
+    @Column(length = 2000)
+    private String diagnosis;
+
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String notes;
+
+    @Column(name = "status")
+    private Integer statusValue;
+
+    @Transient
+    private RecordStatus status;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @PostLoad
+    public void loadEnum() {
+        this.status = RecordStatus.fromInt(this.statusValue != null ? this.statusValue : 0);
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void persistEnumValue() {
+        this.statusValue = (status != null) ? status.getValue() : 0;
+    }
+
+    public void setStatus(RecordStatus status) {
+        this.status = status;
+        this.statusValue = (status != null) ? status.getValue() : 0;
+    }
 }
