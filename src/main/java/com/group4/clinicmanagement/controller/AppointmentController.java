@@ -31,8 +31,11 @@ public class AppointmentController {
     // method show the main view appointment
     @RequestMapping("/manage")
     public String appointmentPage(Model model, HttpSession session) {
-        User currentUser = userRepository.findByUserId(6).orElse(null);
-        if (currentUser == null) return "redirect:/login";
+        User currentUser = userRepository.findByUserId(11).orElse(null);
+        if (currentUser == null) {
+            System.out.println("cannot find user");
+            return "redirect:/login";
+        }
 
         List<Appointment> all = appointmentService.findAllByPatientId(currentUser.getUserId());
         List<Appointment> active = all.stream()
@@ -51,7 +54,7 @@ public class AppointmentController {
     // method to filter the view appointment
     @GetMapping("/view")
     public String filterAppointments(@RequestParam String type, Model model, HttpSession session) {
-        User currentUser = userRepository.findByUserId(6).orElse(null);
+        User currentUser = userRepository.findByUserId(11).orElse(null);
         if (currentUser == null) return "redirect:/login";
 
         List<Appointment> all = appointmentService.findAllByPatientId(currentUser.getUserId());
@@ -60,7 +63,7 @@ public class AppointmentController {
         // view classification
         switch (type) {
             case "history": // history view
-                filterd = all.stream().filter(a -> a.getStatus() == AppointmentStatus.COMPLETED).toList();
+                filterd = all.stream().filter(a -> a.getStatus() == AppointmentStatus.PAID).toList();
                 model.addAttribute("history", filterd);
                 return "fragment/patient/appointment-cards :: history";
             case "submitted": // submitted view
@@ -77,6 +80,10 @@ public class AppointmentController {
                 filterd = all.stream().filter(a -> a.getStatus() == AppointmentStatus.CHECKED_IN).toList();
                 model.addAttribute("current", filterd);
                 return "fragment/patient/appointment-cards :: current";
+            case "examined":
+                filterd = all.stream().filter(a -> a.getStatus() == AppointmentStatus.EXAMINED).toList();
+                model.addAttribute("examined", filterd);
+                return "fragment/patient/appointment-cards :: examined";
             default:
                 filterd = all;
                 break;
@@ -90,7 +97,7 @@ public class AppointmentController {
     @GetMapping("/detail/{id}")
     public String viewAppointmentDetail(@PathVariable("id") int id, Model model, HttpSession session) {
 //        User currentUser = (User) session.getAttribute("user");
-        User currentUser = userRepository.findByUserId(6).orElse(null);
+        User currentUser = userRepository.findByUserId(11).orElse(null);
         if (currentUser == null) {
             return "redirect:/login";
         }

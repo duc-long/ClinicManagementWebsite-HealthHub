@@ -133,3 +133,32 @@
         <p>No active check-ins.</p>
     </div>
 </div>
+
+<!-- 🔹 LỊCH TÁI LHASM (EXAMINED) -->
+<div th:fragment="examined">
+    <div th:if="${!#lists.isEmpty(examined)}" class="d-flex flex-column gap-3">
+        <div th:each="a : ${examined}" class="card shadow-sm p-4 border-warning-subtle">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h6 class="fw-bold text-warning mb-1"
+                        th:text="${#temporals.format(a.appointmentDate, 'dd/MM/yyyy')}"></h6>
+                    <p class="small text-secondary mb-0">
+                        👨‍⚕️ <strong th:text="${a.doctor != null ? a.doctor.user.fullName : 'No doctor assigned'}"></strong>
+                    </p>
+                </div>
+                <span class="badge bg-warning text-dark px-3 py-2">Pending</span>
+            </div>
+            <hr>
+            <p class="text-muted mb-2">🩺 Reason: <span th:text="${a.notes}"></span></p>
+            <div class="d-flex gap-2 flex-wrap">
+                <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
+                   class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(examined)}" class="text-center text-muted mt-5">
+        <i class="bi bi-hourglass-split fs-1 text-secondary"></i>
+        <p>No submitted appointments.</p>
+    </div>
+</div>

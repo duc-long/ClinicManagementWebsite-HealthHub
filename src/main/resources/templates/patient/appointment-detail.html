@@ -58,8 +58,8 @@
                           class="badge bg-success">Confirmed</span>
                     <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).CANCELLED.value}"
                           class="badge bg-danger">Cancelled</span>
-                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).COMPLETED.value}"
-                          class="badge bg-primary">Completed</span>
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).EXAMINED.value}"
+                          class="badge bg-primary">Re-Examined</span>
                     <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).NO_SHOW.value}"
                           class="badge bg-dark">No Show</span>
                     <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).CHECKED_IN.value}"
@@ -105,10 +105,13 @@
                 <a th:href="@{/patient/appointment/manage}" class="btn btn-outline-primary me-2">
                     <i class="bi bi-arrow-left-circle"></i> Back
                 </a>
-                <a th:href="@{/patient/appointment/edit/{id}(id=${appointment.appointmentId})}"
+                <a th:if="${appointment.status.value == T(com.group4.clinicmanagement.enums.AppointmentStatus).PENDING.value}"
+                   th:href="@{/patient/appointment/edit/{id}(id=${appointment.appointmentId})}"
                    class="btn btn-warning">
                     <i class="bi bi-pencil-square"></i> Edit
                 </a>
+
+
             </div>
         </div>
     </div>
