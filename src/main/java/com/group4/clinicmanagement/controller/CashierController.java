@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -31,7 +30,7 @@ public class CashierController {
     }
 
     @GetMapping(value = "/view-profile")
-    public String viewProfile( Model model) {
+    public String viewProfile(Model model) {
         User user = cashierService.findUserById(id);
 
         UserDTO userDTO = new UserDTO();
@@ -43,8 +42,9 @@ public class CashierController {
         model.addAttribute("userDTO", userDTO);
         return "cashier/view-profile";
     }
+
     @GetMapping("/edit-profile")
-    public String showEditForm( Model model) {
+    public String showEditForm(Model model) {
 
         User user = cashierService.findUserById(id);
 
@@ -58,6 +58,7 @@ public class CashierController {
         model.addAttribute("userDTO", dto);
         return "cashier/edit-profile";
     }
+
     @PostMapping(value = "/edit-profile")
     public String editProfile(@ModelAttribute("userDTO") UserDTO dto) {
 

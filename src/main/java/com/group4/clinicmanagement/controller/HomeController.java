@@ -2,13 +2,15 @@ package com.group4.clinicmanagement.controller;
 
 import com.group4.clinicmanagement.dto.DepartmentDTO;
 import com.group4.clinicmanagement.dto.DoctorUserDTO;
-import com.group4.clinicmanagement.entity.Department;
 import com.group4.clinicmanagement.service.DepartmentService;
 import com.group4.clinicmanagement.service.DoctorService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -54,7 +56,7 @@ public class HomeController {
     public String searchDoctor(@RequestParam(name = "departmentId") Integer departmentId,
                                @RequestParam(name = "doctorName") String doctorName,
                                Model model) {
-        List<DoctorUserDTO> doctorUserDTOS =  doctorService.findByNameContainingIgnoreCaseAndDepartmentId(doctorName, departmentId);
+        List<DoctorUserDTO> doctorUserDTOS = doctorService.findByNameContainingIgnoreCaseAndDepartmentId(doctorName, departmentId);
         model.addAttribute("doctors", doctorUserDTOS);
         List<DepartmentDTO> departments = departmentService.findAll();
         model.addAttribute("departments", departments);

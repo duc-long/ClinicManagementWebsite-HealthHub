@@ -9,10 +9,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface AppointmentRepository extends JpaRepository<Appointment,Integer> {
+public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
     List<Appointment> findAllByPatient_PatientId(Integer patientId);
 
     // get the number of appointment in a day
     int countByAppointmentDate(@Param("date") LocalDate date);
+
     List<Appointment> findByStatusValueOrderByDoctor_DoctorIdAsc(Integer status);
 }

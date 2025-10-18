@@ -10,6 +10,7 @@ import java.util.List;
 @Service
 public class MedicalRecordListService {
     private final MedicalRecordListRepository medicalRecordListRepository;
+
     public MedicalRecordListService(MedicalRecordListRepository medicalRecordListRepository) {
         this.medicalRecordListRepository = medicalRecordListRepository;
     }

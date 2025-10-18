@@ -6,12 +6,12 @@ import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
 import com.group4.clinicmanagement.repository.DoctorRepository;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.ArrayList;
 import java.util.List;
 

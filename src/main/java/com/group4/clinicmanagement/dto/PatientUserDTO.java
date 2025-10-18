@@ -3,9 +3,6 @@ package com.group4.clinicmanagement.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 @AllArgsConstructor
 @Data
 public class PatientUserDTO {

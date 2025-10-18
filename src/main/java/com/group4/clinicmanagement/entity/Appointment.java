@@ -45,6 +45,7 @@ public class Appointment {
     private String cancelReason;
     private LocalDateTime createdAt;
     private Integer queueNumber;
+
     @PostLoad
     public void fillStatusEnum() {
         this.status = AppointmentStatus.fromInt(this.statusValue);

@@ -1,4 +1,3 @@
-
 package com.group4.clinicmanagement.dto;
 
 public class UserDTO {

@@ -26,7 +26,7 @@ public class DepartmentService {
         );
     }
 
-    public List<DepartmentDTO> findAll(){
+    public List<DepartmentDTO> findAll() {
         List<Department> departments = departmentRepository.findAll();
         List<DepartmentDTO> result = new ArrayList<>();
 

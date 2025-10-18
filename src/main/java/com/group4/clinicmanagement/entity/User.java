@@ -70,6 +70,7 @@ public class User {
             this.genderValue = this.gender.getValue();
         }
     }
+
     public void setGender(Gender gender) {
         this.gender = gender;
         this.genderValue = (gender != null) ? gender.getValue() : 0;

@@ -7,18 +7,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReceptionistService {
-   private final ReceptionistRepository receptionistRepository;
+    private final ReceptionistRepository receptionistRepository;
 
     public ReceptionistService(ReceptionistRepository receptionistRepository) {
         this.receptionistRepository = receptionistRepository;
     }
 
     @Transactional
-    public User findUserById(int id){
+    public User findUserById(int id) {
         return receptionistRepository.getReferenceById(id);
     }
 
-    public void save(User user){
+    public void save(User user) {
         receptionistRepository.save(user);
     }
 }

@@ -1,12 +1,7 @@
 package com.group4.clinicmanagement;
 
-import com.group4.clinicmanagement.entity.Appointment;
-import com.group4.clinicmanagement.repository.AppointmentRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-
-import java.util.List;
 
 @SpringBootApplication
 public class ClinicManagementApp {

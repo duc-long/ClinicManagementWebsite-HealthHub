@@ -1,8 +1,8 @@
 package com.group4.clinicmanagement.controller;
 
 import com.group4.clinicmanagement.dto.UserDTO;
-import com.group4.clinicmanagement.entity.*;
-import com.group4.clinicmanagement.enums.AppointmentStatus;
+import com.group4.clinicmanagement.entity.Appointment;
+import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.enums.Gender;
 import com.group4.clinicmanagement.service.AppointmentService;
 import com.group4.clinicmanagement.service.ReceptionistService;
