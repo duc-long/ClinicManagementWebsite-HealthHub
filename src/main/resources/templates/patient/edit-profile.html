@@ -43,8 +43,12 @@
             <div class="group-info">
                 <div class="label">Gender</div>
                 <div class="checkbox-group">
-                    <label><input type="radio" th:field="*{genderValue}" value="1"/> Men</label>
-                    <label><input type="radio" th:field="*{genderValue}" value="2"/> Female</label>
+                    <label>
+                        <input type="radio" th:field="*{gender}" th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}" /> Male
+                    </label>
+                    <label>
+                        <input type="radio" th:field="*{gender}" th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}" /> Female
+                    </label>
                 </div>
             </div>
             <div class="group-info">
@@ -54,6 +58,10 @@
             <div class="group-info">
                 <div class="label">Address</div>
                 <input type="text" th:field="*{address}" class="input"/>
+            </div>
+            <div class="group-info">
+                <div class="label">Date of birth</div>
+                <input type="text" th:field="*{dateOfBirth}" class="input"/>
             </div>
         </div>
 

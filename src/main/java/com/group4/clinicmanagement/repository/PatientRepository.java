@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
     @Query("SELECT new com.group4.clinicmanagement.dto.PatientUserDTO(" +
-            "u.userId, p.patientId, u.username, u.fullName, u.email, u.phone, u.genderValue, p.address, u.avatar) " +
+            "u.userId, p.patientId, u.username, u.fullName, u.email, u.phone, u.genderValue, p.address, u.avatar, p.dateOfBirth) " +
             "FROM Patient p JOIN p.user u" +
             " WHERE u.username = :username")
     Optional<PatientUserDTO> fetchPatientWithUserInfoByUsername(@Param("username") String username);
@@ -24,8 +24,9 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Patient p SET p.address = :address, p.updatedAt = CURRENT_TIMESTAMP " +
+    @Query("UPDATE Patient p SET p.address = :address, p.updatedAt = CURRENT_TIMESTAMP, p.dateOfBirth = :dateOfBirth " +
             "WHERE p.patientId = :patientId")
     int updateAddress(@Param("patientId") Integer patientId,
-                      @Param("address") String address);
+                      @Param("address") String address,
+                      @Param("dateOfBirth") java.time.LocalDate dateOfBirth);
 }

@@ -37,7 +37,7 @@ public class PatientService {
                 patientUserDTO.getFullName(),
                 patientUserDTO.getEmail(),
                 patientUserDTO.getPhone(),
-                patientUserDTO.getGenderValue()
+                patientUserDTO.getGender().getValue()
         );
 
         if (updatedUser == 0) {
@@ -47,7 +47,7 @@ public class PatientService {
         User user = userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        int updatedPatient = patientRepository.updateAddress(user.getUserId(), patientUserDTO.getAddress());
+        int updatedPatient = patientRepository.updateAddress(user.getUserId(), patientUserDTO.getAddress(), patientUserDTO.getDateOfBirth());
 
         if (updatedPatient == 0) {
             throw new RuntimeException("Patient not found");

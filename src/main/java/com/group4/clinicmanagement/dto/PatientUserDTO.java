@@ -17,9 +17,23 @@ public class PatientUserDTO {
     private String fullName;
     private String email;
     private String phone;
-    private Integer genderValue;
+    private Gender gender;
     private String address;
     private String avatarFilename;
+    private LocalDate dateOfBirth;
 
-
+    public PatientUserDTO(Integer userId, Integer patientId, String username, String fullName,
+                          String email, String phone,
+                          Integer genderValue, String address, String avatarFilename, LocalDate dateOfBirth) {
+        this.userId = userId;
+        this.patientId = patientId;
+        this.username = username;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.gender = Gender.fromInt(genderValue!=null ? genderValue : 0);
+        this.address = address;
+        this.avatarFilename = avatarFilename;
+        this.dateOfBirth = dateOfBirth;
+    }
 }
