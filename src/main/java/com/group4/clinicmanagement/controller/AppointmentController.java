@@ -12,53 +12,91 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.beans.Transient;
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
-@RequestMapping("/appointment")
+@RequestMapping("/patient/appointment")
 public class AppointmentController {
     private final AppointmentService appointmentService;
     private final UserRepository userRepository;
 
+    // constructor
     public AppointmentController(AppointmentService appointmentService, UserRepository userRepository) {
         this.appointmentService = appointmentService;
         this.userRepository = userRepository;
     }
 
-    @RequestMapping("/appointment-list")
+    // method show the main view appointment
+    @RequestMapping("/manage")
     public String appointmentPage(Model model, HttpSession session) {
-//        User currentUser = (User) session.getAttribute("loggedUser");
+        User currentUser = userRepository.findByUserId(11).orElse(null);
+        if (currentUser == null) {
+            System.out.println("cannot find user");
+            return "redirect:/login";
+        }
 
+        List<Appointment> all = appointmentService.findAllByPatientId(currentUser.getUserId());
+        List<Appointment> active = all.stream()
+                .filter(a -> a.getStatus() == AppointmentStatus.CHECKED_IN)
+                .toList();
+
+        System.out.println("manage start");
+        for (Appointment a : all) {
+            System.out.println(a.getAppointmentId() + " " + a.getStatus());
+        }
+
+        model.addAttribute("current", active);
+        return "patient/appointment";
+    }
+
+    // method to filter the view appointment
+    @GetMapping("/view")
+    public String filterAppointments(@RequestParam String type, Model model, HttpSession session) {
         User currentUser = userRepository.findByUserId(11).orElse(null);
         if (currentUser == null) return "redirect:/login";
 
         List<Appointment> all = appointmentService.findAllByPatientId(currentUser.getUserId());
+        List<Appointment> filterd;
 
-        // filter list
-        List<Appointment> active = all.stream()
-                .filter(a -> a.getStatus().getValue() == 5)
-                .toList();
-        List<Appointment> history = all.stream()
-                .filter(a -> a.getStatus().getValue() == 3)
-                .toList();
-        List<Appointment> submit = all.stream()
-                .filter(a -> a.getStatus().getValue() == 0 || a.getStatus().getValue() == 1)
-                .toList();
+        // view classification
+        switch (type) {
+            case "history": // history view
+                filterd = all.stream().filter(a -> a.getStatus() == AppointmentStatus.PAID).toList();
+                model.addAttribute("history", filterd);
+                return "fragment/patient/appointment-cards :: history";
+            case "submitted": // submitted view
+                filterd = all.stream().filter(a ->
+                        a.getStatus() == AppointmentStatus.PENDING ||
+                                a.getStatus() == AppointmentStatus.CONFIRMED).toList();
+                model.addAttribute("submitted", filterd);
+                return "fragment/patient/appointment-cards :: submitted";
+            case "cancelled": // cancelled view
+                filterd = all.stream().filter(a -> a.getStatus() == AppointmentStatus.CANCELLED).toList();
+                model.addAttribute("cancelled", filterd);
+                return "fragment/patient/appointment-cards :: cancelled";
+            case "current": // current vỉew
+                filterd = all.stream().filter(a -> a.getStatus() == AppointmentStatus.CHECKED_IN).toList();
+                model.addAttribute("current", filterd);
+                return "fragment/patient/appointment-cards :: current";
+            case "examined":
+                filterd = all.stream().filter(a -> a.getStatus() == AppointmentStatus.EXAMINED).toList();
+                model.addAttribute("examined", filterd);
+                return "fragment/patient/appointment-cards :: examined";
+            default:
+                filterd = all;
+                break;
+        }
 
-        model.addAttribute("appointments", active);
-        model.addAttribute("historyList", history);
-        model.addAttribute("submitList", submit);
-        model.addAttribute("appointment", new Appointment());
-        return "patient/appointment-dashboard";
+        model.addAttribute("appointments", filterd);
+        return "fragment/patient/appointment-cards :: appointmentListFragment";
     }
 
+    // method to show appointment detail
     @GetMapping("/detail/{id}")
     public String viewAppointmentDetail(@PathVariable("id") int id, Model model, HttpSession session) {
 //        User currentUser = (User) session.getAttribute("user");
-
         User currentUser = userRepository.findByUserId(11).orElse(null);
         if (currentUser == null) {
             return "redirect:/login";
@@ -66,7 +104,7 @@ public class AppointmentController {
 
         Appointment appointment = appointmentService.findAppointmentById(id);
         if (appointment == null || appointment.getPatient().getPatientId() != currentUser.getUserId()) {
-            return "redirect:/patient/appointments";
+            return "redirect:/patient/appointment/manage";
         }
 
         model.addAttribute("appointment", appointment);
@@ -79,29 +117,52 @@ public class AppointmentController {
         return "/patient/make-appointment";
     }
 
+    // method to create an appointment
     @Transactional
     @PostMapping("/make-appointment")
     public String doMakeAppointment(@ModelAttribute("appointment") Appointment appointment,
-                                    HttpSession session, Model model) {
+                                    HttpSession session, Model model,
+                                    RedirectAttributes redirectAttributes) {
 //        User currentUser = (User) session.getAttribute("user");
-        LocalDate date = appointment.getAppointmentDate();
+        Patient patient = new Patient();
+        patient.setPatientId(11);
 
-        if (!appointmentService.canBookAppointment(date)) {
-            model.addAttribute("errorMessage", "❌ The clinic already has 10 appointments for " + date);
-            return "patient/appointment-dashboard";
+        // check span in the same day
+        if (!appointmentService.canBookAppointment(patient.getPatientId())) {
+            redirectAttributes.addFlashAttribute("message", "❌ You already limit book an appointment. \nPlease choose another day.");
+            redirectAttributes.addFlashAttribute("error");
+            System.out.println("You already limit book an appointment ");
+            return "redirect:/patient/appointment/manage";
         }
 
+        // check valid booking appointment date
+        if (!appointmentService.isBookAppointmentVailDate(appointment.getAppointmentDate())) {
+            model.addAttribute("message", "Invalid booking date, you cannot book a date before the current date");
+            model.addAttribute("messageType", "error");
+            return "patient/make-appointment";
+        }
 
-        Patient p = new Patient();
-        p.setPatientId(11);
-        appointment.setPatient(p);
-
+        appointment.setPatient(patient);
         appointment.setStatus(AppointmentStatus.PENDING);
-        appointmentService.saveAppointment(appointment);
+        Appointment isCreateAppointment = appointmentService.saveAppointment(appointment);
 
-        return "redirect:/appointment/appointment-list";
+        // Notification
+        if (isCreateAppointment != null) { // if success
+            System.out.println("success");
+            redirectAttributes.addFlashAttribute("message", "Create Appointment Successfully");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+        } else {
+            System.out.println("fail"); // if fail
+            redirectAttributes.addFlashAttribute("message", "Failed to create Appointment Successfully");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/manage";
+        }
+
+        System.out.println("update appointment successfully");
+        return "redirect:/patient/appointment/manage";
     }
 
+    // method cancel redirect to cancel appointment page
     @GetMapping("/cancel/{id}")
     public String cancelAppointment(@PathVariable(name = "id") int id, Model model) {
         Appointment appointment = appointmentService.findAppointmentById(id);
@@ -110,43 +171,73 @@ public class AppointmentController {
         return "patient/cancel-appointment";
     }
 
+    // method do cancel appointment
     @Transactional
     @PostMapping("/cancel")
-    public String cancelAppointment(@ModelAttribute(name = "appointment") Appointment cancelAppointment) {
+    public String cancelAppointment(@ModelAttribute(name = "appointment") Appointment cancelAppointment,
+                                    RedirectAttributes redirectAttributes) {
         Appointment existAppointment = appointmentService.findAppointmentById(cancelAppointment.getAppointmentId());
         if (existAppointment == null) {
-            return "redirect:/appointment/appointment-list";
+            redirectAttributes.addFlashAttribute("message", "Cancel appointment failed");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/manage";
         }
 
         // update status cancel
         existAppointment.setStatus(AppointmentStatus.CANCELLED);
         existAppointment.setCancelReason(cancelAppointment.getCancelReason());
 
+        // update cancel status to DB
         appointmentService.saveAppointment(existAppointment);
-        return "redirect:/appointment/appointment-list";
+        redirectAttributes.addFlashAttribute("message", "Cancel appointment successfully");
+        redirectAttributes.addFlashAttribute("messageType", "success");
+
+        System.out.println("cancel appointment successfully");
+        return "redirect:/patient/appointment/manage";
     }
 
-
+    // method redirect to edit page
     @GetMapping("/edit/{id}")
-    public String editAppointment(@PathVariable(name = "id") int id, Model model) {
+    public String editAppointment(@PathVariable(name = "id") int id, Model model,
+                                  RedirectAttributes redirectAttributes) {
         Appointment appointment = appointmentService.findAppointmentById(id);
+
+        // check valid appointment
+        if (appointment == null || appointment.getAppointmentId() != id) {
+            System.out.println("edit appointment failed");
+            redirectAttributes.addFlashAttribute("message", "Appointment does not exist");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/manage";
+        }
+
         model.addAttribute("appointment", appointment);
         return "/patient/edit-appointment";
     }
 
+    // method to update appointment information
     @Transactional
     @PostMapping("/update")
-    public String updateAppointment(@ModelAttribute(name = "appointment") Appointment appointment) {
+    public String updateAppointment(@ModelAttribute(name = "appointment") Appointment appointment,
+                                    RedirectAttributes redirectAttributes) {
         Appointment existing = appointmentService.findAppointmentById(appointment.getAppointmentId());
         if (existing == null) {
-            return "redirect:/appointment/appointment-list";
+            redirectAttributes.addFlashAttribute("message", "Appointment does not exist");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/manage";
         }
 
+        // set new information
         existing.setAppointmentDate(appointment.getAppointmentDate());
         existing.setNotes(appointment.getNotes());
 
+        // update new information
         appointmentService.saveAppointment(existing);
-        return "redirect:/appointment/appointment-list";
+
+        redirectAttributes.addFlashAttribute("message", "Appointment updated successfully");
+        redirectAttributes.addFlashAttribute("messageType", "success");
+
+        System.out.println("update appointment successfully");
+        return "redirect:/patient/appointment/manage";
     }
 
 }
