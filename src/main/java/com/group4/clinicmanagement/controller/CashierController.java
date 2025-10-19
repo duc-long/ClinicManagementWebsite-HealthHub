@@ -30,7 +30,7 @@ public class CashierController {
 
     }
 
-    @GetMapping(value = "/view-profile")
+    @GetMapping(value = "/profile")
     public String viewProfile( Model model) {
         User user = cashierService.findUserById(id);
 
