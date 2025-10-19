@@ -12,7 +12,7 @@ import java.util.List;
 @SpringBootApplication
 public class ClinicManagementApp {
     public static void main(String[] args) {
-//        SpringApplication.run(ClinicManagementApp.class, args);
+        SpringApplication.run(ClinicManagementApp.class, args);
 
         ConfigurableApplicationContext context = SpringApplication.run(ClinicManagementApp.class, args);
         AppointmentRepository appointmentRepository = context.getBean(AppointmentRepository.class);
