@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Doctor Home – HealHub</title>
+
+    <!-- Bootstrap & Icons -->
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root{
+            --sb-width: 260px;
+            --sb-width-collapsed: 72px;
+            --sb-bg: #0b1220;
+            --sb-fg: #e7ecf3;
+            --sb-fg-dim:#9fb0c7;
+            --acc:#4f8cff;
+        }
+        /* Layout */
+        body{background:#f6f7fb;}
+        .app{
+            min-height:100vh;
+            display:grid;
+            grid-template-columns: var(--sb-width) 1fr;
+            transition: grid-template-columns .25s ease;
+        }
+        .app.collapsed{
+            grid-template-columns: var(--sb-width-collapsed) 1fr;
+        }
+
+        /* Sidebar */
+        .sidebar{
+            background:var(--sb-bg);
+            color:var(--sb-fg);
+            position:sticky; top:0; height:100dvh;
+            display:flex; flex-direction:column; gap:.75rem;
+            padding:.75rem;
+            box-shadow: 2px 0 12px #0003;
+            overflow:hidden;
+        }
+        .brand{
+            display:flex; align-items:center; gap:.75rem;
+            padding:.5rem .75rem; border-radius:.75rem;
+        }
+        .brand .logo{
+            width:36px; height:36px; display:grid; place-items:center;
+            border-radius:.75rem; background:#15233b; color:var(--acc);
+            font-weight:700;
+        }
+        .brand .title{ font-weight:700; font-size:1.05rem; }
+
+        .toggle-btn{
+            border:0; background:#15233b; color:var(--sb-fg);
+            width:100%; padding:.6rem .75rem; border-radius:.65rem;
+            display:flex; align-items:center; gap:.65rem; cursor:pointer;
+        }
+        .toggle-btn:hover{background:#1b2d4e}
+
+        .nav{
+            margin-top:.25rem;
+            display:flex; flex-direction:column; gap:.25rem;
+        }
+        .nav a{
+            display:flex; align-items:center; gap:.75rem;
+            padding:.65rem .75rem; border-radius:.65rem;
+            color:var(--sb-fg); text-decoration:none;
+            opacity:.95;
+        }
+        .nav a .icon{ width:22px; text-align:center; color:var(--sb-fg-dim); }
+        .nav a.active, .nav a:hover{
+            background:#1b2d4e; color:#fff;
+        }
+        .nav small{ color:var(--sb-fg-dim); margin:.5rem .5rem .25rem; }
+
+        /* Collapse behaviors: hide label text when collapsed */
+        .app.collapsed .hide-when-collapsed{ display:none !important; }
+        .app.collapsed .brand{ justify-content:center; }
+        .app.collapsed .toggle-btn{ justify-content:center; }
+        .app.collapsed .nav a{ justify-content:center; }
+        .app.collapsed .nav small{ display:none; }
+
+        /* Main */
+        .main{
+            min-width:0;
+            padding:1rem;
+            display:flex; flex-direction:column; gap:1rem;
+        }
+        .topbar{
+            background:#fff; border-radius:1rem; box-shadow:0 2px 12px #0001;
+            padding:.75rem 1rem; display:flex; align-items:center; justify-content:space-between;
+            position:sticky; top:0; z-index:5;
+        }
+        .content{
+            background:#fff; border-radius:1rem; box-shadow:0 2px 12px #0001;
+            padding:1rem;
+        }
+
+        /* Section switching */
+        .section{ display:none; }
+        .section.active{ display:block; }
+
+        /* Cards */
+        .card-soft{
+            background:#f8f9fc; border:1px dashed #dfe6f3; border-radius:1rem; padding:1rem;
+        }
+
+        /* Responsive: mobile turns sidebar into overlay */
+        @media (max-width: 992px){
+            .app{ grid-template-columns: 1fr; }
+            .sidebar{
+                position:fixed; inset:0 auto 0 0; width:var(--sb-width);
+                transform:translateX(-100%); transition: transform .25s ease;
+                z-index:1050;
+            }
+            .app.show-sidebar .sidebar{ transform:translateX(0); }
+            .overlay{
+                display:none; position:fixed; inset:0; background:#0006; z-index:1040;
+            }
+            .app.show-sidebar + .overlay{ display:block; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">DR</div>
+            <div class="title hide-when-collapsed">HealHub · Doctor</div>
+        </div>
+
+        <button id="toggleSidebar" class="toggle-btn" type="button">
+            <i class="fa-solid fa-angles-left"></i>
+            <span class="hide-when-collapsed">Thu gọn</span>
+        </button>
+
+        <nav class="nav" id="sideNav">
+            <small class="hide-when-collapsed">OVERVIEW</small>
+            <a href="#" data-section="dashboard" class="active">
+                <span class="icon"><i class="fa-solid fa-house"></i></span>
+                <span class="hide-when-collapsed">Dashboard</span>
+            </a>
+            <a href="#" data-section="appointments">
+                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="hide-when-collapsed">Appointments</span>
+            </a>
+            <a href="#" data-section="patients">
+                <span class="icon"><i class="fa-solid fa-user-group"></i></span>
+                <span class="hide-when-collapsed">Patients</span>
+            </a>
+            <a href="#" data-section="schedule">
+                <span class="icon"><i class="fa-solid fa-clock"></i></span>
+                <span class="hide-when-collapsed">Schedule</span>
+            </a>
+
+            <small class="hide-when-collapsed mt-2">CARE</small>
+            <a href="#" data-section="prescriptions">
+                <span class="icon"><i class="fa-solid fa-prescription-bottle-medical"></i></span>
+                <span class="hide-when-collapsed">Prescriptions</span>
+            </a>
+            <a href="#" data-section="messages">
+                <span class="icon"><i class="fa-solid fa-message"></i></span>
+                <span class="hide-when-collapsed">Messages</span>
+            </a>
+
+            <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+            <a href="#" data-section="settings">
+                <span class="icon"><i class="fa-solid fa-gear"></i></span>
+                <span class="hide-when-collapsed">Settings</span>
+            </a>
+            <a th:href="@{/logout}">
+                <span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span>
+                <span class="hide-when-collapsed">Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="topbar">
+            <div class="d-flex align-items-center gap-2">
+                <!-- mobile open button -->
+                <button class="btn btn-outline-primary d-lg-none" id="openSidebar" type="button">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h5 class="m-0 fw-bold">Doctor Home</h5>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end">
+                    <div class="fw-semibold" th:text="${#authentication?.name}">dr.nguyen</div>
+                    <div class="text-muted small">Cardiologist</div>
+                </div>
+                <img src="https://i.pravatar.cc/64?img=12" alt="avatar" class="rounded-circle" width="40" height="40" />
+            </div>
+        </div>
+
+        <!-- Content container -->
+        <section class="content">
+            <!-- Dashboard -->
+            <div class="section active" id="section-dashboard">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="card-soft">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="text-muted small">Today Appointments</div>
+                                    <div class="h4 fw-bold" th:text="${todayCount}">8</div>
+                                </div>
+                                <i class="fa-solid fa-calendar-day fa-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-soft">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="text-muted small">Waiting</div>
+                                    <div class="h4 fw-bold" th:text="${waitingCount}">3</div>
+                                </div>
+                                <i class="fa-solid fa-hourglass-half fa-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-soft">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="text-muted small">Messages</div>
+                                    <div class="h4 fw-bold" th:text="${unreadMsg}">5</div>
+                                </div>
+                                <i class="fa-solid fa-envelope-open-text fa-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <h6 class="fw-bold mb-3">Quick Actions</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="#" class="btn btn-primary" data-section="appointments"><i class="fa-solid fa-calendar-plus me-1"></i> View Appointments</a>
+                    <a href="#" class="btn btn-outline-secondary" data-section="patients"><i class="fa-solid fa-user-plus me-1"></i> Patients</a>
+                    <a href="#" class="btn btn-outline-secondary" data-section="prescriptions"><i class="fa-solid fa-file-prescription me-1"></i> Prescriptions</a>
+                </div>
+            </div>
+
+            <!-- Appointments -->
+            <div class="section" id="section-appointments">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="m-0 fw-bold"><i class="fa-solid fa-calendar-check me-2"></i>Appointments</h5>
+                    <div class="d-flex gap-2">
+                        <input class="form-control" placeholder="Search patient / reason..." style="max-width:260px"/>
+                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass me-1"></i> Search</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>#</th><th>Patient</th><th>Time</th><th>Reason</th><th>Status</th><th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- th:each="a, i : ${appointments}" -->
+                        <tr>
+                            <td>1</td>
+                            <td>Tran Van A</td>
+                            <td>10:30–10:50</td>
+                            <td>Chest pain</td>
+                            <td><span class="badge text-bg-warning">PENDING</span></td>
+                            <td class="text-end">
+                                <a th:href="@{/doctor/appointment/1}" class="btn btn-sm btn-outline-primary">Open</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Patients -->
+            <div class="section" id="section-patients">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-user-group me-2"></i>Patients</h5>
+                <div class="row g-3">
+                    <!-- th:each="p : ${patients}" -->
+                    <div class="col-md-6 col-xl-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="https://i.pravatar.cc/80?img=21" class="rounded-circle" width="56" height="56" alt="">
+                                    <div>
+                                        <div class="fw-semibold">Nguyen Thi B</div>
+                                        <div class="text-muted small">Female · 28</div>
+                                    </div>
+                                </div>
+                                <div class="mt-3 d-flex gap-2">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">Records</a>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary">Book</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ... -->
+                </div>
+            </div>
+
+            <!-- Schedule -->
+            <div class="section" id="section-schedule">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-clock me-2"></i>Weekly Schedule</h5>
+                <div class="card-soft">
+                    <p class="m-0 text-muted">Embed calendar hoặc table ca trực ở đây…</p>
+                </div>
+            </div>
+
+            <!-- Prescriptions -->
+            <div class="section" id="section-prescriptions">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-prescription-bottle-medical me-2"></i>Prescriptions</h5>
+                <div class="card-soft">
+                    <p class="m-0 text-muted">Danh sách toa thuốc theo bệnh nhân/đơn gần nhất.</p>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="section" id="section-messages">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-message me-2"></i>Messages</h5>
+                <div class="card-soft">
+                    <p class="m-0 text-muted">Inbox/Chat với bệnh nhân & nhân sự.</p>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="section" id="section-settings">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-gear me-2"></i>Settings</h5>
+                <form class="row g-3" th:action="@{/doctor/profile}" method="post">
+                    <div class="col-md-6">
+                        <label class="form-label">Full name</label>
+                        <input class="form-control" th:value="${doctor.fullName}" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" th:value="${doctor.email}" />
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+</div>
+<!-- Mobile overlay -->
+<div class="overlay"></div>
+
+<!-- Scripts -->
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script>
+    (function(){
+        const app = document.getElementById('app');
+        const sideNav = document.getElementById('sideNav');
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const openBtn = document.getElementById('openSidebar');
+        const overlay = document.querySelector('.overlay');
+
+        // restore sidebar state
+        const key = 'doctorSidebarCollapsed';
+        const saved = localStorage.getItem(key);
+        if(saved === '1') app.classList.add('collapsed');
+
+        // toggle collapse (desktop)
+        toggleBtn.addEventListener('click', ()=>{
+            app.classList.toggle('collapsed');
+            localStorage.setItem(key, app.classList.contains('collapsed') ? '1' : '0');
+        });
+
+        // mobile open/close
+        const openSidebar = ()=> app.classList.add('show-sidebar');
+        const closeSidebar = ()=> app.classList.remove('show-sidebar');
+        openBtn?.addEventListener('click', openSidebar);
+        overlay?.addEventListener('click', closeSidebar);
+
+        // section switching
+        const sections = document.querySelectorAll('.section');
+        const links = sideNav.querySelectorAll('a[data-section]');
+        function showSection(name){
+            sections.forEach(s => s.classList.toggle('active', s.id === 'section-' + name));
+            links.forEach(a => a.classList.toggle('active', a.dataset.section === name));
+            // auto close on mobile
+            closeSidebar();
+        }
+        sideNav.addEventListener('click', (e)=>{
+            const a = e.target.closest('a[data-section]');
+            if(!a) return;
+            e.preventDefault();
+            showSection(a.dataset.section);
+            history.replaceState(null, '', '#'+a.dataset.section); // optional hash
+        });
+
+        // open from hash if present (e.g., /doctor/home#patients)
+        const hash = location.hash?.replace('#','');
+        if(hash){
+            const exists = document.getElementById('section-' + hash);
+            if(exists) showSection(hash);
+        }
+    })();
+</script>
+</body>
+</html>
