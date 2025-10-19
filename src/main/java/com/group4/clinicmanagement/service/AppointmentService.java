@@ -22,7 +22,6 @@ public class AppointmentService {
     public AppointmentService(AppointmentRepository appointmentRepository, FeedbackRepository feedbackRepository) {
         this.feedbackRepository = feedbackRepository;
     // constructor
-    public AppointmentService(AppointmentRepository appointmentRepository) {
         this.appointmentRepository = appointmentRepository;
     }
 

@@ -2,6 +2,7 @@ package com.group4.clinicmanagement.controller;
 
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.service.DoctorService;
+import com.group4.clinicmanagement.service.FeedbackService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +14,10 @@ import java.util.List;
 public class HomeController {
 
     private final DoctorService doctorService;
+    private final FeedbackService feedbackService;
 
-    public HomeController(DoctorService doctorService) {
+    public HomeController(DoctorService doctorService, FeedbackService feedbackService) {
+        this.feedbackService = feedbackService;
         this.doctorService = doctorService;
     }
 
@@ -24,6 +27,10 @@ public class HomeController {
         model.addAttribute("doctors", doctors);
         List<String> specialties = doctorService.findAllDistinctSpecialties();
         model.addAttribute("specialties", specialties);
+        double averageRating = feedbackService.getAverageRating();
+        model.addAttribute("averageRating", averageRating);
+
+        model.addAttribute("feedbacks", feedbackService.getRecentFeedbacks());
         return "home/HomeGuest";
     }
 

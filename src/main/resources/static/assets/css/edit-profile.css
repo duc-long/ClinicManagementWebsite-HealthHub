@@ -71,6 +71,7 @@ input[readonly] {
     min-height: 100vh;
     padding: 24px;
     background: #fff;
+    margin-top: 150px;
 }
 
 .profile-card {

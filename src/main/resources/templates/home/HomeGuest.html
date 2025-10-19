@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/assets/css/home.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/fragment-patient.css">
     <style>
         body {
             background-color: #f6f7fb;
@@ -23,7 +24,7 @@
 <body>
 
 <!-- NAVBAR -->
-<div th:replace="~{fragment/fragment :: navBar}"></div>
+<div th:replace="~{fragment/fragment-patient.html :: fragment-patient}"></div>
 
 <!-- HERO BANNER -->
 <section class="container py-5">
@@ -38,6 +39,7 @@
         </div>
     </div>
 </section>
+
 
 <!-- ACTION BUTTONS BOX -->
 <section class="container py-4">
