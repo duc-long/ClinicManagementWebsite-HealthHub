@@ -1,10 +1,12 @@
 package com.group4.clinicmanagement.controller;
 
 import com.group4.clinicmanagement.dto.FeedbackDTO;
+import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.Feedback;
 import com.group4.clinicmanagement.service.DoctorService;
 import com.group4.clinicmanagement.service.FeedbackService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,15 +26,23 @@ public class HomeController {
     }
 
     @GetMapping
-    public String guestHome(Model model) {
+    public String guestHome(Model model, HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        if (username == null) {
+            return "redirect:/login";
+//            session.setAttribute("username", "patient.jane");
+        }
         List<Doctor> doctors = doctorService.findAllDoctors();
         model.addAttribute("doctors", doctors);
         List<String> specialties = doctorService.findAllDistinctSpecialties();
         model.addAttribute("specialties", specialties);
-        List<FeedbackDTO> feedbacks = feedbackService.getAllFeedback();
+        List<Feedback> feedbacks = feedbackService.getRecentFeedbacks();
         model.addAttribute("feedbacks", feedbacks);
         double averageRating = feedbackService.getAverageRating();  // Tính trung bình rating
         model.addAttribute("averageRating", averageRating);
+        model.addAttribute("feedbackDTO", new FeedbackDTO());
+        List<Appointment> eligibleAppointments = feedbackService.getEligibleAppointmentsForFeedback(username);
+        model.addAttribute("eligibleAppointments", eligibleAppointments);
         return "home/HomeGuest";
     }
 

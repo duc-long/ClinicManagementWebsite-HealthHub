@@ -1,7 +1,9 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.entity.Appointment;
+import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
+import com.group4.clinicmanagement.repository.FeedbackRepository;
 import org.springframework.stereotype.Service;
 
 
@@ -12,9 +14,11 @@ import java.util.List;
 @Service
 public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
+    private final FeedbackRepository feedbackRepository;
 
 
-    public AppointmentService(AppointmentRepository appointmentRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository, FeedbackRepository feedbackRepository) {
+        this.feedbackRepository = feedbackRepository;
         this.appointmentRepository = appointmentRepository;
     }
 

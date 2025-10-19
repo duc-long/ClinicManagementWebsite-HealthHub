@@ -23,7 +23,7 @@ public class Feedback {
     private Patient patient;
 
     @ManyToOne
-    @JoinColumn(name = "appointment_id")
+    @JoinColumn(name = "appointment_id", nullable = false, unique = true)
     private Appointment appointment;
 
     private Float rating; // 1–5

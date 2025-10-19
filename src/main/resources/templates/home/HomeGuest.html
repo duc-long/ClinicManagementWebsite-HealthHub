@@ -129,33 +129,6 @@
     </div>
 </section>
 
-<!--<div class="profile-title-feedback">Feedback</div>-->
-<!--<div class="feedback-list">-->
-<!--    <div th:each="feedback : ${feedbacks}">-->
-<!--        <div class="feedback-item">-->
-<!--            &lt;!&ndash; Hiển thị rating sao &ndash;&gt;-->
-<!--&lt;!&ndash;            <div class="feedback-rating">&ndash;&gt;-->
-<!--&lt;!&ndash;                <span class="rating-stars">&ndash;&gt;-->
-<!--&lt;!&ndash;                    <span th:each="i : ${#numbers.sequence(1, 5)}"&ndash;&gt;-->
-<!--&lt;!&ndash;                          th:classappend="${i <= feedback.rating ? 'star filled' : 'star'}">&#9733;</span>&ndash;&gt;-->
-<!--&lt;!&ndash;                </span>&ndash;&gt;-->
-<!--&lt;!&ndash;                <span th:text="'Rating: ' + ${feedback.rating} + ' / 5'"></span>&ndash;&gt;-->
-<!--&lt;!&ndash;            </div>&ndash;&gt;-->
-
-<!--            <a href="#"-->
-<!--               class="btn-label-medical-record view-medical-record medical-record-link">-->
-<!--                <div class="result-row">-->
-<!--                    <div class="result-label" th:text="${feedback.patientName}"></div>-->
-<!--                    <div class="result-value" th:text="${feedback.diagnosis}"></div>-->
-<!--                    <div class="result-value" th:text="'Rating: ' + ${feedback.rating} + ' / 5.0'"></div>-->
-<!--                    <div class="result-value" th:text="${feedback.feedbackDate}"></div>-->
-<!--                    <div class="result-value" th:text="${feedback.comment}"></div>-->
-<!--                </div>-->
-<!--            </a>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
 <div class="feedback-container">
     <div class="profile-title-feedback">Feedback</div>
 
@@ -173,7 +146,7 @@
     <div class="feedback-list">
         <div class="feedback-item" th:each="feedback : ${feedbacks}">
             <div class="feedback-header">
-                <div class="feedback-name" th:text="${feedback.patientName}">Patient Name</div>
+                <div class="feedback-name" th:text="${feedback.patient.user.fullName}">Patient Name</div>
                 <div class="feedback-rating">
                     <span th:text="${#numbers.formatDecimal(feedback.rating, 1, 1)} + ' / 5.0'"></span>
                     <span class="stars">
@@ -186,17 +159,61 @@
             <div class="feedback-comment" th:text="${feedback.comment}">Comment text</div>
             <div class="feedback-details">
                 <div>
-                    <strong>Diagnosis:</strong>
-                    <span th:text="${feedback.diagnosis}">Diagnosis text</span>
-                </div>
-                <div>
                     <strong>Date:</strong>
-                    <span th:text="${#temporals.format(feedback.recordCreatedAt, 'dd/MM/yyyy')}"></span>
+                    <span th:text="${#temporals.format(feedback.createdAt, 'dd/MM/yyyy')}"></span>
                 </div>
             </div>
         </div>
     </div>
+
+<!--    <div class="feedback-form">-->
+<!--        <h3 class="form-title">Submit Your Feedback</h3>-->
+<!--        <form th:action="@{/feedback}" method="post" >-->
+<!--            <input type="hidden" name="appointmentId" th:value="${appointmentId}"/>-->
+<!--            <div class="form-group">-->
+<!--                <label for="rating">Rating (1–5):</label>-->
+<!--                <input type="number" id="rating" name="rating"  step="0.1" min="1" max="5" required>-->
+<!--            </div>-->
+
+<!--            <div class="form-group">-->
+<!--                <label for="comment">Comment:</label>-->
+<!--                <textarea id="comment" name="comment"  rows="3" required></textarea>-->
+<!--            </div>-->
+
+<!--            <button type="submit" class="submit-btn">Submit Feedback</button>-->
+<!--        </form>-->
+<!--    </div>-->
+    <div class="feedback-form">
+        <h3 class="form-title">Submit Your Feedback</h3>
+
+        <form th:action="@{/feedback}" method="post">
+            <!-- Dropdown chọn appointment hợp lệ -->
+            <div class="form-group">
+                <label for="appointmentId">Chọn lịch hẹn cần phản hồi:</label>
+                <select name="appointmentId" id="appointmentId" required>
+                    <option value="" disabled selected>-- Chọn một lịch hẹn --</option>
+                    <option th:each="appt : ${eligibleAppointments}"
+                            th:value="${appt.appointmentId}"
+                            th:text="${#dates.format(appt.startTime, 'dd/MM/yyyy HH:mm')} + ' với ' + ${appt.doctor.fullName}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Đánh giá (1–5):</label>
+                <input type="number" id="rating" name="rating" step="0.1" min="1" max="5" required>
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Nhận xét:</label>
+                <textarea id="comment" name="comment" rows="3" required></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Gửi phản hồi</button>
+        </form>
+    </div>
 </div>
+
 
 
 <!-- FOOTER -->
@@ -219,7 +236,6 @@
         </div>
     </div>
 </footer>
-
 <!-- Bootstrap JS -->
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>

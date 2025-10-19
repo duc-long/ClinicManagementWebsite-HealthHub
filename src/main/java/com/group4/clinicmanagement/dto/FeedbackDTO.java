@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,13 +10,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class FeedbackDTO {
-    private Integer feedbackId;
+    @NotNull
+    @Min(1)
+    @Max(5)
     private Float rating;
+
+
+    @NotBlank
+    @Size(max = 2000)
     private String comment;
-    private LocalDateTime feedbackDate;
-    private String diagnosis;
-    private LocalDateTime recordCreatedAt;
-    private String patientName;
-    private String username;
-    private String avatar;
+
+
+    // Optionally link to appointment or patient
+    private Integer appointmentId;
+    private Integer patientId;
 }

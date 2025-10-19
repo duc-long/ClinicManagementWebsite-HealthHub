@@ -2,6 +2,7 @@ package com.group4.clinicmanagement.repository;
 
 import com.group4.clinicmanagement.dto.PatientUserDTO;
 import com.group4.clinicmanagement.entity.Patient;
+import com.group4.clinicmanagement.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,6 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
     int updateAddress(@Param("patientId") Integer patientId,
                       @Param("address") String address,
                       @Param("dateOfBirth") java.time.LocalDate dateOfBirth);
+
+    Optional<Object> findByUser(User user);
 }
