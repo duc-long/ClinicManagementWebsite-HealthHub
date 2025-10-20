@@ -7,6 +7,8 @@ import com.group4.clinicmanagement.service.PatientService;
 import com.group4.clinicmanagement.service.PrescriptionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +32,14 @@ public class PatientController {
     @Autowired
     private LabService labService;
 
+    private String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (authentication != null) ? authentication.getName() : null;
+    }
+
     @GetMapping("/profile")
     public String getPatientsByUsername(Model model, HttpSession session) {
-        String username = (String) session.getAttribute("username");
-        if (username == null) {
-            session.setAttribute("username", "patient.jane");
-//            return "redirect:/login";
-        }
+        String username = getCurrentUsername();
         PatientUserDTO patient = patientService.getPatientsByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
         session.setAttribute("patientId", patient.getPatientId());
         List<MedicalRecordListDTO> medicalRecords = medicalRecordService.getMedicalRecordsByPatientId(patient.getPatientId());
@@ -47,12 +50,8 @@ public class PatientController {
     }
 
     @GetMapping("/edit-profile")
-    public String goToEditProfile(HttpSession session, Model model) {
-        String username = (String) session.getAttribute("username");
-        if (username == null) {
-            session.setAttribute("username", "patient.minh");
-//            return "redirect:/login";
-        }
+    public String goToEditProfile(Model model) {
+        String username = getCurrentUsername();
         PatientUserDTO dto = patientService.getPatientsByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         model.addAttribute("patient", dto);
@@ -60,23 +59,17 @@ public class PatientController {
     }
 
     @PostMapping("/save-profile")
-    public String updateProfile(@ModelAttribute("patient") PatientUserDTO dto, @RequestParam("avatar") MultipartFile avatar, HttpSession session) {
-        String sessionUsername = (String) session.getAttribute("username");
+    public String updateProfile(@ModelAttribute("patient") PatientUserDTO dto, @RequestParam("avatar") MultipartFile avatar) {
+        String username = getCurrentUsername();
 
-        if (sessionUsername == null) {
-            return "redirect:/login";
-        }
-
-        patientService.savePatientUserWithAvatar(sessionUsername, dto, avatar);
+        patientService.savePatientUserWithAvatar(username, dto, avatar);
         return "redirect:/patient/profile";
     }
 
     @GetMapping("/medical-records/{recordId}")
     public String getMedicalRecordsByPatientId(Model model, HttpSession session, @PathVariable("recordId") Integer recordId) {
+        String username = getCurrentUsername();
         Integer patientId = (Integer) session.getAttribute("patientId");
-        if (patientId == null) {
-            return "redirect:/login";
-        }
         Optional<MedicalRecordDetailDTO> medicalRecordDetailDTO = medicalRecordService.getMedicalRecordDetailsByPatientId(patientId, recordId);
         List<PrescriptionDetailDTO> prescriptions = prescriptionService.getPrescriptionDetailsByRecordId(recordId);
         List<LabDTO> labs = labService.findLabResultByRecordId(recordId);
@@ -84,6 +77,36 @@ public class PatientController {
         model.addAttribute("labs", labs);
         model.addAttribute("record", medicalRecordDetailDTO.get());
         return "patient/medical-record-detail";
+    }
+
+    @GetMapping("/change-password")
+    public String showChangePasswordForm() {
+        return "patient/change-password";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@RequestParam("currentPassword") String currentPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 Model model) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("error", "Xác nhận mật khẩu không khớp.");
+            return "redirect:/patient/change-password";
+        }
+
+        boolean isChanged = patientService.changePassword(username, currentPassword, newPassword);
+
+        if (!isChanged) {
+            model.addAttribute("error", "Mật khẩu hiện tại không đúng.");
+            return "redirect:/patient/change-password";
+        }
+
+        model.addAttribute("success", "Đổi mật khẩu thành công.");
+        return "redirect:/patient/profile";
     }
 
 }

@@ -32,6 +32,8 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
                     redirectURL = "/doctor/overview";
                     break;
                 case "ROLE_Patient":
+                    redirectURL = "/patient/profile";
+                    break;
                 case "ROLE_Receptionist":
                 case "ROLE_Cashier":
                 case "ROLE_Technician":

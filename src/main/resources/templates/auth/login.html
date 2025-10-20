@@ -29,7 +29,10 @@
         <div class="d-grid">
             <button type="submit" class="btn btn-primary">Login</button>
         </div>
-        <p th:text="${error}" style="color:red"></p>
+<!--        <p th:text="${error}" style="color:red"></p>-->
+        <div th:if="${param.error}" class="alert alert-danger text-center mt-3">
+            Tên đăng nhập hoặc mật khẩu không đúng!
+        </div>
     </form>
 
     <!-- Extra links -->

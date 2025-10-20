@@ -23,5 +23,6 @@ public class ClinicManagementApp {
         for (Appointment appointment : appointments) {
             System.out.println(appointment.getAppointmentId() + " " + appointment.getStatus());
         }
+
     }
 }

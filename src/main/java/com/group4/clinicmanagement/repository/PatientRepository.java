@@ -32,4 +32,8 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
                       @Param("dateOfBirth") java.time.LocalDate dateOfBirth);
 
     Optional<Object> findByUser(User user);
+
+    @Modifying
+    @Query("UPDATE User u SET u.passwordHash = :newHash WHERE u.username = :username")
+    void updatePasswordHashByUsername(@Param("username") String username, @Param("newHash") String newHash);
 }
