@@ -39,8 +39,9 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
                     redirectURL = "/home"; // fallback
             }
 
-            // redirect to select URL
-            response.sendRedirect(redirectURL);
+break;
         }
+        // redirect to select URL
+        response.sendRedirect(redirectURL);
     }
 }

@@ -46,7 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/cashier/**").hasRole("Cashier") // page cashier
                         .anyRequest().authenticated()
                 )
-                // form login for patient
+                // form login
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(loginSuccessHandler)
