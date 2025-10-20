@@ -37,8 +37,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home/**", "/login/**", "/register/**",
-                                "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/home/**", "/login/**", "/register/**",
+                                "/css/**", "/js/**", "/assets/**", "/images/**", "/error").permitAll()
                         .requestMatchers("/doctor/**").hasRole("Doctor") // page doctor
                         .requestMatchers("/patient/**").hasRole("Patient") // page patient
                         .requestMatchers("/admin/**").hasRole("Admin") // page admin
@@ -58,7 +58,8 @@ public class SecurityConfig {
                         .invalidateHttpSession(true) // delete session
                         .deleteCookies("JSESSIONID") // delete cookies
                         .permitAll()
-                );
+                )
+                .requestCache(requestCache -> requestCache.disable()); // ✅ tránh loop
 
         return http.build();
     }
