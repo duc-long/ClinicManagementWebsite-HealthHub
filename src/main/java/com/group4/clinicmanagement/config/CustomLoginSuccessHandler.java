@@ -26,21 +26,31 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
             String role = grantedAuthority.getAuthority(); // get Role
 
             // check role
-            switch (role){
-                case "ROLE_Admin":
+            switch (role) {
                 case "ROLE_Doctor":
-                    redirectURL = "/doctor/overview";
+                    redirectURL = "/doctor/home";
+                    break;
+                case "ROLE_Admin":
+                    redirectURL = "/admin/dashboard";
                     break;
                 case "ROLE_Patient":
+                    redirectURL = "/home";
+                    break;
                 case "ROLE_Receptionist":
+                    redirectURL = "/receptionist/dashboard";
+                    break;
                 case "ROLE_Cashier":
+                    redirectURL = "/cashier/dashboard";
+                    break;
                 case "ROLE_Technician":
+                    redirectURL = "/technician/dashboard";
+                    break;
                 default:
-                    redirectURL = "/home"; // fallback
+                    redirectURL = "/home";
             }
-
-break;
+            break; // chỉ lấy role đầu tiên
         }
+
         // redirect to select URL
         response.sendRedirect(redirectURL);
     }

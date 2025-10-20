@@ -1,4 +1,4 @@
-package com.group4.clinicmanagement.controller;
+package com.group4.clinicmanagement.controller.appointment;
 
 
 import com.group4.clinicmanagement.entity.Appointment;

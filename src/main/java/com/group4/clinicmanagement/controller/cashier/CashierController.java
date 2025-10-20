@@ -1,10 +1,9 @@
-package com.group4.clinicmanagement.controller;
+package com.group4.clinicmanagement.controller.cashier;
 
 import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
-import com.group4.clinicmanagement.enums.Gender;
 import com.group4.clinicmanagement.service.AppointmentService;
 import com.group4.clinicmanagement.service.CashierService;
 import org.springframework.stereotype.Controller;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
