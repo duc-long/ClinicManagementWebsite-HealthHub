@@ -27,23 +27,23 @@ public class CustomUserDetailsService implements UserDetailsService {
         String uri = request.getRequestURI();
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Tài khoản không tồn tại"));
+                .orElseThrow(() -> new UsernameNotFoundException("Account does not exist."));
 
         if (user.getStatus() != UserStatus.ACTIVE) {
-            throw new DisabledException("Tài khoản bị khóa hoặc chưa kích hoạt");
+            throw new DisabledException("Account is locked or not activated.");
         }
 
         String role = user.getRole().getName();
 
         // Kiểm tra đăng nhập đúng vai trò
         if (uri.startsWith("/doctor") && !role.equalsIgnoreCase("Doctor")) {
-            throw new AuthenticationServiceException("Bạn không có quyền đăng nhập vào trang Doctor");
+            throw new AuthenticationServiceException("You do not have permission to log in to the Doctor page.");
         }
         if (uri.startsWith("/patient") && !role.equalsIgnoreCase("Patient")) {
-            throw new AuthenticationServiceException("Bạn không có quyền đăng nhập vào trang Patient");
+            throw new AuthenticationServiceException("You do not have permission to log in to the Patient page.");
         }
         if (uri.startsWith("/admin") && !role.equalsIgnoreCase("Admin")) {
-            throw new AuthenticationServiceException("Bạn không có quyền đăng nhập vào trang Admin");
+            throw new AuthenticationServiceException("You do not have permission to log in to the Admin page.");
         }
 
         return new CustomUserDetails(user);

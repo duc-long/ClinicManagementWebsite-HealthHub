@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .securityMatcher("/patient/login", "/patient/**", "/home/**", "/register/**", "/assets/**", "/images/**")
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/home/**", "/register/**", "/assets/**", "/images/**").permitAll()
+                        .requestMatchers("/patient/login").permitAll()
                         .requestMatchers("/patient/**").hasRole("Patient")
                         .anyRequest().authenticated()
                 )

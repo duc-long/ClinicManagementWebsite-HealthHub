@@ -36,7 +36,7 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
 
         // Nếu Spring trả "Bad credentials" → đổi thành thân thiện hơn
         if ("Bad credentials".equalsIgnoreCase(message)) {
-            message = "Tên đăng nhập hoặc mật khẩu không chính xác.";
+            message = "Username or password is incorrect.";
         }
 
         // Lưu message vào session để hiển thị lên form
