@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.entity;
 
 import com.group4.clinicmanagement.enums.Gender;
+import com.group4.clinicmanagement.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,40 +39,50 @@ public class User {
     @Column(nullable = false, length = 20)
     private String phone;
 
-    // Liên kết 1-1 với từng loại role chi tiết
+    // Relations
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Patient patient;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Doctor doctor;
 
-
     @Column(name = "gender")
     private Integer genderValue;
-
 
     @Transient
     private Gender gender;
 
-    private Boolean isActive = true;
+
+    @Column(name = "is_active")
+    private Integer statusValue;
+
+    @Transient
+    private UserStatus status;
+
     private String avatar;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @PostLoad
-    public void loadGenderEnum() {
+    public void loadEnums() {
         this.gender = Gender.fromInt(this.genderValue != null ? this.genderValue : 0);
+        this.status = UserStatus.fromInt(this.statusValue != null ? this.statusValue : 0);
     }
 
     @PrePersist
     @PreUpdate
-    public void persistGenderValue() {
-        if (this.gender != null) {
-            this.genderValue = this.gender.getValue();
-        }
+    public void persistEnumValues() {
+        this.genderValue = (gender != null) ? gender.getValue() : 0;
+        this.statusValue = (status != null) ? status.getValue() : 0;
     }
+
     public void setGender(Gender gender) {
         this.gender = gender;
         this.genderValue = (gender != null) ? gender.getValue() : 0;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+        this.statusValue = (status != null) ? status.getValue() : 0;
     }
 }

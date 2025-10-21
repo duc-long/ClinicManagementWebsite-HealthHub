@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Feedback {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer feedbackId;
@@ -25,7 +26,9 @@ public class Feedback {
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
-    private Integer rating; // 1-5 sao
+    private Double rating; // 1–5
     private String comment;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

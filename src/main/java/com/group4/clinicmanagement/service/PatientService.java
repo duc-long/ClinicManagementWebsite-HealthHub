@@ -37,7 +37,7 @@ public class PatientService {
                 patientUserDTO.getFullName(),
                 patientUserDTO.getEmail(),
                 patientUserDTO.getPhone(),
-                patientUserDTO.getGenderValue()
+                patientUserDTO.getGender().getValue()
         );
 
         if (updatedUser == 0) {

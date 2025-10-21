@@ -1,12 +1,13 @@
 package com.group4.clinicmanagement.enums;
 
 public enum AppointmentStatus {
-    PENDING(0),
-    CONFIRMED(1),
-    CANCELLED(2),
-    COMPLETED(3),
-    NO_SHOW(4),
-    CHECKED_IN(5);
+    PENDING(0),       // waiting for confirmation
+    CONFIRMED(1),     // doctor assigned
+    CANCELLED(2),     // cancelled by patient or clinic
+    PAID(3),          // bill paid
+    NO_SHOW(4),       // patient did not show up
+    CHECKED_IN(5),    // patient checked in at reception
+    EXAMINED(6);      // doctor finished examination
 
     private final int value;
 
@@ -20,8 +21,8 @@ public enum AppointmentStatus {
 
     public static AppointmentStatus fromInt(int value) {
         for (AppointmentStatus status : values()) {
-            if (status.getValue() == value) return status;
+            if (status.value == value) return status;
         }
-        throw new IllegalArgumentException("Invalid AppointmentStatus value: " + value);
+        return PENDING;
     }
 }

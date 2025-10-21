@@ -21,14 +21,6 @@ public class UserDTO {
         this.id = id;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getFullName() {
         return fullName;
     }
@@ -45,6 +37,14 @@ public class UserDTO {
         this.email = email;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     public String getPhone() {
         return phone;
     }
@@ -53,11 +53,11 @@ public class UserDTO {
         this.phone = phone;
     }
 
-    public Gender getGender() {
-        return gender;
+    public int getId() {
+        return id;
     }
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
+    public void setId(int id) {
+        this.id = id;
     }
 }

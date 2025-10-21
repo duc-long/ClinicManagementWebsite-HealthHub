@@ -22,7 +22,7 @@ public class CashierController {
     CashierService cashierService;
     AppointmentService appointmentService;
 
-    private final int id = 18;
+    private final int id = 4;
 
     public CashierController(CashierService cashierService, AppointmentService appointmentService) {
         this.cashierService = cashierService;
@@ -30,18 +30,16 @@ public class CashierController {
 
     }
 
-    @GetMapping(value = "/profile")
+    @GetMapping(value = "/view-profile")
     public String viewProfile( Model model) {
         User user = cashierService.findUserById(id);
 
         UserDTO userDTO = new UserDTO();
-
-        userDTO.setId(user.getUserId());
+        userDTO.setId(userDTO.getId());
         userDTO.setFullName(user.getFullName());
         userDTO.setEmail(user.getEmail());
         userDTO.setPhone(user.getPhone());
-        userDTO.setGender(user.getGender());
-
+        user.setGender(userDTO.getGender());
         model.addAttribute("userDTO", userDTO);
         return "cashier/view-profile";
     }
@@ -50,14 +48,14 @@ public class CashierController {
 
         User user = cashierService.findUserById(id);
 
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(user.getUserId());
-        userDTO.setFullName(user.getFullName());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setPhone(user.getPhone());
-        userDTO.setGender(user.getGender());
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getUserId());
+        dto.setFullName(user.getFullName());
+        dto.setEmail(user.getEmail());
+        dto.setPhone(user.getPhone());
+        dto.setGender(user.getGender());
 
-        model.addAttribute("userDTO", userDTO);
+        model.addAttribute("userDTO", dto);
         return "cashier/edit-profile";
     }
     @PostMapping(value = "/edit-profile")
