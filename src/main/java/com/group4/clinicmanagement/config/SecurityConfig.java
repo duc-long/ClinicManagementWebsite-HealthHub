@@ -97,7 +97,7 @@ public class SecurityConfig {
         http.securityMatcher("/admin/**", "/admin/login")
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/login", "/assets/**").permitAll()
-                        .anyRequest().hasRole("Admin"))
+                        .anyRequest().permitAll())
                 .formLogin(form -> form
                         .loginPage("/admin/login")
                         .loginProcessingUrl("/admin/login")

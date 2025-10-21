@@ -1,15 +1,15 @@
-package com.group4.clinicmanagement.dto;
+package com.group4.clinicmanagement.dto.admin;
 
 import com.group4.clinicmanagement.enums.Gender;
+import com.group4.clinicmanagement.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Data
-public class PatientUserDTO {
+public class PatientDTO {
     private Integer userId;
     private Integer patientId;
     private String username;
@@ -20,4 +20,6 @@ public class PatientUserDTO {
     private String address;
     private String avatarFilename;
     private LocalDate birthDate;
+    private UserStatus userStatus;
+    private Integer roleId;
 }
