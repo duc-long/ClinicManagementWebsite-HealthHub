@@ -1,4 +1,4 @@
-package com.group4.clinicmanagement.controller;
+package com.group4.clinicmanagement.controller.patient;
 
 import com.group4.clinicmanagement.dto.MedicalRecordListDTO;
 import com.group4.clinicmanagement.dto.PatientUserDTO;
