@@ -1,7 +1,10 @@
-package com.group4.clinicmanagement.controller;
+package com.group4.clinicmanagement.controller.technician;
 
+import com.group4.clinicmanagement.dto.LabRequestDTO;
 import com.group4.clinicmanagement.dto.UserDTO;
+import com.group4.clinicmanagement.entity.LabRequest;
 import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.service.LabRequestService;
 import com.group4.clinicmanagement.service.TechnicianService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/technician")
@@ -20,10 +25,15 @@ public class TechnicianController {
         this.technicianService = technicianService;
     }
 
-    @GetMapping
+    @GetMapping(value = "/login")
+    public String login() {
+        return "auth/technician/login";
+    }
+
+    @GetMapping(value = "/dashboard")
     public String technicianHome(Model model) {
 
-        return "technician/technician-dashboard";
+        return "technician/dashboard";
     }
 
     @GetMapping(value = "/profile")
@@ -62,7 +72,7 @@ public class TechnicianController {
     }
 
     @PostMapping(value = "edit-profile")
-    public String editProfile( @ModelAttribute("userDTO") UserDTO userDTO) {
+    public String editProfile(@ModelAttribute("userDTO") UserDTO userDTO) {
         User user = technicianService.findByUserId(id);
 
         user.setFullName(userDTO.getFullName());
@@ -73,4 +83,5 @@ public class TechnicianController {
         technicianService.save(user);
         return "redirect:/technician/profile";
     }
+
 }

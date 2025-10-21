@@ -45,6 +45,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (uri.startsWith("/admin") && !role.equalsIgnoreCase("Admin")) {
             throw new AuthenticationServiceException("You do not have permission to log in to the Admin page.");
         }
+        if (uri.startsWith("/technician") && !role.equalsIgnoreCase("Technician")) {
+            throw new AuthenticationServiceException("You do not have permission to log in to the Technician page.");
+        }
 
         return new CustomUserDetails(user);
     }
