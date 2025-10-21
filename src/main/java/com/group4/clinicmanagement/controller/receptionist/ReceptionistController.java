@@ -1,4 +1,4 @@
-package com.group4.clinicmanagement.controller;
+package com.group4.clinicmanagement.controller.receptionist;
 
 import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.service.ReceptionistService;
@@ -6,7 +6,6 @@ import com.group4.clinicmanagement.service.AppointmentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/receptionist")
