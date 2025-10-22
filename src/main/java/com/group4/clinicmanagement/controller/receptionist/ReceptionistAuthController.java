@@ -1,4 +1,4 @@
-package com.group4.clinicmanagement.controller.patient;
+package com.group4.clinicmanagement.controller.receptionist;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -8,14 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/patient")
-public class PatientAuthController {
+@RequestMapping("/receptionist")
+public class ReceptionistAuthController {
     @GetMapping("/login")
-    public String patientLoginPage(Model model, HttpSession session, @RequestParam(value = "error", required = false) String error) {
+    public String receptionistLogin(Model model, HttpSession session, @RequestParam(value = "error", required = false) String error){
         if (error == null) { // chỉ xoá khi không có lỗi
             session.removeAttribute("LOGIN_ERROR_MESSAGE");
         }
-        return "auth/patient/login";
+        return "auth/receptionist/login";
     }
-
 }

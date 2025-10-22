@@ -12,7 +12,7 @@
     <script src="/assets/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-<div th:replace="~{fragment/fragment-patient.html :: fragment-patient}"></div>
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
 <div class="page-container">
     <form class="profile-card" th:action="@{/patient/save-profile}" method="post" th:object="${patient}"
           enctype="multipart/form-data">

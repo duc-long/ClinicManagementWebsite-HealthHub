@@ -6,11 +6,13 @@ import com.group4.clinicmanagement.service.MedicalRecordService;
 import com.group4.clinicmanagement.service.PatientService;
 import com.group4.clinicmanagement.service.PrescriptionService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,7 +61,7 @@ public class PatientController {
     }
 
     @PostMapping("/save-profile")
-    public String updateProfile(@ModelAttribute("patient") PatientUserDTO dto, @RequestParam("avatar") MultipartFile avatar) {
+    public String updateProfile(@Valid @ModelAttribute("patient") PatientUserDTO dto, @RequestParam("avatar") MultipartFile avatar) {
         String username = getCurrentUsername();
 
         patientService.savePatientUserWithAvatar(username, dto, avatar);

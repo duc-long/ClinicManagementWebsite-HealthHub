@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -37,3 +36,4 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
     @Query("UPDATE User u SET u.passwordHash = :newHash WHERE u.username = :username")
     void updatePasswordHashByUsername(@Param("username") String username, @Param("newHash") String newHash);
 }
+
