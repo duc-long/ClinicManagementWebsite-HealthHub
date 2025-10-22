@@ -36,7 +36,7 @@
             <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/request-list}">
                 <i class="fa-solid fa-list-check me-1"></i>Requests
             </a>
-            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/tests}">
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/test-list}">
                 <i class="fa-solid fa-vials me-1"></i>Lab Tests
             </a>
             <a class="btn btn-outline-secondary btn-sm" th:href="@{/technician/profile}">
@@ -145,7 +145,7 @@
                         <td th:text="*{doctor.user.fullName}"></td>
                         <td>
                             <span th:switch="*{status.name()}">
-                                <span th:case="'REQUESTED'" class="badge bg-light">Requested</span>
+                                <span th:case="'REQUESTED'" class="badge bg-secondary">Requested</span>
                                 <span th:case="'PAID'" class="badge bg-primary">Paid</span>
                                 <span th:case="'COMPLETED'" class="badge bg-success">Completed</span>
                                 <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
