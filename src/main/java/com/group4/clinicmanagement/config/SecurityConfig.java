@@ -74,7 +74,7 @@ public class SecurityConfig {
     public SecurityFilterChain doctorChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/doctor/**", "/doctor/login")
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/doctor/login", "/assets/**", "/images/**").permitAll()
+                        .requestMatchers("/doctor/login", "/assets/**", "/images/**", "/css/**","/js/**").permitAll()
                         .anyRequest().hasRole("Doctor"))
                 .formLogin(form -> form
                         .loginPage("/doctor/login")

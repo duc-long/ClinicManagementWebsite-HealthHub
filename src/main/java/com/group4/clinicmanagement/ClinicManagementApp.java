@@ -14,14 +14,14 @@ public class ClinicManagementApp {
     public static void main(String[] args) {
         SpringApplication.run(ClinicManagementApp.class, args);
 
-        ConfigurableApplicationContext context = SpringApplication.run(ClinicManagementApp.class, args);
-        AppointmentRepository appointmentRepository = context.getBean(AppointmentRepository.class);
+//        ConfigurableApplicationContext context = SpringApplication.run(ClinicManagementApp.class, args);
+//        AppointmentRepository appointmentRepository = context.getBean(AppointmentRepository.class);
+////
+//        List<Appointment> appointments = appointmentRepository.findAllByPatient_PatientId(11);
 //
-        List<Appointment> appointments = appointmentRepository.findAllByPatient_PatientId(11);
-
-        System.out.println("main");
-        for (Appointment appointment : appointments) {
-            System.out.println(appointment.getAppointmentId() + " " + appointment.getStatus());
-        }
+//        System.out.println("main");
+//        for (Appointment appointment : appointments) {
+//            System.out.println(appointment.getAppointmentId() + " " + appointment.getStatus());
+//        }
     }
 }

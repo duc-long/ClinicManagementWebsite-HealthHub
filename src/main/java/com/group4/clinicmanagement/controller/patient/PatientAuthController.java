@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/patient")
 public class PatientAuthController {
     @GetMapping("/login")
-    public String patientLoginPage(HttpSession session, @RequestParam(value = "error", required = false) String error) {
+    public String patientLoginPage(Model model, HttpSession session, @RequestParam(value = "error", required = false) String error) {
         if (error == null) { // chỉ xoá khi không có lỗi
             session.removeAttribute("LOGIN_ERROR_MESSAGE");
         }

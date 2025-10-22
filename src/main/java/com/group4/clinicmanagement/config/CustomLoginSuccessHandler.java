@@ -1,6 +1,5 @@
 package com.group4.clinicmanagement.config;
 
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,5 +52,6 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         // redirect to select URL
         response.sendRedirect(redirectURL);
+        return;
     }
 }

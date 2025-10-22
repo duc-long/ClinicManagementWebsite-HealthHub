@@ -16,6 +16,9 @@
         session.LOGIN_ERROR_MESSAGE :
         'Invalid username or password'}"></span>
     </div>
+    <div th:if="${param.logout}" class="alert alert-success mt-3 py-2">
+    <span>Logout Successfully</span>
+    </div>
     <form action="/doctor/login" method="post">
         <input type="hidden" name="doctor">
         <!-- Username -->
