@@ -155,7 +155,7 @@
                         <td>
                             <a class="btn btn-sm btn-outline-primary me-1" th:href="@{/technician/request/{id}(id=*{labRequestId})}"><i class="fa-solid fa-eye"></i></a>
                             <a class="btn btn-sm btn-outline-success me-1" th:href="@{/technician/request/update/{id}(id=*{labRequestId})}"><i class="fa-solid fa-pen"></i></a>
-                            <a class="btn btn-sm btn-outline-danger" th:href="@{/technician/request/delete}"><i class="fa-solid fa-trash"></i></a>
+                            <a class="btn btn-sm btn-outline-danger" th:href="@{/technician/request/delete/{id}(id=*{labRequestId})}"><i class="fa-solid fa-trash"></i></a>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(labRequests)}">

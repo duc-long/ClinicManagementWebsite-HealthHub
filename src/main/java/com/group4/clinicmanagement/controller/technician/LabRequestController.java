@@ -42,6 +42,11 @@ public class LabRequestController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             Model model) {
 
+        patientId = (patientId != null && !patientId.isBlank()) ? patientId.trim() : null;
+        doctorName = (doctorName != null && !doctorName.isBlank()) ? doctorName.trim() : null;
+        testName = (testName != null && !testName.isBlank()) ? testName.trim() : null;
+        status = (status != null && !status.isBlank()) ? status.trim() : null;
+
         List<LabRequestDTO> labRequestDTOs;
 
         if (patientId == null && status == null && doctorName == null && testName == null && fromDate == null && toDate == null) {
@@ -56,8 +61,6 @@ public class LabRequestController {
 
         List<LabTestCatalog> labTestCatalogs = labTestCatalogService.getAll();
         List<Doctor> doctors = doctorService.findAllDoctors();
-
-        System.out.println("Result count: " + labRequestDTOs.size()); // 👈 thêm dòng này để kiểm tra
 
 
         model.addAttribute("labTestCatalogs", labTestCatalogs);
