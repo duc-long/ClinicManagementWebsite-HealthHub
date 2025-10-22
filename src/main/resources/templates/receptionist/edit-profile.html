@@ -1,101 +1,82 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Edit Profile - HealHub</title>
-    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        body { background-color: #f6f7fb; }
-        .container-wide { max-width: 800px; }
-        .card { border-radius: 1rem; box-shadow: 0 2px 12px #0001; }
-        .form-label { font-weight: 600; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/edit-profile.css">
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
+<div class="page-container">
+    <form class="profile-card" th:action="@{/patient/save-profile}" method="post" th:object="${patient}"
+          enctype="multipart/form-data">
 
-<!-- 🩺 NAVBAR -->
-<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold text-primary" href="#">
-            <i class="fa-solid fa-hospital-user me-2"></i>HealHub Receptionist
-        </a>
-        <div class="d-flex align-items-center gap-2">
-            <a class="btn btn-outline-primary btn-sm" th:href="@{/receptionist/appointments}">
-                <i class="fa-solid fa-calendar me-1"></i>Appointments
-            </a>
-            <a class="btn btn-outline-secondary btn-sm active" th:href="@{/receptionist/profile}">
-                <i class="fa-solid fa-user me-1"></i>Profile
-            </a>
-            <a class="btn btn-outline-danger btn-sm" href="#">
-                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout
-            </a>
-        </div>
-    </div>
-</nav>
-
-
-<main class="container container-wide py-5">
-
-
-    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">
-                <i class="fa-solid fa-pen me-2"></i>Edit Profile
-            </h4>
+        <div class="profile-title">Change profile</div>
+        <div class="avatar-container avatar-upload">
+            <img th:src="${patient.avatarFilename != null} ? '/images/avatars/' + ${patient.avatarFilename} : '/images/avatars/default-avatar.png'"
+                 class="avatar"
+                 id="avatarPreview"
+                 alt="Avatar"/>
+            <label class="avatar-overlay">
+                <span class="upload-text">Change</span>
+                <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(this)">
+            </label>
         </div>
 
-        <div class="card-body">
-
-            <form th:action="@{/receptionist/edit-profile}" th:object="${receptionist}" method="post">
-                <input type="hidden" th:field="*{id}" />
-
-                <div class="mb-3">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" class="form-control" th:field="*{fullName}" placeholder="Enter full name" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" th:field="*{email}" placeholder="example@email.com" required>
-                </div>
-
-
-                <div class="mb-3">
-                    <label class="form-label">Phone</label>
-                    <input type="text" class="form-control" th:field="*{phone}" placeholder="Enter phone number" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Gender</label>
-                    <select class="form-select" th:field="*{gender}" required>
-                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}">Male</option>
-                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}">Female</option>
-                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).UNKNOWN}">Other</option>
-                    </select>
-                </div>
-
-
-                <!-- Buttons -->
-                <div class="d-flex justify-content-between mt-4">
-                    <a th:href="@{/receptionist/profile}" class="btn btn-secondary">
-                        <i class="fa-solid fa-arrow-left me-1"></i>Back
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-save me-1"></i>Save Changes
-                    </button>
-                </div>
-            </form>
-
+        <div class="info">
+            <div class="group-info">
+                <div class="label">Username</div>
+                <input type="text" th:field="*{username}" disabled readonly class="input"/>
+            </div>
+            <div class="group-info">
+                <div class="label">Name</div>
+                <input type="text" th:field="*{fullName}" class="input"/>
+            </div>
+            <div class="group-info">
+                <div class="label">Email</div>
+                <input type="email" th:field="*{email}" class="input"/>
+            </div>
+            <div class="group-info">
+                <div class="label">Gender</div>
+                <select class="form-select" th:field="*{gender}" required>
+                    <option th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}">Male</option>
+                    <option th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}">Female</option>
+                    <option th:value="${T(com.group4.clinicmanagement.enums.Gender).UNKNOWN}">Other</option>
+                </select>
+            </div>
+            <div class="group-info">
+                <div class="label">Phone</div>
+                <input type="text" th:field="*{phone}" class="input"/>
+            </div>
+            <div class="group-info">
+                <div class="label">Address</div>
+                <input type="text" th:field="*{address}" class="input"/>
+            </div>
         </div>
-    </div>
-</main>
 
-<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+        <div class="button-row">
+            <a th:href="@{/patient/profile}" class="btn-label cancel">Cancel</a>
+            <button type="submit" class="btn-label save">Save</button>
+        </div>
+    </form>
+</div>
 </body>
+
+<script>
+    function previewAvatar(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('avatarPreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
 </html>

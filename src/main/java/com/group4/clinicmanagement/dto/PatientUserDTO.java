@@ -1,6 +1,8 @@
 package com.group4.clinicmanagement.dto;
 
 import com.group4.clinicmanagement.enums.Gender;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

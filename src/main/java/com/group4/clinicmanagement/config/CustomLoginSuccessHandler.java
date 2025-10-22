@@ -15,43 +15,81 @@ import java.util.Collection;
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        String redirectURL = request.getParameter("redirectURL"); // default url
+    public void onAuthenticationSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication) throws IOException, ServletException {
 
-        // get role list from user after login
-        Collection<?extends GrantedAuthority> grantedAuthorities = authentication.getAuthorities();
+        String requestURI = request.getRequestURI(); // login page URL
+        Collection<? extends GrantedAuthority> roles = authentication.getAuthorities();
 
-        for(GrantedAuthority grantedAuthority : grantedAuthorities){
-            String role = grantedAuthority.getAuthority(); // get Role
+        String redirectURL = "/home"; // default fallback
 
-            // check role
-            switch (role) {
-                case "ROLE_Doctor":
-                    redirectURL = "/doctor/home";
-                    break;
-                case "ROLE_Admin":
-                    redirectURL = "/admin/dashboard";
-                    break;
-                case "ROLE_Patient":
-                    redirectURL = "/home";
-                    break;
-                case "ROLE_Receptionist":
-                    redirectURL = "/receptionist/dashboard";
-                    break;
-                case "ROLE_Cashier":
-                    redirectURL = "/cashier/dashboard";
-                    break;
-                case "ROLE_Technician":
-                    redirectURL = "/technician/dashboard";
-                    break;
-                default:
-                    redirectURL = "/home";
+        // ==================== RECEPTIONIST ====================
+        if(requestURI.startsWith("/receptionist/login")) {
+            if(hasRole(roles, "ROLE_Receptionist")) {
+                redirectURL = "/receptionist/profile";
+            } else {
+                // tài khoản không hợp lệ cho trang này
+                response.sendRedirect("/receptionist/login?error=invalid_role");
+                return;
             }
-            break; // chỉ lấy role đầu tiên
+        }
+        // ==================== CASHIER ====================
+        else if(requestURI.startsWith("/cashier/login")) {
+            if(hasRole(roles, "ROLE_Cashier")) {
+                redirectURL = "/cashier/dashboard";
+            } else {
+                response.sendRedirect("/cashier/login?error=invalid_role");
+                return;
+            }
+        }
+        // ==================== DOCTOR ====================
+        else if(requestURI.startsWith("/doctor/login")) {
+            if(hasRole(roles, "ROLE_Doctor")) {
+                redirectURL = "/doctor/home";
+            } else {
+                response.sendRedirect("/doctor/login?error=invalid_role");
+                return;
+            }
+        }
+        // ==================== ADMIN ====================
+        else if(requestURI.startsWith("/admin/login")) {
+            if(hasRole(roles, "ROLE_Admin")) {
+                redirectURL = "/admin/dashboard";
+            } else {
+                response.sendRedirect("/admin/login?error=invalid_role");
+                return;
+            }
+        }
+        // ==================== TECHNICIAN ====================
+        else if(requestURI.startsWith("/technician/login")) {
+            if(hasRole(roles, "ROLE_Technician")) {
+                redirectURL = "/technician/dashboard";
+            } else {
+                response.sendRedirect("/technician/login?error=invalid_role");
+                return;
+            }
+        }
+        // ==================== PATIENT ====================
+        else if(requestURI.startsWith("/patient/login")) {
+            if(hasRole(roles, "ROLE_Patient")) {
+                redirectURL = "/home";
+            } else {
+                response.sendRedirect("/patient/login?error=invalid_role");
+                return;
+            }
+        }
+        // ==================== fallback ====================
+        else {
+            redirectURL = "/home";
         }
 
-        // redirect to select URL
         response.sendRedirect(redirectURL);
-        return;
+    }
+
+    // helper method check role
+    private boolean hasRole(Collection<? extends GrantedAuthority> roles, String roleName) {
+        return roles.stream().anyMatch(r -> r.getAuthority().equals(roleName));
     }
 }
