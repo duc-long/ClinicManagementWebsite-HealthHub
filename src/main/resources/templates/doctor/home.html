@@ -20,7 +20,7 @@
             <div class="title hide-when-collapsed">HealHub · Doctor</div>
         </div>
 
-        <button id="toggleSidebar" class="toggle-btn" type="button">
+        <button id="toggleSidebar" class="toggle-btn d-none d-lg-flex" type="button">
             <i class="fa-solid fa-angles-left"></i>
             <span class="hide-when-collapsed">Thu gọn</span>
         </button>
@@ -59,14 +59,12 @@
                 <span class="icon"><i class="fa-solid fa-gear"></i></span>
                 <span class="hide-when-collapsed">Settings</span>
             </a>
-            <form th:action="@{/doctor/logout}" method="post">
-                <span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span>
-                <span type="submit" class="hide-when-collapsed">Logout</span>
+            <form th:action="@{/doctor/logout}" method="post" class="logout-form">
+                <button type="submit" class="logout-btn text-danger">
+                    <span class="icon"><i class="fa-solid fa-right-from-bracket text-danger"></i></span>
+                    <span class="hide-when-collapsed">Logout</span>
+                </button>
             </form>
-            <!--            <a th:href="@{doctor/logout}">-->
-            <!--                <span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span>-->
-            <!--                <span class="hide-when-collapsed">Logout</span>-->
-            <!--            </a>-->
         </nav>
     </aside>
 

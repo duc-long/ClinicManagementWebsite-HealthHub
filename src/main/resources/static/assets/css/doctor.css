@@ -94,6 +94,43 @@ body{background:#f6f7fb;}
     background:#f8f9fc; border:1px dashed #dfe6f3; border-radius:1rem; padding:1rem;
 }
 
+/* Logout form */
+.logout-form {
+    margin: 0;
+}
+
+.logout-btn {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--sb-fg);
+    text-align: left;
+    padding: .65rem .75rem;
+    border-radius: .65rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    opacity: .95;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background .2s ease;
+}
+
+.logout-btn .icon {
+    width: 22px;
+    text-align: center;
+    color: var(--sb-fg-dim);
+}
+
+.logout-btn:hover {
+    background: #1b2d4e;
+    color: #fff;
+}
+
+.logout-btn:hover .icon {
+    color: #fff;
+}
+
 /* Responsive: mobile turns sidebar into overlay */
 @media (max-width: 992px){
     .app{ grid-template-columns: 1fr; }
@@ -108,3 +145,4 @@ body{background:#f6f7fb;}
     }
     .app.show-sidebar + .overlay{ display:block; }
 }
+
