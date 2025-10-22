@@ -26,7 +26,7 @@ public class PatientController {
     public String getPatientsByUsername(Model model, HttpSession session) {
         String username = (String) session.getAttribute("username");
         if (username == null) {
-            session.setAttribute("username", "michael.t");
+            session.setAttribute("username", "patient.jane");
 //            return "redirect:/login";
         }
         PatientUserDTO patient = patientService.getPatientsByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
@@ -41,7 +41,7 @@ public class PatientController {
     public String goToEditProfile(HttpSession session, Model model) {
         String username = (String) session.getAttribute("username");
         if (username == null) {
-            session.setAttribute("username", "michael.t");
+            session.setAttribute("username", "patient.jane");
 //            return "redirect:/login";
         }
         PatientUserDTO dto = patientService.getPatientsByUsername(username)

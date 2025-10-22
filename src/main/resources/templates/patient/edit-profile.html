@@ -43,10 +43,11 @@
             </div>
             <div class="group-info">
                 <div class="label">Gender</div>
-                <div class="checkbox-group">
-                    <label><input type="radio" th:field="*{genderValue}" value="1"/> Men</label>
-                    <label><input type="radio" th:field="*{genderValue}" value="2"/> Female</label>
-                </div>
+                <select class="form-select" th:field="*{gender}" required>
+                    <option th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}">Male</option>
+                    <option th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}">Female</option>
+                    <option th:value="${T(com.group4.clinicmanagement.enums.Gender).UNKNOWN}">Other</option>
+                </select>
             </div>
             <div class="group-info">
                 <div class="label">Phone</div>
