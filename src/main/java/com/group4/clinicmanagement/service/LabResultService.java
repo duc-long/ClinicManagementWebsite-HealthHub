@@ -25,4 +25,9 @@ public class LabResultService {
     public List<LabResult> filterResults(String resultId, String testName, LocalDate date) {
         return labResultRepository.filterResults(resultId, testName, date);
     }
+
+    public LabResult findById(Integer id) {
+        return labResultRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Result not found"));
+    }
 }

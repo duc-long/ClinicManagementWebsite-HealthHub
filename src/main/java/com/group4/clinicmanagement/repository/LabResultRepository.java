@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.repository;
 
 import com.group4.clinicmanagement.entity.LabResult;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,10 +9,15 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LabResultRepository extends JpaRepository<LabResult,Integer> {
 
+    @EntityGraph(attributePaths = {"images", "labRequest"})
+    Optional<LabResult> findById(Integer id);
+
+    List<LabResult> findAll();
     @Query(value = """
         SELECT r.*
         FROM LabResult r
@@ -27,4 +33,6 @@ public interface LabResultRepository extends JpaRepository<LabResult,Integer> {
             @Param("testName") String testName,
             @Param("date") LocalDate date
     );
+
+
 }
