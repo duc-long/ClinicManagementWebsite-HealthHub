@@ -1,8 +1,13 @@
 package com.group4.clinicmanagement.controller;
 
 import com.group4.clinicmanagement.entity.Doctor;
+import com.group4.clinicmanagement.entity.Feedback;
 import com.group4.clinicmanagement.service.DoctorService;
 import com.group4.clinicmanagement.service.FeedbackService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +26,14 @@ public class HomeController {
         this.doctorService = doctorService;
     }
 
-    @GetMapping
-    public String guestHome(Model model) {
+    @GetMapping()
+    public String guestHome(Model model,@RequestParam(defaultValue = "1") int page) {
+        int pageSize = 3; // hiển thị 3 feedback mỗi trang
+        if (page < 1) {
+            return "redirect:/home?page=1";
+        }
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+
         List<Doctor> doctors = doctorService.findAllDoctors();
         model.addAttribute("doctors", doctors);
         List<String> specialties = doctorService.findAllDistinctSpecialties();
@@ -30,7 +41,11 @@ public class HomeController {
         double averageRating = feedbackService.getAverageRating();
         model.addAttribute("averageRating", averageRating);
 
-        model.addAttribute("feedbacks", feedbackService.getRecentFeedbacks());
+        Page<Feedback> feedbackPage = feedbackService.getFeedbackPage(pageable);
+        if (page > feedbackPage.getTotalPages() && feedbackPage.getTotalPages() > 0) {
+            return "redirect:/home?page=" + feedbackPage.getTotalPages();
+        }
+        model.addAttribute("feedbacks", feedbackPage);
         return "home/HomeGuest";
     }
 

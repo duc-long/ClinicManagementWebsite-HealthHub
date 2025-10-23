@@ -8,84 +8,65 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/profile.css">
-    <link rel="stylesheet" href="/assets/css/fragment-patient.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <!--    <link rel="stylesheet" href="/assets/css/fragment-patient.css">-->
 </head>
 <body>
-<div th:replace="~{fragment/fragment-patient.html :: fragment-patient}"></div>
-<div class="page-container" th:object="${patient}">
-    <div class="profile-card">
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
+<div class="container-fluid" th:object="${patient}">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <div th:replace="~{fragment/patient/side-bar :: sidebar-patient}"></div>
+        <!-- PROFILE CONTENT -->
+        <div class="col-md-9 col-12 p-4">
+            <div class="profile-card">
 
 
-        <div class="profile-title">Profile</div>
-        <img th:src="${patient.avatarFilename != null ? '/images/avatars/' + patient.avatarFilename : '/images/avatars/default-avatar.png'}"
-             class="avatar"
-             id="avatarPreview"
-             alt="Avatar"/>
+                <div class="profile-title">Profile</div>
+                <img th:src="${patient.avatarFilename != null ? '/images/avatars/' + patient.avatarFilename : '/images/avatars/default-avatar.png'}"
+                     class="avatar"
+                     id="avatarPreview"
+                     alt="Avatar"/>
 
 
-        <div class="info">
-            <div class="group-info">
-                <div class="label username-label">Username</div>
-                <div class="value username-value" th:text="*{username}"></div>
-            </div>
-            <div class="group-info">
-                <div class="label name-label">Name</div>
-                <div class="value name-value" th:text="*{fullName}"></div>
-            </div>
-            <div class="group-info">
-                <div class="label email-label">Email</div>
-                <div class="value email-value" th:text="*{email}"></div>
-            </div>
-            <div class="group-info">
-                <div class="label gender-label">Gender</div>
-                <div class="value gender-value" th:switch="*{gender?.value}">
-                    <span th:case="1">Male</span>
-                    <span th:case="2">Female</span>
-                    <span th:case="*">Unknow</span>
+                <div class="info">
+                    <div class="group-info">
+                        <div class="label username-label">Username</div>
+                        <div class="value username-value" th:text="*{username}"></div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label name-label">Name</div>
+                        <div class="value name-value" th:text="*{fullName}"></div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label email-label">Email</div>
+                        <div class="value email-value" th:text="*{email}"></div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label gender-label">Gender</div>
+                        <div class="value gender-value" th:switch="*{gender?.value}">
+                            <span th:case="1">Male</span>
+                            <span th:case="2">Female</span>
+                            <span th:case="*">Unknow</span>
+                        </div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label phone-label">Phone</div>
+                        <div class="value phone-value" th:text="*{phone}"></div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label address-label">Address</div>
+                        <div class="value address-value" th:text="*{address}"></div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label dateOfBirth-label">Date of birth</div>
+                        <div class="value dateOfBirth-value" th:text="*{dateOfBirth}"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="group-info">
-                <div class="label phone-label">Phone</div>
-                <div class="value phone-value" th:text="*{phone}"></div>
-            </div>
-            <div class="group-info">
-                <div class="label address-label">Address</div>
-                <div class="value address-value" th:text="*{address}"></div>
-            </div>
-            <div class="group-info">
-                <div class="label dateOfBirth-label">Date of birth</div>
-                <div class="value dateOfBirth-value" th:text="*{dateOfBirth}"></div>
-            </div>
-        </div>
-
-        <div class="button-row">
-            <a th:href="@{/patient/edit-profile}" class="btn-label change-profile-label">Change profile</a>
-            <a th:href="@{/patient/change-password}" class="btn-label change-password-label">Change password</a>
-            <div class="btn-label delete-account-label">Delete account</div>
-        </div>
-
-        <div class="profile-title-medical">List medical records</div>
-        <div class="medical-records-list">
-            <div th:each="record : ${medicalRecords}">
-                <a th:href="@{/patient/medical-records/{recordId}(recordId=${record.recordId})}"
-                   class="btn-label-medical-record view-medical-record medical-record-link">
-                    <div class="result-row">
-                        <div class="result-label">Diagnosis</div>
-                        <div class="result-value" th:text="${record.diagnosis}"></div>
-                    </div>
-                    <div class="result-row">
-                        <div class="result-label">Day</div>
-                        <div class="result-value"
-                             th:text="${#temporals.format(record.createdAt, 'HH:mm dd/MM/yyyy')}"></div>
-                    </div>
-                    <div class="result-row">
-                        <div class="result-label">Doctor</div>
-                        <div class="result-value" th:text="${record.doctorFullName}"></div>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
+            </div> <!-- profile-card -->
+        </div> <!-- col-md-9 -->
+    </div> <!-- row -->
+</div> <!-- container-fluid -->
 </body>
 </html>

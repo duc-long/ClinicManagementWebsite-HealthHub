@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/profile.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <!--    <link rel="stylesheet" href="/assets/css/fragment-patient.css">-->
+</head>
+<body>
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <div th:replace="~{fragment/patient/side-bar :: sidebar-patient}"></div>
+        <!-- PROFILE CONTENT -->
+        <div class="col-md-9 col-12 p-4">
+            <div class="profile-card">
+                <div class="profile-title-medical">List medical records</div>
+                <div class="medical-records-list">
+                    <div th:each="record : ${medicalRecords}">
+                        <a th:href="@{/patient/medical-records/{recordId}(recordId=${record.recordId})}"
+                           class="btn-label-medical-record view-medical-record medical-record-link">
+                            <div class="result-row">
+                                <div class="result-label">Diagnosis</div>
+                                <div class="result-value" th:text="${record.diagnosis}"></div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">Day</div>
+                                <div class="result-value"
+                                     th:text="${#temporals.format(record.createdAt, 'HH:mm dd/MM/yyyy')}"></div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">Doctor</div>
+                                <div class="result-value" th:text="${record.doctorFullName}"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div> <!-- profile-card -->
+        </div> <!-- col-md-9 -->
+    </div> <!-- row -->
+</div> <!-- container-fluid -->
+</body>
+</html>

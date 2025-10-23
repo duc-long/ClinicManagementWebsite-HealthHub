@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,6 +48,16 @@ public class PatientController {
         model.addAttribute("patient", patient);
         model.addAttribute("medicalRecords", medicalRecords);
         return "patient/profile";
+    }
+
+    @GetMapping("/list-medical-records")
+    public String getListMedicalRecords(Model model, HttpSession session) {
+        String username = getCurrentUsername();
+        PatientUserDTO patient = patientService.getPatientsByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        session.setAttribute("patientId", patient.getPatientId());
+        List<MedicalRecordListDTO> medicalRecords = medicalRecordService.getMedicalRecordsByPatientId(patient.getPatientId());
+        model.addAttribute("medicalRecords", medicalRecords);
+        return "patient/list-medical-record";
     }
 
     @GetMapping("/edit-profile")
@@ -104,7 +113,7 @@ public class PatientController {
 
         if (!isChanged) {
             model.addAttribute("error", "Mật khẩu hiện tại không đúng.");
-            return "redirect:/patient/change-password";
+            return "patient/change-password";
         }
 
         model.addAttribute("success", "Đổi mật khẩu thành công.");

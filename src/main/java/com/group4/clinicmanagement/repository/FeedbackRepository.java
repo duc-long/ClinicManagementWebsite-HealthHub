@@ -3,6 +3,8 @@ package com.group4.clinicmanagement.repository;
 import com.group4.clinicmanagement.dto.FeedbackDTO;
 import com.group4.clinicmanagement.entity.Feedback;
 import com.group4.clinicmanagement.entity.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +21,6 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
     List<Feedback> findTop10ByOrderByCreatedAtDesc();
 
     Optional<Feedback> findByAppointment_AppointmentId(Integer appointmentId);
+
+    Page<Feedback> findAll(Pageable pageable);
 }

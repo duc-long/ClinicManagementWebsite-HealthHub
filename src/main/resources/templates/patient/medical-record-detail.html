@@ -8,135 +8,146 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/medical-record-detail.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
 </head>
 <body>
-<div class="page-container" th:object="${record}">
-    <div class="profile-title">Medical Record</div>
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragment/patient/side-bar :: sidebar-patient}"></div>
 
-    <div class="card-container">
-        <!-- LEFT: Patient Info -->
-        <div class="card">
-            <h2 class="card-title">Information</h2>
-            <div class="info-grid">
-                <div class="label">Full name</div>
-                <div class="value" th:text="*{fullName}"></div>
+        <div class="col-md-9 col-12 p-4">
+            <div class="page-container" th:object="${record}">
+                <div class="profile-title">Medical Record</div>
 
-                <div class="label">Gender</div>
-                <div class="value"
-                     th:text="*{genderValue == 1 ? 'Male' : (genderValue == 2 ? 'Female' : 'Other')}">
+                <div class="card-container">
+                    <!-- LEFT: Patient Info -->
+                    <div class="card">
+                        <h2 class="card-title">Information</h2>
+                        <div class="info-grid">
+                            <div class="label">Full name</div>
+                            <div class="value" th:text="*{fullName}"></div>
+
+                            <div class="label">Gender</div>
+                            <div class="value"
+                                 th:text="*{genderValue == 1 ? 'Male' : (genderValue == 2 ? 'Female' : 'Other')}">
+                            </div>
+
+                            <div class="label">DOB</div>
+                            <div class="value" th:text="*{dateOfBirth}"></div>
+
+                            <div class="label">Phone</div>
+                            <div class="value" th:text="*{phone}"></div>
+
+                            <div class="label">Email</div>
+                            <div class="value" th:text="*{email}"></div>
+
+                            <div class="label">Address</div>
+                            <div class="value" th:text="*{address}"></div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Medical Result -->
+                    <div class="card">
+                        <h2 class="card-title">Vital Sign</h2>
+                        <div class="info-grid">
+                            <div class="label">Height (cm)</div>
+                            <div class="value" th:text="*{heightCm}"></div>
+
+                            <div class="label">Weight (kg)</div>
+                            <div class="value" th:text="*{weightKg}"></div>
+
+                            <div class="label">Blood pressure</div>
+                            <div class="value" th:text="*{bloodPressure}"></div>
+
+                            <div class="label">Heart rate</div>
+                            <div class="value" th:text="*{heartRate}"></div>
+
+                            <div class="label">Temperature</div>
+                            <div class="value" th:text="*{temperature}"></div>
+                        </div>
+                    </div>
+
+                    <!-- LEFT: Result -->
+                    <div class="card">
+                        <h2 class="card-title">Final Result</h2>
+                        <div class="info-grid">
+                            <div class="label">Diagnosis</div>
+                            <div class="value" th:text="*{diagnosis}"></div>
+
+                            <div class="label">Note</div>
+                            <div class="value" th:text="*{notes}"></div>
+
+                            <div class="label">Day</div>
+                            <div class="value" th:text="*{createdAt}"></div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Doctor -->
+                    <div class="card">
+                        <h2 class="card-title">Doctor</h2>
+                        <div class="info-grid">
+                            <div class="label">Full name</div>
+                            <div class="value" th:text="*{doctorFullName}"></div>
+
+                            <div class="label">Specialty</div>
+                            <div class="value" th:text="*{specialty}"></div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Prescription -->
+                    <div class="card full-width">
+                        <h2 class="card-title">Prescription</h2>
+                        <table class="prescription-table">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Dosage</th>
+                                <th>Frequency</th>
+                                <th>Duration (days)</th>
+                                <th>Quantity</th>
+                                <th>Instruction</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="med : ${prescriptions}">
+                                <td th:text="${med.name}"></td>
+                                <td th:text="${med.dosage}">500mg</td>
+                                <td th:text="${med.frequency}">Twice daily</td>
+                                <td th:text="${med.duration_days}">5</td>
+                                <td th:text="${med.quantity}">10</td>
+                                <td th:text="${med.instruction}">After meals</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- FULL: Lab -->
+                    <div class="card full-width" th:each="lab : ${labs}">
+                        <h2 class="card-title">Lab Result</h2>
+                        <div class="info-grid">
+                            <div class="label">Test name</div>
+                            <div class="value" th:text="${lab.nameLabTest}"></div>
+
+                            <div class="label">Description test</div>
+                            <div class="value" th:text="${lab.descriptionLabTest}"></div>
+
+                            <div class="label">Result test</div>
+                            <div class="value" th:text="${lab.resultText}"></div>
+
+                            <div class="label">Description result</div>
+                            <div class="value" th:text="${lab.description}"></div>
+                        </div>
+                        <div class="lab-image-container">
+                            <!--                <img th:src="${lab.filePath}" alt="Lab Image" class="lab-image"/>-->
+                            <img th:src="@{/images/labs/{filename}(filename=${lab.filePath})}" alt="Lab Image"
+                                 class="lab-image"/>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="label">DOB</div>
-                <div class="value" th:text="*{dateOfBirth}"></div>
-
-                <div class="label">Phone</div>
-                <div class="value" th:text="*{phone}"></div>
-
-                <div class="label">Email</div>
-                <div class="value" th:text="*{email}"></div>
-
-                <div class="label">Address</div>
-                <div class="value" th:text="*{address}"></div>
-            </div>
-        </div>
-
-        <!-- RIGHT: Medical Result -->
-        <div class="card">
-            <h2 class="card-title">Vital Sign</h2>
-            <div class="info-grid">
-                <div class="label">Height (cm)</div>
-                <div class="value" th:text="*{heightCm}"></div>
-
-                <div class="label">Weight (kg)</div>
-                <div class="value" th:text="*{weightKg}"></div>
-
-                <div class="label">Blood pressure</div>
-                <div class="value" th:text="*{bloodPressure}"></div>
-
-                <div class="label">Heart rate</div>
-                <div class="value" th:text="*{heartRate}"></div>
-
-                <div class="label">Temperature</div>
-                <div class="value" th:text="*{temperature}"></div>
-            </div>
-        </div>
-
-        <!-- LEFT: Result -->
-        <div class="card">
-            <h2 class="card-title">Final Result</h2>
-            <div class="info-grid">
-                <div class="label">Diagnosis</div>
-                <div class="value" th:text="*{diagnosis}"></div>
-
-                <div class="label">Note</div>
-                <div class="value" th:text="*{notes}"></div>
-
-                <div class="label">Day</div>
-                <div class="value" th:text="*{createdAt}"></div>
-            </div>
-        </div>
-
-        <!-- RIGHT: Doctor -->
-        <div class="card">
-            <h2 class="card-title">Doctor</h2>
-            <div class="info-grid">
-                <div class="label">Full name</div>
-                <div class="value" th:text="*{doctorFullName}"></div>
-
-                <div class="label">Specialty</div>
-                <div class="value" th:text="*{specialty}"></div>
-            </div>
-        </div>
-
-        <!-- RIGHT: Prescription -->
-        <div class="card full-width">
-            <h2 class="card-title">Prescription</h2>
-            <table class="prescription-table">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Dosage</th>
-                    <th>Frequency</th>
-                    <th>Duration (days)</th>
-                    <th>Quantity</th>
-                    <th>Instruction</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="med : ${prescriptions}">
-                    <td th:text="${med.name}"></td>
-                    <td th:text="${med.dosage}">500mg</td>
-                    <td th:text="${med.frequency}">Twice daily</td>
-                    <td th:text="${med.duration_days}">5</td>
-                    <td th:text="${med.quantity}">10</td>
-                    <td th:text="${med.instruction}">After meals</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- FULL: Lab -->
-        <div class="card full-width" th:each="lab : ${labs}">
-            <h2 class="card-title">Lab Result</h2>
-            <div class="info-grid">
-                <div class="label">Test name</div>
-                <div class="value" th:text="${lab.nameLabTest}"></div>
-
-                <div class="label">Description test</div>
-                <div class="value" th:text="${lab.descriptionLabTest}"></div>
-
-                <div class="label">Result test</div>
-                <div class="value" th:text="${lab.resultText}"></div>
-
-                <div class="label">Description result</div>
-                <div class="value" th:text="${lab.description}"></div>
-            </div>
-            <div class="lab-image-container">
-                <!--                <img th:src="${lab.filePath}" alt="Lab Image" class="lab-image"/>-->
-                <img th:src="@{/images/labs/{filename}(filename=${lab.filePath})}" alt="Lab Image" class="lab-image"/>
-            </div>
-        </div>
-    </div>
-</div>
+            </div> <!-- page-container -->
+        </div> <!-- col-md-9 -->
+    </div> <!-- row -->
+</div> <!-- container-fluid -->
 </body>
 </html>

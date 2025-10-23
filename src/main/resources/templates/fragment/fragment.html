@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <div th:fragment="css">
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
 </div>
@@ -25,7 +25,23 @@
                     </ul>
                 </div>
                 <a class="text-primary text-decoration-none fw-semibold" th:href="@{/appointment/appointment-list}">Book an appointment</a>
-                <a class="btn btn-primary btn-sm text-white fw-semibold px-3" href="#">Login</a>
+                <div sec:authorize="!isAuthenticated()">
+                    <a class="btn btn-primary btn-sm text-white fw-semibold px-3" th:href="@{/login}">Login</a>
+                </div>
+<!--                <div sec:authorize="isAuthenticated()">-->
+<!--                    <a th:href="@{/patient/profile}" class="btn btn-primary">-->
+<!--                        Hi, <span th:text="${#authentication.name}">Tên</span>-->
+<!--                    </a>-->
+<!--                </div>-->
+                <div class="dropdown" sec:authorize="isAuthenticated()">
+                    <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Hi, <span th:text="${#authentication.principal.fullName}">User</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/patient/profile}">Profile</a></li>
+                        <li><a class="dropdown-item text-danger" th:href="@{/patient/logout}">Logout</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>

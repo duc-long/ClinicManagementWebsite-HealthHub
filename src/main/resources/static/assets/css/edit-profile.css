@@ -71,11 +71,10 @@ input[readonly] {
     min-height: 100vh;
     padding: 24px;
     background: #fff;
-    margin-top: 150px;
 }
 
 .profile-card {
-    width: 1120px;
+    width: 1200px;
     max-width: 100%;
     background: #fff;
     border-radius: 20px;

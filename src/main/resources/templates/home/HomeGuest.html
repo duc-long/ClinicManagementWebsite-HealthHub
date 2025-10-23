@@ -24,7 +24,7 @@
 <body>
 
 <!-- NAVBAR -->
-<div th:replace="~{fragment/fragment-patient.html :: fragment-patient}"></div>
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
 
 <!-- HERO BANNER -->
 <section class="container py-5">
@@ -54,7 +54,8 @@
                style="width: 380px;">
                 <i class="fa-solid fa-star me-2"></i>View Feedback
             </a>
-            <a th:href="@{/appointment/make-appointment}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5" style="width: 380px;">
+            <a th:href="@{/appointment/make-appointment}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5"
+               style="width: 380px;">
                 <i class="fa-solid fa-calendar-check me-2"></i>Book Appointment
             </a>
         </div>
@@ -131,60 +132,10 @@
     </div>
 </section>
 
+
 <div class="feedback-container">
-    <div class="profile-title-feedback">Feedback</div>
+    <div th:replace="~{fragment/patient/page :: pagination-feedback}"></div>
 
-    <!-- Trung bình đánh giá -->
-    <div class="feedback-average">
-        <div class="stars">
-            <span th:each="i : ${#numbers.sequence(1, 5)}"
-                  th:classappend="${i <= T(java.lang.Math).floor(averageRating) ? 'star filled' : (i - averageRating <= 0.5 ? 'star half' : 'star')}"
-                  class="star">&#9733;</span>
-        </div>
-        <div class="average-score" th:text="${#numbers.formatDecimal(averageRating, 1, 1)} + ' / 5.0'"></div>
-    </div>
-
-    <!-- Danh sách feedback -->
-    <div class="feedback-list">
-        <div class="feedback-item" th:each="feedback : ${feedbacks}">
-            <div class="feedback-header">
-                <div class="feedback-name" th:text="${feedback.patient.user.fullName}">Patient Name</div>
-                <div class="feedback-rating">
-                    <span th:text="${#numbers.formatDecimal(feedback.rating, 1, 1)} + ' / 5.0'"></span>
-                    <span class="stars">
-                        <span th:each="i : ${#numbers.sequence(1, 5)}"
-                              th:classappend="${i <= T(java.lang.Math).floor(feedback.rating) ? 'star filled' : (i - feedback.rating <= 0.5 && i > feedback.rating ? 'star half' : 'star')}"
-                              class="star">&#9733;</span>
-                    </span>
-                </div>
-            </div>
-            <div class="feedback-comment" th:text="${feedback.comment}">Comment text</div>
-            <div class="feedback-details">
-                <div>
-                    <strong>Date:</strong>
-                    <span th:text="${#temporals.format(feedback.createdAt, 'dd/MM/yyyy')}"></span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-<!--    <div class="feedback-form">-->
-<!--        <h3 class="form-title">Submit Your Feedback</h3>-->
-<!--        <form th:action="@{/feedback}" method="post" >-->
-<!--            <input type="hidden" name="appointmentId" th:value="${appointmentId}"/>-->
-<!--            <div class="form-group">-->
-<!--                <label for="rating">Rating (1–5):</label>-->
-<!--                <input type="number" id="rating" name="rating"  step="0.1" min="1" max="5" required>-->
-<!--            </div>-->
-
-<!--            <div class="form-group">-->
-<!--                <label for="comment">Comment:</label>-->
-<!--                <textarea id="comment" name="comment"  rows="3" required></textarea>-->
-<!--            </div>-->
-
-<!--            <button type="submit" class="submit-btn">Submit Feedback</button>-->
-<!--        </form>-->
-<!--    </div>-->
     <div class="feedback-form">
         <h3 class="form-title">Submit Your Feedback</h3>
 
@@ -217,7 +168,6 @@
 </div>
 
 
-
 <!-- FOOTER -->
 <footer class="bg-primary text-white py-5">
     <div class="container">
@@ -240,5 +190,6 @@
 </footer>
 <!-- Bootstrap JS -->
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>

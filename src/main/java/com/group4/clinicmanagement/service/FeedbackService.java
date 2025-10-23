@@ -11,6 +11,8 @@ import com.group4.clinicmanagement.repository.FeedbackRepository;
 import com.group4.clinicmanagement.repository.PatientRepository;
 import com.group4.clinicmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -80,5 +82,9 @@ public class FeedbackService {
                 .filter(app -> app.getStatus().equals(AppointmentStatus.EXAMINED)) // đã khám
                 .filter(app -> feedbackRepository.findByAppointment_AppointmentId(app.getAppointmentId()).isEmpty()) // chưa feedback
                 .toList();
+    }
+
+    public Page<Feedback> getFeedbackPage(Pageable pageable) {
+        return feedbackRepository.findAll(pageable);
     }
 }

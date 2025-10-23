@@ -89,6 +89,7 @@ public class PatientService {
             }
         }
     }
+
     public boolean changePassword(String username, String currentPassword, String newPassword) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
 
