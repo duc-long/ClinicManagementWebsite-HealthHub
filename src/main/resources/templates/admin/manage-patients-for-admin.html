@@ -133,8 +133,8 @@
                             <td th:text="${p.phone}"></td>
                             <td class="text-center" th:text="${p.userStatus}" th:classappend="${p.userStatus.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></td>
                             <td class="text-center">
-                                <a class="btn btn-sm btn-outline-primary me-2">Edit</a>
-                                <a class="btn btn-sm btn-outline-danger me-2">Delete</a>
+                                <a th:href="@{/admin/patient/edit/{id}(id=${p.patientId})}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+                                <a th:href="@{/admin/patient/delete/{id}(id=${p.patientId})}" class="btn btn-sm btn-outline-danger me-2">Delete</a>
                                 <a th:href="@{/admin/patient/{id}(id=${p.patientId})}" class="btn btn-sm btn-outline-dark me-2">View</a>
                             </td>
                         </tr>
@@ -186,6 +186,6 @@
 
 </div>
 
-
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

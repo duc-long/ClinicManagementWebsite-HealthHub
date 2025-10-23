@@ -4,6 +4,7 @@ import com.group4.clinicmanagement.enums.Gender;
 import com.group4.clinicmanagement.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -19,6 +20,7 @@ public class PatientDTO {
     private Gender gender;
     private String address;
     private String avatarFilename;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
     private UserStatus userStatus;
     private Integer roleId;

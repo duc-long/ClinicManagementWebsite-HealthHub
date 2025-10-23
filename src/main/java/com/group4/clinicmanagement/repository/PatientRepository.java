@@ -27,4 +27,6 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
             "WHERE p.patientId = :patientId")
     int updateAddress(@Param("patientId") Integer patientId,
                       @Param("address") String address);
+
+
 }
