@@ -1,8 +1,10 @@
 package com.group4.clinicmanagement.controller.receptionist;
 
+import com.group4.clinicmanagement.dto.ReceptionistUserDTO;
 import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.service.ReceptionistService;
 import com.group4.clinicmanagement.service.AppointmentService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,24 +23,26 @@ public class ReceptionistController {
     }
 
     @GetMapping("/profile")
-    public String viewProfile(Model model) {
-        int receptionistId = 4; // Demo data
-        UserDTO dto = receptionistService.getReceptionistProfile(receptionistId);
+    public String viewProfile(Model model, Authentication authentication) {
+        String receptionistName = authentication.getName();
+        ReceptionistUserDTO dto = receptionistService.getReceptionistProfile(receptionistName);
         model.addAttribute("receptionist", dto);
         return "receptionist/profile";
     }
 
     @GetMapping("/edit-profile")
-    public String editProfile(Model model) {
-        int receptionistId = 4;
-        UserDTO dto = receptionistService.getReceptionistProfile(receptionistId);
+    public String editProfile(Model model, Authentication authentication) {
+        String receptionistName = authentication.getName();
+        ReceptionistUserDTO dto = receptionistService.getReceptionistProfile(receptionistName);
         model.addAttribute("receptionist", dto);
         return "receptionist/edit-profile";
     }
 
     @PostMapping("/edit-profile")
-    public String editProfile(@ModelAttribute("receptionist") UserDTO dto) {
-        receptionistService.updateReceptionistProfile(dto);
+    public String editProfile(@ModelAttribute("receptionist") ReceptionistUserDTO dto, Authentication authentication) {
+        String receptionistName = authentication.getName();
+
+        receptionistService.updateReceptionistProfile(receptionistName,dto);
         return "redirect:/receptionist/profile";
     }
 }

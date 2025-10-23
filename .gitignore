@@ -39,3 +39,6 @@ build/
 
 # Ignore local Spring Boot config
 application.properties
+
+# Ignore
+uploads/**

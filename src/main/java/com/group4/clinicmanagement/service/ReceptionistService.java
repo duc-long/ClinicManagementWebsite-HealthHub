@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.service;
 
+import com.group4.clinicmanagement.dto.ReceptionistUserDTO;
 import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.enums.Gender;
@@ -15,18 +16,21 @@ public class ReceptionistService {
         this.receptionistRepository = receptionistRepository;
     }
 
-    private UserDTO convertToDTO(User user) {
+    private ReceptionistUserDTO convertToDTO(User user) {
         if (user == null) return null;
-        return new UserDTO(
+        return new ReceptionistUserDTO(
+               user.getUserId(),
+                user.getUsername(),
                 user.getFullName(),
                 user.getEmail(),
                 user.getPhone(),
                 user.getGender(),
-                user.getUserId()
+                user.getAvatar(),
+                user.getStatus()
         );
     }
 
-    private void applyDTOToEntity(UserDTO dto, User user) {
+    private void applyDTOToEntity(ReceptionistUserDTO dto, User user) {
         user.setFullName(dto.getFullName());
         user.setEmail(dto.getEmail());
         user.setPhone(dto.getPhone());
@@ -34,14 +38,16 @@ public class ReceptionistService {
     }
 
     @Transactional(readOnly = true)
-    public UserDTO getReceptionistProfile(int id) {
-        User user = receptionistRepository.findById(id).orElse(null);
+    public ReceptionistUserDTO getReceptionistProfile(String receptionistName) {
+        User user = receptionistRepository.findByUsername(receptionistName);
+        System.out.println("\n====="+ user.getUsername());
         return convertToDTO(user);
     }
 
     @Transactional
-    public void updateReceptionistProfile(UserDTO dto) {
-        User user = receptionistRepository.findById(dto.getId()).orElseThrow();
+    public void updateReceptionistProfile(String receptionistName, ReceptionistUserDTO dto) {
+        User user = receptionistRepository.findByUsername(receptionistName);
+        System.out.println("\n====="+ dto.getUsername());
         applyDTOToEntity(dto, user);
         receptionistRepository.save(user);
     }
