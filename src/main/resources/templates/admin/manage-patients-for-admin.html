@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Doctor Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
@@ -183,8 +184,28 @@
             </ul>
         </nav>
     </div>
+    <div id="flash-message" th:data-msg="${successMessage}" style="display:none;"></div>
 
 </div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const message = document.getElementById('flash-message').dataset.msg;
+    if (message) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: message,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#28a745',
+            customClass: {
+                popup: 'swal2-border-green'
+            }
+        });
+    }
+    /*]]>*/
+</script>
+
+
 
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>

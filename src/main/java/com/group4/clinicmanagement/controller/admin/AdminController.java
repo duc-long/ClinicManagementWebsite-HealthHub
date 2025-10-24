@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 
@@ -50,24 +51,30 @@ public class AdminController {
     }
 
     @PostMapping(value = "/patient/edit-result")
-    public String editPatientResult(@Valid @ModelAttribute(name = "patientDTO") PatientDTO dto, BindingResult bindingResult, @RequestParam("avatar") MultipartFile avatar , Model model) {
+    public String editPatientResult(@Valid @ModelAttribute(name = "patientDTO") PatientDTO dto,
+                                    BindingResult bindingResult,
+                                    @RequestParam("avatar") MultipartFile avatar,
+                                    RedirectAttributes redirectAttributes,
+                                    Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("patientDTO", dto);
             model.addAttribute("today", LocalDate.now());
-            System.out.printf("%s\n", bindingResult.getAllErrors());
             return "admin/update-patient";
         }
-        try {
 
+        try {
             patientService.update(dto, avatar);
-            return  "redirect:/admin/patient";
-        }  catch (Exception e) {
-            model.addAttribute("today", java.time.LocalDate.now());
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Patient with ID: " + dto.getPatientId() + " was updated successfully!");
+            return "redirect:/admin/patient";
+        } catch (Exception e) {
+            model.addAttribute("today", LocalDate.now());
             model.addAttribute("patientDTO", dto);
             return "admin/update-patient";
         }
     }
+
 
     @GetMapping(value = "/patient/delete/{id}")
     public String deletePatientById(@PathVariable(value = "id") Integer id, Model model) {
@@ -77,9 +84,11 @@ public class AdminController {
     }
 
     @PostMapping(value = "/patient/delete-result")
-    public String deletePatientById(@ModelAttribute(name = "patientDTO") PatientDTO dto, Model model) {
+    public String deletePatientById(@ModelAttribute(name = "patientDTO") PatientDTO dto, Model model, RedirectAttributes redirectAttributes) {
         try {
             patientService.deletePatient(dto);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Patient with ID: " + dto.getPatientId() + " was deleted successfully!");
             return "redirect:/admin/patient";
         } catch (Exception e) {
             System.out.println(  "\n" + "Error: " + e.getMessage() + "\n");
@@ -107,8 +116,14 @@ public class AdminController {
             return "admin/add-new-patient";
         }
 
-        patientService.newPatient(dto, avatar);
-        return "redirect:/admin/patient";
+        try {
+            patientService.newPatient(dto, avatar);
+
+            return "redirect:/admin/patient";
+        } catch (Exception e) {
+            return  "redirect:/admin/patient";
+        }
+
     }
 
 
