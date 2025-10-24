@@ -2,104 +2,134 @@ package com.group4.clinicmanagement.controller.technician;
 
 import com.group4.clinicmanagement.dto.LabRequestDTO;
 import com.group4.clinicmanagement.dto.LabResultDTO;
-import com.group4.clinicmanagement.dto.UserDTO;
-import com.group4.clinicmanagement.entity.LabRequest;
-import com.group4.clinicmanagement.entity.LabResult;
+import com.group4.clinicmanagement.dto.TechnicianDTO;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.enums.LabRequestStatus;
+import com.group4.clinicmanagement.security.CustomUserDetails;
 import com.group4.clinicmanagement.service.LabRequestService;
 import com.group4.clinicmanagement.service.LabResultService;
 import com.group4.clinicmanagement.service.TechnicianService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequestMapping("/technician")
 public class TechnicianController {
-    private final int id = 18;
-    TechnicianService technicianService;
-    LabRequestService labRequestService;
-    LabResultService labResultService;
 
-    public TechnicianController(TechnicianService technicianService, LabRequestService labRequestService, LabResultService labResultService) {
+    private final TechnicianService technicianService;
+    private final LabRequestService labRequestService;
+    private final LabResultService labResultService;
+
+    public TechnicianController(TechnicianService technicianService,
+                                LabRequestService labRequestService,
+                                LabResultService labResultService) {
         this.technicianService = technicianService;
         this.labRequestService = labRequestService;
         this.labResultService = labResultService;
     }
 
-    @GetMapping(value = "/login")
+    @GetMapping("/login")
     public String login() {
         return "auth/technician/login";
     }
 
-    @GetMapping(value = "/dashboard")
+    @GetMapping("/dashboard")
     public String technicianHome(Model model) {
         List<LabResultDTO> labResultDTOS = new ArrayList<>(labResultService.findLabResultList());
         labResultDTOS.removeIf(r -> !"PAID".equals(r.getLabRequestStatus()));
 
         List<LabRequestDTO> labRequestDTOS = new ArrayList<>(labRequestService.getAllLabRequestDTO());
-        labRequestDTOS.removeIf(r -> !r.getStatus().equals( LabRequestStatus.REQUESTED));
+        labRequestDTOS.removeIf(r -> !r.getStatus().equals(LabRequestStatus.REQUESTED));
 
         model.addAttribute("labRequestDTOS", labRequestDTOS);
         model.addAttribute("labResultDTOS", labResultDTOS);
-
         return "technician/dashboard";
     }
 
+    @GetMapping("/profile")
+    public String viewProfile(Authentication authentication, Model model) {
+        CustomUserDetails customUser = (CustomUserDetails) authentication.getPrincipal();
+        User user = technicianService.findByUserId(customUser.getUserId());
 
-    @GetMapping(value = "/profile")
-    public String viewProfile(Model model) {
-
-        User user = technicianService.findByUserId(id);
-
-        UserDTO userDTO = new UserDTO();
-
-        userDTO.setId(user.getUserId());
-        userDTO.setFullName(user.getFullName());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setPhone(user.getPhone());
-        userDTO.setGender(user.getGender());
-
-        model.addAttribute("userDTO", userDTO);
+        TechnicianDTO technicianDTO = TechnicianDTO.fromEntity(user);
+        model.addAttribute("technicianDTO", technicianDTO);
 
         return "technician/profile";
     }
 
-    @GetMapping(value = "edit-profile")
-    public String editProfile(Model model) {
-        User user = technicianService.findByUserId(id);
+    @GetMapping("/edit-profile")
+    public String editProfile(Authentication authentication, Model model) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer userId = userDetails.getUserId();
 
-        UserDTO userDTO = new UserDTO();
+        User user = technicianService.findByUserId(userId);
+        TechnicianDTO technicianDTO = TechnicianDTO.fromEntity(user);
 
-        userDTO.setId(user.getUserId());
-        userDTO.setFullName(user.getFullName());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setPhone(user.getPhone());
-        userDTO.setGender(user.getGender());
-
-        model.addAttribute("userDTO", userDTO);
-
+        model.addAttribute("technicianDTO", technicianDTO);
         return "technician/edit-profile";
     }
 
-    @PostMapping(value = "edit-profile")
-    public String editProfile(@ModelAttribute("userDTO") UserDTO userDTO) {
-        User user = technicianService.findByUserId(id);
+    @PostMapping("/edit-profile")
+    public String editProfile(@Valid @ModelAttribute("technicianDTO") TechnicianDTO technicianDTO,
+                              BindingResult bindingResult,
+                              @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
+                              Authentication authentication) throws IOException {
+        if (bindingResult.hasErrors()) {
+            return "technician/edit-profile";
 
-        user.setFullName(userDTO.getFullName());
-        user.setEmail(userDTO.getEmail());
-        user.setPhone(userDTO.getPhone());
-        user.setGender(userDTO.getGender());
+        }
 
-        technicianService.save(user);
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer userId = userDetails.getUserId();
+
+        technicianService.updateProfile(userId, technicianDTO, avatarFile);
         return "redirect:/technician/profile";
+    }
+
+    @GetMapping("/change-password")
+    public String changePasswordForm() {
+        return "technician/change-password";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@RequestParam("currentPassword") String currentPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 Authentication authentication,
+                                 Model model) {
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Integer userId = userDetails.getUserId();
+
+        boolean success = technicianService.changePassword(userId, currentPassword, newPassword, confirmPassword);
+
+        if (success) {
+            model.addAttribute("success", "Password changed successfully!");
+        } else {
+            model.addAttribute("error", "Failed to change password. Please check your inputs.");
+        }
+
+        return "auth/technician/login";
+    }
+
+    @PostMapping("/delete-account")
+    public String deleteAccount(Authentication authentication, HttpServletRequest request) throws ServletException {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        technicianService.deactivateAccount(userDetails.getUserId());
+
+        request.logout();
+        return "redirect:/technician/login";
     }
 
 }

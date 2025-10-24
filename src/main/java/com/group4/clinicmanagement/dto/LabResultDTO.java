@@ -25,18 +25,14 @@ public class LabResultDTO {
     private String technicianName;
     private String resultText;
 
-    private List<LabImage> images; // ảnh hiện tại (hiển thị lại trên form)
+    private List<LabImage> images;
     private LocalDateTime createdAt;
     private String labRequestStatus;
 
-    // 🆕 Dữ liệu thao tác từ form (không lưu DB)
-    private List<Integer> deleteImageIds;        // danh sách ảnh cần xóa
-    private List<MultipartFile> xrayFiles;       // danh sách ảnh upload mới
+    private List<Integer> deleteImageIds;
+    private List<MultipartFile> xrayFiles;
 
 
-    // =============================
-    // Entity -> DTO
-    // =============================
     public static LabResultDTO fromEntity(LabResult entity) {
         if (entity == null) return null;
 
@@ -44,9 +40,8 @@ public class LabResultDTO {
         dto.setResultId(entity.getResultId());
         dto.setResultText(entity.getResultText());
         dto.setCreatedAt(entity.getCreatedAt());
-        dto.setImages(entity.getImages()); // chứa danh sách ảnh hiện có
+        dto.setImages(entity.getImages());
 
-        // LabRequest mapping
         LabRequest request = entity.getLabRequest();
         if (request != null) {
             dto.setLabRequestId(request.getLabRequestId());
@@ -61,7 +56,6 @@ public class LabResultDTO {
             }
         }
 
-        // Technician mapping
         User tech = entity.getTechnician();
         if (tech != null) {
             dto.setTechnicianName(tech.getFullName());
@@ -70,9 +64,6 @@ public class LabResultDTO {
         return dto;
     }
 
-    // =============================
-    // DTO -> Entity
-    // =============================
     public LabResult toEntity(LabRequest labRequest, User technician) {
         LabResult entity = new LabResult();
         entity.setResultId(this.resultId);
