@@ -24,7 +24,7 @@
                         <li th:each="s : ${session.specialties}"><a class="dropdown-item" th:href="@{/home/specialty/{specialty}(specialty=${s})}" th:text="${s}"></a></li>
                     </ul>
                 </div>
-                <a class="text-primary text-decoration-none fw-semibold" th:href="@{/appointment/appointment-list}">Book an appointment</a>
+                <a class="text-primary text-decoration-none fw-semibold" th:href="@{/patient/appointment/manage}">Book an appointment</a>
                 <a class="btn btn-primary btn-sm text-white fw-semibold px-3" href="#">Login</a>
             </div>
         </div>

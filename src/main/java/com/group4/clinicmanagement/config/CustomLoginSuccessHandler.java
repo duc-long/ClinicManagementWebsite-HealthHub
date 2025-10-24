@@ -27,7 +27,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
             // check role
             switch (role) {
                 case "ROLE_Doctor":
-                    redirectURL = "/doctor/home";
+                    redirectURL = "/doctor/overview";
                     break;
                 case "ROLE_Admin":
                     redirectURL = "/admin/dashboard";

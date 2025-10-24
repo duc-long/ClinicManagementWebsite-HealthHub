@@ -12,16 +12,16 @@ import java.util.List;
 @SpringBootApplication
 public class ClinicManagementApp {
     public static void main(String[] args) {
-        SpringApplication.run(ClinicManagementApp.class, args);
+//        SpringApplication.run(ClinicManagementApp.class, args);
 
-//        ConfigurableApplicationContext context = SpringApplication.run(ClinicManagementApp.class, args);
-//        AppointmentRepository appointmentRepository = context.getBean(AppointmentRepository.class);
-////
-//        List<Appointment> appointments = appointmentRepository.findAllByPatient_PatientId(11);
+        ConfigurableApplicationContext context = SpringApplication.run(ClinicManagementApp.class, args);
+        AppointmentRepository appointmentRepository = context.getBean(AppointmentRepository.class);
 //
-//        System.out.println("main");
-//        for (Appointment appointment : appointments) {
-//            System.out.println(appointment.getAppointmentId() + " " + appointment.getStatus());
-//        }
+        List<Appointment> appointments = appointmentRepository.findByDoctor_DoctorIdAndStatusValue(3, 5);
+
+        System.out.println("main");
+        for (Appointment appointment : appointments) {
+            System.out.println(appointment.getAppointmentId() + " " + appointment.getStatus());
+        }
     }
 }

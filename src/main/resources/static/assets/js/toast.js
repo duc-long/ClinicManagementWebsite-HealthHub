@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Nếu có message thì show
     if (toastBody !== "") {
-        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+        const toast = new bootstrap.Toast(toastEl, { delay: 3000, autohide: true});
         toast.show();
         console.log("🎉 Toast hiển thị thành công");
     } else {

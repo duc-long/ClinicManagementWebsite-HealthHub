@@ -11,7 +11,7 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body>
-
+<div th:insert="~{fragment/toast/toast :: toast}"></div>
 <div id="app" class="app">
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -31,7 +31,7 @@
                 <span class="icon"><i class="fa-solid fa-house"></i></span>
                 <span class="hide-when-collapsed">Dashboard</span>
             </a>
-            <a href="#" data-section="appointments">
+            <a href="#" data-section="appointments" th:classappend="${active == 'appointments'} ? ' active'">
                 <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
                 <span class="hide-when-collapsed">Appointments</span>
             </a>
@@ -55,9 +55,9 @@
             </a>
 
             <small class="hide-when-collapsed mt-2">ACCOUNT</small>
-            <a href="#" data-section="settings">
+            <a href="#" data-section="profile" th:classappend="${active == 'profile'} ? ' active'">
                 <span class="icon"><i class="fa-solid fa-gear"></i></span>
-                <span class="hide-when-collapsed">Settings</span>
+                <span class="hide-when-collapsed">Profile</span>
             </a>
             <form th:action="@{/doctor/logout}" method="post" class="logout-form">
                 <button type="submit" class="logout-btn text-danger">
@@ -68,185 +68,11 @@
         </nav>
     </aside>
 
-    <!-- Main -->
-    <main class="main">
-        <div class="topbar">
-            <div class="d-flex align-items-center gap-2">
-                <!-- mobile open button -->
-                <button class="btn btn-outline-primary d-lg-none" id="openSidebar" type="button">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <h5 class="m-0 fw-bold">Doctor Home</h5>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="text-end">
-                    <div class="fw-semibold" th:text="${username}">dr.nguyen</div>
-                    <div class="text-muted small" th:text="'Department: ' + ${department}">Department</div>
-                </div>
-                <img src="https://i.pravatar.cc/64?img=12" alt="avatar" class="rounded-circle" width="40" height="40"/>
-            </div>
-        </div>
-
-        <!-- Content container -->
-        <section class="content">
-            <!-- Dashboard -->
-            <div class="section active" id="section-dashboard">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="card-soft">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <div class="text-muted small">Today Appointments</div>
-                                    <div class="h4 fw-bold" th:text="${todayCount}">8</div>
-                                </div>
-                                <i class="fa-solid fa-calendar-day fa-xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card-soft">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <div class="text-muted small">Waiting</div>
-                                    <div class="h4 fw-bold" th:text="${waitingCount}">3</div>
-                                </div>
-                                <i class="fa-solid fa-hourglass-half fa-xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card-soft">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <div class="text-muted small">Messages</div>
-                                    <div class="h4 fw-bold" th:text="${unreadMsg}">5</div>
-                                </div>
-                                <i class="fa-solid fa-envelope-open-text fa-xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <hr/>
-                <h6 class="fw-bold mb-3">Quick Actions</h6>
-                <div class="d-flex flex-wrap gap-2">
-                    <a href="#" class="btn btn-primary" data-section="appointments"><i
-                            class="fa-solid fa-calendar-plus me-1"></i> View Appointments</a>
-                    <a href="#" class="btn btn-outline-secondary" data-section="patients"><i
-                            class="fa-solid fa-user-plus me-1"></i> Patients</a>
-                    <a href="#" class="btn btn-outline-secondary" data-section="prescriptions"><i
-                            class="fa-solid fa-file-prescription me-1"></i> Prescriptions</a>
-                </div>
-            </div>
-
-            <!-- Appointments -->
-            <div class="section" id="section-appointments">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h5 class="m-0 fw-bold"><i class="fa-solid fa-calendar-check me-2"></i>Appointments</h5>
-                    <div class="d-flex gap-2">
-                        <input class="form-control" placeholder="Search patient / reason..." style="max-width:260px"/>
-                        <button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass me-1"></i> Search
-                        </button>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Patient</th>
-                            <th>Time</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <!-- th:each="a, i : ${appointments}" -->
-                        <tr>
-                            <td>1</td>
-                            <td>Tran Van A</td>
-                            <td>10:30–10:50</td>
-                            <td>Chest pain</td>
-                            <td><span class="badge text-bg-warning">PENDING</span></td>
-                            <td class="text-end">
-                                <a th:href="@{/doctor/appointment/1}" class="btn btn-sm btn-outline-primary">Open</a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Patients -->
-            <div class="section" id="section-patients">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-user-group me-2"></i>Patients</h5>
-                <div class="row g-3">
-                    <!-- th:each="p : ${patients}" -->
-                    <div class="col-md-6 col-xl-4">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center gap-3">
-                                    <img src="https://i.pravatar.cc/80?img=21" class="rounded-circle" width="56"
-                                         height="56" alt="">
-                                    <div>
-                                        <div class="fw-semibold">Nguyen Thi B</div>
-                                        <div class="text-muted small">Female · 28</div>
-                                    </div>
-                                </div>
-                                <div class="mt-3 d-flex gap-2">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">Records</a>
-                                    <a href="#" class="btn btn-sm btn-outline-secondary">Book</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ... -->
-                </div>
-            </div>
-
-            <!-- Schedule -->
-            <div class="section" id="section-schedule">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-clock me-2"></i>Weekly Schedule</h5>
-                <div class="card-soft">
-                    <p class="m-0 text-muted">Embed calendar hoặc table ca trực ở đây…</p>
-                </div>
-            </div>
-
-            <!-- Prescriptions -->
-            <div class="section" id="section-prescriptions">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-prescription-bottle-medical me-2"></i>Prescriptions</h5>
-                <div class="card-soft">
-                    <p class="m-0 text-muted">Danh sách toa thuốc theo bệnh nhân/đơn gần nhất.</p>
-                </div>
-            </div>
-
-            <!-- Messages -->
-            <div class="section" id="section-messages">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-message me-2"></i>Messages</h5>
-                <div class="card-soft">
-                    <p class="m-0 text-muted">Inbox/Chat với bệnh nhân & nhân sự.</p>
-                </div>
-            </div>
-
-            <!-- Settings -->
-            <div class="section" id="section-settings">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-gear me-2"></i>Settings</h5>
-                <form class="row g-3" th:action="@{/doctor/profile}" method="post">
-                    <div class="col-md-6">
-                        <label class="form-label">Full name</label>
-                        <!--                        <input class="form-control" th:value="${doctor.fullName}" />-->
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Email</label>
-                        <!--                        <input class="form-control" th:value="${doctor.email}" />-->
-                    </div>
-                    <div class="col-12">
-                        <button class="btn btn-primary">Save</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-    </main>
+    <section class="content" id="content">
+        <!-- Settings -->
+        <div class="section" id="section-settings"
+             th:replace="~{fragment/doctor/doctor-fragment :: overview}"></div>
+    </section>
 </div>
 <!-- Mobile overlay -->
 <div class="overlay"></div>
@@ -305,5 +131,7 @@
         }
     })();
 </script>
+<script th:src="@{/assets/js/doctor.js}"></script>
+<script th:src="@{/assets/js/toast.js}"></script>
 </body>
 </html>

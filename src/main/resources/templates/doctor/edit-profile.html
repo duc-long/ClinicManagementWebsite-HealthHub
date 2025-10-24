@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Update Doctor Profile – HealHub</title>
+
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/assets/css/doctor.css}" rel="stylesheet"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <div class="card shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-hm-blue mb-0">
+                <i class="fa-solid fa-user-doctor me-2"></i>Update Doctor Information
+            </h3>
+            <a th:href="@{/doctor/overview}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <form th:action="@{/doctor/profile/update}" th:object="${doctor}" method="post" class="needs-validation" novalidate>
+
+            <!-- Row 1: Full Name & Username -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Full Name</label>
+                    <input type="text" class="form-control" th:field="*{fullName}" placeholder="Enter full name" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Username</label>
+                    <input type="text" class="form-control" th:field="*{username}">
+                </div>
+            </div>
+
+            <!-- Row 2: Email & Phone -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Email</label>
+                    <input type="email" class="form-control" th:field="*{email}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Phone Number</label>
+                    <input type="text" class="form-control" th:field="*{phone}" placeholder="Enter phone number" required>
+                </div>
+            </div>
+
+            <!-- Row 3: Gender & Birthdate -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Gender</label>
+                    <select class="form-select" th:field="*{gender}" required>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Row 4: Biography -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Biography</label>
+                <textarea class="form-control" rows="4" th:field="*{bio}"
+                          placeholder="Write a short description about your experience, skills, and background..."></textarea>
+            </div>
+
+            <!-- Submit -->
+            <div class="text-end mt-4">
+                <button type="submit" class="btn btn-hm-green px-4">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>Save Changes
+                </button>
+            </div>
+        </form>
+
+        <!-- Success Alert -->
+        <div th:if="${success}" class="alert alert-success mt-4" th:text="${success}"></div>
+    </div>
+</div>
+
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script>
+    // Bootstrap client-side form validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+</body>
+</html>
