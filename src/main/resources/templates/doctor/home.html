@@ -55,7 +55,7 @@
             </a>
 
             <small class="hide-when-collapsed mt-2">ACCOUNT</small>
-            <a href="#" data-section="profile" th:classappend="${active == 'profile'} ? ' active'">
+            <a th:href="@{/doctor/profile}" th:classappend="${active == 'profile'} ? ' active'">
                 <span class="icon"><i class="fa-solid fa-gear"></i></span>
                 <span class="hide-when-collapsed">Profile</span>
             </a>
@@ -71,7 +71,7 @@
     <section class="content" id="content">
         <!-- Settings -->
         <div class="section" id="section-settings"
-             th:replace="~{fragment/doctor/doctor-fragment :: overview}"></div>
+             th:replace="~{fragment/doctor/doctor-fragment :: ${section}}"></div>
     </section>
 </div>
 <!-- Mobile overlay -->
@@ -131,7 +131,6 @@
         }
     })();
 </script>
-<script th:src="@{/assets/js/doctor.js}"></script>
 <script th:src="@{/assets/js/toast.js}"></script>
 </body>
 </html>

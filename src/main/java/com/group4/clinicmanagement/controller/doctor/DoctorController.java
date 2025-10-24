@@ -52,7 +52,7 @@ public class DoctorController {
 
         model.addAttribute("username", username);
         model.addAttribute("department", department.getName());
-        model.addAttribute("overview", "overview");
+        model.addAttribute("section", "overview");
         return "doctor/home";
     }
 
@@ -112,6 +112,30 @@ public class DoctorController {
             default:
                 return "fragment/doctor/doctor-fragment :: overview";
         }
+    }
+
+    @GetMapping("/profile")
+    public String loadProfile(Principal principal, Model model) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) return "redirect:/doctor/login";
+
+        Doctor doctor = doctorService.findDoctorById(user.getUserId());
+        model.addAttribute("doctor", doctor);
+
+        DoctorDTO doctorDTO = new DoctorDTO();
+        doctorDTO.setGender(user.getGender());
+        doctorDTO.setEmail(user.getEmail());
+        doctorDTO.setPhone(user.getPhone());
+        doctorDTO.setFullName(user.getFullName());
+        doctorDTO.setDoctorId(user.getUserId());
+        doctorDTO.setAvatarFileName(user.getAvatar());
+        doctorDTO.setUsername(user.getUsername());
+        Department department = departmentRepository.findByDepartmentId(doctor.getDepartment().getDepartmentId())
+                .orElse(null);
+        model.addAttribute("doctor", doctorDTO);
+        model.addAttribute("department", department.getName());
+        model.addAttribute("section", "profile");
+        return "doctor/home";
     }
 
     @GetMapping("/appointment/detail/{id}")
@@ -201,9 +225,5 @@ public class DoctorController {
         return "redirect:/doctor/overview";
     }
 
-    @GetMapping("/{path:[^\\.]*}")
-    public String handleDoctorRoutes() {
-        return "doctor/home";
-    }
 
 }
