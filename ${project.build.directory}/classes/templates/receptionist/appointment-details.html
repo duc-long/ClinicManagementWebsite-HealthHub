@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Appointment Details</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body>
+<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-primary" href="#">
+            <i class="fa-solid fa-hospital-user me-2"></i>HealHub Receptionist
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/receptionist/appointments}">
+                <i class="fa-solid fa-calendar me-1"></i>Appointments</a>
+            <a class="btn btn-outline-secondary btn-sm active" th:href="@{/receptionist/profile}">
+                <i class="fa-solid fa-user me-1"></i>Profile
+            </a>
+            <a class="btn btn-outline-danger btn-sm" href="#">
+                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h2>Appointment Details</h2>
+    <div class="card p-3 mt-3">
+        <p><strong>Appointment ID:</strong> <span th:text="${appointment.appointmentId}"></span></p>
+        <p><strong>Patient:</strong> <span th:text="${appointment.patient.user.fullName}"></span></p>
+        <p><strong>Phone:</strong> <span th:text="${appointment.patient.user.phone}"></span></p>
+        <p><strong>Appointment Date:</strong> <span th:text="${appointment.appointmentDate}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${appointment.status}"></span></p>
+        <p><strong>Notes:</strong> <span th:text="${appointment.notes}"></span></p>
+        <p><strong>Doctor:</strong> <span th:text="${appointment.doctor != null ? appointment.doctor.user.fullName : 'Not Assigned'}"></span></p>
+        <a th:href="@{'/receptionist/appointments'}" class="btn btn-secondary mt-3">Back to List</a>
+    </div>
+</div>
+</body>
+</html>

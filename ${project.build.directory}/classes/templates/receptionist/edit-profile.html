@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Profile - HealHub</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { background-color: #f6f7fb; }
+        .container-wide { max-width: 800px; }
+        .card { border-radius: 1rem; box-shadow: 0 2px 12px #0001; }
+        .form-label { font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<!-- 🩺 NAVBAR -->
+<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-primary" href="#">
+            <i class="fa-solid fa-hospital-user me-2"></i>HealHub Receptionist
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/receptionist/appointments}">
+                <i class="fa-solid fa-calendar me-1"></i>Appointments
+            </a>
+            <a class="btn btn-outline-secondary btn-sm active" th:href="@{/receptionist/profile}">
+                <i class="fa-solid fa-user me-1"></i>Profile
+            </a>
+            <a class="btn btn-outline-danger btn-sm" href="#">
+                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+
+<main class="container container-wide py-5">
+
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="fa-solid fa-pen me-2"></i>Edit Profile
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <form th:action="@{/receptionist/edit-profile}" th:object="${receptionist}" method="post">
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" th:field="*{fullName}" placeholder="Enter full name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" th:field="*{email}" placeholder="example@email.com" required>
+                </div>
+
+
+                <div class="mb-3">
+                    <label class="form-label">Phone</label>
+                    <input type="text" class="form-control" th:field="*{phone}" placeholder="Enter phone number" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Gender</label>
+                    <select class="form-select" th:field="*{gender}" required>
+                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}">Male</option>
+                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}">Female</option>
+                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).UNKNOWN}">Other</option>
+                    </select>
+                </div>
+
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a th:href="@{/receptionist/profile}" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Back
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-save me-1"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</main>
+
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

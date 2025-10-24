@@ -2,13 +2,17 @@ package com.group4.clinicmanagement.controller.admin;
 
 import com.group4.clinicmanagement.dto.admin.PatientDTO;
 import com.group4.clinicmanagement.service.admin.PatientForAdminService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 
 
 @Controller
@@ -21,7 +25,7 @@ public class AdminController {
 
     @GetMapping(value = "/patient")
     public String showPatientList(Model model,
-                              @RequestParam(value = "size", defaultValue = "5") Integer size,
+                              @RequestParam(value = "size", defaultValue = "10") Integer size,
                               @RequestParam(value = "page", defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, size);
         Page<PatientDTO> patientDTOs = patientService.findAll(pageable);
@@ -46,13 +50,21 @@ public class AdminController {
     }
 
     @PostMapping(value = "/patient/edit-result")
-    public String editPatientResult(@ModelAttribute(name = "patientDTO") PatientDTO dto, @RequestParam("avatar") MultipartFile avatar , Model model) {
+    public String editPatientResult(@Valid @ModelAttribute(name = "patientDTO") PatientDTO dto, BindingResult bindingResult, @RequestParam("avatar") MultipartFile avatar , Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("patientDTO", dto);
+            model.addAttribute("today", LocalDate.now());
+            System.out.printf("%s\n", bindingResult.getAllErrors());
+            return "admin/update-patient";
+        }
         try {
+
             patientService.update(dto, avatar);
             return  "redirect:/admin/patient";
         }  catch (Exception e) {
             model.addAttribute("today", java.time.LocalDate.now());
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("patientDTO", dto);
             return "admin/update-patient";
         }
     }
@@ -70,10 +82,34 @@ public class AdminController {
             patientService.deletePatient(dto);
             return "redirect:/admin/patient";
         } catch (Exception e) {
-            model.addAttribute("today", java.time.LocalDate.now());
-            model.addAttribute("error", e.getMessage());
-            return "admin/delete-patient";
+            System.out.println(  "\n" + "Error: " + e.getMessage() + "\n");
+            return "redirect:/admin/patient";
         }
     }
+
+    @GetMapping(value = "/patient/new")
+    public String addNewPatient(Model model) {
+        model.addAttribute("patientDTO", new PatientDTO());
+        return "admin/add-new-patient";
+    }
+
+    @PostMapping(value = "/patient/new-result")
+    public String addNewPatientResult(
+            @Valid @ModelAttribute("patientDTO") PatientDTO dto,
+            BindingResult bindingResult,
+            @RequestParam("avatar") MultipartFile avatar,
+            Model model
+    ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("patientDTO", dto);
+            model.addAttribute("today", LocalDate.now());
+            System.out.printf("%s\n", bindingResult.getAllErrors());
+            return "admin/add-new-patient";
+        }
+
+        patientService.newPatient(dto, avatar);
+        return "redirect:/admin/patient";
+    }
+
 
 }

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Doctor Search - HealHub</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background-color: #f6f7fb;
+        }
+
+        .container-wide {
+            max-width: 1200px;
+        }
+
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px #0001;
+        }
+
+        .search-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .filter-card {
+            background: white;
+        }
+
+        .doctor-result {
+            border-left: 4px solid #007bff;
+        }
+
+        .specialty-badge {
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div th:replace="~{fragment/fragment :: navBar}"></div>
+</div>
+
+<main class="container container-wide py-4">
+    <div class="card search-card p-4 mb-4" >
+        <h1 class="h3 mb-3"><i class="fa-solid fa-search me-2"></i>Search</h1>
+        <form th:action="@{/home/search-doctor}" method="post">
+            <div class="row g-4 justify-content-center align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Specialty</label>
+                    <select class="form-select" id="specialty" name="specialty">
+                        <option value="All">All Specialties</option>
+                        <th:block th:each="s : ${specialties}">
+                            <option th:value="${s}" th:text="${s}"></option>
+                        </th:block>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="doctorName" class="form-label">Search by Name</label>
+                    <input type="text" class="form-control" id="doctorName" name="doctorName"
+                           placeholder="Doctor's name..." required>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button type="submit" class="btn btn-light mt-2"><i class="fa-solid fa-search me-2"></i>Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0" th:text="${pageTitle}"></h5>
+            </div>
+            <div class="card doctor-result p-1 mb-3" th:each="doctor, iterStat : ${doctors}">
+                <div class="row align-items-center">
+                    <div class="col-md-2 text-center">
+                        <i class="fa-solid fa-user-doctor text-primary" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <div class="col-md-6 align-content-center" style="height: 100px">
+                        <h5 class="mb-1" th:text="${doctor.user.fullName}"></h5>
+                        <div class="mb-2">
+                            <span class="badge bg-primary bg-opacity-10 text-white specialty-badge me-1" th:text="${doctor.specialty}"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <a th:href="@{/home/doctor-profile/{doctorId}(doctorId=${doctor.doctorId})}" class="btn btn-outline-primary btn-sm">View Profile</a>
+                    </div>
+                </div>
+            </div>
+
+<!--            <div class="text-center mt-4 ">-->
+<!--                <button class="btn btn-outline-primary" >Load More Results</button>-->
+<!--            </div>-->
+        </div>
+    </div>
+</main>
+<script th:src="@{assets/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

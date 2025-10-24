@@ -28,5 +28,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.avatar = :filename WHERE u.username = :username")
     void updateAvatarFilename(@Param("username") String username,
                               @Param("filename") String filename);
-    
+
+    @Query(value = "SELECT MAX(user_id) FROM Users", nativeQuery = true)
+    Optional<Integer> getMaxUserId();
+
 }

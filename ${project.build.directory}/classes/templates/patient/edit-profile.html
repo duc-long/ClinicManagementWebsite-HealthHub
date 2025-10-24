@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/edit-profile.css">
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
+<div class="page-container">
+    <form class="profile-card" th:action="@{/patient/save-profile}" method="post" th:object="${patient}"
+          enctype="multipart/form-data">
+
+        <div class="profile-title">Change profile</div>
+        <div class="avatar-container avatar-upload">
+            <img th:src="${patient.avatarFilename != null} ? '/images/avatars/' + ${patient.avatarFilename} : '/images/avatars/default-avatar.png'"
+                 class="avatar"
+                 id="avatarPreview"
+                 alt="Avatar"/>
+            <label class="avatar-overlay">
+                <span class="upload-text">Change</span>
+                <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(this)">
+            </label>
+        </div>
+
+        <div class="info">
+            <div class="group-info">
+                <div class="label">Username</div>
+                <input type="text" th:field="*{username}" disabled readonly class="input"/>
+            </div>
+            <div class="group-info">
+                <div class="label">Name</div>
+                <input type="text" th:field="*{fullName}" class="input"/>
+            </div>
+            <div class="group-info">
+                <div class="label">Email</div>
+                <input type="email" th:field="*{email}" class="input"/>
+            </div>
+            <div class="group-info">
+                <div class="label">Gender</div>
+                <div class="checkbox-group">
+                    <label><input type="radio" th:field="*{genderValue}" value="1"/> Men</label>
+                    <label><input type="radio" th:field="*{genderValue}" value="2"/> Female</label>
+                </div>
+            </div>
+            <div class="group-info">
+                <div class="label">Phone</div>
+                <input type="text" th:field="*{phone}" class="input"/>
+            </div>
+            <div class="group-info">
+                <div class="label">Address</div>
+                <input type="text" th:field="*{address}" class="input"/>
+            </div>
+        </div>
+
+        <div class="button-row">
+            <a th:href="@{/patient/profile}" class="btn-label cancel">Cancel</a>
+            <button type="submit" class="btn-label save">Save</button>
+        </div>
+    </form>
+</div>
+</body>
+
+<script>
+    function previewAvatar(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('avatarPreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+</html>
