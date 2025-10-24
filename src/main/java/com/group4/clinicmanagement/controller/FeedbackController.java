@@ -1,18 +1,27 @@
 package com.group4.clinicmanagement.controller;
 
 import com.group4.clinicmanagement.dto.FeedbackDTO;
+import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.Feedback;
+import com.group4.clinicmanagement.security.CustomUserDetails;
+import com.group4.clinicmanagement.service.DoctorService;
 import com.group4.clinicmanagement.service.FeedbackService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/feedback")
@@ -20,20 +29,86 @@ public class FeedbackController {
     @Autowired
     private FeedbackService feedbackService;
 
-    @PostMapping()
-    public String submitFeedback(@ModelAttribute FeedbackDTO feedbackDTO,
-                                 HttpSession session,
-                                 RedirectAttributes redirectAttributes) {
+    @PostMapping
+    public String submitFeedback(@Valid @ModelAttribute FeedbackDTO feedbackDTO,
+                                 BindingResult result,
+                                 RedirectAttributes redirectAttributes,
+                                 Model model) {
 
-        Integer userId = (Integer) session.getAttribute("userId");
+        // ✅ Lấy user từ Spring Security
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
+            redirectAttributes.addFlashAttribute("error", "You must log in to submit feedback.");
+            return "redirect:/patient/login";
+        }
 
-        if (!feedbackService.canGiveFeedback(userId, feedbackDTO.getAppointmentId())) {
-            redirectAttributes.addFlashAttribute("error", "Bạn không đủ điều kiện để gửi phản hồi.");
+        Integer userId = userDetails.getUser().getUserId();
+
+        // Kiểm tra validation cơ bản
+        if (result.hasErrors()) {
+            result.getFieldErrors().forEach(error ->
+                    System.out.println("❌ Validation error -> field: " + error.getField() + " | message: " + error.getDefaultMessage())
+            );
+            redirectAttributes.addFlashAttribute("error", "Please fill in all required fields correctly.");
             return "redirect:/home";
         }
 
-        feedbackService.submitFeedback(feedbackDTO);
-        redirectAttributes.addFlashAttribute("success", "Gửi phản hồi thành công.");
+        // Kiểm tra logic nghiệp vụ
+        boolean success = feedbackService.submitFeedback(userId, feedbackDTO);
+
+        if (!success) {
+            redirectAttributes.addFlashAttribute("error", "You are not eligible to give feedback for this appointment.");
+        } else {
+            redirectAttributes.addFlashAttribute("success", "Thank you! Your feedback has been submitted successfully.");
+        }
+
+        return "redirect:/home";
+    }
+
+    // 🟡 Xử lý khi submit form edit
+    @PostMapping("/update-feedback")
+    public String updateFeedback(@Valid @ModelAttribute FeedbackDTO feedbackForm, BindingResult result, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails userDetails)) {
+            return "redirect:/patient/login";
+        }
+        // Kiểm tra validation cơ bản
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("error", "Please fill in all required fields correctly.");
+            return "redirect:/home";
+        }
+
+        boolean updated = feedbackService.updateFeedback(feedbackForm, userDetails.getUserId());
+        if (updated) {
+            redirectAttributes.addFlashAttribute("success", "Feedback updated successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Unable to update feedback.");
+        }
+
+        return "redirect:/home";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteFeedback(@PathVariable("id") Integer feedbackId,
+                                 RedirectAttributes redirectAttributes) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // ✅ Kiểm tra đăng nhập
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
+            redirectAttributes.addFlashAttribute("error", "You must log in to delete feedback.");
+            return "redirect:/patient/login";
+        }
+
+        Integer userId = userDetails.getUser().getUserId();
+
+        boolean deleted = feedbackService.deleteFeedback(userId, feedbackId);
+
+        if (deleted) {
+            redirectAttributes.addFlashAttribute("success", "Feedback has been deleted successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "You can only delete your own feedback or feedback not found.");
+        }
+
         return "redirect:/home";
     }
 }

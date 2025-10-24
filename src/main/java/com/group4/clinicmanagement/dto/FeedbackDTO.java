@@ -10,18 +10,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class FeedbackDTO {
-    @NotNull
-    @Min(1)
-    @Max(5)
+    private Integer feedbackId;
+
+    @NotNull(message = "Appointment is required")
+    private Integer appointmentId;
+
+    @NotNull(message = "Rating is required")
+    @Min(value = 1, message = "Minimum rating is 1 star")
+    @Max(value = 5, message = "Maximum rating is 5 stars")
     private Float rating;
 
-
-    @NotBlank
-    @Size(max = 2000)
+    @NotBlank(message = "Comment cannot be empty")
     private String comment;
-
-
-    // Optionally link to appointment or patient
-    private Integer appointmentId;
-    private Integer patientId;
 }

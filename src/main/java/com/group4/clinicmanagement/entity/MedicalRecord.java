@@ -23,7 +23,7 @@ public class MedicalRecord {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 

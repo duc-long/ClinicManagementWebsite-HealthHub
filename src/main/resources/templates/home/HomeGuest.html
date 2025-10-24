@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/fragment-patient.css">
+    <link rel="stylesheet" href="/assets/css/popup-error.css">
     <style>
         body {
             background-color: #f6f7fb;
@@ -136,34 +137,8 @@
 <div class="feedback-container">
     <div th:replace="~{fragment/patient/page :: pagination-feedback}"></div>
 
-    <div class="feedback-form">
-        <h3 class="form-title">Submit Your Feedback</h3>
+    <div th:replace="~{fragment/patient/feedback :: feedback}">
 
-        <form th:action="@{/feedback}" method="post">
-            <!-- Dropdown chọn appointment hợp lệ -->
-            <div class="form-group">
-                <label for="appointmentId">Chọn lịch hẹn cần phản hồi:</label>
-                <select name="appointmentId" id="appointmentId" required>
-                    <option value="" disabled selected>-- Chọn một lịch hẹn --</option>
-                    <option th:each="appt : ${eligibleAppointments}"
-                            th:value="${appt.appointmentId}"
-                            th:text="${#dates.format(appt.startTime, 'dd/MM/yyyy HH:mm')} + ' với ' + ${appt.doctor.fullName}">
-                    </option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="rating">Đánh giá (1–5):</label>
-                <input type="number" id="rating" name="rating" step="0.1" min="1" max="5" required>
-            </div>
-
-            <div class="form-group">
-                <label for="comment">Nhận xét:</label>
-                <textarea id="comment" name="comment" rows="3" required></textarea>
-            </div>
-
-            <button type="submit" class="submit-btn">Gửi phản hồi</button>
-        </form>
     </div>
 </div>
 
@@ -190,6 +165,37 @@
 </footer>
 <!-- Bootstrap JS -->
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function showEditForm(id) {
+        document.getElementById('edit-form-' + id).style.display = 'block';
+    }
 
+    function hideEditForm(id) {
+        document.getElementById('edit-form-' + id).style.display = 'none';
+    }
+</script>
+
+<script>
+    function confirmDelete(feedbackId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to undo this action!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Gửi form khi user bấm Yes
+                document.getElementById('delete-form-' + feedbackId).submit();
+            }
+        });
+    }
+</script>
+
+<div th:replace="~{fragment/popup :: popup}"></div>>
 </body>
 </html>

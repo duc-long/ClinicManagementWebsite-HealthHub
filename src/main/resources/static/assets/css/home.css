@@ -106,6 +106,15 @@
     width: 100%;
 }
 
+.feedback-item-user {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
 .feedback-header {
     display: flex;
     justify-content: space-between;
@@ -245,5 +254,28 @@ select {
     color: #333;
 }
 
+.star-rating {
+    direction: rtl; /* để click sao từ phải sang trái (5 → 1) */
+    display: inline-flex;
+    gap: 5px;
+    font-size: 50px;
+}
+
+.star-rating input {
+    display: none; /* ẩn radio gốc */
+}
+
+.star-rating label {
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+/* khi hover hoặc chọn sao */
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #FFD700;
+}
 
 

@@ -44,6 +44,9 @@ public class Appointment {
     private String notes;
     private String cancelReason;
 
+    @OneToOne(mappedBy = "appointment", fetch = FetchType.LAZY)
+    private MedicalRecord medicalRecord;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
     @Column(name="queue_number")

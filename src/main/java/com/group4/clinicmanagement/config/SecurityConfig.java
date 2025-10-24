@@ -44,11 +44,11 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain guestAndPatientChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/patient/login", "/patient/**", "/home/**", "/register/**", "/assets/**", "/images/**")
+                .securityMatcher("/patient/login", "/patient/**", "/home/**", "/register/**", "/assets/**", "/images/**", "/feedback/**")
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/home/**", "/register/**", "/assets/**", "/images/**").permitAll()
                         .requestMatchers("/patient/login").permitAll()
-                        .requestMatchers("/patient/**").hasRole("Patient")
+                        .requestMatchers("/patient/**", "/feedback/**").hasRole("Patient")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

@@ -1,0 +1,46 @@
+<div class="feedback-form" th:fragment="feedback">
+    <h3 class="form-title">Submit Your Feedback</h3>
+
+    <form th:action="@{/feedback}" method="post">
+        <!-- Dropdown for eligible appointments -->
+        <div th:if="${eligibleAppointments != null and !eligibleAppointments.isEmpty()}">
+            <label for="appointmentId">Select your completed appointment:</label>
+            <select name="appointmentId" id="appointmentId" required>
+                <option value="" disabled selected>-- Select an appointment --</option>
+                <option th:each="appt : ${eligibleAppointments}"
+                        th:value="${appt.appointmentId}"
+                        th:text="${(appt.medicalRecord != null ? appt.medicalRecord.diagnosis : 'No diagnosis available')
+                                  + ' - ' + appt.doctor.user.fullName
+                                  + ' (' + #temporals.format(appt.appointmentDate, 'dd/MM/yyyy') + ')'}">
+                </option>
+            </select>
+        </div>
+
+        <div th:if="${eligibleAppointments == null or eligibleAppointments.isEmpty()}">
+            <p style="color: gray;">No available appointments for feedback.</p>
+        </div>
+
+        <div class="form-group">
+            <label>Rating:</label>
+            <div class="star-rating">
+                <input type="radio" id="star5" name="rating" value="5" required/>
+                <label for="star5" title="5 stars">★</label>
+                <input type="radio" id="star4" name="rating" value="4"/>
+                <label for="star4" title="4 stars">★</label>
+                <input type="radio" id="star3" name="rating" value="3"/>
+                <label for="star3" title="3 stars">★</label>
+                <input type="radio" id="star2" name="rating" value="2"/>
+                <label for="star2" title="2 stars">★</label>
+                <input type="radio" id="star1" name="rating" value="1"/>
+                <label for="star1" title="1 star">★</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="comment">Comment:</label>
+            <textarea id="comment" name="comment" rows="3" required></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Feedback</button>
+    </form>
+</div>

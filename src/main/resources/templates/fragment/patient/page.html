@@ -11,8 +11,89 @@
         <div class="average-score" th:text="${#numbers.formatDecimal(averageRating, 1, 1)} + ' / 5.0'"></div>
     </div>
 
+    <div th:if="${userFeedbacks != null and #lists.size(userFeedbacks) > 0}">
+        <h5 class="text-success">Your Feedback</h5>
+        <div class="feedback-item-user user-feedback" th:each="feedback : ${userFeedbacks}">
+            <div class="feedback-header">
+                <div class="feedback-name" th:text="'Fullname: '+ ${feedback.patient.user.fullName}"></div>
+                <div class="feedback-rating">
+                    <span th:text="${#numbers.formatDecimal(feedback.rating, 1, 1)} + ' / 5.0'"></span>
+                    <span class="stars">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}"
+                              th:classappend="${i <= T(java.lang.Math).floor(feedback.rating) ? 'star filled' : (i - feedback.rating <= 0.5 && i > feedback.rating ? 'star half' : 'star')}"
+                              class="star">&#9733;</span>
+                    </span>
+                </div>
+            </div>
+            <div class="feedback-comment">
+                <div><strong>Comment:</strong> <span th:text="${feedback.comment}"></span></div>
+            </div>
+            <div class="feedback-details">
+                <div><strong>Date:</strong> <span th:text="${#temporals.format(feedback.createdAt, 'dd/MM/yyyy')}"></span></div>
+            </div>
+            <button type="button" class="btn btn-sm btn-warning mt-2"
+                    th:onclick="'showEditForm(' + ${feedback.feedbackId} + ');'">Edit</button>
+            <button type="button" class="btn btn-sm btn-danger mt-2"
+                    th:onclick="'confirmDelete(' + ${feedback.feedbackId} + ');'">
+                Delete
+            </button>
+
+            <form th:id="'delete-form-' + ${feedback.feedbackId}"
+                  th:action="@{'/feedback/delete/' + ${feedback.feedbackId}}"
+                  method="post" style="display:none;"></form>
+
+            <div class="edit-form mt-3" th:id="'edit-form-' + ${feedback.feedbackId}" style="display:none;">
+                <form th:action="@{/feedback/update-feedback}" method="post">
+                    <div th:if="${feedback.appointment != null}">
+                        <input type="hidden" name="appointmentId" th:value="${feedback.appointment.appointmentId}" />
+                    </div>
+                    <input type="hidden" name="feedbackId" th:value="${feedback.feedbackId}"/>
+                    <div class="form-group">
+                        <label>Rating:</label>
+                        <div class="star-rating">
+                            <input type="radio" th:id="'star5-' + ${feedback.feedbackId}" name="rating"
+                                   value="5" th:checked="${feedback.rating == 5}" required/>
+                            <label th:for="'star5-' + ${feedback.feedbackId}" title="5 stars">★</label>
+
+                            <input type="radio" th:id="'star4-' + ${feedback.feedbackId}" name="rating"
+                                   value="4" th:checked="${feedback.rating == 4}"/>
+                            <label th:for="'star4-' + ${feedback.feedbackId}" title="4 stars">★</label>
+
+                            <input type="radio" th:id="'star3-' + ${feedback.feedbackId}" name="rating"
+                                   value="3" th:checked="${feedback.rating == 3}"/>
+                            <label th:for="'star3-' + ${feedback.feedbackId}" title="3 stars">★</label>
+
+                            <input type="radio" th:id="'star2-' + ${feedback.feedbackId}" name="rating"
+                                   value="2" th:checked="${feedback.rating == 2}"/>
+                            <label th:for="'star2-' + ${feedback.feedbackId}" title="2 stars">★</label>
+
+                            <input type="radio" th:id="'star1-' + ${feedback.feedbackId}" name="rating"
+                                   value="1" th:checked="${feedback.rating == 1}"/>
+                            <label th:for="'star1-' + ${feedback.feedbackId}" title="1 star">★</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Comment:</label>
+                        <textarea name="comment" rows="3" th:text="${feedback.comment}"></textarea>
+                    </div>
+
+                    <div class="form-actions mt-2">
+                        <button type="submit" class="btn btn-success btn-sm">Save</button>
+                        <button type="button" class="btn btn-secondary btn-sm"
+                                th:onclick="'hideEditForm(' + ${feedback.feedbackId} + ');'">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Form Edit ẩn -->
+
+
+
     <!-- Danh sách feedback -->
 
+    <h5 class="text-success">Others Feedback</h5>
     <div class="feedback-list">
         <div class="feedback-item" th:each="feedback : ${feedbacks.content}">
             <div class="feedback-header">

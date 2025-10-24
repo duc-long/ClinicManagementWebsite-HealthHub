@@ -17,10 +17,12 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
     @Query("SELECT AVG(f.rating) FROM Feedback f")
     Double getAverageRating();
 
-
-    List<Feedback> findTop10ByOrderByCreatedAtDesc();
-
     Optional<Feedback> findByAppointment_AppointmentId(Integer appointmentId);
 
     Page<Feedback> findAll(Pageable pageable);
+
+    @Query("SELECT f FROM Feedback f WHERE f.patient.patientId <> :userId")
+    Page<Feedback> findByPatient_PatientIdNot(@Param("userId") Integer userId, Pageable pageable);
+
+    List<Feedback> findAllByPatient_PatientIdOrderByCreatedAtDesc(Integer userId);
 }
