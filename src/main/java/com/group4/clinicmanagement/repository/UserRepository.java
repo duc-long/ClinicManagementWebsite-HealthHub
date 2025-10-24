@@ -28,5 +28,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.avatar = :filename WHERE u.username = :username")
     void updateAvatarFilename(@Param("username") String username,
                               @Param("filename") String filename);
-    
+    Optional<User> findByFullName(String fullname);
+
+
 }
