@@ -40,7 +40,7 @@
 
 <div class="page-container" th:object="${technicianDTO}">
     <div class="profile-card">
-        <div class="profile-title">My Profile</div>
+        <div class="profile-title">My Profile</div><span th:text="${technicianDTO.avatarFilename}"></span>
         <!-- 🖼️ Avatar -->
         <img th:if="${technicianDTO != null}"
              th:src="${technicianDTO.avatarFilename != null and !#strings.isEmpty(technicianDTO.avatarFilename)}

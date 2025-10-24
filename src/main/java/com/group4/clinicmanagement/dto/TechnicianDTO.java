@@ -24,10 +24,7 @@ public class TechnicianDTO {
     private Gender gender;
     private int id;
     private String username;
-    private String avatar;
-
-    // Nếu muốn upload ảnh trực tiếp từ form
-    private transient MultipartFile avatarFile;
+    private String avatarFilename;
 
     // Constructor
     public TechnicianDTO() {}
@@ -40,7 +37,7 @@ public class TechnicianDTO {
         this.gender = gender;
         this.id = id;
         this.username = username;
-        this.avatar = avatar;
+        this.avatarFilename = avatar;
     }
 
     // Mapping từ Entity -> DTO
@@ -53,7 +50,7 @@ public class TechnicianDTO {
         dto.setPhone(user.getPhone());
         dto.setGender(user.getGender());
         dto.setUsername(user.getUsername());
-        dto.setAvatar(user.getAvatar());
+        dto.setAvatarFilename(user.getAvatar());
         return dto;
     }
 }
