@@ -36,13 +36,15 @@ public class LabRequestService {
         dto.setStatusValue(entity.getStatusValue());
         dto.setStatus(entity.getStatus());
         dto.setRequestedAt(entity.getRequestedAt());
+        dto.setPatient(entity.getMedicalRecord().getPatient());
         return dto;
     }
 
-    public List<LabRequestDTO> getAllLabRequestDTO(List<LabRequest> entities) {
+    public List<LabRequestDTO> getAllLabRequestDTO() {
+        List<LabRequest>  labRequests = this.labRequestRepository.findAll();
         List<LabRequestDTO> dtoList = new ArrayList<>();
 
-        for (LabRequest entity : entities) {
+        for (LabRequest entity : labRequests) {
             LabRequestDTO dto = toDTO(entity);
             dtoList.add(dto);
         }
@@ -60,7 +62,11 @@ public class LabRequestService {
     ) {
         List<LabRequest> labRequests = labRequestRepository.filterRequests(patientId, doctorName, testName, status, fromDate, toDate);
 
-        List<LabRequestDTO> dtoList = getAllLabRequestDTO(labRequests);
+        List<LabRequestDTO> dtoList = new ArrayList<>();
+        for(LabRequest labRequest : labRequests){
+            LabRequestDTO dto = toDTO(labRequest);
+            dtoList.add(dto);
+        }
         return dtoList;
     }
 

@@ -51,7 +51,7 @@ public class LabRequestController {
 
         if (patientId == null && status == null && doctorName == null && testName == null && fromDate == null && toDate == null) {
             List<LabRequest> labRequests = labRequestService.getAllLabRequests();
-            labRequestDTOs = labRequestService.getAllLabRequestDTO(labRequests);
+            labRequestDTOs = labRequestService.getAllLabRequestDTO();
         } else {
             LocalDateTime from = (fromDate != null) ? fromDate.atStartOfDay() : null;
             LocalDateTime to = (toDate != null) ? toDate.atTime(23, 59, 59) : null;

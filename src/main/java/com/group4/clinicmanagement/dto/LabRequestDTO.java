@@ -2,6 +2,8 @@ package com.group4.clinicmanagement.dto;
 
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.LabTestCatalog;
+import com.group4.clinicmanagement.entity.Patient;
+import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.enums.LabRequestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +21,7 @@ public class LabRequestDTO {
     private Integer statusValue;
     private LabRequestStatus status;
     private LocalDateTime requestedAt;
+    private Patient patient;
 
     public LabRequestDTO() {
     }
