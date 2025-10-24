@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -21,4 +22,15 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     Doctor getDoctorByDoctorId(Integer doctorId);
 
     List<Doctor> getDoctorBySpecialtyIgnoreCase(String specialty);
+
+    @Query("""
+           SELECT d FROM Doctor d
+           WHERE d.doctorId NOT IN (
+               SELECT s.doctor.doctorId
+               FROM DoctorDailySlot s
+               WHERE s.slotDate = :date
+               AND s.availableSlots <= 0
+           )
+           """)
+    List<Doctor> findAvailableDoctorsOnDate(LocalDate date);
 }

@@ -3,6 +3,8 @@ package com.group4.clinicmanagement.controller.receptionist;
 import com.group4.clinicmanagement.dto.ReceptionistUserDTO;
 import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.entity.Appointment;
+import com.group4.clinicmanagement.entity.Doctor;
+import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.service.ReceptionistService;
 import com.group4.clinicmanagement.service.AppointmentService;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,11 @@ public class ReceptionistController {
                                   AppointmentService appointmentService) {
         this.receptionistService = receptionistService;
         this.appointmentService = appointmentService;
+    }
+
+    @GetMapping("/home")
+    public String home() {
+        return "receptionist/receptionist-home";
     }
 
     @GetMapping("/profile")
@@ -63,4 +70,22 @@ public class ReceptionistController {
         return "receptionist/appointment-details";
     }
 
+    @GetMapping("/appointment/edit/{id}")
+    public String showEditAppointmentForm(@PathVariable("id") Integer id, Model model) {
+        Appointment appointment = appointmentService.getById(id);
+        List<Doctor> availableDoctors = appointmentService.getAvailableDoctors(appointment.getAppointmentDate());
+        model.addAttribute("appointment", appointment);
+        model.addAttribute("availableDoctors", availableDoctors);
+        model.addAttribute("statuses", AppointmentStatus.values());
+        return "receptionist/appointment-edit";
+    }
+
+    @PostMapping("/appointment/edit")
+    public String updateAppointment(@ModelAttribute("appointment") Appointment updatedAppointment) {
+        if (updatedAppointment.getStatusValue() != null) {
+            updatedAppointment.setStatus(AppointmentStatus.fromInt(updatedAppointment.getStatusValue()));
+        }
+        appointmentService.updateAppointment(updatedAppointment);
+        return "redirect:/receptionist/appointment-list";
+    }
 }

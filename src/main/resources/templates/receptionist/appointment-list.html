@@ -8,17 +8,19 @@
 <nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold text-primary" href="#">
-            <i class="fa-solid fa-hospital-user me-2"></i>HealHub Receptionist
+            <i class="fa-solid fa-hospital-user me-2"></i>HeathHub Receptionist
         </a>
         <div class="d-flex align-items-center gap-2">
-            <a class="btn btn-outline-primary btn-sm" th:href="@{/receptionist/appointments}">
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/receptionist/appointment-list}">
                 <i class="fa-solid fa-calendar me-1"></i>Appointments</a>
             <a class="btn btn-outline-secondary btn-sm active" th:href="@{/receptionist/profile}">
                 <i class="fa-solid fa-user me-1"></i>Profile
             </a>
-            <a class="btn btn-outline-danger btn-sm" href="#">
-                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout
-            </a>
+            <form action="/receptionist/logout" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Logout
+                </button>
+            </form>
         </div>
     </div>
 </nav>
@@ -46,8 +48,8 @@
             <td th:text="${app.status}"></td>
             <td th:text="${app.doctor != null ? app.doctor.user.fullName : 'Not Assigned'}"></td>
             <td>
-                <a th:href="@{'/receptionist/appointments/' + ${app.appointmentId}}" class="btn btn-info btn-sm">Details</a>
-                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                <a th:href="@{'/receptionist/appointment/' + ${app.appointmentId}}" class="btn btn-info btn-sm">Details</a>
+                <a th:href="@{'/receptionist/appointment/edit/' + ${app.appointmentId}}" class="btn btn-warning btn-sm">Edit</a>
             </td>
         </tr>
         </tbody>

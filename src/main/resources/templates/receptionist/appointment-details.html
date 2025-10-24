@@ -16,9 +16,12 @@
             <a class="btn btn-outline-secondary btn-sm active" th:href="@{/receptionist/profile}">
                 <i class="fa-solid fa-user me-1"></i>Profile
             </a>
-            <a class="btn btn-outline-danger btn-sm" href="#">
-                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout
-            </a>
+            <form action="/receptionist/logout" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Logout
+                </button>
+            </form>
+
         </div>
     </div>
 </nav>
@@ -33,7 +36,7 @@
         <p><strong>Status:</strong> <span th:text="${appointment.status}"></span></p>
         <p><strong>Notes:</strong> <span th:text="${appointment.notes}"></span></p>
         <p><strong>Doctor:</strong> <span th:text="${appointment.doctor != null ? appointment.doctor.user.fullName : 'Not Assigned'}"></span></p>
-        <a th:href="@{'/receptionist/appointments'}" class="btn btn-secondary mt-3">Back to List</a>
+        <a th:href="@{'/receptionist/appointment-list'}" class="btn btn-secondary mt-3">Back to List</a>
     </div>
 </div>
 </body>

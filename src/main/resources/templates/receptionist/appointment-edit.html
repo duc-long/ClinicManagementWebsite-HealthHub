@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Appointment</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Edit Appointment</h2>
+
+    <form th:action="@{/receptionist/appointment/edit}" th:object="${appointment}" method="post" class="mt-3">
+        <input type="hidden" th:field="*{appointmentId}"/>
+
+        <!-- Appointment Date -->
+        <div class="mb-3">
+            <label>Date:</label>
+            <input type="text" th:field="*{appointmentDate}" class="form-control" readonly/>
+        </div>
+
+        <!-- Appointment Status -->
+        <div class="mb-3">
+            <label>Status:</label>
+            <select th:field="*{statusValue}" class="form-control">
+                <option th:each="s : ${statuses}"
+                        th:value="${s.value}"
+                        th:text="${s.name()}"
+                        th:selected="${s.value == appointment.statusValue}">
+                </option>
+            </select>
+        </div>
+
+        <!-- Assign Doctor -->
+        <div class="mb-3">
+            <label>Assign Doctor:</label>
+            <select th:field="*{doctor.doctorId}" class="form-control">
+                <option value="">-- Select Doctor --</option>
+                <option th:each="doc : ${availableDoctors}"
+                        th:value="${doc.doctorId}"
+                        th:text="${doc.user.fullName + ' (' + doc.department.name + ')'}"
+                        th:selected="${appointment.doctor != null and doc.doctorId == appointment.doctor.doctorId}">
+                </option>
+            </select>
+        </div>
+
+        <!-- Notes -->
+        <div class="mb-3">
+            <label>Notes:</label>
+            <textarea th:field="*{notes}" class="form-control" rows="3" readonly></textarea>
+        </div>
+
+        <!-- Cancel Reason -->
+        <div class="mb-3">
+            <label>Cancel Reason:</label>
+            <input th:field="*{cancelReason}" class="form-control"
+                   th:disabled="${appointment.status?.name() != 'CANCELLED'}"/>
+        </div>
+
+        <!-- Buttons -->
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a th:href="@{/receptionist/appointment-list}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+</body>
+</html>
