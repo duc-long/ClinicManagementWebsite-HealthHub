@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="brand">
+        <div class="logo">DR</div>
+        <div class="title hide-when-collapsed">HealHub · Doctor</div>
+    </div>
+
+    <button id="toggleSidebar" class="toggle-btn" type="button">
+        <i class="fa-solid fa-angles-left"></i>
+        <span class="hide-when-collapsed">Thu gọn</span>
+    </button>
+
+    <nav class="nav" id="sideNav">
+        <small class="hide-when-collapsed">OVERVIEW</small>
+        <a href="#" data-section="dashboard" class="active">
+            <span class="icon"><i class="fa-solid fa-house"></i></span>
+            <span class="hide-when-collapsed">Dashboard</span>
+        </a>
+        <a href="#" data-section="appointments">
+            <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+            <span class="hide-when-collapsed">Appointments</span>
+        </a>
+        <a href="#" data-section="patients">
+            <span class="icon"><i class="fa-solid fa-user-group"></i></span>
+            <span class="hide-when-collapsed">Patients</span>
+        </a>
+        <a href="#" data-section="schedule">
+            <span class="icon"><i class="fa-solid fa-clock"></i></span>
+            <span class="hide-when-collapsed">Schedule</span>
+        </a>
+
+        <small class="hide-when-collapsed mt-2">CARE</small>
+        <a href="#" data-section="prescriptions">
+            <span class="icon"><i class="fa-solid fa-prescription-bottle-medical"></i></span>
+            <span class="hide-when-collapsed">Prescriptions</span>
+        </a>
+        <a href="#" data-section="messages">
+            <span class="icon"><i class="fa-solid fa-message"></i></span>
+            <span class="hide-when-collapsed">Messages</span>
+        </a>
+
+        <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+        <a href="#" data-section="settings">
+            <span class="icon"><i class="fa-solid fa-gear"></i></span>
+            <span class="hide-when-collapsed">Settings</span>
+        </a>
+        <form th:action="@{/doctor/logout}" method="post">
+            <span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span>
+            <span type="submit" class="hide-when-collapsed">Logout</span>
+        </form>
+        <!--            <a th:href="@{doctor/logout}">-->
+        <!--                <span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span>-->
+        <!--                <span class="hide-when-collapsed">Logout</span>-->
+        <!--            </a>-->
+    </nav>
+</aside>
+</body>
+</html>
