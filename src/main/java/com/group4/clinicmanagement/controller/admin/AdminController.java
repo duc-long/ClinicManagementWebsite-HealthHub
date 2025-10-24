@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.controller.admin;
 
 import com.group4.clinicmanagement.dto.admin.PatientDTO;
+import com.group4.clinicmanagement.service.UserService;
 import com.group4.clinicmanagement.service.admin.PatientForAdminService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -20,8 +21,10 @@ import java.time.LocalDate;
 @RequestMapping(value = "/admin")
 public class AdminController {
     private final PatientForAdminService patientService;
-    public AdminController(PatientForAdminService patientService) {
+    private final UserService userService;
+    public AdminController(PatientForAdminService patientService, UserService userService) {
         this.patientService = patientService;
+        this.userService = userService;
     }
 
     @GetMapping(value = "/patient")
@@ -92,6 +95,9 @@ public class AdminController {
             return "redirect:/admin/patient";
         } catch (Exception e) {
             System.out.println(  "\n" + "Error: " + e.getMessage() + "\n");
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Cannot delete the patient with ID: " + dto.getPatientId());
             return "redirect:/admin/patient";
         }
     }
@@ -107,24 +113,27 @@ public class AdminController {
             @Valid @ModelAttribute("patientDTO") PatientDTO dto,
             BindingResult bindingResult,
             @RequestParam("avatar") MultipartFile avatar,
+            RedirectAttributes redirectAttributes,
             Model model
     ) {
+        if (userService.isUsernameDuplicate(dto.getUsername())) {
+            bindingResult.rejectValue("username", "error.username", "Username already exists");
+        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("patientDTO", dto);
             model.addAttribute("today", LocalDate.now());
             System.out.printf("%s\n", bindingResult.getAllErrors());
             return "admin/add-new-patient";
-        }
-
-        try {
+        } else {
             patientService.newPatient(dto, avatar);
-
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Patient with ID: " + dto.getPatientId() + " was created successfully!");
             return "redirect:/admin/patient";
-        } catch (Exception e) {
-            return  "redirect:/admin/patient";
         }
+
 
     }
+
 
 
 }

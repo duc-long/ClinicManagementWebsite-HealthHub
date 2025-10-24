@@ -183,21 +183,37 @@
             </ul>
         </nav>
     </div>
-    <div id="flash-message" th:data-msg="${successMessage}" style="display:none;"></div>
+    <div id="flash-message-success" th:data-msg="${successMessage}" style="display:none;"></div>
+    <div id="flash-message-error" th:data-msg="${errorMessage}" style="display:none;"></div>
 
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    const message = document.getElementById('flash-message').dataset.msg;
-    if (message) {
+    const successMsg = document.getElementById('flash-message-success').dataset.msg;
+    const errorMsg = document.getElementById('flash-message-error').dataset.msg;
+
+    if (successMsg) {
         Swal.fire({
             icon: 'success',
             title: 'Success!',
-            text: message,
+            text: successMsg,
             confirmButtonText: 'OK',
             confirmButtonColor: '#28a745',
             customClass: {
                 popup: 'swal2-border-green'
+            }
+        });
+    }
+
+    if (errorMsg) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: errorMsg,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#dc3545',
+            customClass: {
+                popup: 'swal2-border-red'
             }
         });
     }

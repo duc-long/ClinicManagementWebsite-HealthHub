@@ -30,7 +30,6 @@ public class PatientDTO {
     private String email;
 
     @Pattern(regexp = "\\d{10}", message = "Phone must be 10 digits")
-    @NotBlank(message = "Phone number is required")
     private String phone;
 
     @NotNull(message = "Gender is required")

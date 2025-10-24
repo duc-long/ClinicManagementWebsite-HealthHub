@@ -128,16 +128,8 @@ public class PatientForAdminService {
 
     @Transactional
     public void newPatient(PatientDTO dto, MultipartFile avatar) {
-        Integer getMaxId = userRepository.getMaxUserId().orElse(0);
         Patient patient = new Patient();
         User user = new User();
-        if (getMaxId == 0) {
-            user.setUserId(getMaxId);
-            patient.setPatientId(user.getUserId());
-        } else {
-            user.setUserId(getMaxId + 1);
-            patient.setPatientId(user.getUserId() + 1);
-        }
         String encodePassword = passwordEncoder.encode(PasswordUtil.PASSWORD);
 
         user.setFullName(dto.getFullName());
