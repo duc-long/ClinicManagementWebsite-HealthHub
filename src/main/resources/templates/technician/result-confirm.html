@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Result</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-outline-primary d-lg-none me-2" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#sidebarMobile" aria-controls="sidebarMobile">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a class="navbar-brand fw-bold text-primary" th:href="@{/technician/dashboard}">
+                <i class="fa-solid fa-heart-pulse me-2"></i>HealHub
+            </a>
+        </div>
+        <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/request-list}">
+                <i class="fa-solid fa-list-check me-1"></i>Requests
+            </a>
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/test-list}">
+                <i class="fa-solid fa-vials me-1"></i>Lab Tests
+            </a>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/technician/profile}">
+                <i class="fa-solid fa-user me-1"></i>Profile
+            </a>
+            <a class="btn btn-outline-danger btn-sm" th:href="@{/logout}">
+                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+<main class="container py-2">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white fw-bold">
+            Confirm Result – RES-<span th:text="${result.resultId}"></span>
+        </div>
+        <div class="card-body">
+            <p><strong>Patient:</strong> <span th:text="${result.patientName}"></span></p>
+            <p><strong>Test:</strong> <span th:text="${result.testName}"></span></p>
+            <p><strong>Technician:</strong> <span th:text="${result.technicianName}"></span></p>
+            <p><strong>Description:</strong></p>
+            <p th:text="${result.resultText}"></p>
+
+            <!-- Hiển thị ảnh nếu có -->
+            <div th:if="${result.images != null and !#lists.isEmpty(result.images)}">
+                <hr>
+                <h6>Attached X-Ray / Lab Images:</h6>
+                <div class="row g-3">
+                    <div class="col-md-4" th:each="img : ${result.images}">
+                        <div class="border rounded p-2 shadow-sm">
+                            <img th:src="@{${img.filePath}}" class="img-fluid rounded mb-2" alt="Lab Image">
+                            <p class="small text-muted" th:text="${img.description}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form th:action="@{/technician/result-confirm/{id}(id=${result.resultId})}" method="post">
+                <div class="mt-4 d-flex justify-content-end gap-2">
+                    <a th:href="@{/technician/result-list}" class="btn btn-outline-secondary px-4">Back</a>
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="fa-solid fa-check me-1"></i>Confirm Result
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

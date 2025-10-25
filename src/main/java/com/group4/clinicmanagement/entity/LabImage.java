@@ -9,7 +9,7 @@ import java.util.List;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Labimage")
+@Table(name = "labimage")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

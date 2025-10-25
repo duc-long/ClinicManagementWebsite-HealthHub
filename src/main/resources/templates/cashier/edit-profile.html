@@ -53,12 +53,10 @@
                 <div class="col-12">
                     <label class="form-label">Gender *</label>
                     <select class="form-select" th:field="*{gender}" required>
-                        <option value="1">Male</option>
-                        <option value="2">Female</option>
-                        <option value="0">Other</option>
+                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}">Male</option>
+                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}">Female</option>
+                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).UNKNOWN}">Other</option>
                     </select>
-
-
                 </div>
                 <div class="col-12">
                     <label class="form-label">Email Address *</label>

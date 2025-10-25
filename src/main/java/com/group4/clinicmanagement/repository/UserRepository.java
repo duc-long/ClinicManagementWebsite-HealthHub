@@ -42,4 +42,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT MAX(user_id) FROM Users", nativeQuery = true)
     Optional<Integer> getMaxUserId();
 
+
+    Optional<User> findByFullName(String fullname);
+
+
+    User getReferenceByUserId(Integer userId);
+
 }

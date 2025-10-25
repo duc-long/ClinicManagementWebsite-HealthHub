@@ -56,6 +56,7 @@ public class ReceptionistController {
         return "redirect:/receptionist/profile";
     }
 
+
     @GetMapping("/appointment-list")
     public String listAppointments(Model model) {
         List<Appointment> appointments = appointmentService.getAllAppointments();
@@ -89,3 +90,4 @@ public class ReceptionistController {
         return "redirect:/receptionist/appointment-list";
     }
 }
+

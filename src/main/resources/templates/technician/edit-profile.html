@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Profile - HealHub</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f6f7fb;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .container-wide {
+            max-width: 720px;
+        }
+
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #007bff33;
+        }
+
+        .avatar-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-upload {
+            margin-top: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🩵 Navbar -->
+<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <a class="navbar-brand fw-bold text-primary" th:href="@{/technician/dashboard}">
+                <i class="fa-solid fa-heart-pulse me-2"></i>HealHub
+            </a>
+        </div>
+        <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/dashboard}">
+                <i class="fa-solid fa-list-check me-1"></i>Requests
+            </a>
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/dashboard}">
+                <i class="fa-solid fa-vials me-1"></i>Lab Tests
+            </a>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/technician/profile}">
+                <i class="fa-solid fa-user me-1"></i>Profile
+            </a>
+            <a class="btn btn-outline-danger btn-sm" th:href="@{/logout}">
+                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- 🧩 Main -->
+<main class="container container-wide py-5">
+    <div class="card">
+        <div class="card-header text-center bg-white">
+            <h3 class="mb-0">
+                <i class="fa-solid fa-user-pen me-2 text-primary"></i>Edit Profile
+            </h3>
+        </div>
+        <div class="card-body px-4 pb-4">
+            <form th:action="@{/technician/edit-profile}" method="POST"
+                  th:object="${technicianDTO}" enctype="multipart/form-data">
+
+                <!-- Avatar upload -->
+                <div class="avatar-upload">
+                    <img th:src="${technicianDTO.avatarFilename != null and !#strings.isEmpty(technicianDTO.avatarFilename)}
+                                    ? @{/uploads/avatars/{file}(file=${technicianDTO.avatarFilename})}
+                                    : @{/uploads/avatars/default-avatar.png}"
+                         id="avatarPreview"
+                         alt="Avatar"
+                         class="avatar-preview mb-2"/>
+                    <input type="file" name="avatarFile" id="avatarFile"
+                           class="form-control w-auto btn-upload" accept="image/*">
+                    <small class="text-muted">Choose a new profile picture (optional)</small>
+                </div>
+
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label for="fullName" class="form-label fw-semibold">Full Name</label>
+                    <input type="text" class="form-control" id="fullName"
+                           th:field="*{fullName}" placeholder="Enter your full name" required>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-semibold">Email</label>
+                    <input type="email" class="form-control" id="email"
+                           th:field="*{email}" placeholder="you@example.com" required>
+                </div>
+
+                <!-- Phone -->
+                <div class="mb-3">
+                    <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone"
+                           th:field="*{phone}" placeholder="e.g. 0987xxxxxx">
+                </div>
+
+                <!-- Gender -->
+                <div class="mb-4">
+                    <label for="gender" class="form-label fw-semibold">Gender</label>
+                    <select class="form-select" th:field="*{gender}" id="gender" required>
+                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}">Male</option>
+                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}">Female</option>
+                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).UNKNOWN}">Other</option>
+                    </select>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between">
+                    <a th:href="@{/technician/profile}" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+
+<!-- JS: Preview ảnh đại diện -->
+<script>
+    const avatarInput = document.getElementById("avatarFile");
+    const avatarPreview = document.getElementById("avatarPreview");
+
+    if (avatarInput) {
+        avatarInput.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                avatarPreview.src = URL.createObjectURL(file);
+            }
+        });
+    }
+</script>
+</body>
+</html>

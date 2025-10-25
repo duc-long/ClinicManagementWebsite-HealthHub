@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "Labresult")
+@Table(name = "labresult")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,8 +30,8 @@ public class LabResult {
     @Column(columnDefinition = "TEXT")
     private String resultText;
 
-    @OneToMany(mappedBy = "labResult")
-    private List<LabImage> labImages;
+    @OneToMany(mappedBy="labResult")
+    private List<LabImage> images;
 
     private LocalDateTime createdAt;
 }

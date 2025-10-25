@@ -32,6 +32,7 @@
                      alt="Avatar"/>
 
 
+<<<<<<< HEAD
                 <div class="info">
                     <div class="group-info">
                         <div class="label username-label">Username</div>
@@ -66,6 +67,27 @@
                         <div class="value dateOfBirth-value"
                              th:text="${#temporals.format(patient.dateOfBirth, 'dd/MM/yyyy')}"></div>
                     </div>
+=======
+        <div class="info">
+            <div class="group-info">
+                <div class="label username-label">Username</div>
+                <div class="value username-value" th:text="*{username}"></div>
+            </div>
+            <div class="group-info">
+                <div class="label name-label">Name</div>
+                <div class="value name-value" th:text="*{fullName}"></div>
+            </div>
+            <div class="group-info">
+                <div class="label email-label">Email</div>
+                <div class="value email-value" th:text="*{email}"></div>
+            </div>
+            <div class="group-info">
+                <div class="label gender-label">Gender</div>
+                <div class="value gender-value" th:switch="*{gender.getValue()}">
+                    <span th:case="1">Male</span>
+                    <span th:case="2">Female</span>
+                    <span th:case="*">Other</span>
+>>>>>>> feature/technician
                 </div>
             </div> <!-- profile-card -->
         </div> <!-- col-md-9 -->

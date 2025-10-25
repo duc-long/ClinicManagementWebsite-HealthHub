@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technician Profile – HealHub</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/assets/css/profile.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body>
+<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-outline-primary d-lg-none me-2" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#sidebarMobile" aria-controls="sidebarMobile">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a class="navbar-brand fw-bold text-primary" th:href="@{/technician}"><i
+                    class="fa-solid fa-heart-pulse me-2"></i>Technician HealHub</a>
+        </div>
+        <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician}"><i
+                    class="fa-solid fa-list-check me-1"></i>Requests</a>
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician}"><i class="fa-solid fa-vials me-1"></i>Lab
+                Tests</a>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/technician/profile}"><i
+                    class="fa-solid fa-user me-1"></i>Profile</a>
+            <a class="btn btn-outline-danger btn-sm" th:href="@{/technician}"><i
+                    class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="page-container" th:object="${technicianDTO}">
+    <div class="profile-card">
+        <div class="profile-title">My Profile</div>
+        <!-- 🖼️ Avatar -->
+        <img th:if="${technicianDTO != null}"
+             th:src="${technicianDTO.avatarFilename != null and !#strings.isEmpty(technicianDTO.avatarFilename)}
+                ? @{/uploads/avatars/{file}(file=${technicianDTO.avatarFilename})}
+                : @{/uploads/avatars/default-avatar.png}"
+             class="avatar"
+             id="avatarPreview"
+             alt="Avatar"/>
+
+
+        <div class="info">
+            <div class="group-info">
+                <div class="label username-label">Username</div>
+                <div class="value username-value" th:text="*{username}">technician01</div>
+            </div>
+
+            <div class="group-info">
+                <div class="label name-label">Full Name</div>
+                <div class="value name-value" th:text="*{fullName}">Nguyễn Quốc Kiệt</div>
+            </div>
+
+            <div class="group-info">
+                <div class="label email-label">Email</div>
+                <div class="value email-value" th:text="*{email}">technician@example.com</div>
+            </div>
+
+            <div class="group-info">
+                <div class="label gender-label">Gender</div>
+                <div class="value gender-value" th:switch="*{gender.name()}">
+                    <span th:case="${'MALE'}">Male</span>
+                    <span th:case="${'FEMALE'}">Female</span>
+                    <span th:case="*">Other</span>
+                </div>
+
+            </div>
+
+            <div class="group-info">
+                <div class="label phone-label">Phone</div>
+                <div class="value phone-value" th:text="*{phone}">0123456789</div>
+            </div>
+        </div>
+
+        <div class="button-row">
+            <a th:href="@{/technician/edit-profile}" class="btn-label change-profile-label">Change Profile</a>
+            <a th:href="@{/technician/change-password}" class="btn-label change-password-label">Change Password</a>
+            <form th:action="@{/technician/delete-account}" method="post" onsubmit="return confirm('Are you sure you want to delete your account?');">
+                <button type="submit" class="btn-label delete-account-label text-danger">Delete Account</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
