@@ -278,4 +278,45 @@ select {
     color: #FFD700;
 }
 
+.feedback-actions {
+    display: flex;
+    justify-content: flex-end; /* ✅ đẩy nút qua phải */
+    gap: 10px;                 /* khoảng cách giữa 2 nút */
+    margin-top: 12px;
+}
+
+/* Nút cơ bản */
+.feedback-actions .btn {
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 8px 16px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.25s ease;
+}
+
+/* Nút Edit */
+.feedback-actions .btn-warning {
+    background-color: #ffc107;
+    color: #333;
+}
+.feedback-actions .btn-warning:hover {
+    background-color: #e0a800;
+    color: #fff;
+}
+
+/* Nút Delete */
+.feedback-actions .btn-danger {
+    background-color: #dc3545;
+}
+.feedback-actions .btn-danger:hover {
+    background-color: #b02a37;
+}
+
+/* Hiệu ứng hover nhẹ */
+.feedback-actions .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
 

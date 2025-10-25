@@ -44,9 +44,9 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain guestAndPatientChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/patient/login", "/patient/**", "/home/**", "/register/**", "/assets/**", "/images/**", "/feedback/**")
+                .securityMatcher("/patient/login", "/patient/**", "/home/**", "/register/**", "/assets/**", "/images/**", "/feedback/**", "/auth/**")
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/home/**", "/register/**", "/assets/**", "/images/**").permitAll()
+                        .requestMatchers("/home/**", "/register/**", "/assets/**", "/images/**", "/auth/**").permitAll()
                         .requestMatchers("/patient/login").permitAll()
                         .requestMatchers("/patient/**", "/feedback/**").hasRole("Patient")
                         .anyRequest().authenticated()

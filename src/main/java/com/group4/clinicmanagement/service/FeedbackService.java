@@ -65,36 +65,29 @@ public class FeedbackService {
         // 1️⃣ Kiểm tra Appointment có tồn tại không
         Optional<Appointment> appointmentOpt = appointmentRepository.findById(feedbackDTO.getAppointmentId());
         if (appointmentOpt.isEmpty()) {
-            System.out.println("❌ Appointment not found");
             return false;
         }
 
         Appointment appointment = appointmentOpt.get();
-        System.out.println("✅ Found appointment with status = " + appointment.getStatusValue());
-        System.out.println("✅ Appointment.patientId = " + (appointment.getPatient() != null ? appointment.getPatient().getPatientId() : null));
 
         // 2️⃣ Check xem appointment này thuộc về user hiện tại không
         if (appointment.getPatient() == null || !appointment.getPatient().getPatientId().equals(userId)) {
-            System.out.println("a");
             return false;
         }
 
         // 3️⃣ Check xem appointment đã khám chưa
         if (appointment.getStatusValue() != AppointmentStatus.EXAMINED.getValue()) {
-            System.out.println("b");
             return false;
         }
 
         // 4️⃣ Check xem appointment này đã có feedback chưa
         if (feedbackRepository.findByAppointment_AppointmentId(appointment.getAppointmentId()).isPresent()) {
-            System.out.println("c");
             return false;
         }
 
         // 5️⃣ Lấy thông tin bệnh nhân
         Patient patient = patientRepository.findById(userId).orElse(null);
         if (patient == null) {
-            System.out.println("❌ Patient not found!");
             return false;
         }
 
@@ -108,31 +101,6 @@ public class FeedbackService {
 
         feedbackRepository.save(feedback);
         return true;
-    }
-
-    @Transactional
-    public Page<Feedback> getFeedbackPageForUser(Integer userId, Pageable pageable) {
-        List<Feedback> allFeedbacks = new ArrayList<>();
-
-        // Feedback của chính user (nếu có)
-        List<Feedback> userFeedbacks = feedbackRepository.findAllByPatient_PatientIdOrderByCreatedAtDesc(userId);
-
-        if (!userFeedbacks.isEmpty()) {
-            // Nếu user có feedback, lấy feedback của họ lên đầu
-            allFeedbacks.addAll(userFeedbacks);
-
-            // Sau đó lấy thêm feedback của người khác
-            Page<Feedback> others = feedbackRepository.findAll(pageable);
-            others.stream()
-                    .filter(f -> !f.getPatient().getUser().getUserId().equals(userId))
-                    .forEach(allFeedbacks::add);
-        } else {
-            // Nếu chưa có feedback nào, chỉ hiển thị feedback mới nhất
-            Page<Feedback> newest = feedbackRepository.findAll(pageable);
-            allFeedbacks.addAll(newest.getContent());
-        }
-
-        return new PageImpl<>(allFeedbacks, pageable, allFeedbacks.size());
     }
 
     public List<Feedback> getLatestFeedbackByUser(Integer userId) {

@@ -248,5 +248,11 @@ input[readonly] {
     font-weight: 500;
 }
 
+.error-message {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
 
 

@@ -1,75 +1,218 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<!-- ✅ CSS -->
 <div th:fragment="css">
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <style>
+        :root {
+            --primary-color: #009bab;
+            --hover-color: #007d88;
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand {
+            color: var(--primary-color) !important;
+            font-weight: 700;
+            font-size: 28px;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin: 0 10px;
+            transition: 0.2s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--hover-color);
+        }
+
+        .btn-login {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 8px 20px;
+        }
+
+        .btn-login:hover {
+            background-color: var(--hover-color);
+        }
+
+        .dropdown-menu {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 40px 0;
+        }
+
+        footer h4 {
+            font-weight: 700;
+            font-size: 22px;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+        /*.navbar {*/
+        /*    height: 80px;*/
+        /*    background: #ffffff;*/
+        /*    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);*/
+        /*}*/
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .user-btn {
+            background-color: #009bab;
+            color: #fff;
+            font-weight: 500;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 16px;
+            transition: all 0.25s ease-in-out;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .user-btn:hover {
+            background-color: #007f8a;
+            transform: translateY(-1px);
+        }
+
+        .user-btn:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 155, 171, 0.3);
+        }
+
+        .dropdown-menu {
+            border-radius: 10px;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .dropdown-item:hover {
+            background-color: #e8f9fa;
+        }
+
+    </style>
 </div>
 
+<!-- ✅ NAVBAR -->
 <div th:fragment="navBar">
-    <style>
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
-    </style>
-    <nav class="navbar navbar-expand-lg bg-white border-bottom py-3">
+    <nav class="navbar navbar-expand-lg py-3">
         <div class="container">
-            <a class="navbar-brand fw-bold text-primary fs-2" th:href="@{/home}">HealthHub</a>
-            <div class="d-flex align-items-center gap-4">
-                <a class="text-primary text-decoration-none fw-semibold" th:href="@{/home/list-doctor}">Doctors</a>
-                <div class="dropdown">
-                    <a class="dropdown-toggle text-primary text-decoration-none fw-semibold"
-                       id="dropdownSpecialty" data-bs-toggle="dropdown" aria-expanded="false">
-                        Specialty
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
-                        <li th:each="s : ${session.specialties}"><a class="dropdown-item" th:href="@{/home/specialty/{specialty}(specialty=${s})}" th:text="${s}"></a></li>
-                    </ul>
-                </div>
-                <a class="text-primary text-decoration-none fw-semibold" th:href="@{/appointment/appointment-list}">Book an appointment</a>
-                <div sec:authorize="!isAuthenticated()">
-                    <a class="btn btn-primary btn-sm text-white fw-semibold px-3" th:href="@{/login}">Login</a>
-                </div>
-<!--                <div sec:authorize="isAuthenticated()">-->
-<!--                    <a th:href="@{/patient/profile}" class="btn btn-primary">-->
-<!--                        Hi, <span th:text="${#authentication.name}">Tên</span>-->
-<!--                    </a>-->
-<!--                </div>-->
-                <div class="dropdown" sec:authorize="isAuthenticated()">
-                    <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Hi, <span th:text="${#authentication.principal.fullName}">User</span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/patient/profile}">Profile</a></li>
-                        <li><a class="dropdown-item text-danger" th:href="@{/patient/logout}">Logout</a></li>
-                    </ul>
-                </div>
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/home}">
+                <span style="
+                    font-size: 40px;
+                    font-weight: 800;
+                    color: #009bab;
+                    letter-spacing: 0.5px;
+                    font-family: 'Segoe UI', sans-serif;
+                ">Health<span style="color:#005f65;">Hub</span></span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+                    aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/home/list-doctor}">Doctors</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdownSpecialty" data-bs-toggle="dropdown">
+                            Specialty
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li th:each="s : ${session.specialties}">
+                                <a class="dropdown-item"
+                                   th:href="@{/home/specialty/{specialty}(specialty=${s})}"
+                                   th:text="${s}"></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/appointment/appointment-list}">Book Appointment</a>
+                    </li>
+
+                    <!-- Guest -->
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="btn btn-login ms-2" th:href="@{/patient/login}">Login</a>
+                    </li>
+
+                    <!-- Logged In -->
+                    <div class="dropdown" sec:authorize="isAuthenticated()">
+                        <button class="user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Hi, <span th:text="${#authentication.principal.fullName}">User</span>
+                        </button>
+                        <ul class="dropdown-menu shadow-sm border-0 mt-2">
+                            <li><a class="dropdown-item" th:href="@{/patient/profile}"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item text-danger" th:href="@{/patient/logout}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </ul>
             </div>
         </div>
     </nav>
 </div>
 
-
-<footer th:fragment="footer" class="bg-primary text-white py-5">
+<!-- ✅ FOOTER -->
+<footer th:fragment="footer">
     <div class="container">
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <h4 class="fw-bold">HealthHub</h4>
+        <div class="row gy-4">
+            <div class="col-md-4">
+                <h4>HealthHub</h4>
                 <p>FPT’s Trusted Healthcare System</p>
                 <p><i class="fa fa-map-marker-alt me-2"></i>666 Nguyen Van Cu, Can Tho</p>
                 <p><i class="fa fa-phone me-2"></i>+84 123 456 789</p>
             </div>
-            <div class="col-md-4 mb-3">
-                <h6 class="fw-bold">Links</h6>
+            <div class="col-md-4">
+                <h6 class="fw-bold">Quick Links</h6>
                 <ul class="list-unstyled">
-                    <li><a th:href="@{/home/list-doctor}" class="text-white text-decoration-none">Doctor</a></li>
-                    <li><a href="#" class="text-white text-decoration-none">Appointment</a></li>
+                    <li><a th:href="@{/home/list-doctor}">Doctors</a></li>
+                    <li><a th:href="@{/appointment/appointment-list}">Appointments</a></li>
+                    <li><a th:href="@{/home}">Home</a></li>
                 </ul>
             </div>
+            <div class="col-md-4 text-md-end text-center">
+                <h6 class="fw-bold">Follow Us</h6>
+                <div>
+                    <a href="#" class="me-3"><i class="fa fa-facebook"></i></a>
+                    <a href="#" class="me-3"><i class="fa fa-twitter"></i></a>
+                    <a href="#"><i class="fa fa-instagram"></i></a>
+                </div>
+            </div>
         </div>
+        <hr class="mt-4" style="border-color: rgba(255,255,255,0.3);">
+        <p class="text-center mb-0">&copy; 2025 HealthHub. All rights reserved.</p>
     </div>
 </footer>
 
+<!-- ✅ JS -->
 <div th:fragment="js">
-    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </div>
 
 </html>

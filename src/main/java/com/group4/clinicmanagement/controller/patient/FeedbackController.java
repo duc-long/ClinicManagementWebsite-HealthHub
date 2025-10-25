@@ -1,18 +1,10 @@
-package com.group4.clinicmanagement.controller;
+package com.group4.clinicmanagement.controller.patient;
 
 import com.group4.clinicmanagement.dto.FeedbackDTO;
-import com.group4.clinicmanagement.entity.Doctor;
-import com.group4.clinicmanagement.entity.Feedback;
 import com.group4.clinicmanagement.security.CustomUserDetails;
-import com.group4.clinicmanagement.service.DoctorService;
 import com.group4.clinicmanagement.service.FeedbackService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -20,8 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/feedback")
@@ -46,10 +36,12 @@ public class FeedbackController {
 
         // Kiểm tra validation cơ bản
         if (result.hasErrors()) {
-            result.getFieldErrors().forEach(error ->
-                    System.out.println("❌ Validation error -> field: " + error.getField() + " | message: " + error.getDefaultMessage())
+            StringBuilder errorMessage = new StringBuilder("Please fix the following errors:");
+            result.getFieldErrors().forEach(err ->
+                    errorMessage.append("<br>")
+                            .append(err.getDefaultMessage())
             );
-            redirectAttributes.addFlashAttribute("error", "Please fill in all required fields correctly.");
+            redirectAttributes.addFlashAttribute("error", errorMessage);
             return "redirect:/home";
         }
 
@@ -74,7 +66,12 @@ public class FeedbackController {
         }
         // Kiểm tra validation cơ bản
         if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("error", "Please fill in all required fields correctly.");
+            StringBuilder errorMessage = new StringBuilder("Please fix the following errors:");
+            result.getFieldErrors().forEach(err ->
+                    errorMessage.append("<br>")
+                            .append(err.getDefaultMessage())
+            );
+            redirectAttributes.addFlashAttribute("error", errorMessage);
             return "redirect:/home";
         }
 

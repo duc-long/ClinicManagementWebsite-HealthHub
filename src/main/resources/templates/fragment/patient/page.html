@@ -31,12 +31,14 @@
             <div class="feedback-details">
                 <div><strong>Date:</strong> <span th:text="${#temporals.format(feedback.createdAt, 'dd/MM/yyyy')}"></span></div>
             </div>
-            <button type="button" class="btn btn-sm btn-warning mt-2"
-                    th:onclick="'showEditForm(' + ${feedback.feedbackId} + ');'">Edit</button>
-            <button type="button" class="btn btn-sm btn-danger mt-2"
-                    th:onclick="'confirmDelete(' + ${feedback.feedbackId} + ');'">
-                Delete
-            </button>
+            <div class="feedback-actions">
+                <button type="button" class="btn btn-sm btn-warning mt-2"
+                        th:onclick="'showEditForm(' + ${feedback.feedbackId} + ');'">Edit</button>
+                <button type="button" class="btn btn-sm btn-danger mt-2"
+                        th:onclick="'confirmDelete(' + ${feedback.feedbackId} + ');'">
+                    Delete
+                </button>
+            </div>
 
             <form th:id="'delete-form-' + ${feedback.feedbackId}"
                   th:action="@{'/feedback/delete/' + ${feedback.feedbackId}}"

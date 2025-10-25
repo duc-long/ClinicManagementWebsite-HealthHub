@@ -12,9 +12,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +39,12 @@ public class PatientController {
     private String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (authentication != null) ? authentication.getName() : null;
+    }
+
+    private String safeValue(String newValue, String oldValue) {
+        if (newValue == null) return oldValue;
+        String trimmed = newValue.trim();
+        return trimmed.isEmpty() ? oldValue : trimmed;
     }
 
     @GetMapping("/profile")
@@ -70,10 +79,39 @@ public class PatientController {
     }
 
     @PostMapping("/save-profile")
-    public String updateProfile(@Valid @ModelAttribute("patient") PatientUserDTO dto, @RequestParam("avatar") MultipartFile avatar) {
+    public String updateProfile(@Valid @ModelAttribute("patient") PatientUserDTO dto,
+                                BindingResult result,
+                                Model model,
+                                @RequestParam("avatar") MultipartFile avatar,
+                                RedirectAttributes redirect,
+                                Principal principal) {
+        System.out.println("DTO BEFORE MERGE: " + dto);
         String username = getCurrentUsername();
+        if (result.hasErrors()) {
+            // ✅ Lấy dữ liệu cũ từ DB
+            PatientUserDTO oldData = patientService.getPatientsByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-        patientService.savePatientUserWithAvatar(username, dto, avatar);
+            // Merge dữ liệu hợp lệ + giữ dữ liệu cũ cho phần bị trống
+            dto.setFullName(safeValue(dto.getFullName(), oldData.getFullName()));
+            dto.setEmail(safeValue(dto.getEmail(), oldData.getEmail()));
+            dto.setPhone(safeValue(dto.getPhone(), oldData.getPhone()));
+            dto.setAddress(safeValue(dto.getAddress(), oldData.getAddress()));
+            dto.setAvatarFilename(oldData.getAvatarFilename());
+            dto.setGender(dto.getGender() != null ? dto.getGender() : oldData.getGender());
+            dto.setDateOfBirth(dto.getDateOfBirth() != null ? dto.getDateOfBirth() : oldData.getDateOfBirth());
+            dto.setUsername(username); // giữ lại username hiện tại
+
+            model.addAttribute("patient", dto); // Trả lại dữ liệu cho form
+            return "patient/edit-profile";
+        }
+        try {
+            patientService.savePatientUserWithAvatar(username, dto, avatar);
+            redirect.addFlashAttribute("success", "Profile updated successfully!");
+        } catch (RuntimeException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+        }
+//        patientService.savePatientUserWithAvatar(username, dto, avatar);
         return "redirect:/patient/profile";
     }
 

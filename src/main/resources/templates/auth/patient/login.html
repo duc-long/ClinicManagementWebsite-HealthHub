@@ -1,48 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Login</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <div th:replace="~{fragment/fragment.html :: css}"></div>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .login-wrapper {
+            min-height: calc(100vh - 70px); /* trừ chiều cao navbar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 40px;
+        }
+
+        .login-card {
+            width: 400px;
+            background: #fff;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px 35px;
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 30px;
+            font-weight: 700;
+            color: #009bab;
+            margin-bottom: 25px;
+        }
+
+        label {
+            font-weight: 500;
+            color: #007d88;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1.5px solid #cfd9de;
+            padding: 10px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .form-control:focus {
+            border-color: #009bab;
+            box-shadow: 0 0 0 0.15rem rgba(0, 155, 171, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #009bab;
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .btn-primary:hover {
+            background-color: #007d88;
+        }
+
+        .text-center a {
+            color: #009bab;
+            text-decoration: none;
+        }
+
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+
+        .alert-danger {
+            font-size: 14px;
+            border-radius: 10px;
+        }
+    </style>
 </head>
-<body class="bg-light d-flex align-items-center justify-content-center vh-100">
+<body>
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
 
-<div class="card shadow p-4" style="width: 22rem;">
-    <h3 class="text-center mb-4">Patient Login</h3>
-    <div th:if="${param.error}" class="alert alert-danger mt-3 py-2">
-    <span th:text="${session.LOGIN_ERROR_MESSAGE != null ?
-        session.LOGIN_ERROR_MESSAGE :
-        'Invalid username or password'}"></span>
-    </div>
-    <form action="/patient/login" method="post">
-        <!-- Username -->
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required>
+<div class="d-flex align-items-center justify-content-center vh-100">
+    <div class="login-card">
+        <div class="login-title">Patient Login</div>
+
+        <div th:if="${param.error}" class="alert alert-danger text-center py-2">
+            <span th:text="${session.LOGIN_ERROR_MESSAGE != null ?
+                session.LOGIN_ERROR_MESSAGE :
+                'Invalid username or password'}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-warning text-center" role="alert">
+            <span th:text="${error}"></span>
         </div>
 
-        <!-- Password -->
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" id="password" name="password" class="form-control" placeholder="Enter password"
-                   required>
-        </div>
+        <form action="/patient/login" method="post">
+            <!-- Username -->
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" id="username" name="username" class="form-control"
+                       placeholder="Enter username" required>
+            </div>
 
-        <!-- Submit -->
-        <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Login</button>
+            <!-- Password -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-control"
+                       placeholder="Enter password" required>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+
+        <!-- Extra links -->
+        <div class="text-center mt-3">
+            <a th:href="@{/auth/forgot-password}" class="d-block mb-1">Forgot Password?</a>
+            <span>Don't have an account? <a th:href="@{/auth/register}">Register</a></span>
         </div>
-    </form>
-    <!-- Extra links -->
-    <div class="text-center mt-3">
-        <a href="forgotPassword.html" class="d-block">Forgot Password?</a>
-        <span>Don't have an account? <a href="registerPatient.html">Register</a></span>
     </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

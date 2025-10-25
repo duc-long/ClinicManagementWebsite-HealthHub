@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Patient</title>
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <div th:replace="~{fragment/fragment.html :: css}"></div>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .register-container {
+            max-width: 900px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px 50px;
+            margin: 60px auto;
+        }
+
+        .register-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: #009bab;
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #007d88;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+            border: 1.5px solid #bcd2d0;
+            padding: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #009bab;
+            box-shadow: 0 0 0 0.15rem rgba(0, 155, 171, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #009bab;
+            border: none;
+            padding: 12px 25px;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #007d88;
+        }
+
+        .text-danger {
+            font-size: 13px;
+        }
+
+        .text-center a {
+            color: #009bab;
+            text-decoration: none;
+        }
+
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .col-md-6 {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
+<div class="register-container">
+    <div class="register-title">Register Account</div>
+
+    <form th:action="@{/auth/register}" th:object="${patient}" method="post">
+        <div class="row g-4">
+
+            <!-- Username -->
+            <div class="col-md-6">
+                <label class="form-label">Username</label>
+                <input type="text" th:field="*{username}" class="form-control" required placeholder="Enter username">
+                <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+            </div>
+
+            <!-- Full Name -->
+            <div class="col-md-6">
+                <label class="form-label">Full Name</label>
+                <input type="text" th:field="*{fullName}" class="form-control" required placeholder="Enter full name">
+                <div class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" th:field="*{email}" class="form-control" required placeholder="Enter email">
+                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <!-- Phone -->
+            <div class="col-md-6">
+                <label class="form-label">Phone</label>
+                <input type="text" th:field="*{phone}" class="form-control" required placeholder="Enter phone number">
+                <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            </div>
+
+            <!-- Gender -->
+            <div class="col-md-6">
+                <label class="form-label">Gender</label>
+                <div class="d-flex gap-3 align-items-center mt-2">
+                    <label><input type="radio" th:field="*{gender}" required  th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}"> Male</label>
+                    <label><input type="radio" th:field="*{gender}" required  th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}"> Female</label>
+                </div>
+                <div class="text-danger" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></div>
+            </div>
+
+            <!-- Address -->
+            <div class="col-md-6">
+                <label class="form-label">Address</label>
+                <input type="text" th:field="*{address}" class="form-control" required placeholder="Enter address">
+                <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="col-md-6">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" th:field="*{dateOfBirth}" required class="form-control">
+                <div class="text-danger" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
+            </div>
+
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-primary px-5">Register</button>
+        </div>
+    </form>
+
+    <div class="text-center mt-3">
+        <a href="/patient/login">Already have an account? Login</a>
+    </div>
+</div>
+
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

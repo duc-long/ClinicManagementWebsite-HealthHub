@@ -1,4 +1,4 @@
-package com.group4.clinicmanagement.dto;
+package com.group4.clinicmanagement.dto.registerpatient;
 
 import com.group4.clinicmanagement.enums.Gender;
 import jakarta.validation.constraints.*;
@@ -8,23 +8,25 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-public class PatientUserDTO {
-    private Integer userId;
-    private Integer patientId;
+@AllArgsConstructor
+@NoArgsConstructor
+public class PatientRegisterDTO {
+    @NotBlank(message = "Username must not be blank")
+    @Size(min = 8, max = 50, message = "Username must be between 8 and 50 characters")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9_]{8,50}$",
+            message = "Username can only contain letters, numbers, and underscores (no special characters)"
+    )
     private String username;
 
     @NotBlank(message = "Full name must not be blank")
-    @Size(min = 3, max = 100, message = "Full name must be between 3 and 100 characters")
     private String fullName;
 
-    @NotBlank(message = "Email must not be blank")
     @Email(message = "Invalid email address")
+    @NotBlank(message = "Email must not be blank")
     private String email;
 
     @Pattern(regexp = "^[0-9]{9,11}$", message = "Phone number must contain 9–11 digits")
@@ -35,13 +37,11 @@ public class PatientUserDTO {
     private Gender gender;
 
     @NotBlank(message = "Address must not be blank")
-    @Size(max = 500, message = "Address must not exceed 500 characters")
     private String address;
-
-    private String avatarFilename;
 
     @Past(message = "Date of birth must be in the past")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
 
     @AssertTrue(message = "Age must be between 10 and 120 years")
@@ -49,20 +49,5 @@ public class PatientUserDTO {
         if (dateOfBirth == null) return true;
         int age = Period.between(dateOfBirth, LocalDate.now()).getYears();
         return age >= 10 && age <= 120;
-    }
-
-    public PatientUserDTO(Integer userId, Integer patientId, String username, String fullName,
-                          String email, String phone,
-                          Integer genderValue, String address, String avatarFilename, LocalDate dateOfBirth) {
-        this.userId = userId;
-        this.patientId = patientId;
-        this.username = username;
-        this.fullName = fullName;
-        this.email = email;
-        this.phone = phone;
-        this.gender = Gender.fromInt(genderValue!=null ? genderValue : 0);
-        this.address = address;
-        this.avatarFilename = avatarFilename;
-        this.dateOfBirth = dateOfBirth;
     }
 }
