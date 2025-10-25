@@ -1,12 +1,18 @@
 package com.group4.clinicmanagement.dto;
 
 import com.group4.clinicmanagement.enums.AppointmentStatus;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppointmentDTO {
-    private Integer appointmentId;
+    private int appointmentId;
 
     private String doctorName;        // a.getDoctor().getUser().getFullName()
     private String patientName;       // a.getPatient().getUser().getFullName()
@@ -16,8 +22,8 @@ public class AppointmentDTO {
     private LocalDateTime createdAt;
 
     private AppointmentStatus status;
-    private Integer queueNumber;
-
+    private int queueNumber;
     private String notes;
     private String cancelReason;
+
 }

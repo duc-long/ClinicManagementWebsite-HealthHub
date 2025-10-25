@@ -85,6 +85,9 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/doctor/logout")
                         .logoutSuccessUrl("/doctor/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .clearAuthentication(true)
                         .permitAll())
                 .csrf(csrf -> csrf.disable());
         return http.build();
