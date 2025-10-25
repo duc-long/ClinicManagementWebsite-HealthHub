@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.controller.admin;
 
 import com.group4.clinicmanagement.dto.admin.PatientDTO;
+import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.service.UserService;
 import com.group4.clinicmanagement.service.admin.PatientForAdminService;
 import jakarta.validation.Valid;
@@ -125,9 +126,9 @@ public class AdminController {
             System.out.printf("%s\n", bindingResult.getAllErrors());
             return "admin/add-new-patient";
         } else {
-            patientService.newPatient(dto, avatar);
+            Patient patient = patientService.newPatient(dto, avatar);
             redirectAttributes.addFlashAttribute("successMessage",
-                    "Patient with ID: " + dto.getPatientId() + " was created successfully!");
+                    "Patient with ID: " + patient.getPatientId() + " was created successfully!");
             return "redirect:/admin/patient";
         }
 

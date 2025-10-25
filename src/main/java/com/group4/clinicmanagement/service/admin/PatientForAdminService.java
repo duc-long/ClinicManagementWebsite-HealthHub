@@ -127,7 +127,7 @@ public class PatientForAdminService {
     }
 
     @Transactional
-    public void newPatient(PatientDTO dto, MultipartFile avatar) {
+    public Patient newPatient(PatientDTO dto, MultipartFile avatar) {
         Patient patient = new Patient();
         User user = new User();
         String encodePassword = passwordEncoder.encode(PasswordUtil.PASSWORD);
@@ -176,6 +176,7 @@ public class PatientForAdminService {
                 throw new RuntimeException("Upload avatar failed", e);
             }
         }
+        return patient;
     }
 
 
