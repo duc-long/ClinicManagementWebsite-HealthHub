@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "Role")
 @Data
@@ -17,4 +19,5 @@ public class Role {
 
     @Column(nullable = false, unique = true, length = 50)
     private String name;
+
 }

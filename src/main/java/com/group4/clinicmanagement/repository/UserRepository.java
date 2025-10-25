@@ -29,6 +29,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     void updateAvatarFilename(@Param("username") String username,
                               @Param("filename") String filename);
 
+
     @Query("SELECT u FROM User u WHERE u.email = :email AND u.userId <> :userId")
     Optional<User> findOtherByEmail(@Param("email") String email, @Param("userId") Integer userId);
 
@@ -37,4 +38,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     boolean existsByEmail(String email);
 
     boolean existsByUsername(String username);
+
+    @Query(value = "SELECT MAX(user_id) FROM Users", nativeQuery = true)
+    Optional<Integer> getMaxUserId();
+
 }

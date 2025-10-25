@@ -35,5 +35,7 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
     @Modifying
     @Query("UPDATE User u SET u.passwordHash = :newHash WHERE u.username = :username")
     void updatePasswordHashByUsername(@Param("username") String username, @Param("newHash") String newHash);
+
+
 }
 
