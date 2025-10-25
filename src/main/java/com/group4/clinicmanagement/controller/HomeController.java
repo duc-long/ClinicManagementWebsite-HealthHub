@@ -33,7 +33,7 @@ public class HomeController {
     }
 
     @GetMapping()
-    public String guestHome(Model model,@RequestParam(defaultValue = "1") int page) {
+    public String guestHome(Model model,@RequestParam(defaultValue = "1") int page, HttpSession session) {
         int pageSize = 3; // hiển thị 3 feedback mỗi trang
         if (page < 1) {
             return "redirect:/home?page=1";
@@ -43,7 +43,7 @@ public class HomeController {
         List<Doctor> doctors = doctorService.findAllDoctors();
         model.addAttribute("doctors", doctors);
         List<String> specialties = doctorService.findAllDistinctSpecialties();
-        model.addAttribute("specialties", specialties);
+        session.setAttribute("specialties", specialties);
         double averageRating = feedbackService.getAverageRating();
         model.addAttribute("averageRating", averageRating);
 

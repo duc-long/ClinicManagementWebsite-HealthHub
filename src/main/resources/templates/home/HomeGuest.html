@@ -101,11 +101,15 @@
                     Specialty
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
-                    <li th:each="s : ${specialties}"><a class="dropdown-item"
-                                                        th:href="@{/home/specialty/{specialty}(specialty=${s})}"
-                                                        th:text="${s}"></a></li>
+                    <li th:each="s : ${session.specialties}">
+                        <a class="dropdown-item"
+                           th:href="@{/home/specialty/{specialty}(specialty=${s})}"
+                           th:text="${s}">
+                        </a>
+                    </li>
                 </ul>
             </div>
+
         </div>
 
         <!-- RIGHT SPECIALTY CARDS -->
