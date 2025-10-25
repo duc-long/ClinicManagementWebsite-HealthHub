@@ -1,0 +1,59 @@
+/* Toast Container */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Toast Item */
+.toast {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.5s ease;
+    position: relative;
+    overflow: hidden;
+    min-width: 250px;
+}
+
+/* Khi toast hiện ra */
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Màu sắc cho success và error */
+.toast-success {
+    background-color: #28a745;
+}
+
+.toast-error {
+    background-color: #dc3545;
+}
+
+/* Thanh tiến trình ở dưới */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    animation: toastProgress 3s linear forwards;
+}
+
+@keyframes toastProgress {
+    from { width: 100%; }
+    to { width: 0; }
+}

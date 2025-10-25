@@ -1,0 +1,322 @@
+.profile-title-feedback {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #009BAB;
+    font-weight: 500;
+    font-size: clamp(32px, 4vw, 42px);
+    margin: 0 0 0;
+}
+.feedback-container {
+    padding: 40px;
+    background: #f8f9fc;
+}
+
+.feedback-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #008080;
+}
+
+.feedback-average {
+    text-align: center;
+    margin: 10px 0 30px;
+}
+
+.stars {
+    display: inline-block;
+}
+
+/*.star {*/
+/*    font-size: 50px;*/
+/*    color: #ccc;*/
+/*}*/
+
+.star {
+    font-size: 50px;
+    color: #ccc;
+    position: relative;
+    display: inline-block;
+}
+
+.star.filled {
+    color: #f1c40f;
+}
+
+/* 25% sao */
+.star.quarter::after {
+    content: '\2605';
+    color: #f1c40f;
+    position: absolute;
+    left: 0;
+    width: 25%;
+    overflow: hidden;
+}
+
+.star.half::after {
+    content: '\2605';
+    color: #f1c40f;
+    position: absolute;
+    margin-left: -42px;
+    width: 25px;
+    overflow: hidden;
+}
+
+/* 75% sao */
+.star.three-quarter::after {
+    content: '\2605';
+    color: #f1c40f;
+    position: absolute;
+    left: 0;
+    width: 75%;
+    overflow: hidden;
+}
+
+.average-score {
+    font-size: 22px;
+    font-weight: bold;
+    color: #008080;
+    margin-top: 5px;
+}
+
+.profile-card {
+    width: 80%;
+    max-width: 100%;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    padding: 32px 32px 40px;
+    display: grid;
+    gap: 10px 40px;
+    margin: 0 auto;
+}
+
+.feedback-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.feedback-item {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    width: 100%;
+}
+
+.feedback-item-user {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.feedback-name {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.feedback-comment {
+    color: #007878;
+    font-size: 20px;
+    margin-top: -35px;
+}
+
+.feedback-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    width: 80%;
+    margin: 20px auto 0;
+}
+
+.form-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #008080;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.submit-btn {
+    background-color: #009BAB;
+    color: white;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #007d88;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: white;
+    margin: auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.pagination a {
+    color: #009BAB;
+    border: 1px solid #009BAB;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.pagination a:hover {
+    background-color: #009BAB;
+    color: #fff;
+}
+
+.pagination span {
+    font-weight: 500;
+    color: #333;
+}
+
+.star-rating {
+    direction: rtl; /* để click sao từ phải sang trái (5 → 1) */
+    display: inline-flex;
+    gap: 5px;
+    font-size: 50px;
+}
+
+.star-rating input {
+    display: none; /* ẩn radio gốc */
+}
+
+.star-rating label {
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+/* khi hover hoặc chọn sao */
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #FFD700;
+}
+
+.feedback-actions {
+    display: flex;
+    justify-content: flex-end; /* ✅ đẩy nút qua phải */
+    gap: 10px;                 /* khoảng cách giữa 2 nút */
+    margin-top: 12px;
+}
+
+/* Nút cơ bản */
+.feedback-actions .btn {
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 8px 16px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.25s ease;
+}
+
+/* Nút Edit */
+.feedback-actions .btn-warning {
+    background-color: #ffc107;
+    color: #333;
+}
+.feedback-actions .btn-warning:hover {
+    background-color: #e0a800;
+    color: #fff;
+}
+
+/* Nút Delete */
+.feedback-actions .btn-danger {
+    background-color: #dc3545;
+}
+.feedback-actions .btn-danger:hover {
+    background-color: #b02a37;
+}
+
+/* Hiệu ứng hover nhẹ */
+.feedback-actions .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "labtestcatalog")
+@Table(name = "Labtestcatalog")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -6,9 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "medicalrecord")
+@Table(name = "Medicalrecord")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +23,7 @@ public class MedicalRecord {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
@@ -48,6 +49,15 @@ public class MedicalRecord {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "medicalRecord")
+    private List<VitalSigns> vitalSigns;
+
+    @OneToMany(mappedBy = "medicalRecord")
+    private List<LabRequest> labRequests;
+
+    @OneToMany(mappedBy = "medicalRecord")
+    private List<Prescription> prescriptions;
 
     @PostLoad
     public void loadEnum() {

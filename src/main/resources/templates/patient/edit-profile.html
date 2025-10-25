@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,65 +8,109 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/edit-profile.css">
-    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/popup-error.css">
+    <link rel="stylesheet" href="/assets/css/side-bar-patient.css">
+    <div th:replace="~{fragment/fragment.html :: css}"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body>
 <div th:replace="~{fragment/fragment.html :: navBar}"></div>
-<div class="page-container">
-    <form class="profile-card" th:action="@{/patient/save-profile}" method="post" th:object="${patient}"
-          enctype="multipart/form-data">
+<div class="container-fluid" >
+    <div class="row">
 
-        <div class="profile-title">Change profile</div>
-        <div class="avatar-container avatar-upload">
-            <img th:src="${patient.avatarFilename != null} ? '/images/avatars/' + ${patient.avatarFilename} : '/images/avatars/default-avatar.png'"
-                 class="avatar"
-                 id="avatarPreview"
-                 alt="Avatar"/>
-            <label class="avatar-overlay">
-                <span class="upload-text">Change</span>
-                <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(this)">
-            </label>
-        </div>
+        <!-- SIDEBAR -->
+        <div th:replace="~{fragment/patient/side-bar :: sidebar-patient}"></div>
+        <!-- PROFILE CONTENT -->
+        <div class="col-md-9 col-12 p-4">
+            <!--            <div class="profile-card">-->
+            <form class="profile-card" th:action="@{/patient/save-profile}" method="post" th:object="${patient}"
+                  enctype="multipart/form-data">
+                <input type="hidden" th:field="*{username}">
+                <div class="profile-title">Change profile</div>
+                <div class="avatar-container avatar-upload">
+                    <img th:src="${patient.avatarFilename != null} ? '/images/avatars/' + ${patient.avatarFilename} : '/images/avatars/default-avatar.png'"
+                         class="avatar"
+                         id="avatarPreview"
+                         alt="Avatar"/>
+                    <label class="avatar-overlay">
+                        <span class="upload-text">Change</span>
+                        <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(this)">
+                    </label>
+                </div>
 
-        <div class="info">
-            <div class="group-info">
-                <div class="label">Username</div>
-                <input type="text" th:field="*{username}" disabled readonly class="input"/>
-            </div>
-            <div class="group-info">
-                <div class="label">Name</div>
-                <input type="text" th:field="*{fullName}" class="input"/>
-            </div>
-            <div class="group-info">
-                <div class="label">Email</div>
-                <input type="email" th:field="*{email}" class="input"/>
-            </div>
-            <div class="group-info">
-                <div class="label">Gender</div>
-                <select class="form-select" th:field="*{gender}" required>
-                    <option th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}">Male</option>
-                    <option th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}">Female</option>
-                    <option th:value="${T(com.group4.clinicmanagement.enums.Gender).UNKNOWN}">Other</option>
-                </select>
-            </div>
-            <div class="group-info">
-                <div class="label">Phone</div>
-                <input type="text" th:field="*{phone}" class="input"/>
-            </div>
-            <div class="group-info">
-                <div class="label">Address</div>
-                <input type="text" th:field="*{address}" class="input"/>
-            </div>
-        </div>
+                <div class="info">
+                    <div class="group-info">
+                        <div class="label">Username</div>
+                        <input type="text" th:value="${#authentication.name}" disabled readonly class="input"/>
+                    </div>
+                    <div class="group-info">
+                        <div class="label">Name</div>
+                        <input type="text" th:field="*{fullName}" class="input"/>
+                        <div class="error-message"
+                             th:if="${#fields.hasErrors('fullName')}"
+                             th:errors="*{fullName}"></div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label">Email</div>
+                        <input type="email" th:field="*{email}" class="input"/>
+                        <div class="error-message"
+                             th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}"></div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label">Gender</div>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="radio" th:field="*{gender}"
+                                       th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}"/> Male
+                            </label>
+                            <label>
+                                <input type="radio" th:field="*{gender}"
+                                       th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}"/> Female
+                            </label>
+                        </div>
+                        <div class="error-message"
+                             th:if="${#fields.hasErrors('gender')}"
+                             th:errors="*{gender}"></div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label">Phone</div>
+                        <input type="text" th:field="*{phone}" class="input"/>
+                        <div class="error-message"
+                             th:if="${#fields.hasErrors('phone')}"
+                             th:errors="*{phone}"></div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label">Address</div>
+                        <input type="text" th:field="*{address}" class="input"/>
+                        <div class="error-message"
+                             th:if="${#fields.hasErrors('address')}"
+                             th:errors="*{address}"></div>
+                    </div>
+                    <div class="group-info">
+                        <div class="label">Date of birth</div>
+                        <input type="date"
+                               th:field="*{dateOfBirth}"
+                               th:value="${#temporals.format(patient.dateOfBirth, 'yyyy-MM-dd')}"
+                               class="input"/>
+                        <div class="error-message"
+                             th:if="${#fields.hasErrors('dateOfBirth')}"
+                             th:errors="*{dateOfBirth}"></div>
+                        <div class="error-message" th:if="${#fields.hasErrors('validAge')}" th:errors="*{validAge}"></div>
+                    </div>
+                </div>
 
-        <div class="button-row">
-            <a th:href="@{/patient/profile}" class="btn-label cancel">Cancel</a>
-            <button type="submit" class="btn-label save">Save</button>
+                <div class="button-row">
+                    <a th:href="@{/patient/profile}" class="btn-label cancel">Cancel</a>
+                    <button type="submit" class="btn-label save">Save</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 </body>
-
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 <script>
     function previewAvatar(input) {
         const file = input.files[0];
@@ -79,4 +123,7 @@
         }
     }
 </script>
+
+
+<div th:replace="~{fragment/popup :: popup}"></div>>
 </html>

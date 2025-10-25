@@ -6,9 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "labresult")
+@Table(name = "Labresult")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,6 +29,9 @@ public class LabResult {
 
     @Column(columnDefinition = "TEXT")
     private String resultText;
+
+    @OneToMany(mappedBy = "labResult")
+    private List<LabImage> labImages;
 
     private LocalDateTime createdAt;
 }

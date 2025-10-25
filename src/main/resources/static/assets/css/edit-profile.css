@@ -74,7 +74,7 @@ input[readonly] {
 }
 
 .profile-card {
-    width: 1120px;
+    width: 1200px;
     max-width: 100%;
     background: #fff;
     border-radius: 20px;
@@ -246,6 +246,12 @@ input[readonly] {
 .upload-text {
     font-size: 16px;
     font-weight: 500;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 4px;
 }
 
 

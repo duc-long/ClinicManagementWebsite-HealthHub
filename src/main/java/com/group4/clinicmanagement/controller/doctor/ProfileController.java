@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
-@RequestMapping("/patient/profile")
+//@RequestMapping("/patient/profile")
 public class ProfileController {
 
     @GetMapping("/view")

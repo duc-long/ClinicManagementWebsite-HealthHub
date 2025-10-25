@@ -7,9 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "LabRequest")
+@Table(name = "Labrequest")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,6 +40,9 @@ public class LabRequest {
 
     @Column(name = "requested_at")
     private LocalDateTime requestedAt;
+
+    @OneToMany(mappedBy = "labRequest")
+    private List<LabResult> labResults;
 
     @PostLoad
     public void loadEnum() {

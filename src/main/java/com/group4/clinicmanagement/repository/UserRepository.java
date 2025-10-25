@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Transactional
     @Query("UPDATE User u SET u.fullName = :fullName, u.email = :email, " +
@@ -28,5 +28,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.avatar = :filename WHERE u.username = :username")
     void updateAvatarFilename(@Param("username") String username,
                               @Param("filename") String filename);
-    
+
+    @Query("SELECT u FROM User u WHERE u.email = :email AND u.userId <> :userId")
+    Optional<User> findOtherByEmail(@Param("email") String email, @Param("userId") Integer userId);
+
+    Optional<User> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
 }

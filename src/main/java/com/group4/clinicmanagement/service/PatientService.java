@@ -4,6 +4,7 @@ import com.group4.clinicmanagement.dto.PatientUserDTO;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.repository.PatientRepository;
 import com.group4.clinicmanagement.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,8 +21,10 @@ import java.util.UUID;
 public class PatientService {
     private final PatientRepository patientRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public PatientService(PatientRepository patientRepository, UserRepository userRepository) {
+    public PatientService(PatientRepository patientRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
         this.patientRepository = patientRepository;
         this.userRepository = userRepository;
     }
@@ -47,7 +50,7 @@ public class PatientService {
         User user = userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        int updatedPatient = patientRepository.updateAddress(user.getUserId(), patientUserDTO.getAddress());
+        int updatedPatient = patientRepository.updateAddress(user.getUserId(), patientUserDTO.getAddress(), patientUserDTO.getDateOfBirth());
 
         if (updatedPatient == 0) {
             throw new RuntimeException("Patient not found");
@@ -85,8 +88,23 @@ public class PatientService {
                 throw new RuntimeException("Upload avatar failed", e);
             }
         }
+    }
 
+    public boolean changePassword(String username, String currentPassword, String newPassword) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
 
+        if (optionalUser.isEmpty()) return false;
 
+        User user = optionalUser.get();
+
+        // So sánh mật khẩu hiện tại
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+            return false;
+        }
+
+        // Cập nhật mật khẩu mới đã băm
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return true;
     }
 }

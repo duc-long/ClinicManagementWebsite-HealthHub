@@ -1,0 +1,37 @@
+<div th:fragment="popup">
+<div id="toast-container"></div>
+
+<script th:inline="javascript">
+    // ✅ Hàm hiển thị toast
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.classList.add('toast', `toast-${type}`);
+        toast.innerHTML = `
+            <span>${message}</span>
+            <div class="toast-progress"></div>
+        `;
+
+        document.getElementById('toast-container').appendChild(toast);
+
+        // Gọi hiệu ứng vào
+        setTimeout(() => toast.classList.add('show'), 100);
+
+        // Ẩn sau 3 giây
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+
+    // ✅ Kiểm tra flash attribute từ backend (Spring)
+    const successMsg = /*[[${success}]]*/ null;
+    const errorMsg   = /*[[${error}]]*/ null;
+
+    if (successMsg) {
+        showToast(String(successMsg), 'success');
+    }
+    if (errorMsg) {
+        showToast(String(errorMsg), 'error');
+    }
+</script>
+</div>

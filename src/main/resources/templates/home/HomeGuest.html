@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HealthHub - Home</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/assets/css/home.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/fragment-patient.css">
+    <link rel="stylesheet" href="/assets/css/popup-error.css">
+    <div th:replace="~{fragment/fragment.html :: css}"></div>
     <style>
         body {
             background-color: #f6f7fb;
@@ -22,7 +27,7 @@
 <body>
 
 <!-- NAVBAR -->
-<div th:replace="~{fragment/fragment :: navBar}"></div>
+<div th:replace="~{fragment/fragment.html :: navBar}"></div>
 
 <!-- HERO BANNER -->
 <section class="container py-5">
@@ -38,11 +43,13 @@
     </div>
 </section>
 
+
 <!-- ACTION BUTTONS BOX -->
 <section class="container py-4">
     <div class="card p-5 shadow text-center border-primary border-1">
         <div class="d-flex justify-content-center gap-4 flex-wrap">
-            <a th:href="@{/home/search-doctor}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5" style="width: 380px;">
+            <a th:href="@{/home/search-doctor}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5"
+               style="width: 380px;">
                 <i class="fa-solid fa-user-doctor me-2"></i>Find A Doctors
             </a>
             <a href="#"
@@ -50,7 +57,8 @@
                style="width: 380px;">
                 <i class="fa-solid fa-star me-2"></i>View Feedback
             </a>
-            <a th:href="@{/appointment/make-appointment}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5" style="width: 380px;">
+            <a th:href="@{/appointment/make-appointment}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5"
+               style="width: 380px;">
                 <i class="fa-solid fa-calendar-check me-2"></i>Book Appointment
             </a>
         </div>
@@ -84,7 +92,8 @@
         <div class="col-md-4">
             <h2 class="text-primary fw-bold mb-3">Our Specialties</h2>
             <p class="text-muted">
-                HealthHub provides a wide range of medical specialties and expert care teams, ensuring every patient receives trusted, personalized treatment using modern technology and evidence-based practices.
+                HealthHub provides a wide range of medical specialties and expert care teams, ensuring every patient
+                receives trusted, personalized treatment using modern technology and evidence-based practices.
             </p>
             <div class="dropdown">
                 <a class="dropdown-toggle text-primary text-decoration-none fw-semibold"
@@ -92,7 +101,9 @@
                     Specialty
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
-                    <li th:each="s : ${specialties}"><a class="dropdown-item" th:href="@{/home/specialty/{specialty}(specialty=${s})}" th:text="${s}"></a></li>
+                    <li th:each="s : ${specialties}"><a class="dropdown-item"
+                                                        th:href="@{/home/specialty/{specialty}(specialty=${s})}"
+                                                        th:text="${s}"></a></li>
                 </ul>
             </div>
         </div>
@@ -103,7 +114,8 @@
                 <div class="col-md-6">
                     <div class="card text-white border-0 position-relative">
                         <img src="https://placehold.co/360x240" class="card-img" alt="General Internal Medicine">
-                        <div class="card-img-overlay d-flex align-items-end" style="background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);">
+                        <div class="card-img-overlay d-flex align-items-end"
+                             style="background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);">
                             <h5 class="card-title fw-bold">Cardiology</h5>
                         </div>
                     </div>
@@ -111,7 +123,8 @@
                 <div class="col-md-6">
                     <div class="card text-white border-0 position-relative">
                         <img src="https://placehold.co/360x240" class="card-img" alt="Obstetrics & Gynaecology">
-                        <div class="card-img-overlay d-flex align-items-end" style="background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);">
+                        <div class="card-img-overlay d-flex align-items-end"
+                             style="background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);">
                             <h5 class="card-title fw-bold">Neurology</h5>
                         </div>
                     </div>
@@ -121,6 +134,16 @@
         </div>
     </div>
 </section>
+
+
+<div class="feedback-container">
+    <div th:replace="~{fragment/patient/page :: pagination-feedback}"></div>
+
+    <div th:replace="~{fragment/patient/feedback :: feedback}">
+
+    </div>
+</div>
+
 
 <!-- FOOTER -->
 <footer class="bg-primary text-white py-5">
@@ -142,8 +165,39 @@
         </div>
     </div>
 </footer>
-
 <!-- Bootstrap JS -->
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function showEditForm(id) {
+        document.getElementById('edit-form-' + id).style.display = 'block';
+    }
+
+    function hideEditForm(id) {
+        document.getElementById('edit-form-' + id).style.display = 'none';
+    }
+</script>
+
+<script>
+    function confirmDelete(feedbackId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to undo this action!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Gửi form khi user bấm Yes
+                document.getElementById('delete-form-' + feedbackId).submit();
+            }
+        });
+    }
+</script>
+
+<div th:replace="~{fragment/popup :: popup}"></div>
 </body>
 </html>

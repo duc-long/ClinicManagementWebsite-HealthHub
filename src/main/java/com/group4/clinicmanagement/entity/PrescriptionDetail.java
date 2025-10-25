@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "prescriptiondetail")
+@Table(name = "Prescriptiondetail")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,4 +26,7 @@ public class PrescriptionDetail {
 
     private Integer quantity;
     private String dosage;
+    private String frequency;
+    private Integer duration_days;
+    private String instruction;
 }

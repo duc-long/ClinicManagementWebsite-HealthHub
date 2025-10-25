@@ -1,0 +1,124 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Lexend", sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+}
+
+.page-container {
+    max-width: 1200px;
+    /*margin: 40px auto;*/
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+    padding: 32px 32px 40px;
+}
+
+.profile-title {
+    text-align: center;
+    color: #009BAB;
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.card-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    padding: 30px 40px;
+    width: 49%;
+    /*flex: 1;*/
+    /*flex: 0 0 calc(50% - 20px); !* 2 ô mỗi hàng, trừ đi gap *!*/
+    /*max-width: calc(50% - 20px);*/
+}
+
+.card-title {
+    color: #009BAB;
+    font-weight: 600;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 14px 20px;
+}
+
+.label {
+    color: #009BAB;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.value {
+    color: #7a7a7a;
+    font-size: 18px;
+    font-weight: 400;
+    white-space: pre-wrap;
+}
+
+.info-grid > .label,
+.info-grid > .value {
+    padding: 3px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.prescription-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.prescription-table th,
+.prescription-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+}
+
+.prescription-table th {
+    background-color: #f2f2f2;
+    color: #009BAB;
+    font-weight: 600;
+}
+
+.prescription-table td {
+    color: #555;
+    font-weight: 400;
+}
+
+.lab-image-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.lab-image {
+    width: 100%;   /* Chiếm toàn bộ chiều rộng của card */
+    height: auto;  /* Đảm bảo ảnh giữ tỷ lệ */
+    border-radius: 10px;  /* Tùy chỉnh nếu bạn muốn bo góc ảnh */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Thêm bóng mờ để ảnh nổi bật */
+    margin-top: 20px;
+}
+
+.card.full-width {
+    grid-column: 1 / -1; /* Chiếm toàn bộ chiều ngang */
+    margin-top: 20px; /* Khoảng cách giữa các card full-width */
+    flex-basis: 100%;
+    width: 99%;
+}
+
+

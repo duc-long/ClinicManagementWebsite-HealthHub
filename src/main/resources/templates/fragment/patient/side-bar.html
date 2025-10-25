@@ -1,0 +1,32 @@
+<!-- SIDEBAR -->
+<div class="col-md-3 col-12 sidebar p-4 border-end" th:fragment="sidebar-patient">
+    <h5 class="sidebar-title">Account</h5>
+    <ul class="nav flex-column sidebar-nav">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/patient/profile}">
+                <i class="bi bi-person-circle"></i> Information
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/patient/list-medical-records}">
+                <i class="bi bi-journal-medical"></i> List medical records
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/patient/edit-profile}">
+                <i class="bi bi-pencil-square"></i> Edit profile
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/patient/change-password}">
+                <i class="bi bi-key-fill"></i> Change password
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link logout" th:href="@{/patient/logout}">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+        </li>
+    </ul>
+</div>
+
