@@ -1,59 +1,97 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Appointment List</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments – HealHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
 </head>
 <body>
-<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold text-primary" href="#">
-            <i class="fa-solid fa-hospital-user me-2"></i>HeathHub Receptionist
-        </a>
-        <div class="d-flex align-items-center gap-2">
-            <a class="btn btn-outline-primary btn-sm" th:href="@{/receptionist/appointment-list}">
-                <i class="fa-solid fa-calendar me-1"></i>Appointments</a>
-            <a class="btn btn-outline-secondary btn-sm active" th:href="@{/receptionist/profile}">
-                <i class="fa-solid fa-user me-1"></i>Profile
+<div class="app" id="appLayout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">R</div>
+            <div class="title hide-when-collapsed">HealHub · Receptionist</div>
+        </div>
+
+        <button id="toggleSidebar" class="toggle-btn" type="button">
+            <i class="fa-solid fa-angles-left"></i>
+            <span class="hide-when-collapsed">Collapse</span>
+        </button>
+
+        <nav class="nav" id="sideNav">
+            <small class="hide-when-collapsed">OVERVIEW</small>
+            <a th:href="@{/receptionist/appointment-list}">
+                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="hide-when-collapsed">Appointments</span>
             </a>
-            <form action="/receptionist/logout" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-outline-danger btn-sm">
-                    <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Logout
+            <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+            <a th:href="@{/receptionist/profile}">
+                <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+                <span class="hide-when-collapsed">Profile</span>
+            </a>
+            <form th:action="@{/receptionist/logout}" method="post" style="margin-top:.5rem;">
+                <button class="toggle-btn" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hide-when-collapsed">Logout</span>
                 </button>
             </form>
-        </div>
-    </div>
-</nav>
+        </nav>
+    </aside>
 
-<div class="container mt-5">
-    <h2>Appointment Management</h2>
-    <table class="table table-bordered table-striped mt-3">
-        <thead class="table-primary">
-        <tr>
-            <th>ID</th>
-            <th>Patient Name</th>
-            <th>Phone</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Doctor</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="app : ${appointments}">
-            <td th:text="${app.appointmentId}"></td>
-            <td th:text="${app.patient.user.fullName}"></td>
-            <td th:text="${app.patient.user.phone}"></td>
-            <td th:text="${app.appointmentDate}"></td>
-            <td th:text="${app.status}"></td>
-            <td th:text="${app.doctor != null ? app.doctor.user.fullName : 'Not Assigned'}"></td>
-            <td>
-                <a th:href="@{'/receptionist/appointment/' + ${app.appointmentId}}" class="btn btn-info btn-sm">Details</a>
-                <a th:href="@{'/receptionist/appointment/edit/' + ${app.appointmentId}}" class="btn btn-warning btn-sm">Edit</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <!-- MAIN -->
+    <main class="main">
+        <div class="topbar">
+            <h4 class="mb-0">Appointment Management</h4>
+        </div>
+
+        <div class="content">
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Phone</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Doctor</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="app : ${appointments}">
+                    <td th:text="${app.appointmentId}"></td>
+                    <td th:text="${app.patient.user.fullName}"></td>
+                    <td th:text="${app.patient.user.phone}"></td>
+                    <td th:text="${app.appointmentDate}"></td>
+                    <td th:text="${app.status}"></td>
+                    <td th:text="${app.doctor != null ? app.doctor.user.fullName : 'Not Assigned'}"></td>
+                    <td>
+                        <a th:href="@{'/receptionist/appointment/' + ${app.appointmentId}}" class="btn btn-info btn-sm">Details</a>
+                        <a th:href="@{'/receptionist/appointment/edit/' + ${app.appointmentId}}" class="btn btn-warning btn-sm">Edit</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
 </div>
+<div class="overlay" id="overlay"></div>
+
+<script>
+    const app = document.getElementById('appLayout');
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const overlay = document.getElementById('overlay');
+
+    toggleBtn.addEventListener('click', () => {
+        app.classList.toggle('collapsed');
+    });
+    overlay.addEventListener('click', () => {
+        app.classList.remove('show-sidebar');
+    });
+</script>
 </body>
 </html>

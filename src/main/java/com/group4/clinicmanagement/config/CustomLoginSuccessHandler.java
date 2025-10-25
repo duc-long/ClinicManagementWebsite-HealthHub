@@ -28,7 +28,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         // ==================== RECEPTIONIST ====================
         if(requestURI.startsWith("/receptionist/login")) {
             if(hasRole(roles, "ROLE_Receptionist")) {
-                redirectURL = "/receptionist/profile";
+                redirectURL = "/receptionist/appointment-list";
             } else {
                 // tài khoản không hợp lệ cho trang này
                 response.sendRedirect("/receptionist/login?error=invalid_role");

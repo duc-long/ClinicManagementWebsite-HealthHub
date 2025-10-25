@@ -1,100 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/edit-profile.css">
-    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <title>Edit Profile – HealHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
 </head>
 <body>
-<div class="page-container">
-    <form class="profile-card" th:action="@{/receptionist/edit-profile}" method="post" th:object="${receptionist}"
-          enctype="multipart/form-data">
-
-        <div class="profile-title">Change profile</div>
-        <div class="avatar-container avatar-upload">
-            <img th:src="${receptionist.avatarFilename != null} ? '/images/avatars/' + ${receptionist.avatarFilename} : '/images/avatars/default-avatar.png'"
-                 class="avatar"
-                 id="avatarPreview"
-                 alt="Avatar"/>
-            <label class="avatar-overlay">
-                <span class="upload-text">Change</span>
-                <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(this)">
-            </label>
+<div class="app" id="appLayout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">R</div>
+            <div class="title hide-when-collapsed">HealHub · Receptionist</div>
         </div>
 
-        <div class="info">
-            <div class="group-info">
-                <div class="label">Username</div>
-                <input type="text" th:field="*{username}" disabled readonly class="input"/>
-            </div>
-            <div class="group-info">
-                <div class="label">Name</div>
-                <input type="text" th:field="*{fullName}" class="input"/>
-            </div>
-            <div class="group-info">
-                <div class="label">Email</div>
-                <input type="email" th:field="*{email}" class="input"/>
-            </div>
-            <div class="group-info">
-                <div class="label">Gender</div>
-                <div class="form-group">
-                    <label>Gender</label>
-                    <div class="form-check">
-                        <input class="form-check-input"
-                               type="radio"
-                               th:field="*{gender}"
-                               th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}"
-                               id="genderMale" required>
-                        <label class="form-check-label" for="genderMale">Male</label>
+        <button id="toggleSidebar" class="toggle-btn" type="button">
+            <i class="fa-solid fa-angles-left"></i>
+            <span class="hide-when-collapsed">Collapse</span>
+        </button>
+
+        <nav class="nav" id="sideNav">
+            <small class="hide-when-collapsed">OVERVIEW</small>
+            <a th:href="@{/receptionist/appointment-list}">
+                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="hide-when-collapsed">Appointments</span>
+            </a>
+            <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+            <a th:href="@{/receptionist/profile}">
+                <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+                <span class="hide-when-collapsed">Profile</span>
+            </a>
+            <form th:action="@{/receptionist/logout}" method="post" style="margin-top:.5rem;">
+                <button class="toggle-btn" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hide-when-collapsed">Logout</span>
+                </button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <h4>Edit Profile</h4>
+        </div>
+
+        <div class="content">
+            <form class="profile-card" th:action="@{/receptionist/edit-profile}" method="post" th:object="${receptionist}" enctype="multipart/form-data">
+                <div class="profile-title">Change profile</div>
+
+                <div class="avatar" style="margin:auto;">
+                    <img th:src="${receptionist.avatarFilename != null} ?
+                                 '/images/avatars/' + ${receptionist.avatarFilename} :
+                                 '/images/avatars/default-avatar.png'"
+                         id="avatarPreview" width="150" height="150"
+                         style="border-radius:50%; object-fit:cover;" alt="Avatar"/>
+                    <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(this)" style="margin-top:10px;">
+                </div>
+
+                <div class="info" style="margin-top:20px;">
+                    <div class="group-info">
+                        <div class="label">Username</div>
+                        <input type="text" th:field="*{username}" readonly class="form-control"/>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input"
-                               type="radio"
-                               th:field="*{gender}"
-                               th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}"
-                               id="genderFemale">
-                        <label class="form-check-label" for="genderFemale">Female</label>
+                    <div class="group-info">
+                        <div class="label">Full Name</div>
+                        <input type="text" th:field="*{fullName}" class="form-control"/>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input"
-                               type="radio"
-                               th:field="*{gender}"
-                               th:value="${T(com.group4.clinicmanagement.enums.Gender).UNKNOWN}"
-                               id="genderOther">
-                        <label class="form-check-label" for="genderOther">Other</label>
+                    <div class="group-info">
+                        <div class="label">Email</div>
+                        <input type="email" th:field="*{email}" class="form-control"/>
+                    </div>
+                    <div class="group-info">
+                        <div class="label">Phone</div>
+                        <input type="text" th:field="*{phone}" class="form-control"/>
                     </div>
                 </div>
 
-            </div>
-            <div class="group-info">
-                <div class="label">Phone</div>
-                <input type="text" th:field="*{phone}" class="input"/>
-            </div>
+                <div class="button-row mt-3">
+                    <a th:href="@{/receptionist/profile}" class="btn-label change-password-label">Cancel</a>
+                    <button type="submit" class="btn-label change-profile-label">Save</button>
+                </div>
+            </form>
         </div>
-
-        <div class="button-row">
-            <a th:href="@{/receptionist/profile}" class="btn-label cancel">Cancel</a>
-            <button type="submit" class="btn-label save">Save</button>
-        </div>
-    </form>
+    </main>
 </div>
-</body>
+
+<div class="overlay" id="overlay"></div>
 
 <script>
     function previewAvatar(input) {
         const file = input.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = e => {
-                document.getElementById('avatarPreview').src = e.target.result;
-            };
+            reader.onload = e => document.getElementById('avatarPreview').src = e.target.result;
             reader.readAsDataURL(file);
         }
     }
+
+    const app = document.getElementById('appLayout');
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const overlay = document.getElementById('overlay');
+
+    toggleBtn.addEventListener('click', () => app.classList.toggle('collapsed'));
+    overlay.addEventListener('click', () => app.classList.remove('show-sidebar'));
 </script>
+</body>
 </html>
