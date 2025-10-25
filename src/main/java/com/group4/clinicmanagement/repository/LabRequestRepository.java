@@ -29,6 +29,7 @@ public interface LabRequestRepository extends JpaRepository<LabRequest, Integer>
                WHEN :status = 'PAID' THEN 1
                WHEN :status = 'COMPLETED' THEN 2
                WHEN :status = 'CANCELLED' THEN 3
+               WHEN :status = 'RUNNING' THEN 4
            END)
       AND ((:fromDate IS NULL) OR lr.requested_at >= :fromDate)
       AND ((:toDate IS NULL) OR lr.requested_at <= :toDate)

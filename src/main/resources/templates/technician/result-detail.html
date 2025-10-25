@@ -70,7 +70,7 @@
                                 ${result.labRequestStatus == 'REQUESTED'} ? 'badge bg-secondary' :
                                 (${result.labRequestStatus == 'PAID'} ? 'badge bg-primary' : 'badge bg-success')"
                                       th:text="${result.labRequestStatus}">
-                            </span>
+                                </span>
                             </div>
                             <div th:if="${result.labRequestStatus == 'COMPLETED'}"
                                     th:text="${#temporals.format(result.createdAt, 'dd/MM/yyyy HH:mm:ss')}"></div>

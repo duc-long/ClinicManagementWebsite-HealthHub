@@ -60,14 +60,22 @@
                         <dt class="col-4">Doctor Request</dt>
                         <dd class="col-8" th:text="${request.medicalRecord.doctor.user.fullName}"></dd>
                         <dt class="col-4">Requested</dt>
-                        <dd class="col-8" th:text="${request.requestedAt}"></dd>
+                        <dd class="col-8" th:text="${#temporals.format(request.requestedAt,'dd-MM-yyyy HH:mm')}"></dd>
                         <dt class="col-4">Status</dt>
-                        <dd class="col-8" th:text="${request.status}"></dd>
+                        <dd class="col-8">
+                            <span th:switch="${request.status.name()}">
+                                <span th:case="'REQUESTED'" class="badge bg-secondary">Requested</span>
+                                <span th:case="'PAID'" class="badge bg-yellow">Paid</span>
+                                <span th:case="'COMPLETED'" class="badge bg-success">Completed</span>
+                                <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
+                                <span th:case="'RUNNING'" class="badge bg-primary">Running</span>
+                            </span>
+                        </dd>
                     </dl>
                     <div class="d-flex gap-2">
                         <a th:if="${request.status.name() == 'PAID'}"
                                 class="btn btn-primary"
-                           th:href="@{/technician/test/{id}(id = ${request.labRequestId})}">Create Lab Test</a>
+                           th:href="@{/technician/create-test/{id}(id = ${request.labRequestId})}">Create Lab Test</a>
                     </div>
                 </div>
             </div>

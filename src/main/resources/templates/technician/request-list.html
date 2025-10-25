@@ -82,6 +82,7 @@
                         <option value="">All Status</option>
                         <option value="REQUESTED" th:selected="${status == 'REQUESTED'}">Requested</option>
                         <option value="PAID" th:selected="${status == 'PAID'}">Paid</option>
+                        <option value="RUNNING" th:selected="${status == 'RUNNING'}">Running</option>
                         <option value="COMPLETED" th:selected="${status == 'COMPLETED'}">Completed</option>
                         <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
                     </select>
@@ -146,16 +147,15 @@
                         <td>
                             <span th:switch="*{status.name()}">
                                 <span th:case="'REQUESTED'" class="badge bg-secondary">Requested</span>
-                                <span th:case="'PAID'" class="badge bg-primary">Paid</span>
+                                <span th:case="'PAID'" class="badge bg-yellow">Paid</span>
                                 <span th:case="'COMPLETED'" class="badge bg-success">Completed</span>
                                 <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
+                                <span th:case="'RUNNING'" class="badge bg-primary">Running</span>
                             </span>
                         </td>
                         <td th:text="*{#temporals.format(requestedAt, 'dd-MM-yyyy HH:mm')}"></td>
                         <td>
                             <a class="btn btn-sm btn-outline-primary me-1" th:href="@{/technician/request/{id}(id=*{labRequestId})}"><i class="fa-solid fa-eye"></i></a>
-                            <a class="btn btn-sm btn-outline-success me-1" th:href="@{/technician/request/update/{id}(id=*{labRequestId})}"><i class="fa-solid fa-pen"></i></a>
-                            <a class="btn btn-sm btn-outline-danger" th:href="@{/technician/request/delete/{id}(id=*{labRequestId})}"><i class="fa-solid fa-trash"></i></a>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(labRequests)}">

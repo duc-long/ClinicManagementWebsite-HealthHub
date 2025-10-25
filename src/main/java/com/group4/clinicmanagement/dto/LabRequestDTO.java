@@ -1,9 +1,6 @@
 package com.group4.clinicmanagement.dto;
 
-import com.group4.clinicmanagement.entity.Doctor;
-import com.group4.clinicmanagement.entity.LabTestCatalog;
-import com.group4.clinicmanagement.entity.Patient;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.*;
 import com.group4.clinicmanagement.enums.LabRequestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,5 +21,16 @@ public class LabRequestDTO {
     private Patient patient;
 
     public LabRequestDTO() {
+    }
+    public LabRequestDTO(LabRequest labRequest) {
+        this.labRequestId = labRequest.getLabRequestId();
+        this.doctor = labRequest.getDoctor();
+        this.medicalRecordId = labRequest.getMedicalRecord().getRecordId();
+        this.labTestCatalog = labRequest.getTest();
+        this.requestedAt = labRequest.getRequestedAt();
+        this.statusValue = labRequest.getStatusValue();
+        this.status = labRequest.getStatus();
+        this.requestedAt = labRequest.getRequestedAt();
+        this.patient = labRequest.getMedicalRecord().getPatient();
     }
 }

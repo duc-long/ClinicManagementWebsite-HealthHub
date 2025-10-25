@@ -115,6 +115,7 @@
                         <th>Test</th>
                         <th>Status</th>
                         <th>Technician</th>
+                        <th>Date/Time</th>
                         <th>Action</th>
                     </tr>
                     </thead>
@@ -124,13 +125,16 @@
                         <td th:text="${result.patientName}"></td>
                         <td th:text="${result.testName}"></td>
                         <td>
-                            <span th:classappend="
-                                ${result.labRequestStatus == 'REQUESTED'} ? 'badge bg-secondary' :
-                                (${result.labRequestStatus == 'PAID'} ? 'badge bg-primary' : 'badge bg-success')"
-                                  th:text="${result.labRequestStatus}">
+                            <span th:switch="${result.labRequestStatus}">
+                                <span th:case="'REQUESTED'" class="badge bg-secondary">Requested</span>
+                                <span th:case="'PAID'" class="badge bg-yellow">Paid</span>
+                                <span th:case="'COMPLETED'" class="badge bg-success">Completed</span>
+                                <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
+                                <span th:case="'RUNNING'" class="badge bg-primary">Running</span>
                             </span>
                         </td>
                         <td th:text="${result.technicianName}"></td>
+                        <td th:text="${#temporals.format(result.createdAt,'dd/MM/yyyy HH:mm:ss')}"></td>
                         <td>
                             <a class="btn btn-sm btn-outline-info me-1"
                                th:href="@{/technician/result/{id}(id = ${result.resultId})}">Detail</a>

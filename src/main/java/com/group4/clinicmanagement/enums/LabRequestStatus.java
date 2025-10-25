@@ -4,7 +4,8 @@ public enum LabRequestStatus {
     REQUESTED(0),
     PAID(1),
     COMPLETED(2),
-    CANCELLED(3);
+    CANCELLED(3),
+    RUNNING(4);
 
     private final int value;
 

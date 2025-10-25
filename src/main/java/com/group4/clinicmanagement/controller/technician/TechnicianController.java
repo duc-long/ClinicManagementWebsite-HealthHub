@@ -47,7 +47,7 @@ public class TechnicianController {
     @GetMapping("/dashboard")
     public String technicianHome(Model model) {
         List<LabResultDTO> labResultDTOS = new ArrayList<>(labResultService.findLabResultList());
-        labResultDTOS.removeIf(r -> !"PAID".equals(r.getLabRequestStatus()));
+        labResultDTOS.removeIf(r -> !"RUNNING".equals(r.getLabRequestStatus()));
 
         List<LabRequestDTO> labRequestDTOS = new ArrayList<>(labRequestService.getAllLabRequestDTO());
         labRequestDTOS.removeIf(r -> !r.getStatus().equals(LabRequestStatus.REQUESTED));

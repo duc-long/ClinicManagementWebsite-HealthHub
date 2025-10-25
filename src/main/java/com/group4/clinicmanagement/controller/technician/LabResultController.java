@@ -1,13 +1,18 @@
 package com.group4.clinicmanagement.controller.technician;
 
+import com.group4.clinicmanagement.dto.LabRequestDTO;
 import com.group4.clinicmanagement.dto.LabResultDTO;
+import com.group4.clinicmanagement.entity.LabRequest;
 import com.group4.clinicmanagement.entity.LabResult;
 import com.group4.clinicmanagement.entity.LabTestCatalog;
+import com.group4.clinicmanagement.security.CustomUserDetails;
+import com.group4.clinicmanagement.service.CustomUserDetailsService;
 import com.group4.clinicmanagement.service.LabRequestService;
 import com.group4.clinicmanagement.service.LabResultService;
 import com.group4.clinicmanagement.service.LabTestCatalogService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,6 +35,16 @@ public class LabResultController {
         this.labResultService = labResultService;
         this.labRequestService = labRequestService;
         this.labTestCatalogService = labTestCatalogService;
+    }
+
+    @GetMapping("/create-test/{id}")
+    public String createTest(@PathVariable("id") Integer labRequestId, Authentication authentication, Model model, RedirectAttributes redirectAttributes) {
+        CustomUserDetails userDetails = authentication.getPrincipal() == null ? null : (CustomUserDetails) authentication.getPrincipal();
+        int technicianId = userDetails.getUserId();
+
+        Integer resultId = labResultService.createResultForRequest(labRequestId, technicianId);
+
+        return "redirect:/technician/result/" + resultId;
     }
 
     @GetMapping("/result-list")

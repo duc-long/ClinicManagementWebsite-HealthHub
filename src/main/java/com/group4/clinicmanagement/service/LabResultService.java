@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.service;
 
+import com.group4.clinicmanagement.dto.LabRequestDTO;
 import com.group4.clinicmanagement.dto.LabResultDTO;
 import com.group4.clinicmanagement.entity.LabImage;
 import com.group4.clinicmanagement.entity.LabRequest;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +39,30 @@ public class LabResultService {
         this.userRepository = userRepository;
         this.labImageRepository = labImageRepository;
     }
+
+    @Transactional
+    public Integer createResultForRequest(Integer labRequestId, int technicianUserId) {
+        LabRequest request = labRequestRepository.findById(labRequestId)
+                .orElseThrow(() -> new RuntimeException("LabRequest not found"));
+
+        User technician = userRepository.getReferenceByUserId(technicianUserId);
+        if (technician == null) {
+            throw new RuntimeException("Technician not found for userId " + technicianUserId);
+        }
+
+        LabResult result = new LabResult();
+        result.setLabRequest(request);
+        result.setCreatedAt(LocalDateTime.now());
+        result.setTechnician(technician);
+
+        request.setStatus(LabRequestStatus.RUNNING);
+
+        labRequestRepository.save(request);
+        labResultRepository.save(result);
+
+        return result.getResultId();
+    }
+
 
     public List<LabResultDTO> findLabResultList() {
         return labResultRepository.findAll().stream()

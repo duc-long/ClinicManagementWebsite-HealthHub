@@ -40,7 +40,7 @@
 
 <div class="page-container" th:object="${technicianDTO}">
     <div class="profile-card">
-        <div class="profile-title">My Profile</div><span th:text="${technicianDTO.avatarFilename}"></span>
+        <div class="profile-title">My Profile</div>
         <!-- 🖼️ Avatar -->
         <img th:if="${technicianDTO != null}"
              th:src="${technicianDTO.avatarFilename != null and !#strings.isEmpty(technicianDTO.avatarFilename)}
@@ -86,7 +86,9 @@
         <div class="button-row">
             <a th:href="@{/technician/edit-profile}" class="btn-label change-profile-label">Change Profile</a>
             <a th:href="@{/technician/change-password}" class="btn-label change-password-label">Change Password</a>
-            <a th:href="@{/technician/delete-account}" class="btn-label delete-account-label text-danger">Delete Account</a>
+            <form th:action="@{/technician/delete-account}" method="post" onsubmit="return confirm('Are you sure you want to delete your account?');">
+                <button type="submit" class="btn-label delete-account-label text-danger">Delete Account</button>
+            </form>
         </div>
     </div>
 </div>
