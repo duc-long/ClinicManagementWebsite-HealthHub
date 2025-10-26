@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Medical Records – HealHub</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <style>
+        :root {
+            --hm-blue: #005691;
+            --hm-green: #008744;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: var(--hm-blue);
+        }
+
+        .btn-hm {
+            background-color: var(--hm-blue);
+            color: white;
+        }
+
+        .btn-hm:hover {
+            background-color: #003f6f;
+            color: #fff;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f5f8fb;
+        }
+
+        .badge-status {
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+<div th:fragment="medicalRecordFragment">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="section-title mb-0"><i class="fa-solid fa-file-medical me-2"></i>Hồ sơ bệnh án</h4>
+        <a th:href="@{/doctor/records/new}" class="btn btn-hm">
+            <i class="fa-solid fa-plus me-1"></i> Thêm hồ sơ
+        </a>
+    </div>
+
+    <!-- Filter/Search -->
+    <form th:action="@{/doctor/records}" method="get" class="row g-2 mb-3">
+        <div class="col-md-4">
+            <input type="text" name="keyword" th:value="${keyword}" class="form-control"
+                   placeholder="Tìm theo tên bệnh nhân hoặc chẩn đoán...">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-primary w-100">
+                <i class="fa-solid fa-search me-1"></i> Lọc
+            </button>
+        </div>
+    </form>
+
+    <!-- Table -->
+    <div class="table-responsive shadow-sm rounded bg-white p-3">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Patient</th>
+                <th>Diagnose</th>
+                <th>Note</th>
+                <th>Status</th>
+                <th>Create Date</th>
+                <th class="text-center">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="record, iStat : ${records}">
+                <td th:text="${iStat.index + 1}"></td>
+                <td th:text="${record.patient.fullName}"></td>
+                <td th:text="${#strings.abbreviate(record.diagnosis, 40)}"></td>
+                <td th:text="${#strings.abbreviate(record.notes, 40)}"></td>
+
+                <td>
+                    <span th:switch="${record.status.name()}">
+                        <span th:case="'OPEN'" class="badge bg-success badge-status">Mở</span>
+                        <span th:case="'IN_PROGRESS'" class="badge bg-warning text-dark badge-status">Đang xử lý</span>
+                        <span th:case="'CLOSED'" class="badge bg-secondary badge-status">Đã đóng</span>
+                        <span th:case="*"
+                              class="badge bg-light text-dark badge-status">Không xác định</span>
+                    </span>
+                </td>
+
+                <td th:text="${#temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+
+                <td class="text-center">
+                    <a th:href="@{'/doctor/records/' + ${record.recordId}}" class="btn btn-sm btn-outline-info me-1">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                    <a th:href="@{'/doctor/records/edit/' + ${record.recordId}}" class="btn btn-sm btn-outline-primary">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(records)}">
+                <td colspan="7" class="text-center text-muted py-3">
+                    <i class="fa-regular fa-folder-open me-1"></i> Chưa có hồ sơ nào được tạo
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

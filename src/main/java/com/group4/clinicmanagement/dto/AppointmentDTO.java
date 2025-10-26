@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AppointmentDTO {
     private int appointmentId;
-
+    private int patientId;
     private String doctorName;        // a.getDoctor().getUser().getFullName()
     private String patientName;       // a.getPatient().getUser().getFullName()
     private String receptionistName;  // a.getReceptionist().getFullName()

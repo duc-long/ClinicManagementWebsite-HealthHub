@@ -31,17 +31,17 @@
                 <span class="icon"><i class="fa-solid fa-house"></i></span>
                 <span class="hide-when-collapsed">Dashboard</span>
             </a>
-            <a href="#" data-section="appointments" th:classappend="${active == 'appointments'} ? ' active'">
+            <a th:href="@{/doctor/appointments}" th:classappend="${active == 'appointments'} ? ' active'">
                 <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
                 <span class="hide-when-collapsed">Appointments</span>
             </a>
-            <a href="#" data-section="patients">
+            <a th:href="@{/doctor/records/list}">
                 <span class="icon"><i class="fa-solid fa-user-group"></i></span>
-                <span class="hide-when-collapsed">Patients</span>
+                <span class="hide-when-collapsed">Medical Record</span>
             </a>
-            <a href="#" data-section="schedule">
+            <a th:href="@{/doctor/prescription}">
                 <span class="icon"><i class="fa-solid fa-clock"></i></span>
-                <span class="hide-when-collapsed">Schedule</span>
+                <span class="hide-when-collapsed">Prescription</span>
             </a>
 
             <small class="hide-when-collapsed mt-2">CARE</small>

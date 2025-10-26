@@ -26,4 +26,9 @@ public class PrescriptionDetail {
 
     private Integer quantity;
     private String dosage;
+    private Integer frequency;
+
+    @Column(name = "duration_days")
+    private Integer durationDay;
+    private String instruction;
 }

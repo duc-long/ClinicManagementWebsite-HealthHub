@@ -1,20 +1,16 @@
 package com.group4.clinicmanagement.controller.doctor;
 
-import com.group4.clinicmanagement.dto.AppointmentDTO;
-import com.group4.clinicmanagement.dto.DoctorDTO;
-import com.group4.clinicmanagement.entity.Appointment;
-import com.group4.clinicmanagement.entity.Department;
-import com.group4.clinicmanagement.entity.Doctor;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.dto.*;
+import com.group4.clinicmanagement.entity.*;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
+import com.group4.clinicmanagement.enums.PrescriptionStatus;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
 import com.group4.clinicmanagement.security.CustomUserDetails;
-import com.group4.clinicmanagement.service.AppointmentService;
-import com.group4.clinicmanagement.service.DoctorService;
-import com.group4.clinicmanagement.service.UserService;
+import com.group4.clinicmanagement.service.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -30,17 +26,26 @@ public class DoctorController {
     private final DepartmentRepository departmentRepository;
     private final AppointmentRepository appointmentRepository;
     private final AppointmentService appointmentService;
+    private final DrugCatalogService drugCatalogService;
+    private final MedicalRecordService medicalRecordService;
+    private final PrescriptionService prescriptionService;
 
     public DoctorController(DoctorService doctorService, UserService userService, DepartmentRepository departmentRepository,
-                            AppointmentRepository appointmentRepository, AppointmentService appointmentService) {
+                            AppointmentRepository appointmentRepository, AppointmentService appointmentService,
+                            DrugCatalogService drugCatalogService, MedicalRecordService medicalRecordService,
+                            PrescriptionService prescriptionService) {
         this.doctorService = doctorService;
         this.userService = userService;
         this.departmentRepository = departmentRepository;
         this.appointmentRepository = appointmentRepository;
         this.appointmentService = appointmentService;
+        this.drugCatalogService = drugCatalogService;
+        this.medicalRecordService = medicalRecordService;
+        this.prescriptionService = prescriptionService;
     }
 
-    @GetMapping({"/overview"})
+    // method to load home view doctor
+    @GetMapping({"/home"})
     public String home(Model model,
                        Authentication authentication) {
         String username = authentication.getName();
@@ -49,71 +54,29 @@ public class DoctorController {
 
         Doctor doctor = doctorService.findDoctorById(user.getUserId());
         Department department = doctorService.findDoctorDepartment(doctor.getDepartment().getDepartmentId());
-
-        model.addAttribute("username", username);
-        model.addAttribute("department", department.getName());
-        model.addAttribute("section", "overview");
+        List<AppointmentDTO> appointmentList = appointmentRepository
+                .findByDoctor_DoctorIdAndStatusValue(user.getUserId(), AppointmentStatus.CHECKED_IN.getValue())
+                .stream()
+                .map(a -> new AppointmentDTO(
+                        a.getAppointmentId(),
+                        a.getPatient().getPatientId(),
+                        a.getDoctor() != null && a.getDoctor().getUser() != null ? a.getDoctor().getUser().getFullName() : "Unknown",
+                        a.getPatient() != null && a.getPatient().getUser() != null ? a.getPatient().getUser().getFullName() : "Unknown",
+                        a.getReceptionist() != null ? a.getReceptionist().getFullName() : "Unknown",
+                        a.getAppointmentDate(),
+                        a.getCreatedAt(),
+                        a.getStatus(),
+                        a.getQueueNumber(),
+                        a.getNotes(),
+                        a.getCancelReason()
+                ))
+                .toList();
+        model.addAttribute("appointments", appointmentList);
+        model.addAttribute("section", "home");
         return "doctor/home";
     }
 
-    @GetMapping("/view/{section}")
-    public String loadFragment(@PathVariable String section, Principal principal, Model model) {
-        User user = userService.findUserByUsername(principal.getName());
-        if (user == null) return "redirect:/doctor/login";
-
-        Doctor doctor = doctorService.findDoctorById(user.getUserId());
-        model.addAttribute("doctor", doctor);
-
-        switch (section) {
-            case "profile":
-                DoctorDTO doctorDTO = new DoctorDTO();
-                doctorDTO.setGender(user.getGender());
-                doctorDTO.setEmail(user.getEmail());
-                doctorDTO.setPhone(user.getPhone());
-                doctorDTO.setFullName(user.getFullName());
-                doctorDTO.setDoctorId(user.getUserId());
-                doctorDTO.setAvatarFileName(user.getAvatar());
-                doctorDTO.setUsername(user.getUsername());
-                Department department = departmentRepository.findByDepartmentId(doctor.getDepartment().getDepartmentId())
-                        .orElse(null);
-                model.addAttribute("doctor", doctorDTO);
-                model.addAttribute("department", department.getName());
-                return "fragment/doctor/doctor-fragment :: profile";
-            case "overview":
-                return "fragment/doctor/doctor-fragment :: overview";
-            case "appointments":
-                try {
-                    List<AppointmentDTO> appointmentList = appointmentRepository
-                            .findByDoctor_DoctorIdAndStatusValue(user.getUserId(), AppointmentStatus.CHECKED_IN.getValue())
-                            .stream()
-                            .map(a -> new AppointmentDTO(
-                                    a.getAppointmentId(),
-                                    a.getDoctor() != null && a.getDoctor().getUser() != null ? a.getDoctor().getUser().getFullName() : "Unknown",
-                                    a.getPatient() != null && a.getPatient().getUser() != null ? a.getPatient().getUser().getFullName() : "Unknown",
-                                    a.getReceptionist() != null ? a.getReceptionist().getFullName() : "Unknown",
-                                    a.getAppointmentDate(),
-                                    a.getCreatedAt(),
-                                    a.getStatus(),
-                                    a.getQueueNumber(),
-                                    a.getNotes(),
-                                    a.getCancelReason()
-                            ))
-                            .toList();
-                    System.out.println("Lấy ssc");
-                    model.addAttribute("appointments", appointmentList);
-                    return "fragment/doctor/doctor-fragment :: appointments";
-                } catch (Exception e) {
-                    System.out.println("Lỗi excepetion");
-                    e.printStackTrace();
-                    model.addAttribute("appointments", List.of());
-                    model.addAttribute("error", e.getMessage());
-                    return "fragment/doctor/doctor-fragment :: appointments";
-                }
-            default:
-                return "fragment/doctor/doctor-fragment :: overview";
-        }
-    }
-
+    // method to load profile doctor
     @GetMapping("/profile")
     public String loadProfile(Principal principal, Model model) {
         User user = userService.findUserByUsername(principal.getName());
@@ -138,7 +101,47 @@ public class DoctorController {
         return "doctor/home";
     }
 
-    @GetMapping("/appointment/detail/{id}")
+    // method to load appointment list for doctor
+    @GetMapping("/appointments")
+    public String loadAppointment(Principal principal, Model model, RedirectAttributes redirectAttributes) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) return "redirect:/doctor/login";
+
+        Doctor doctor = doctorService.findDoctorById(user.getUserId());
+        model.addAttribute("doctor", doctor);
+
+        try {
+            List<AppointmentDTO> appointmentList = appointmentRepository
+                    .findByDoctor_DoctorIdAndStatusValue(user.getUserId(), AppointmentStatus.CHECKED_IN.getValue())
+                    .stream()
+                    .map(a -> new AppointmentDTO(
+                            a.getAppointmentId(),
+                            a.getPatient().getPatientId(),
+                            a.getDoctor() != null && a.getDoctor().getUser() != null ? a.getDoctor().getUser().getFullName() : "Unknown",
+                            a.getPatient() != null && a.getPatient().getUser() != null ? a.getPatient().getUser().getFullName() : "Unknown",
+                            a.getReceptionist() != null ? a.getReceptionist().getFullName() : "Unknown",
+                            a.getAppointmentDate(),
+                            a.getCreatedAt(),
+                            a.getStatus(),
+                            a.getQueueNumber(),
+                            a.getNotes(),
+                            a.getCancelReason()
+                    ))
+                    .toList();
+            model.addAttribute("appointments", appointmentList);
+            model.addAttribute("section", "appointments");
+            return "doctor/home";
+        } catch (Exception e) {
+            System.out.println("Lỗi excepetion");
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            return "redirect:/doctor/home";
+        }
+    }
+
+    // method to show appointment detail for doctor
+    @GetMapping("/appointments/detail/{id}")
     public String loadAppointmentDetail(@PathVariable int id, Model model,
                                         RedirectAttributes redirectAttributes,
                                         Principal principal) {
@@ -148,11 +151,12 @@ public class DoctorController {
         if (user.getUserId() != a.getDoctor().getDoctorId()) {
             redirectAttributes.addFlashAttribute("message", "You can't access this appointment");
             redirectAttributes.addFlashAttribute("messageType", "error");
-            return "redirect:/doctor/appointment/detail/" + id;
+            return "redirect:/doctor/home";
         }
 
         AppointmentDTO dto = new AppointmentDTO(
                 a.getAppointmentId(),
+                a.getPatient().getPatientId(),
                 a.getDoctor().getUser().getFullName(),
                 a.getPatient().getUser().getFullName(),
                 a.getReceptionist() != null ? a.getReceptionist().getFullName() : "N/A",
@@ -165,14 +169,15 @@ public class DoctorController {
         );
 
         model.addAttribute("appointment", dto);
-        return "fragment/doctor/doctor-fragment :: appointment-detail";
+        model.addAttribute("section", "appointment-detail");
+        return "doctor/home";
     }
 
     // method to redirect to update profile page
     @GetMapping("/profile/edit/{id}")
-    public String updateProfile(Model model,
-                                @PathVariable(name = "id") int id,
-                                Principal principal) {
+    public String loadProfile(Model model,
+                              @PathVariable(name = "id") int id,
+                              Principal principal) {
         User user = userService.findUserByUsername(principal.getName());
 
         // check valid user info
@@ -206,7 +211,7 @@ public class DoctorController {
         if (user == null) return "redirect:/login";
 
         Doctor doctor = doctorService.findDoctorById(user.getUserId());
-        if (doctor == null) return "redirect:/doctor/overview";
+        if (doctor == null) return "redirect:/doctor/home";
 
         // --- Update user basic info ---
         user.setFullName(doctorModel.getFullName());
@@ -222,8 +227,152 @@ public class DoctorController {
 
         redirectAttributes.addFlashAttribute("message", "Doctor profile updated successfully!");
         redirectAttributes.addFlashAttribute("messageType", "success");
-        return "redirect:/doctor/overview";
+        return "redirect:/doctor/home";
+    }
+
+    // method to show record form
+    @GetMapping("/records/{id}")
+    public String loadRecordForm(Model model, Principal principal,
+                                 @RequestParam(name = "patientId") int patientId,
+                                 @RequestParam(name = "appointmentId") int appointmentId) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) return "redirect:/doctor/login";
+
+        model.addAttribute("record", new MedicalRecordDTO());
+        model.addAttribute("appointmentId", appointmentId);
+        model.addAttribute("patientId", patientId);
+        return "doctor/create-medical-record";
+    }
+
+    // method to show list medical record
+    @GetMapping("/records/list")
+    public String loadRecordList(Model model, Principal principal) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) return "redirect:/doctor/login";
+
+        List<MedicalRecordDTO> medicalRecordListDTOList =
+                medicalRecordService.findMedicalRecordByDoctorIdAndStatus(user.getUserId())
+                        .stream()
+                        .map(medicalRecord -> new MedicalRecordDTO(
+                                medicalRecord.getRecordId(),
+                                medicalRecord.getDiagnosis(),
+                                medicalRecord.getCreatedAt(),
+                                medicalRecord.getDoctor().getUser().getFullName(),
+                                medicalRecord.getNotes(),
+                                medicalRecord.getStatus(),
+                                medicalRecord.getDoctor().getDoctorId(),
+                                medicalRecord.getPatient().getPatientId(),
+                                medicalRecord.getAppointment().getAppointmentId(),
+                                medicalRecord.getPatient().getUser().getFullName()
+                        )).toList();
+
+        model.addAttribute("records", medicalRecordListDTOList);
+        model.addAttribute("section", "medical-record-list");
+        return "doctor/home";
+    }
+
+    // method to save medical record
+    @PostMapping("/record/save")
+    public String saveRecord(Model model, Principal principal,
+                             @ModelAttribute(name = "record") MedicalRecordDTO record,
+                             RedirectAttributes redirectAttributes) {
+        User user = userService.findUserByUsername(principal.getName());
+        Doctor doctor = doctorService.findDoctorById(user.getUserId());
+
+        Appointment appointment = new Appointment();
+        appointment.setAppointmentId(record.getAppointmentId());
+
+        Patient patient = new Patient();
+        patient.setPatientId(record.getPatientId());
+
+        // Create MedicalRecord
+        MedicalRecord medicalRecord = new MedicalRecord();
+        medicalRecord.setDoctor(doctor);
+        medicalRecord.setAppointment(appointment);
+        medicalRecord.setPatient(patient);
+        medicalRecord.setDiagnosis(record.getDiagnosis());
+        medicalRecord.setNotes(record.getNotes());
+        medicalRecord.setStatus(record.getRecordStatus());
+        medicalRecord.setCreatedBy(user);
+
+        // save to DB
+        int saved = medicalRecordService.saveRecord(medicalRecord);
+
+        if (saved > 0) {
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "Create medical record successfully!");
+            redirectAttributes.addFlashAttribute("section", "appointments");
+            return "redirect:/doctor/home";
+        } else {
+            model.addAttribute("messageType", "error");
+            model.addAttribute("message", "Failed to save medical record!");
+            model.addAttribute("section", "appointments");
+            return "/doctor/home";
+        }
+    }
+
+    @GetMapping("/prescription/new/{id}")
+    public String loadCreatePrescription(@PathVariable("id") int recordId,
+                                         @RequestParam("appointmentId") int appointmentId,
+                                         @RequestParam("patientId") int patientId,
+                                         Model model, Principal principal) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) return "redirect:/doctor/login";
+
+        MedicalRecord medicalRecord = medicalRecordService.findById(recordId);
+        MedicalRecordDTO medicalRecordDTO = new MedicalRecordDTO();
+
+        medicalRecordDTO.setPatientId(patientId);
+        medicalRecordDTO.setDiagnosis(medicalRecord.getDiagnosis());
+        medicalRecordDTO.setPatientName(medicalRecord.getPatient().getUser().getFullName());
+
+        model.addAttribute("recordId", recordId);
+        model.addAttribute("record", medicalRecordDTO);
+        model.addAttribute("prescription", new PrescriptionDTO());
+        model.addAttribute("drugs", drugCatalogService.findAllDrugs());
+        return "doctor/create-prescription";
     }
 
 
+    @PostMapping("/prescription/save")
+    @Transactional
+    public String savePrescription(@RequestParam("recordId") int recordId,
+                                   @RequestParam("drugIds") List<Integer> drugIds,
+                                   @RequestParam("quantities") List<Integer> quantities,
+                                   @RequestParam("dosages") List<String> dosages,
+                                   @RequestParam("frequencies") List<Integer> frequencies,
+                                   @RequestParam("durationDay") List<Integer> durationDays,
+                                   @RequestParam("instructions") List<String> instructions,
+                                   Principal principal,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            User user = userService.findUserByUsername(principal.getName());
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                redirectAttributes.addFlashAttribute("message", "Doctor not found or session expired!");
+                return "redirect:/doctor/login";
+            }
+
+            Doctor doctor = doctorService.findDoctorById(user.getUserId());
+
+            prescriptionService.savePrescription(
+                    recordId,
+                    doctor.getDoctorId(),
+                    PrescriptionStatus.ACTIVE,
+                    drugIds, quantities, dosages, frequencies, durationDays, instructions
+            );
+
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "Prescription created successfully!");
+            return "redirect:/doctor/home";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Failed to create prescription: " + e.getMessage());
+            return "redirect:/doctor/records/list";
+        }
+    }
+
 }
+
