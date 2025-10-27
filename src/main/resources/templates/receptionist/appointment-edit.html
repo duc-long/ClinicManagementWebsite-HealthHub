@@ -56,11 +56,15 @@
 
                 <div class="mb-3">
                     <label>Status:</label>
-                    <select th:field="*{statusValue}" class="form-control">
+                    <select th:field="*{status}" class="form-control">
                         <option th:each="s : ${statuses}"
-                                th:value="${s.value}"
-                                th:text="${s.name()}"></option>
+                                th:value="${s.name()}"
+                                th:text="${s.name()}">
+                        </option>
                     </select>
+
+
+
                 </div>
 
                 <div class="mb-3">

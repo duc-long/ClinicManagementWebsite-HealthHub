@@ -86,6 +86,7 @@ public class ReceptionistController {
         if (updatedAppointment.getStatusValue() != null) {
             updatedAppointment.setStatus(AppointmentStatus.fromInt(updatedAppointment.getStatusValue()));
         }
+
         appointmentService.updateAppointment(updatedAppointment);
         return "redirect:/receptionist/appointment-list";
     }

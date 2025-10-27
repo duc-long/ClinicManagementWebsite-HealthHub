@@ -12,6 +12,7 @@ import com.group4.clinicmanagement.repository.FeedbackRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -115,6 +116,7 @@ public class AppointmentService {
         existing.setNotes(updated.getNotes());
         existing.setDoctor(newDoctor);
         existing.setStatus(newStatus);
+        existing.fillStatusValue();
 
         // Case 1: Assign doctor & was pending → auto CONFIRM + slot -1
         if (oldStatus == AppointmentStatus.PENDING && newDoctor != null) {
