@@ -1,8 +1,12 @@
 package com.group4.clinicmanagement.controller.admin;
 
+import com.group4.clinicmanagement.dto.DepartmentDTO;
+import com.group4.clinicmanagement.dto.admin.DoctorDTO;
 import com.group4.clinicmanagement.dto.admin.PatientDTO;
-import com.group4.clinicmanagement.entity.Patient;
+import com.group4.clinicmanagement.repository.admin.DoctorForAdminRepository;
+import com.group4.clinicmanagement.service.DepartmentService;
 import com.group4.clinicmanagement.service.UserService;
+import com.group4.clinicmanagement.service.admin.DoctorForAdminService;
 import com.group4.clinicmanagement.service.admin.PatientForAdminService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -16,22 +20,30 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Controller
 @RequestMapping(value = "/admin")
 public class AdminController {
     private final PatientForAdminService patientService;
+    private final DoctorForAdminService doctorService;
     private final UserService userService;
-    public AdminController(PatientForAdminService patientService, UserService userService) {
+    private final DepartmentService departmentService;
+    private final DoctorForAdminRepository doctorForAdminRepository;
+
+    public AdminController(PatientForAdminService patientService, DoctorForAdminService doctorService, UserService userService, DepartmentService departmentService, DoctorForAdminRepository doctorForAdminRepository) {
         this.patientService = patientService;
+        this.doctorService = doctorService;
         this.userService = userService;
+        this.departmentService = departmentService;
+        this.doctorForAdminRepository = doctorForAdminRepository;
     }
 
     @GetMapping(value = "/patient")
     public String showPatientList(Model model,
-                              @RequestParam(value = "size", defaultValue = "10") Integer size,
-                              @RequestParam(value = "page", defaultValue = "0") Integer page) {
+                                  @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                  @RequestParam(value = "page", defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, size);
         Page<PatientDTO> patientDTOs = patientService.findAll(pageable);
         model.addAttribute("patientDTOs", patientDTOs);
@@ -88,14 +100,14 @@ public class AdminController {
     }
 
     @PostMapping(value = "/patient/delete-result")
-    public String deletePatientById(@ModelAttribute(name = "patientDTO") PatientDTO dto, Model model, RedirectAttributes redirectAttributes) {
+    public String deletePatientById(@ModelAttribute(name = "patientDTO") PatientDTO dto, RedirectAttributes redirectAttributes) {
         try {
             patientService.deletePatient(dto);
             redirectAttributes.addFlashAttribute("successMessage",
                     "Patient with ID: " + dto.getPatientId() + " was deleted successfully!");
             return "redirect:/admin/patient";
         } catch (Exception e) {
-            System.out.println(  "\n" + "Error: " + e.getMessage() + "\n");
+            System.out.println("\n" + "Error: " + e.getMessage() + "\n");
             redirectAttributes.addFlashAttribute(
                     "errorMessage",
                     "Cannot delete the patient with ID: " + dto.getPatientId());
@@ -126,15 +138,147 @@ public class AdminController {
             System.out.printf("%s\n", bindingResult.getAllErrors());
             return "admin/add-new-patient";
         } else {
-            Patient patient = patientService.newPatient(dto, avatar);
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Patient with ID: " + patient.getPatientId() + " was created successfully!");
-            return "redirect:/admin/patient";
+            try {
+                Integer patientId = patientService.newPatient(dto, avatar);
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Patient with ID: " + patientId + " was created successfully!");
+                return "redirect:/admin/patient";
+            } catch (Exception e) {
+                System.out.println(e.getMessage() + "Error ------------------------------\n");
+                return "admin/add-new-patient";
+            }
+
         }
 
 
     }
 
+    @GetMapping(value = "/doctor")
+    public String showDoctorList(Model model,
+                                 @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                 @RequestParam(value = "page", defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<DoctorDTO> doctorDTOS = doctorService.findAllDoctors(pageable);
+        model.addAttribute("doctorDTOS", doctorDTOS);
+        return "admin/manage-doctors-for-admin";
+    }
+
+    @GetMapping(value = "/doctor/{id}")
+    public String showDoctorById(@PathVariable(value = "id") Integer id, Model model) {
+        DoctorDTO doctorDTO = doctorService.findById(id);
+        model.addAttribute("doctorDTO", doctorDTO);
+        return "admin/doctor-details";
+    }
+
+    @GetMapping(value = "/doctor/edit/{id}")
+    public String editDoctorById(@PathVariable(value = "id") Integer id, Model model) {
+        DoctorDTO doctorDTO = doctorService.findById(id);
+        List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+        model.addAttribute("patientDTOList", patientDTOList);
+        model.addAttribute("today", java.time.LocalDate.now());
+        model.addAttribute("doctorDTO", doctorDTO);
+        model.addAttribute("error", "");
+        return "admin/update-doctor";
+    }
+
+    @PostMapping(value = "/doctor/edit-result")
+    public String editDoctorResult(@Valid @ModelAttribute(name = "doctorDTO") DoctorDTO dto,
+                                   BindingResult bindingResult,
+                                   @RequestParam("avatar") MultipartFile avatar,
+                                   RedirectAttributes redirectAttributes,
+                                   Model model) {
+
+        if (doctorService.isLicenseNoDuplicateForUpdate(dto.getLicenseNo(), dto.getDoctorId())) {
+            bindingResult.rejectValue("licenseNo", "error.licenseNo", "LicenseNo already exists");
+        }
+        if (bindingResult.hasErrors()) {
+            List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+            model.addAttribute("patientDTOList", patientDTOList);
+            model.addAttribute("doctorDTO", dto);
+            model.addAttribute("today", LocalDate.now());
+            return "admin/update-doctor";
+        }
+
+        try {
+            doctorService.update(dto, avatar);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Doctor with ID: " + dto.getDoctorId() + " was updated successfully!");
+            return "redirect:/admin/doctor";
+        } catch (Exception e) {
+            List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+            System.out.println(e.getMessage() + "Error ------------------------------\n");
+            model.addAttribute("patientDTOList", patientDTOList);
+            model.addAttribute("today", LocalDate.now());
+            model.addAttribute("doctorDTO", dto);
+            return "admin/update-doctor";
+        }
+    }
+
+    @GetMapping(value = "/doctor/new")
+    public String addNewDoctor(Model model) {
+        List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+        model.addAttribute("patientDTOList", patientDTOList);
+        model.addAttribute("doctorDTO", new DoctorDTO());
+        return "admin/add-new-doctor";
+    }
+
+    @PostMapping(value = "/doctor/new-result")
+    public String addNewDoctorResult(
+            @Valid @ModelAttribute("doctorDTO") DoctorDTO dto,
+            BindingResult bindingResult,
+            @RequestParam("avatar") MultipartFile avatar,
+            RedirectAttributes redirectAttributes,
+            Model model
+    ) {
+        if (doctorService.isLicenseNoDuplicateForNewDoctor(dto.getLicenseNo(), dto.getDoctorId())) {
+            bindingResult.rejectValue("licenseNo", "error.licenseNo", "LicenseNo already exists");
+        }
+        if (userService.isUsernameDuplicate(dto.getUsername())) {
+            bindingResult.rejectValue("username", "error.username", "Username already exists");
+        }
+        if (bindingResult.hasErrors()) {
+            List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+            model.addAttribute("patientDTOList", patientDTOList);
+            model.addAttribute("doctorDTO", dto);
+            model.addAttribute("today", LocalDate.now());
+            return "admin/add-new-doctor";
+        } else {
+            try {
+                Integer doctorId = doctorService.newDoctor(dto, avatar);
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Doctor with ID: " + doctorId + " was created successfully!");
+                return "redirect:/admin/doctor";
+            } catch (Exception e) {
+                System.out.println(e.getMessage() + "Error ------------------------------\n");
+                List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+                model.addAttribute("patientDTOList", patientDTOList);
+                return "admin/add-new-doctor";
+            }
+        }
+    }
+
+    @GetMapping(value = "/doctor/delete/{id}")
+    public String deleteDoctorById(@PathVariable(value = "id") Integer id, Model model) {
+        DoctorDTO doctorDTO = doctorService.findById(id);
+        model.addAttribute("doctorDTO", doctorDTO);
+        return "admin/delete-doctor";
+    }
+
+    @PostMapping(value = "/doctor/delete-result")
+    public String deleteDoctorById(@ModelAttribute(name = "doctorDTO") DoctorDTO dto, RedirectAttributes redirectAttributes) {
+        try {
+            doctorService.deleteDoctor(dto);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Doctor with ID: " + dto.getDoctorId() + " was deleted successfully!");
+            return "redirect:/admin/doctor";
+        } catch (Exception e) {
+            System.out.println("\n" + "Error: " + e.getMessage() + "\n");
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Cannot delete the doctor with ID: " + dto.getDoctorId());
+            return "redirect:/admin/doctor";
+        }
+    }
 
 
 }

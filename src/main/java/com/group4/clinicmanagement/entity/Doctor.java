@@ -1,9 +1,12 @@
 package com.group4.clinicmanagement.entity;
 
+import com.group4.clinicmanagement.dto.admin.DoctorDTO;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;

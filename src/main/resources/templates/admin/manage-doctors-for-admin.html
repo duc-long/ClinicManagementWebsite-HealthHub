@@ -82,10 +82,10 @@
                 <a class="nav-link " href="#"><i class="fas fa-chart-line me-2"></i> Dashboard</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" th:href="@{/admin/patient}"><i class="fas fa-users me-2"></i> Patients</a>
+                <a class="nav-link" th:href="@{/admin/patient}"><i class="fas fa-users me-2"></i> Patients</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i> Doctors</a>
+                <a class="nav-link active" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i> Doctors</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#"><i class="fas fa-hospital-user me-2"></i> Receptionists</a>
@@ -110,10 +110,10 @@
 
         <!-- Page Content -->
         <div class="p-4">
-            <h2 class="section-title">Manage Patients</h2>
+            <h2 class="section-title">Manage Doctors</h2>
 
             <div class="mb-3 text-end">
-                <a th:href="@{/admin/patient/new}" class="btn btn-hm-green">+ Create</a>
+                <a th:href="@{/admin/doctor/new}" class="btn btn-hm-green">Create</a>
             </div>
 
             <div class="card shadow-sm">
@@ -123,7 +123,7 @@
                         <tr>
                             <th>ID</th>
                             <th>FullName</th>
-                            <th>DOB</th>
+                            <th>Profile Visibility</th>
                             <th>Gender</th>
                             <th>Phone</th>
                             <th>Status</th>
@@ -131,20 +131,22 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="p : ${patientDTOs}">
+                        <tr th:each="p : ${doctorDTOS}">
                             <td th:text="${p.userId}"></td>
                             <td th:text="${p.fullName}"></td>
-                            <td th:text="${p.birthDate}"></td>
+                            <td class="text-center" th:text="${p.profileVisibility} ? 'Visible' : 'Hidden'"
+                                th:classappend="${p.profileVisibility} ? 'text-success fw-bold' : 'text-danger fw-bold'"
+                            ></td>
                             <td th:text="${p.gender}"></td>
                             <td th:text="${p.phone}"></td>
                             <td class="text-center" th:text="${p.userStatus}"
                                 th:classappend="${p.userStatus.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></td>
                             <td class="text-center">
-                                <a th:href="@{/admin/patient/edit/{id}(id=${p.patientId})}"
+                                <a th:href="@{/admin/doctor/edit/{id}(id=${p.doctorId})}"
                                    class="btn btn-sm btn-outline-primary me-2">Edit</a>
-                                <a th:href="@{/admin/patient/delete/{id}(id=${p.patientId})}"
+                                <a th:href="@{/admin/doctor/delete/{id}(id=${p.doctorId})}"
                                    class="btn btn-sm btn-outline-danger me-2">Delete</a>
-                                <a th:href="@{/admin/patient/{id}(id=${p.patientId})}"
+                                <a th:href="@{/admin/doctor/{id}(id=${p.doctorId})}"
                                    class="btn btn-sm btn-outline-dark me-2">View</a>
                             </td>
                         </tr>
@@ -158,36 +160,36 @@
             <ul class="pagination justify-content-center">
 
                 <!-- First -->
-                <li class="page-item text-red" th:classappend="${patientDTOs.first} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/patient(page=0, size=10)}">First</a>
+                <li class="page-item text-red" th:classappend="${doctorDTOS.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/doctor(page=0, size=10)}">First</a>
                 </li>
 
                 <!-- Previous -->
-                <li class="page-item" th:classappend="${patientDTOs.first} ? 'disabled'">
+                <li class="page-item" th:classappend="${doctorDTOS.first} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/admin/patient(page=${patientDTOs.number - 1}, size=5)}">Previous</a>
+                       th:href="@{/admin/doctor(page=${doctorDTOS.number - 1}, size=5)}">Previous</a>
                 </li>
 
                 <!-- Center pages -->
                 <li class="page-item"
-                    th:each="i : ${#numbers.sequence((patientDTOs.number > 2 ? patientDTOs.number - 2 : 0),
-                                             (patientDTOs.number + 2 < patientDTOs.totalPages ? patientDTOs.number + 2 : patientDTOs.totalPages - 1))}"
-                    th:classappend="${i == patientDTOs.number} ? 'active'">
+                    th:each="i : ${#numbers.sequence((doctorDTOS.number > 2 ? doctorDTOS.number - 2 : 0),
+                                             (doctorDTOS.number + 2 < doctorDTOS.totalPages ? doctorDTOS.number + 2 : doctorDTOS.totalPages - 1))}"
+                    th:classappend="${i == doctorDTOS.number} ? 'active'">
                     <a class="page-link"
                        th:text="${i + 1}"
-                       th:href="@{/admin/patient(page=${i}, size=10)}"></a>
+                       th:href="@{/admin/doctor(page=${i}, size=10)}"></a>
                 </li>
 
                 <!-- Next -->
-                <li class="page-item" th:classappend="${patientDTOs.last} ? 'disabled'">
+                <li class="page-item" th:classappend="${doctorDTOS.last} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/admin/patient(page=${patientDTOs.number + 1}, size=10)}">Next</a>
+                       th:href="@{/admin/doctor(page=${doctorDTOS.number + 1}, size=10)}">Next</a>
                 </li>
 
                 <!-- Last -->
-                <li class="page-item" th:classappend="${patientDTOs.last} ? 'disabled'">
+                <li class="page-item" th:classappend="${doctorDTOS.last} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/admin/patient(page=${patientDTOs.totalPages - 1}, size=10)}">Last</a>
+                       th:href="@{/admin/doctor(page=${doctorDTOS.totalPages - 1}, size=10)}">Last</a>
                 </li>
             </ul>
         </nav>

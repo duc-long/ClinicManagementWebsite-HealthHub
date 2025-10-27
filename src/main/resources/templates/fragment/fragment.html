@@ -114,6 +114,11 @@
             background-color: #e8f9fa;
         }
 
+        .navbar .dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0;
+        }
+
     </style>
 </div>
 
@@ -145,12 +150,10 @@
                         <a class="nav-link dropdown-toggle" href="#" id="dropdownSpecialty" data-bs-toggle="dropdown">
                             Specialty
                         </a>
-                        <ul class="dropdown-menu">
-                            <li th:each="s : ${session.specialties}">
-                                <a class="dropdown-item"
-                                   th:href="@{/home/specialty/{specialty}(specialty=${s})}"
-                                   th:text="${s}"></a>
-                            </li>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
+                            <li th:each="s : ${specialties}"><a class="dropdown-item"
+                                                                th:href="@{/home/specialty/{specialty}(specialty=${s})}"
+                                                                th:text="${s}"></a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

@@ -91,10 +91,10 @@
                 <a class="nav-link" href="#"><i class="fas fa-chart-line me-2"></i> Dashboard</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" th:href="@{/admin/patient}"><i class="fas fa-users me-2"></i> Patients</a>
+                <a class="nav-link " th:href="@{/admin/patient}"><i class="fas fa-users me-2"></i> Patients</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i> Doctors</a>
+                <a class="nav-link active" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i> Doctors</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#"><i class="fas fa-hospital-user me-2"></i> Receptionists</a>
@@ -118,94 +118,134 @@
 
         <!-- Page Content -->
         <div class="p-4">
-            <h2 class="section-title">Manage Patients</h2>
+            <h2 class="section-title">Manage Doctors</h2>
 
             <div class="d-flex justify-content-center">
                 <div class="card shadow-sm w-75">
                     <div class="card-body">
 
-                        <!-- Avatar center -->
                         <!-- Avatar -->
                         <div class="d-flex justify-content-center mb-4">
-                            <img th:src="${patientDTO.avatarFilename} != null ?
-                  @{/images/avatars/{file}(file=${patientDTO.avatarFilename})} :
+                            <img th:src="${doctorDTO.avatarFilename} != null ?
+                  @{/images/avatars/{file}(file=${doctorDTO.avatarFilename})} :
                   @{/images/avatars/default-avatar.png}"
                                  alt="Avatar"
                                  class="rounded-circle shadow avatar-img"
                                  style="width: 150px; height: 150px; object-fit: cover;">
                         </div>
 
-                        <h4 class="mb-4 text-hm-blue text-center">Patient Details</h4>
+                        <h4 class="mb-4 text-hm-blue text-center">Doctor Details</h4>
 
                         <!-- USER INFO -->
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">User ID</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${patientDTO.userId}" readonly/>
+                                <input type="text" class="form-control" th:value="${doctorDTO.userId}" readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Username</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${patientDTO.username}" readonly/>
+                                <input type="text" class="form-control" th:value="${doctorDTO.username}" readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Full Name</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${patientDTO.fullName}" readonly/>
+                                <input type="text" class="form-control" th:value="${doctorDTO.fullName}" readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Email</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${patientDTO.email}" readonly/>
+                                <input type="text" class="form-control" th:value="${doctorDTO.email}" readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Phone</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${patientDTO.phone}" readonly/>
+                                <input type="text" class="form-control" th:value="${doctorDTO.phone}" readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Gender</label>
                             <div class="col-sm-10 pt-2">
-        <span th:text="${patientDTO.gender}"
-              th:classappend="${patientDTO.gender.name() == 'MALE'} ? 'text-primary fw-bold' : 'text-pink fw-bold'"></span>
+        <span class="form-control" th:text="${doctorDTO.gender}"
+              th:classappend="${doctorDTO.gender.name() == 'MALE'} ? 'text-primary fw-bold' : 'text-pink fw-bold'"></span>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label fw-bold">Address</label>
+                            <label class="col-sm-2 col-form-label fw-bold">License No</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${patientDTO.address}" readonly/>
+                                <input type="text" class="form-control" th:value="${doctorDTO.licenseNo}" readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label fw-bold">Date of Birth</label>
+                            <label class="col-sm-2 col-form-label fw-bold">Specialty</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${patientDTO.birthDate}" readonly/>
+                                <input type="text" class="form-control" th:value="${doctorDTO.specialty}" readonly/>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label fw-bold">Degree</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" th:value="${doctorDTO.degree}" readonly/>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label fw-bold">Years Experience</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" th:value="${doctorDTO.yearsExperience}"
+                                       readonly/>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label fw-bold">Bio</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" th:value="${doctorDTO.bio}" readonly/>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label fw-bold">Department</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" th:value="${doctorDTO.department.name}"
+                                       readonly/>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label fw-bold">Profile Visibility</label>
+                            <div class="col-sm-10">
+                                <input type="text"
+                                       class="form-control"
+                                       th:value="${doctorDTO.profileVisibility} ? 'Visible' : 'Hidden'"
+                                       th:classappend="${doctorDTO.profileVisibility} ? 'text-success fw-bold' : 'text-danger fw-bold'"
+                                       readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Status</label>
                             <div class="col-sm-10 pt-2">
-        <span th:text="${patientDTO.userStatus}"
-              th:classappend="${patientDTO.userStatus.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></span>
+        <span class="form-control" th:text="${doctorDTO.userStatus}"
+              th:classappend="${doctorDTO.userStatus.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></span>
                             </div>
                         </div>
 
                         <!-- ACTIONS -->
                         <div class="text-end">
-                            <a th:href="@{/admin/patient}" class="btn btn-secondary me-2">
+                            <a th:href="@{/admin/doctor}" class="btn btn-secondary me-2">
                                 <i class="fas fa-arrow-left me-1"></i> Back to List
                             </a>
                         </div>
