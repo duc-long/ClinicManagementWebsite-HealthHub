@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
+@Entity
 @Table(name = "medicalrecord")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class MedicalRecord {
 
     @Id

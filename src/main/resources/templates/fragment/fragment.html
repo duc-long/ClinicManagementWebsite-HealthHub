@@ -114,6 +114,11 @@
             background-color: #e8f9fa;
         }
 
+        .navbar .dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0;
+        }
+
     </style>
 </div>
 
@@ -142,23 +147,17 @@
                         <a class="nav-link" th:href="@{/home/list-doctor}">Doctors</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle fw-semibold text-primary text-decoration-none"
-                           href="#" id="dropdownSpecialty" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdownSpecialty" data-bs-toggle="dropdown">
                             Specialty
                         </a>
-
                         <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
-                            <li th:each="s : ${session.specialties}">
-                                <a class="dropdown-item"
-                                   th:href="@{/home/specialty/{specialty}(specialty=${s})}"
-                                   th:text="${s}">
-                                </a>
-                            </li>
+                            <li th:each="s : ${specialties}"><a class="dropdown-item"
+                                                                th:href="@{/home/specialty/{specialty}(specialty=${s})}"
+                                                                th:text="${s}"></a></li>
                         </ul>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/patient/appointment/make-appointment}">Book Appointment</a>
+                        <a class="nav-link" th:href="@{/appointment/appointment-list}">Book Appointment</a>
                     </li>
 
                     <!-- Guest -->
