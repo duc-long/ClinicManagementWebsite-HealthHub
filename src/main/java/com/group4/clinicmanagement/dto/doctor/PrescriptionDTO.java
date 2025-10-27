@@ -1,4 +1,4 @@
-package com.group4.clinicmanagement.dto;
+package com.group4.clinicmanagement.dto.doctor;
 
 import com.group4.clinicmanagement.enums.PrescriptionStatus;
 import lombok.Data;

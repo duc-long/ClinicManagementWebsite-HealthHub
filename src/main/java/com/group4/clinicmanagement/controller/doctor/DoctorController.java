@@ -1,16 +1,15 @@
 package com.group4.clinicmanagement.controller.doctor;
 
 import com.group4.clinicmanagement.dto.*;
+import com.group4.clinicmanagement.dto.doctor.MedicalRecordDTO;
+import com.group4.clinicmanagement.dto.doctor.PrescriptionDTO;
 import com.group4.clinicmanagement.entity.*;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.enums.PrescriptionStatus;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
-import com.group4.clinicmanagement.security.CustomUserDetails;
 import com.group4.clinicmanagement.service.*;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;

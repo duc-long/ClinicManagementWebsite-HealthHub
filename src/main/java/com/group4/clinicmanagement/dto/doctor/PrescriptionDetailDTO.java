@@ -1,4 +1,4 @@
-package com.group4.clinicmanagement.dto;
+package com.group4.clinicmanagement.dto.doctor;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
