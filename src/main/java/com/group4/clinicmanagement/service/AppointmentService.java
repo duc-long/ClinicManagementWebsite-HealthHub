@@ -1,13 +1,15 @@
 package com.group4.clinicmanagement.service;
 
+import com.group4.clinicmanagement.dto.AppointmentDTO;
 import com.group4.clinicmanagement.entity.Appointment;
+import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
 import java.time.LocalDate;
-
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -77,6 +79,36 @@ public class AppointmentService {
         LocalDate today = LocalDate.now(ZoneOffset.UTC);
 
         return !date.isBefore(today);
+    }
+
+    public int countTodayAppointments(Integer doctorId) {
+        return appointmentRepository.countTodayAppointments(doctorId);
+    }
+
+    public int countWaitingAppointments(Integer doctorId) {
+        int totalToday = appointmentRepository.countTodayAppointments(doctorId);
+        int examinedToday = appointmentRepository.countExaminedTodayAppointments(doctorId);
+        return totalToday - examinedToday;
+    }
+
+    public Page<AppointmentDTO> getTodayAppointmentsPaged(Integer doctorId, String patientName, AppointmentStatus status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Appointment> appointments = appointmentRepository.findTodayAppointmentsPaged(doctorId, patientName, status, pageable);
+
+        return appointments
+                .map(a -> new AppointmentDTO(
+                        a.getAppointmentId(),
+                        a.getPatient().getPatientId(),
+                        a.getDoctor().getUser().getFullName(),
+                        a.getPatient().getUser().getFullName(),
+                        a.getReceptionist() != null ? a.getReceptionist().getFullName() : "N/A",
+                        a.getAppointmentDate(),
+                        a.getCreatedAt(),
+                        a.getStatus(),
+                        a.getQueueNumber(),
+                        a.getNotes(),
+                        a.getCancelReason()
+                ));
     }
 
 }

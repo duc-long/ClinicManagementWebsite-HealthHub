@@ -8,7 +8,9 @@ import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
 import com.group4.clinicmanagement.security.CustomUserDetails;
 import com.group4.clinicmanagement.service.*;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -47,32 +49,30 @@ public class DoctorController {
     // method to load home view doctor
     @GetMapping({"/home"})
     public String home(Model model,
-                       Authentication authentication) {
-        String username = authentication.getName();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userDetails.getUser(); // hoặc getUserId() nếu bạn có method đó
+                       Principal principal,
+                       @RequestParam(value = "patientName", required = false) String patientName,
+                       @RequestParam(value = "status", required = false) AppointmentStatus status,
+                       @RequestParam(value = "page", defaultValue = "0") int page,
+                       @RequestParam(value = "size", defaultValue = "10") int size) {
+        User user = userService.findUserByUsername(principal.getName());
 
-        Doctor doctor = doctorService.findDoctorById(user.getUserId());
-        Department department = doctorService.findDoctorDepartment(doctor.getDepartment().getDepartmentId());
-        List<AppointmentDTO> appointmentList = appointmentRepository
-                .findByDoctor_DoctorIdAndStatusValue(user.getUserId(), AppointmentStatus.CHECKED_IN.getValue())
-                .stream()
-                .map(a -> new AppointmentDTO(
-                        a.getAppointmentId(),
-                        a.getPatient().getPatientId(),
-                        a.getDoctor() != null && a.getDoctor().getUser() != null ? a.getDoctor().getUser().getFullName() : "Unknown",
-                        a.getPatient() != null && a.getPatient().getUser() != null ? a.getPatient().getUser().getFullName() : "Unknown",
-                        a.getReceptionist() != null ? a.getReceptionist().getFullName() : "Unknown",
-                        a.getAppointmentDate(),
-                        a.getCreatedAt(),
-                        a.getStatus(),
-                        a.getQueueNumber(),
-                        a.getNotes(),
-                        a.getCancelReason()
-                ))
-                .toList();
-        model.addAttribute("appointments", appointmentList);
+        // check user null
+        if (user == null) {
+            return "redirect:/doctor/login";
+        }
+
+        model.addAttribute("todayCount", appointmentService.countTodayAppointments(user.getUserId()));
+        model.addAttribute("waitingCount", appointmentService.countWaitingAppointments(user.getUserId()));
+
+        Page<AppointmentDTO> appointments = appointmentService.getTodayAppointmentsPaged(user.getUserId(), patientName, status, page, size);
+        model.addAttribute("appointments", appointments.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", appointments.getTotalPages());
+        model.addAttribute("patientName", patientName);
+        model.addAttribute("status", status);
         model.addAttribute("section", "home");
+        model.addAttribute("active", "home");
+
         return "doctor/home";
     }
 
@@ -170,6 +170,7 @@ public class DoctorController {
 
         model.addAttribute("appointment", dto);
         model.addAttribute("section", "appointment-detail");
+        model.addAttribute("active", "home");
         return "doctor/home";
     }
 
@@ -241,7 +242,9 @@ public class DoctorController {
         model.addAttribute("record", new MedicalRecordDTO());
         model.addAttribute("appointmentId", appointmentId);
         model.addAttribute("patientId", patientId);
-        return "doctor/create-medical-record";
+        model.addAttribute("active", "home");
+        model.addAttribute("section", "create-record");
+        return "doctor/home";
     }
 
     // method to show list medical record
@@ -267,7 +270,7 @@ public class DoctorController {
                         )).toList();
 
         model.addAttribute("records", medicalRecordListDTOList);
-        model.addAttribute("section", "medical-record-list");
+        model.addAttribute("section", "medicalRecordList");
         return "doctor/home";
     }
 
@@ -301,8 +304,8 @@ public class DoctorController {
         if (saved > 0) {
             redirectAttributes.addFlashAttribute("messageType", "success");
             redirectAttributes.addFlashAttribute("message", "Create medical record successfully!");
-            redirectAttributes.addFlashAttribute("section", "appointments");
-            return "redirect:/doctor/home";
+            redirectAttributes.addFlashAttribute("record", record);
+            return "redirect:/doctor/vital/create";
         } else {
             model.addAttribute("messageType", "error");
             model.addAttribute("message", "Failed to save medical record!");
@@ -372,6 +375,18 @@ public class DoctorController {
             redirectAttributes.addFlashAttribute("message", "Failed to create prescription: " + e.getMessage());
             return "redirect:/doctor/records/list";
         }
+    }
+
+
+    @GetMapping("/vital/create")
+    public String showVitalForm(Model model, Principal principal, @ModelAttribute(value = "record") MedicalRecordDTO record) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) return "redirect:/doctor/login";
+
+        model.addAttribute("vitalDTO", new VitalSignsDTO());
+        model.addAttribute("section", "vital-create");
+        model.addAttribute("active", "home");
+        return "doctor/home";
     }
 
 }
