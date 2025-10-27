@@ -80,11 +80,11 @@
         <h4 class="text-white mb-4">CLINIC HUB</h4>
         <ul class="nav nav-pills flex-column">
             <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-chart-line me-2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link active" th:href="@{/admin/patient}"><i
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/patient}"><i
                     class="fas fa-users me-2"></i> Patients</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i>
                 Doctors</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/admin/receptionist}"><i class="fas fa-hospital-user me-2"></i>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/admin/receptionist}"><i class="fas fa-hospital-user me-2"></i>
                 Receptionists</a></li>
             <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-cash-register me-2"></i> Cashiers</a>
             </li>
@@ -102,12 +102,12 @@
 
         <!-- Page Content -->
         <div class="p-4">
-            <h2 class="section-title">Create New Patient</h2>
+            <h2 class="section-title">Create New Receptionist</h2>
 
             <div class="d-flex justify-content-center">
                 <div class="card shadow-sm w-75">
                     <div class="card-body">
-                        <form th:action="@{/admin/patient/new-result}" th:object="${patientDTO}" method="post"
+                        <form th:action="@{/admin/receptionist/new-result}" th:object="${receptionistDTO}" method="post"
                               enctype="multipart/form-data">
 
                             <!-- Avatar Upload -->
@@ -119,7 +119,7 @@
                                 <input type="file" class="form-control w-50" name="avatar">
                             </div>
 
-                            <h4 class="mb-4 text-hm-blue text-center">Patient Information</h4>
+                            <h4 class="mb-4 text-hm-blue text-center">Receptionist Information</h4>
 
                             <!-- Username -->
                             <div class="mb-3 row">
@@ -177,32 +177,13 @@
                                 </div>
                             </div>
 
-                            <!-- Address -->
-                            <div class="mb-3 row">
-                                <label class="col-sm-2 col-form-label fw-bold">Address</label>
-                                <div class="col-sm-10">
-                                    <input type="text" th:field="*{address}" class="form-control"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('address')}"
-                                         th:errors="*{address}"></div>
-                                </div>
-                            </div>
-
-                            <!-- Birthdate -->
-                            <div class="mb-3 row">
-                                <label class="col-sm-2 col-form-label fw-bold">Date of Birth</label>
-                                <div class="col-sm-10">
-                                    <input type="date" th:field="*{birthDate}" class="form-control"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('birthDate')}"
-                                         th:errors="*{birthDate}"></div>
-                                </div>
-                            </div>
                             <!-- Buttons -->
                             <div class="text-end">
-                                <a th:href="@{/admin/patient}" class="btn btn-secondary me-2">
+                                <a th:href="@{/admin/receptionist}" class="btn btn-secondary me-2">
                                     <i class="fas fa-arrow-left me-1"></i> Cancel
                                 </a>
                                 <button type="submit" class="btn btn-hm-green">
-                                    <i class="fas fa-user-plus me-1"></i> Create Patient
+                                    <i class="fas fa-user-plus me-1"></i> Create Receptionist
                                 </button>
                             </div>
                         </form>

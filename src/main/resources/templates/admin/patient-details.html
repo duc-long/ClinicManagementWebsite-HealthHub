@@ -97,7 +97,7 @@
                 <a class="nav-link" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i> Doctors</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-hospital-user me-2"></i> Receptionists</a>
+                <a class="nav-link" th:href="@{/admin/receptionist}"><i class="fas fa-hospital-user me-2"></i> Receptionists</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#"><i class="fas fa-cash-register me-2"></i> Cashiers</a>
@@ -176,7 +176,7 @@
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Gender</label>
                             <div class="col-sm-10 pt-2">
-        <span th:text="${patientDTO.gender}"
+        <span class="form-control" th:text="${patientDTO.gender}"
               th:classappend="${patientDTO.gender.name() == 'MALE'} ? 'text-primary fw-bold' : 'text-pink fw-bold'"></span>
                             </div>
                         </div>
@@ -198,7 +198,7 @@
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Status</label>
                             <div class="col-sm-10 pt-2">
-        <span th:text="${patientDTO.userStatus}"
+        <span class="form-control" th:text="${patientDTO.userStatus}"
               th:classappend="${patientDTO.userStatus.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></span>
                             </div>
                         </div>
