@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.service;
 
+
 import com.group4.clinicmanagement.dto.MedicalRecordDetailDTO;
 import com.group4.clinicmanagement.dto.MedicalRecordListDTO;
 import com.group4.clinicmanagement.repository.MedicalRecordRepository;
@@ -8,13 +9,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import com.group4.clinicmanagement.entity.MedicalRecord;
+import java.time.LocalDateTime;
+import java.util.List;
+
 
 @Service
 public class MedicalRecordService {
     private final MedicalRecordRepository medicalRecordRepository;
+
     public MedicalRecordService(MedicalRecordRepository medicalRecordRepository) {
         this.medicalRecordRepository = medicalRecordRepository;
     }
+
 
     @Transactional
     // Phương thức để lấy medical records theo patientId
@@ -27,4 +34,26 @@ public class MedicalRecordService {
     public Optional<MedicalRecordDetailDTO> getMedicalRecordDetailsByPatientId(Integer patientId, Integer recordId) {
         return medicalRecordRepository.findMedicalRecordDetailByPatientId(patientId, recordId);
     }
+
+    public int saveRecord(MedicalRecord medicalRecord) {
+        return medicalRecordRepository.insertMedicalRecord(
+                medicalRecord.getPatient().getPatientId(),
+                medicalRecord.getAppointment().getAppointmentId(),
+                medicalRecord.getCreatedBy().getUserId(),
+                medicalRecord.getDoctor().getDoctorId(),
+                medicalRecord.getDiagnosis(),
+                medicalRecord.getNotes(),
+                medicalRecord.getStatus().getValue(),
+                LocalDateTime.now()
+        );
+    }
+
+    public MedicalRecord findById(int recordId) {
+        return  medicalRecordRepository.findByRecordId(recordId).orElse(null);
+    }
+
+    public List<MedicalRecord> findMedicalRecordByDoctorIdAndStatus(int doctorId) {
+        return medicalRecordRepository.findByDoctorIdAndStatusValue(doctorId, 0);
+    }
 }
+

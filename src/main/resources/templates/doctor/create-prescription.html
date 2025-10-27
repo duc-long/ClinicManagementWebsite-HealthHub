@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Prescription – HealHub</title>
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --hm-blue: #005691;
+            --hm-green: #008744;
+            --hm-light-blue: #eaf4fb;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: "Inter", sans-serif;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: var(--hm-blue);
+        }
+
+        .btn-hm {
+            background-color: var(--hm-blue);
+            color: #fff;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-hm:hover {
+            background-color: #003f6f;
+            color: white;
+        }
+
+        .card {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            background-color: var(--hm-light-blue);
+            color: var(--hm-blue);
+            font-weight: 600;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+        }
+
+        table th, table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container mt-5 mb-5">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="section-title mb-0">
+            <i class="fa-solid fa-prescription-bottle-medical me-2"></i> Create Prescription
+        </h3>
+        <a th:href="@{/doctor/records/list}" class="btn btn-outline-secondary rounded-pill px-3">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Records
+        </a>
+    </div>
+
+    <!-- Patient Info -->
+    <div class="alert alert-light border shadow-sm mb-4">
+        <div class="row">
+            <div class="col-md-4"><strong>👤 Patient:</strong> <span th:text="${record.patientName}">John Doe</span></div>
+            <div class="col-md-4"><strong>🩺 Diagnosis:</strong> <span th:text="${record.diagnosis}">Flu</span></div>
+            <div class="col-md-4"><strong>📅 Date:</strong> <span th:text="${#temporals.format(record.createdAt, 'dd/MM/yyyy')}">20/10/2025</span></div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form th:action="@{/doctor/prescription/save}" method="post" class="bg-white p-4 rounded-4 shadow-sm">
+        <input type="hidden" name="recordId" th:value="${recordId}"/>
+
+        <!-- Status -->
+        <div class="mb-4">
+            <label class="form-label fw-semibold text-secondary">Status</label>
+            <select class="form-select" name="statusValue">
+                <option th:each="s : ${T(com.group4.clinicmanagement.enums.PrescriptionStatus).values()}"
+                        th:value="${s.value}" th:text="${s.name()}"></option>
+            </select>
+        </div>
+
+        <!-- Prescription Details -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fa-solid fa-pills me-2"></i> Prescription Details
+            </div>
+            <div class="card-body">
+                <table class="table align-middle table-hover" id="drugTable">
+                    <thead class="table-light">
+                    <tr>
+                        <th style="width: 20%">Drug</th>
+                        <th style="width: 10%">Quantity</th>
+                        <th style="width: 15%">Dosage</th>
+                        <th style="width: 10%">Frequency</th>
+                        <th style="width: 10%">Duration (days)</th>
+                        <th style="width: 20%">Instruction</th>
+                        <th style="width: 10%">Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="drugBody">
+                    <tr class="drug-row">
+                        <td>
+                            <select class="form-select" name="drugIds" required>
+                                <option value="">-- Select drug --</option>
+                                <option th:each="d : ${drugs}" th:value="${d.drugId}" th:text="${d.name}"></option>
+                            </select>
+                        </td>
+                        <td><input type="number" name="quantities" class="form-control text-center" min="1" required></td>
+                        <td><input type="text" name="dosages" class="form-control" placeholder="e.g., 500mg"></td>
+                        <td><input type="number" name="frequencies" class="form-control text-center" placeholder="2"></td>
+                        <td><input type="number" name="durationDay" class="form-control text-center" placeholder="7"></td>
+                        <td><input type="text" name="instructions" class="form-control" placeholder="After meal"></td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-row">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-end mt-3">
+                    <button type="button" class="btn btn-outline-primary rounded-pill" id="addDrug">
+                        <i class="fa-solid fa-plus me-1"></i> Add Drug
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-hm rounded-pill px-4">
+                <i class="fa-solid fa-floppy-disk me-2"></i> Save Prescription
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- JS -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tbody = document.getElementById('drugBody');
+        const addBtn = document.getElementById('addDrug');
+
+        addBtn.addEventListener('click', function () {
+            const firstRow = tbody.querySelector('.drug-row');
+            if (!firstRow) return;
+
+            const newRow = firstRow.cloneNode(true);
+            newRow.querySelectorAll('input').forEach(i => i.value = '');
+            newRow.querySelector('select').selectedIndex = 0;
+            tbody.appendChild(newRow);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.remove-row')) {
+                const rows = tbody.querySelectorAll('.drug-row');
+                if (rows.length > 1) e.target.closest('.drug-row').remove();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
