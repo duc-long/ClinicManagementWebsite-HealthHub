@@ -18,8 +18,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-
-
     public boolean isUsernameDuplicate(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
@@ -35,4 +33,5 @@ public class UserService {
     public void saveUser(User user) {
         userRepository.save(user);
     }
+
 }

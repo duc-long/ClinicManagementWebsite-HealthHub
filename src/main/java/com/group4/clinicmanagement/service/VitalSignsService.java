@@ -5,7 +5,9 @@ import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.VitalSigns;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.VitalSignsRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class VitalSignsService {
     private final VitalSignsRepository vitalSignsRepository;
     private final AppointmentRepository  appointmentRepository;
@@ -35,4 +37,10 @@ public class VitalSignsService {
 //        vs.setCreatedAt(LocalDateTime.now());
 //        vitalSignsRepository.save(vs);
 //    }
+
+//    List<VitalSigns> findByRecord(Integer recordId);
+
+    public VitalSigns findVitalSignsById(int recordId) {
+        return vitalSignsRepository.findByRecordId(recordId).orElse(null);
+    }
 }

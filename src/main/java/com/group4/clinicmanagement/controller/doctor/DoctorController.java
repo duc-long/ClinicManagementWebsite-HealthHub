@@ -30,11 +30,14 @@ public class DoctorController {
     private final DrugCatalogService drugCatalogService;
     private final MedicalRecordService medicalRecordService;
     private final PrescriptionService prescriptionService;
+    private final PrescriptionDetailService prescriptionDetailService;
+    private final VitalSignsService vitalSignsService;
 
     public DoctorController(DoctorService doctorService, UserService userService, DepartmentRepository departmentRepository,
                             AppointmentRepository appointmentRepository, AppointmentService appointmentService,
                             DrugCatalogService drugCatalogService, MedicalRecordService medicalRecordService,
-                            PrescriptionService prescriptionService) {
+                            PrescriptionService prescriptionService, VitalSignsService vitalSignsService,
+                            PrescriptionDetailService prescriptionDetailService) {
         this.doctorService = doctorService;
         this.userService = userService;
         this.departmentRepository = departmentRepository;
@@ -42,7 +45,9 @@ public class DoctorController {
         this.appointmentService = appointmentService;
         this.drugCatalogService = drugCatalogService;
         this.medicalRecordService = medicalRecordService;
+        this.vitalSignsService = vitalSignsService;
         this.prescriptionService = prescriptionService;
+        this.prescriptionDetailService = prescriptionDetailService;
     }
 
     // method to load home view doctor
@@ -235,7 +240,7 @@ public class DoctorController {
         return "redirect:/doctor/home";
     }
 
-    // method to show record form
+    // method to show create record form
     @GetMapping("/records/{id}")
     public String loadRecordForm(Model model, Principal principal,
                                  @RequestParam(name = "patientId") int patientId,
@@ -252,29 +257,29 @@ public class DoctorController {
     }
 
     // method to show list medical record
-    @GetMapping("/records/list")
-    public String loadRecordList(Model model, Principal principal) {
-        User user = userService.findUserByUsername(principal.getName());
-        if (user == null) return "redirect:/doctor/login";
+    @GetMapping("/detail/{recordId}")
+    public String viewRecordDetail(@PathVariable Integer recordId, Model model) {
+        MedicalRecord record = medicalRecordService.findById(recordId);
+        if (record == null) {
+            return "redirect:/doctor/records/list";
+        }
 
-        List<MedicalRecordDTO> medicalRecordListDTOList =
-                medicalRecordService.findMedicalRecordByDoctorIdAndStatus(user.getUserId())
-                        .stream()
-                        .map(medicalRecord -> new MedicalRecordDTO(
-                                medicalRecord.getRecordId(),
-                                medicalRecord.getDiagnosis(),
-                                medicalRecord.getCreatedAt(),
-                                medicalRecord.getDoctor().getUser().getFullName(),
-                                medicalRecord.getNotes(),
-                                medicalRecord.getStatus(),
-                                medicalRecord.getDoctor().getDoctorId(),
-                                medicalRecord.getPatient().getPatientId(),
-                                medicalRecord.getAppointment().getAppointmentId(),
-                                medicalRecord.getPatient().getUser().getFullName()
-                        )).toList();
+        // VitalSigns (1 bản ghi duy nhất)
+        VitalSigns vitalSigns = vitalSignsService.findVitalSignsById(recordId);
 
-        model.addAttribute("records", medicalRecordListDTOList);
-        model.addAttribute("section", "medicalRecordList");
+        // Prescription (nếu có)
+        Prescription prescription = prescriptionService.findPrescriptionById(record.getPrescriptions().get);
+
+        // Lab Request (nếu có)
+        LabRequest labRequest = labRequestService.findByRecordId(recordId);
+
+        // Đưa dữ liệu sang view
+        model.addAttribute("record", record);
+        model.addAttribute("vitalSigns", vitalSigns);
+        model.addAttribute("labRequest", labRequest);
+        model.addAttribute("prescription", prescription);
+        model.addAttribute("section", "record-detail");
+        model.addAttribute("active", "records");
         return "doctor/home";
     }
 
@@ -393,5 +398,19 @@ public class DoctorController {
         return "doctor/home";
     }
 
+//    @PostMapping("/vital/")
+//    public String saveVital(@ModelAttribute("vitalDTO") VitalSignsDTO dto,
+//                            Principal principal,
+//                            RedirectAttributes ra) {
+//        try {
+//            User nurse = userService.findUserByUsername(principal.getName());
+//            vitalSignsService.saveForRecord(dto, nurse);
+//            ra.addFlashAttribute("success", "Vital signs saved successfully.");
+//            return "redirect:/doctor/records/detail/" + dto.getRecordId();
+//        } catch (Exception e) {
+//            ra.addFlashAttribute("error", "Error saving vital signs: " + e.getMessage());
+//            return "redirect:/doctor/vitals/create?recordId=" + dto.getRecordId();
+//        }
+//    }
 }
 

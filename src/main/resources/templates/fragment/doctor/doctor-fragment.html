@@ -574,7 +574,6 @@
             </tbody>
         </table>
     </div>
-
 </div>
 
 <!-- Prescription -->
@@ -945,5 +944,135 @@
             </div>
 
         </form>
+    </div>
+</div>
+
+<div th:fragment="record-detail">
+    <div class="card p-4 shadow-sm">
+        <h5 class="text-primary mb-4">
+            <i class="fa-solid fa-file-medical me-2"></i> Medical Record Detail
+        </h5>
+
+        <!-- ✅ Record Information -->
+        <div class="mb-4">
+            <h6 class="fw-bold text-secondary mb-2">🩺 Record Information</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Record ID:</strong> <span th:text="${record.recordId}"></span></p>
+                    <p><strong>Doctor:</strong> <span th:text="${record.doctor.user.fullName}"></span></p>
+                    <p><strong>Status:</strong>
+                        <span th:text="${record.status}"
+                              th:classappend="${record.status.name() == 'COMPLETED'} ? 'badge bg-success' : 'badge bg-warning text-dark'"></span>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Created At:</strong>
+                        <span th:text="${#temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+                    <p><strong>Appointment ID:</strong> <span th:text="${record.appointment.appointmentId}"></span></p>
+                    <p><strong>Patient:</strong> <span th:text="${record.appointment.patient.user.fullName}"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <hr/>
+
+        <!-- ✅ Symptoms, Diagnosis, Treatment -->
+        <div class="mb-4">
+            <h6 class="fw-bold text-secondary mb-2">🧠 Medical Details</h6>
+            <p><strong>Symptoms:</strong> <span th:text="${record.symptoms ?: '-'}"></span></p>
+            <p><strong>Diagnosis:</strong> <span th:text="${record.diagnosis ?: '-'}"></span></p>
+            <p><strong>Treatment Plan:</strong> <span th:text="${record.treatmentPlan ?: '-'}"></span></p>
+        </div>
+
+        <hr/>
+
+        <!-- ✅ Vital Signs -->
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold text-secondary">💓 Vital Signs</h6>
+                <a th:href="@{'/doctor/vitals/create?recordId=' + ${record.recordId}}"
+                   class="btn btn-outline-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Add Vital Signs
+                </a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(vitalSigns)}" class="text-muted fst-italic">
+                No vital signs recorded yet.
+            </div>
+
+            <div th:if="${!#lists.isEmpty(vitalSigns)}" class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Height (cm)</th>
+                        <th>Weight (kg)</th>
+                        <th>Blood Pressure</th>
+                        <th>Heart Rate</th>
+                        <th>Temperature</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="v : ${vitalSigns}">
+                        <td th:text="${#temporals.format(v.recordedAt, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${v.heightCm}"></td>
+                        <td th:text="${v.weightKg}"></td>
+                        <td th:text="${v.bloodPressure}"></td>
+                        <td th:text="${v.heartRate}"></td>
+                        <td th:text="${v.temperature}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <hr/>
+
+        <!-- ✅ Prescription Detail -->
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold text-secondary">💊 Prescription</h6>
+                <a th:href="@{'/doctor/prescription/create?recordId=' + ${record.recordId}}"
+                   class="btn btn-outline-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Add Prescription
+                </a>
+            </div>
+
+            <div th:if="${prescription == null}" class="text-muted fst-italic">
+                No prescription created yet.
+            </div>
+
+            <div th:if="${prescription != null}">
+                <p><strong>Prescription ID:</strong> <span th:text="${prescription.prescriptionId}"></span></p>
+                <div th:if="${!#lists.isEmpty(prescription.details)}" class="table-responsive">
+                    <table class="table table-sm align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Drug</th>
+                            <th>Dosage</th>
+                            <th>Quantity</th>
+                            <th>Notes</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="d, iter : ${prescription.details}">
+                            <td th:text="${iter.index + 1}"></td>
+                            <td th:text="${d.drug.drugName}"></td>
+                            <td th:text="${d.dosage}"></td>
+                            <td th:text="${d.quantity}"></td>
+                            <td th:text="${d.notes ?: '-'}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <a th:href="@{/doctor/records/list}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </a>
+        </div>
     </div>
 </div>

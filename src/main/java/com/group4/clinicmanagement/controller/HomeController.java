@@ -3,9 +3,11 @@ package com.group4.clinicmanagement.controller;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.Feedback;
+import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.security.CustomUserDetails;
 import com.group4.clinicmanagement.service.DoctorService;
 import com.group4.clinicmanagement.service.FeedbackService;
+import com.group4.clinicmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -26,14 +29,21 @@ public class HomeController {
 
     private final DoctorService doctorService;
     private final FeedbackService feedbackService;
+    private final UserService userService;
 
-    public HomeController(DoctorService doctorService, FeedbackService feedbackService) {
+    public HomeController(DoctorService doctorService, FeedbackService feedbackService, UserService userService) {
         this.feedbackService = feedbackService;
         this.doctorService = doctorService;
+        this.userService = userService;
     }
 
     @GetMapping()
-    public String guestHome(Model model,@RequestParam(defaultValue = "1") int page, HttpSession session) {
+    public String guestHome(Model model, @RequestParam(defaultValue = "1") int page, HttpSession session, Principal principal) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (!user.getRole().getName().equals("Patient")) {
+            return "redirect:/patient/login";
+        }
+
         int pageSize = 3; // hiển thị 3 feedback mỗi trang
         if (page < 1) {
             return "redirect:/home?page=1";

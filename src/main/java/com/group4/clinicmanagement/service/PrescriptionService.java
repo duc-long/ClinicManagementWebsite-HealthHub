@@ -28,7 +28,7 @@ public class PrescriptionService {
         return prescriptionRepository.findByPatientIdAndRecordId(recordId);
     }
 
-    public Prescription findById(int prescriptionId) {
+    public Prescription findPrescriptionById(int prescriptionId) {
         return prescriptionRepository.findById(prescriptionId).orElse(null);
     }
 

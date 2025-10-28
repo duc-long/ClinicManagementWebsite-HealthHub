@@ -50,14 +50,14 @@ public class MedicalRecord {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "medicalRecord")
-    private List<VitalSigns> vitalSigns;
+    @OneToOne(mappedBy = "medicalRecord")
+    private VitalSigns vitalSigns;
 
-    @OneToMany(mappedBy = "medicalRecord")
-    private List<LabRequest> labRequests;
+    @OneToOne(mappedBy = "medicalRecord")
+    private LabRequest labRequests;
 
-    @OneToMany(mappedBy = "medicalRecord")
-    private List<Prescription> prescriptions;
+    @OneToOne(mappedBy = "medicalRecord")
+    private Prescription prescriptions;
 
     @PostLoad
     public void loadEnum() {

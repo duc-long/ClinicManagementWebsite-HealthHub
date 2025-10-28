@@ -20,7 +20,7 @@ public class LabRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer labRequestId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "record_id", nullable = false)
     private MedicalRecord medicalRecord;
 

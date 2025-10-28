@@ -19,7 +19,7 @@ public class VitalSigns {
     @Column(name = "vital_id")
     private Integer vitalId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "record_id", nullable = false)
     private MedicalRecord medicalRecord; // FK -> MedicalRecord
 
