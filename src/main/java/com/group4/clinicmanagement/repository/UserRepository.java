@@ -26,8 +26,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                                 @Param("gender") Integer gender);
 
     Optional<User> findUserByUsername(String username);
+
     Optional<User> findByUsername(String username);
+
     Optional<User> findByUserId(int userId);
+
     @Modifying
     @Query("UPDATE User u SET u.avatar = :filename WHERE u.username = :username")
     void updateAvatarFilename(@Param("username") String username,
@@ -52,8 +55,15 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     User getReferenceByUserId(Integer userId);
 
+
     @Query("SELECT u FROM User u WHERE u.role.roleId = 3")
     Page<User> findAllByRoleReceptionist(Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE u.role.roleId = 4")
+    Page<User> findAllByRoleCashier(Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE u.role.roleId = 5")
+    Page<User> findAllByRoleTechnician(Pageable pageable);
 
     Optional<User> getUserByUserIdAndRole_RoleId(Integer userId, int roleRoleId);
 

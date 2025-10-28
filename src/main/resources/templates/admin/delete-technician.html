@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Patient Details</title>
+    <title>Delete technician</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
@@ -91,7 +92,7 @@
                     class="fas fa-chart-line me-2"></i> Dashboard</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/patient}"><i
                     class="fas fa-users me-2"></i> Patients</a></li>
-            <li class="nav-item"><a class="nav-link active" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i>
                 Doctors</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/receptionist}"><i
                     class="fas fa-hospital-user me-2"></i>
@@ -99,7 +100,7 @@
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/cashier}"><i
                     class="fas fa-cash-register me-2"></i> Cashiers</a>
             </li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/admin/technician}"><i
+            <li class="nav-item"><a class="nav-link active" th:href="@{/admin/technician}"><i
                     class="fas fa-user-gear me-2"></i> Technicians</a></li>
         </ul>
     </div>
@@ -114,137 +115,93 @@
 
         <!-- Page Content -->
         <div class="p-4">
-            <h2 class="section-title">Manage Doctors</h2>
+            <h2 class="section-title">Manage technicians</h2>
 
             <div class="d-flex justify-content-center">
                 <div class="card shadow-sm w-75">
                     <div class="card-body">
 
+                        <!-- Avatar center -->
                         <!-- Avatar -->
                         <div class="d-flex justify-content-center mb-4">
-                            <img th:src="${doctorDTO.avatarFilename} != null ?
-                  @{/images/avatars/{file}(file=${doctorDTO.avatarFilename})} :
+                            <img th:src="${technicianDTO.avatarFilename} != null ?
+                  @{/images/avatars/{file}(file=${technicianDTO.avatarFilename})} :
                   @{/images/avatars/default-avatar.png}"
                                  alt="Avatar"
                                  class="rounded-circle shadow avatar-img"
                                  style="width: 150px; height: 150px; object-fit: cover;">
                         </div>
 
-                        <h4 class="mb-4 text-hm-blue text-center">Doctor Details</h4>
+                        <h4 class="mb-4 text-hm-blue text-center">technician Details</h4>
 
                         <!-- USER INFO -->
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">User ID</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.userId}" readonly/>
+                                <input type="text" class="form-control" th:value="${technicianDTO.userId}" readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Username</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.username}" readonly/>
+                                <input type="text" class="form-control" th:value="${technicianDTO.username}"
+                                       readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Full Name</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.fullName}" readonly/>
+                                <input type="text" class="form-control" th:value="${technicianDTO.fullName}"
+                                       readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Email</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.email}" readonly/>
+                                <input type="text" class="form-control" th:value="${technicianDTO.email}" readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Phone</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.phone}" readonly/>
+                                <input type="text" class="form-control" th:value="${technicianDTO.phone}" readonly/>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Gender</label>
                             <div class="col-sm-10 pt-2">
-        <span class="form-control" th:text="${doctorDTO.gender}"
-              th:classappend="${doctorDTO.gender.name() == 'MALE'} ? 'text-primary fw-bold' : 'text-pink fw-bold'"></span>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label fw-bold">License No</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.licenseNo}" readonly/>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label fw-bold">Specialty</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.specialty}" readonly/>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label fw-bold">Degree</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.degree}" readonly/>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label fw-bold">Years Experience</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.yearsExperience}"
-                                       readonly/>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label fw-bold">Bio</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.bio}" readonly/>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label fw-bold">Department</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${doctorDTO.department.name}"
-                                       readonly/>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label fw-bold">Profile Visibility</label>
-                            <div class="col-sm-10">
-                                <input type="text"
-                                       class="form-control"
-                                       th:value="${doctorDTO.profileVisibility} ? 'Visible' : 'Hidden'"
-                                       th:classappend="${doctorDTO.profileVisibility} ? 'text-success fw-bold' : 'text-danger fw-bold'"
-                                       readonly/>
+        <span class="form-control" th:text="${technicianDTO.gender}"
+              th:classappend="${technicianDTO.gender.name() == 'MALE'} ? 'text-primary fw-bold' : 'text-pink fw-bold'"></span>
                             </div>
                         </div>
 
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Status</label>
                             <div class="col-sm-10 pt-2">
-        <span class="form-control" th:text="${doctorDTO.userStatus}"
-              th:classappend="${doctorDTO.userStatus.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></span>
+        <span class="form-control" th:text="${technicianDTO.userStatus}"
+              th:classappend="${technicianDTO.userStatus.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></span>
                             </div>
                         </div>
 
                         <!-- ACTIONS -->
-                        <div class="text-end">
-                            <a th:href="@{/admin/doctor}" class="btn btn-secondary me-2">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a th:href="@{/admin/technician}" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left me-1"></i> Back to List
                             </a>
+
+                            <form id="deleteForm" th:action="@{/admin/technician/delete-result}" method="post">
+                                <input type="hidden" name="userId" th:value="${technicianDTO.userId}"/>
+                                <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                                    <i class="fas fa-trash-alt me-1"></i> Delete
+                                </button>
+                            </form>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -252,6 +209,26 @@
         </div>
     </div>
 </div>
+<script>
+    function confirmDelete() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action will permanently delete the technician from the system!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('deleteForm').submit();
+            }
+        });
+    }
+</script>
+
+
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
