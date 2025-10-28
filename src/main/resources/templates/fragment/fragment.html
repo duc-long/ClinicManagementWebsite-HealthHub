@@ -148,12 +148,12 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdownSpecialty" data-bs-toggle="dropdown">
-                            Specialty
+                            Departments
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
-                            <li th:each="s : ${specialties}"><a class="dropdown-item"
-                                                                th:href="@{/home/specialty/{specialty}(specialty=${s})}"
-                                                                th:text="${s}"></a></li>
+                            <li th:each="s : ${departments}"><a class="dropdown-item"
+                                                                th:href="@{/home/department/{departmentName}(departmentName=${s.name})}"
+                                                                th:text="${s.name}"></a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

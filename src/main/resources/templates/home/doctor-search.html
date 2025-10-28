@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Doctor Search - HealHub</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <div th:replace="~{fragment/fragment.html :: css}"></div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
@@ -40,20 +41,20 @@
 </head>
 <body>
 <div>
-    <div th:replace="~{fragment/fragment :: navBar}"></div>
+    <div th:replace="~{fragment/fragment.html :: navBar}"></div>
 </div>
 
 <main class="container container-wide py-4">
     <div class="card search-card p-4 mb-4" >
         <h1 class="h3 mb-3"><i class="fa-solid fa-search me-2"></i>Search</h1>
-        <form th:action="@{/home/search-doctor}" method="post">
+        <form th:action="@{/home/search-doctor-result}" method="get">
             <div class="row g-4 justify-content-center align-items-end">
                 <div class="col-md-4">
-                    <label class="form-label">Specialty</label>
-                    <select class="form-select" id="specialty" name="specialty">
-                        <option value="All">All Specialties</option>
-                        <th:block th:each="s : ${specialties}">
-                            <option th:value="${s}" th:text="${s}"></option>
+                    <label class="form-label">Department</label>
+                    <select class="form-select" id="departmentId" name="departmentId">
+                        <option value="0">All departments</option>
+                        <th:block th:each="s : ${departments}">
+                            <option th:value="${s.departmentId}" th:text="${s.name}"></option>
                         </th:block>
                     </select>
                 </div>
@@ -78,10 +79,14 @@
             <div class="card doctor-result p-1 mb-3" th:each="doctor, iterStat : ${doctors}">
                 <div class="row align-items-center">
                     <div class="col-md-2 text-center">
-                        <i class="fa-solid fa-user-doctor text-primary" style="font-size: 2.5rem;"></i>
+                        <img th:src="${doctor.avatarFilename} != null ?
+                  @{/images/avatars/{file}(file=${doctor.avatarFilename})} :
+                  @{/images/avatars/default-avatar.png}"
+                             alt="Avatar"
+                             class="rounded-circle shadow avatar-img" style="height: 100px; object-fit: cover; width: 100px;">
                     </div>
                     <div class="col-md-6 align-content-center" style="height: 100px">
-                        <h5 class="mb-1" th:text="${doctor.user.fullName}"></h5>
+                        <h5 class="mb-1" th:text="${doctor.fullName}"></h5>
                         <div class="mb-2">
                             <span class="badge bg-primary bg-opacity-10 text-white specialty-badge me-1" th:text="${doctor.specialty}"></span>
                         </div>
@@ -92,9 +97,9 @@
                 </div>
             </div>
 
-<!--            <div class="text-center mt-4 ">-->
-<!--                <button class="btn btn-outline-primary" >Load More Results</button>-->
-<!--            </div>-->
+            <!--            <div class="text-center mt-4 ">-->
+            <!--                <button class="btn btn-outline-primary" >Load More Results</button>-->
+            <!--            </div>-->
         </div>
     </div>
 </main>

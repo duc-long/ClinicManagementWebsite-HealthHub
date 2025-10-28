@@ -18,7 +18,9 @@ public class DepartmentService {
         this.departmentRepository = departmentRepository;
     }
 
-    private DepartmentDTO mapToDepartmentDTO(Department department) {
+    public DepartmentDTO toDTO(Department department) {
+        if (department == null) return null;
+
         return new DepartmentDTO(
                 department.getDepartmentId(),
                 department.getName(),
@@ -26,14 +28,14 @@ public class DepartmentService {
         );
     }
 
-    @Transactional
-    public List<DepartmentDTO> findAllDepartment() {
+    public List<DepartmentDTO> findAll() {
         List<Department> departments = departmentRepository.findAll();
+        List<DepartmentDTO> result = new ArrayList<>();
 
-        List<DepartmentDTO> departmentDTOs = new ArrayList<>();
         for (Department department : departments) {
-            departmentDTOs.add(mapToDepartmentDTO(department));
+            DepartmentDTO dto = toDTO(department);
+            result.add(dto);
         }
-        return departmentDTOs;
+        return result;
     }
 }

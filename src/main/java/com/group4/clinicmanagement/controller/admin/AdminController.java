@@ -177,7 +177,7 @@ public class AdminController {
     @GetMapping(value = "/doctor/edit/{id}")
     public String editDoctorById(@PathVariable(value = "id") Integer id, Model model) {
         DoctorDTO doctorDTO = doctorService.findById(id);
-        List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+        List<DepartmentDTO> patientDTOList = departmentService.findAll();
         model.addAttribute("patientDTOList", patientDTOList);
         model.addAttribute("doctorDTO", doctorDTO);
         model.addAttribute("error", "");
@@ -195,7 +195,7 @@ public class AdminController {
             bindingResult.rejectValue("licenseNo", "error.licenseNo", "LicenseNo already exists");
         }
         if (bindingResult.hasErrors()) {
-            List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+            List<DepartmentDTO> patientDTOList = departmentService.findAll();
             model.addAttribute("patientDTOList", patientDTOList);
             model.addAttribute("doctorDTO", dto);
             return "admin/update-doctor";
@@ -207,7 +207,7 @@ public class AdminController {
                     "Doctor with ID: " + dto.getDoctorId() + " was updated successfully!");
             return "redirect:/admin/doctor";
         } catch (Exception e) {
-            List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+            List<DepartmentDTO> patientDTOList = departmentService.findAll();
             System.out.println(e.getMessage() + "Error ------------------------------\n");
             model.addAttribute("patientDTOList", patientDTOList);
             model.addAttribute("doctorDTO", dto);
@@ -217,7 +217,7 @@ public class AdminController {
 
     @GetMapping(value = "/doctor/new")
     public String addNewDoctor(Model model) {
-        List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+        List<DepartmentDTO> patientDTOList = departmentService.findAll();
         model.addAttribute("patientDTOList", patientDTOList);
         model.addAttribute("doctorDTO", new DoctorDTO());
         return "admin/add-new-doctor";
@@ -238,7 +238,7 @@ public class AdminController {
             bindingResult.rejectValue("username", "error.username", "Username already exists");
         }
         if (bindingResult.hasErrors()) {
-            List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+            List<DepartmentDTO> patientDTOList = departmentService.findAll();
             model.addAttribute("patientDTOList", patientDTOList);
             model.addAttribute("doctorDTO", dto);
             return "admin/add-new-doctor";
@@ -250,7 +250,7 @@ public class AdminController {
                 return "redirect:/admin/doctor";
             } catch (Exception e) {
                 System.out.println(e.getMessage() + "Error ------------------------------\n");
-                List<DepartmentDTO> patientDTOList = departmentService.findAllDepartment();
+                List<DepartmentDTO> patientDTOList = departmentService.findAll();
                 model.addAttribute("patientDTOList", patientDTOList);
                 return "admin/add-new-doctor";
             }
