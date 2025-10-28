@@ -91,7 +91,7 @@
                         <div class="row g-3 mt-2">
                             <div class="col-md-6" th:each="img : ${result.images}">
                                 <div class="border rounded overflow-hidden shadow-sm">
-                                    <img th:src="${img.filePath}"
+                                    <img th:src="'/images/labs/' + ${img.filePath}"
                                          alt="X-ray Result Image"
                                          class="img-fluid w-100">
                                 </div>

@@ -30,7 +30,7 @@ public class LabResult {
     @Column(columnDefinition = "TEXT")
     private String resultText;
 
-    @OneToMany(mappedBy="labResult")
+    @OneToMany(mappedBy="labResult", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LabImage> images;
 
     private LocalDateTime createdAt;

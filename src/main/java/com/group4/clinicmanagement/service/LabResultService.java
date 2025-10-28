@@ -105,7 +105,7 @@ public class LabResultService {
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         // Trả về đường dẫn tương đối để lưu DB
-        return "/uploads/" + folder + "/" + fileName;
+        return fileName;
     }
 
     private void deleteFileIfExists(String relativePath) {
@@ -174,6 +174,11 @@ public class LabResultService {
                 }
             }
         }
+    }
+
+    @Transactional
+    public void deleteResult(int resultId) {
+        labResultRepository.deleteById(resultId);
     }
 
 

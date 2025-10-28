@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Technician Dashboard - HealHub</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>body { background-color: #f6f7fb; } .card { max-width: 720px; margin: 10vh auto; }</style>
+</head>
+<body>
+<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-outline-primary d-lg-none me-2" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#sidebarMobile" aria-controls="sidebarMobile">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <a class="navbar-brand fw-bold text-primary" th:href="@{/technician/dashboard}">
+                <i class="fa-solid fa-heart-pulse me-2"></i>HealHub
+            </a>
+        </div>
+        <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/request-list}">
+                <i class="fa-solid fa-list-check me-1"></i>Requests
+            </a>
+            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/test-list}">
+                <i class="fa-solid fa-vials me-1"></i>Lab Tests
+            </a>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/technician/profile}">
+                <i class="fa-solid fa-user me-1"></i>Profile
+            </a>
+            <a class="btn btn-outline-danger btn-sm" th:href="@{/logout}">
+                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
+<main class="w-100">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4 p-md-5">
+            <h1 class="h4 mb-3">Delete Lab Test</h1>
+            <p>Are you sure you want to delete lab test <strong>RES-<span th:text="${result.resultId}"></span></strong>? This action cannot be undone.</p>
+            <div class="d-flex gap-2">
+                <form method="post" th:action="@{/technician/result-delete/{id}(id=${result.resultId})}" >
+                    <input type="hidden" name="resultID" readonly th:value="${result.resultId}">
+                    <button class="btn btn-danger" type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>
+
+
