@@ -268,11 +268,20 @@
                     <i class="fa-solid fa-arrow-left me-1"></i> Back to Home
                 </a>
 
-                <!-- 💊 Go to Diagnosis -->
-                <a type="button"
+                <!-- Nếu chưa có record -->
+                <a th:if="${recordId == null}"
+                   type="button"
                    class="btn btn-hm-primary"
                    th:href="@{/doctor/records/new(appointmentId=${appointment.appointmentId}, patientId=${appointment.patientId})}">
                     <i class="fa-solid fa-stethoscope me-1"></i> Create Medical Record
+                </a>
+
+                <!-- Nếu đã có record -->
+                <a th:if="${recordId != null}"
+                   type="button"
+                   class="btn btn-outline-hm-primary"
+                   th:href="@{/doctor/records/detail/{id}(id=${recordId})}">
+                    <i class="fa-solid fa-file-medical me-1"></i> View Medical Record
                 </a>
             </div>
         </div>
@@ -331,7 +340,6 @@
         </form>
     </div>
 </div>
-
 
 <!-- Patients -->
 <div th:fragment="patient">

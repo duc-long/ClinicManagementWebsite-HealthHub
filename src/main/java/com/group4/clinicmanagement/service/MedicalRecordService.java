@@ -55,5 +55,11 @@ public class MedicalRecordService {
     public List<MedicalRecord> findMedicalRecordByDoctorIdAndStatus(int doctorId) {
         return medicalRecordRepository.findByDoctorIdAndStatusValue(doctorId, 0);
     }
+
+    // method to find medical record by appointment ID
+    public MedicalRecord findByAppointmentId(int appointmentId) {
+        return medicalRecordRepository.findMedicalRecordByAppointment_AppointmentId(appointmentId)
+                .orElse(null);
+    }
 }
 

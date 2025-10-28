@@ -78,5 +78,7 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, In
 
     @Query(value = "SELECT * FROM dbo.MedicalRecord WHERE record_id = :id", nativeQuery = true)
     Optional<MedicalRecord> findByRecordId(@Param("id") int id);
+
+    Optional<MedicalRecord> findMedicalRecordByAppointment_AppointmentId(int appointmentId);
 }
 

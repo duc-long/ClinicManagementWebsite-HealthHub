@@ -46,7 +46,7 @@ public class DoctorController {
     }
 
     // method to load home view doctor
-    @GetMapping({"/home"})
+    @GetMapping("/home")
     public String home(Model model,
                        Principal principal,
                        @RequestParam(value = "patientName", required = false) String patientName,
@@ -153,6 +153,10 @@ public class DoctorController {
             return "redirect:/doctor/home";
         }
 
+        MedicalRecord medicalRecord = medicalRecordService.findByAppointmentId(id);
+        System.out.println("medicalRecord = " + medicalRecord.getPatient().getUser().getFullName());
+        Integer medicalRecordId = (medicalRecord != null) ? medicalRecord.getRecordId() : null;
+
         AppointmentDTO dto = new AppointmentDTO(
                 a.getAppointmentId(),
                 a.getPatient().getPatientId(),
@@ -170,6 +174,7 @@ public class DoctorController {
         model.addAttribute("appointment", dto);
         model.addAttribute("section", "appointment-detail");
         model.addAttribute("active", "home");
+        model.addAttribute("recordId", medicalRecordId);
         return "doctor/home";
     }
 
