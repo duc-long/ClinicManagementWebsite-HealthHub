@@ -13,7 +13,7 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="ClinicDB@localhost" uuid="7f1dcfd2-d447-4bf4-bf83-6317a22cf54a">
+    <data-source source="LOCAL" name="@localhost [2]" uuid="7f1dcfd2-d447-4bf4-bf83-6317a22cf54a">
       <driver-ref>sqlserver.ms</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
