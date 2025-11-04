@@ -5,8 +5,10 @@ import com.group4.clinicmanagement.service.LabService;
 import com.group4.clinicmanagement.service.MedicalRecordService;
 import com.group4.clinicmanagement.service.PatientService;
 import com.group4.clinicmanagement.service.PrescriptionService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,7 +50,7 @@ public class PatientController {
     }
 
     @GetMapping("/profile")
-    public String getPatientsByUsername(Model model, HttpSession session) {
+    public String getPatientsByUsername(Model model, HttpSession session, HttpServletRequest request) {
         String username = getCurrentUsername();
         PatientUserDTO patient = patientService.getPatientsByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
         session.setAttribute("patientId", patient.getPatientId());
@@ -56,25 +58,28 @@ public class PatientController {
 
         model.addAttribute("patient", patient);
         model.addAttribute("medicalRecords", medicalRecords);
+        model.addAttribute("currentPath", request.getRequestURI());
         return "patient/profile";
     }
 
     @GetMapping("/list-medical-records")
-    public String getListMedicalRecords(Model model, HttpSession session) {
+    public String getListMedicalRecords(Model model, HttpSession session, HttpServletRequest request) {
         String username = getCurrentUsername();
         PatientUserDTO patient = patientService.getPatientsByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
         session.setAttribute("patientId", patient.getPatientId());
         List<MedicalRecordListDTO> medicalRecords = medicalRecordService.getMedicalRecordsByPatientId(patient.getPatientId());
         model.addAttribute("medicalRecords", medicalRecords);
+        model.addAttribute("currentPath", request.getRequestURI());
         return "patient/list-medical-record";
     }
 
     @GetMapping("/edit-profile")
-    public String goToEditProfile(Model model) {
+    public String goToEditProfile(Model model, HttpServletRequest request) {
         String username = getCurrentUsername();
         PatientUserDTO dto = patientService.getPatientsByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         model.addAttribute("patient", dto);
+        model.addAttribute("currentPath", request.getRequestURI());
         return "patient/edit-profile";
     }
 
@@ -116,7 +121,7 @@ public class PatientController {
     }
 
     @GetMapping("/medical-records/{recordId}")
-    public String getMedicalRecordsByPatientId(Model model, HttpSession session, @PathVariable("recordId") Integer recordId) {
+    public String getMedicalRecordsByPatientId(Model model, HttpSession session, @PathVariable("recordId") Integer recordId, HttpServletRequest request) {
         String username = getCurrentUsername();
         Integer patientId = (Integer) session.getAttribute("patientId");
         Optional<MedicalRecordDetailDTO> medicalRecordDetailDTO = medicalRecordService.getMedicalRecordDetailsByPatientId(patientId, recordId);
@@ -125,12 +130,14 @@ public class PatientController {
         model.addAttribute("prescriptions", prescriptions);
         model.addAttribute("labs", labs);
         model.addAttribute("record", medicalRecordDetailDTO.get());
+        model.addAttribute("currentPath", request.getRequestURI());
         return "patient/medical-record-detail";
     }
 
     @GetMapping("/change-password")
-    public String showChangePasswordForm() {
-        return "patient/change-password";
+    public String showChangePasswordForm(Model model, HttpServletRequest request) {
+
+        model.addAttribute("currentPath", request.getRequestURI());return "patient/change-password";
     }
 
     @PostMapping("/change-password")

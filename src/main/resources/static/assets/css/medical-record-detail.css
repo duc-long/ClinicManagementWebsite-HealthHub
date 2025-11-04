@@ -115,7 +115,6 @@ body {
 }
 
 .card.full-width {
-    grid-column: 1 / -1; /* Chiếm toàn bộ chiều ngang */
     margin-top: 20px; /* Khoảng cách giữa các card full-width */
     flex-basis: 100%;
     width: 99%;

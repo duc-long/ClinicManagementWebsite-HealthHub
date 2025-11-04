@@ -125,28 +125,33 @@
                         </table>
                     </div>
 
-                    <!-- FULL: Lab -->
-                    <div class="card full-width" th:each="lab : ${labs}">
-                        <h2 class="card-title">Lab Result</h2>
-                        <div class="info-grid">
-                            <div class="label">Test name</div>
-                            <div class="value" th:text="${lab.nameLabTest}"></div>
+                    <th:block th:each="lab, iterStat : ${labs}">
+                        <div th:if="${iterStat.index == 0 or labs[iterStat.index - 1].nameLabTest != lab.nameLabTest}"
+                             class="card full-width">
+                            <h2 class="card-title">Lab Result</h2>
+                            <div class="info-grid">
+                                <div class="label">Test name</div>
+                                <div class="value" th:text="${lab.nameLabTest}"></div>
 
-                            <div class="label">Description test</div>
-                            <div class="value" th:text="${lab.descriptionLabTest}"></div>
+                                <div class="label">Description test</div>
+                                <div class="value" th:text="${lab.descriptionLabTest}"></div>
 
-                            <div class="label">Result test</div>
-                            <div class="value" th:text="${lab.resultText}"></div>
+                                <div class="label">Result test</div>
+                                <div class="value" th:text="${lab.resultText}"></div>
+                            </div>
 
-                            <div class="label">Description result</div>
-                            <div class="value" th:text="${lab.description}"></div>
+                            <div class="lab-image-container">
+                                <div th:each="img : ${labs}" th:if="${img.nameLabTest == lab.nameLabTest}">
+                                    <div class="label">Description result</div>
+                                    <div class="value" th:text="${img.description}"></div>
+                                    <img th:src="@{/images/labs/{filename}(filename=${#strings.substring(img.filePath, img.filePath.lastIndexOf('/') + 1)})}"
+                                         alt="Lab Image" class="lab-image"/>
+                                    <div class="separator-line"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="lab-image-container">
-                            <!--                <img th:src="${lab.filePath}" alt="Lab Image" class="lab-image"/>-->
-                            <img th:src="@{/images/labs/{filename}(filename=${lab.filePath})}" alt="Lab Image"
-                                 class="lab-image"/>
-                        </div>
-                    </div>
+                    </th:block>
+
                 </div>
             </div> <!-- page-container -->
         </div> <!-- col-md-9 -->

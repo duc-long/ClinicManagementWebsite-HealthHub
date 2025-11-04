@@ -8,49 +8,45 @@
     <!-- ✅ Bootstrap & Fonts -->
     <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/profile.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/side-bar-patient.css">
+    <div th:replace="~{fragment/fragment.html :: css}"></div>
     <style>
-        body {
-            background-color: #f9fbfd;
-            font-family: 'Inter', sans-serif;
-            color: #2c3e50;
+        /* CSS cho các thẻ li */
+        .list-group-item {
+            max-width: 400px;
+        }
+        .list-group{
+            margin-left: 30%;
         }
 
-        .card {
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .badge {
-            font-size: 0.9rem;
-            padding: 0.5em 0.9em;
-            border-radius: 6px;
-        }
-
-        .btn {
-            border-radius: 8px;
-            font-weight: 500;
-        }
     </style>
 </head>
 
 <body>
 <div th:replace="~{fragment/fragment.html :: navBar}"></div>
-<div class="container py-5">
-    <div class="text-center mb-5">
-        <h2 class="fw-bold text-primary">🩺 Appointment Detail</h2>
-        <p class="text-muted">Detailed information of your selected appointment</p>
-    </div>
+<div class="container-fluid" th:object="${patient}">
+    <div class="row">
 
-    <div class="card p-4 mx-auto" style="max-width: 700px;">
-        <div class="card-body">
-            <h5 class="card-title mb-3 text-center text-primary">
-                Appointment #<span th:text="${appointment.appointmentId}"></span>
-            </h5>
+        <!-- SIDEBAR -->
+        <div th:replace="~{fragment/patient/side-bar :: sidebar-patient}"></div>
+        <!-- PROFILE CONTENT -->
+        <div class="col-md-9 col-12 p-4">
+            <div class="profile-card-appointment">
+                <div class="profile-title">Appointment Detail</div>
+                <p class="text-muted" style="display:flex; justify-content: center;">Detailed information of your selected appointment</p>
 
-            <!-- 🩵 Appointment Status -->
-            <div class="text-center mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3 text-center text-primary">
+                        Appointment #<span th:text="${appointment.appointmentId}"></span>
+                    </h5>
+
+                    <!-- 🩵 Appointment Status -->
+                    <div class="text-center mb-4">
                 <span th:switch="${appointment.statusValue}">
                     <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).PENDING.value}"
                           class="badge bg-warning text-dark">Pending</span>
@@ -66,58 +62,60 @@
                           class="badge bg-info text-dark">Checked-In</span>
                     <span th:case="*" class="badge bg-secondary">Unknown</span>
                 </span>
-            </div>
+                    </div>
 
-            <!-- 🧾 Appointment Info -->
-            <ul class="list-group list-group-flush mb-3">
-                <li class="list-group-item">
-                    <strong>👨‍⚕️ Doctor:</strong>
-                    <span th:text="${appointment.doctor != null ? appointment.doctor.user.fullName : 'None'}"></span>
-                </li>
-                <li class="list-group-item">
-                    <strong>📅 Date:</strong>
-                    <span th:text="${#temporals.format(appointment.appointmentDate, 'dd/MM/yyyy')}"></span>
-                </li>
-                <li class="list-group-item">
-                    <strong>🕓 Created At:</strong>
-                    <span th:text="${appointment.createdAt != null ? #temporals.format(appointment.createdAt, 'dd/MM/yyyy HH:mm') : '—'}"></span>
-                </li>
-                <li class="list-group-item">
-                    <strong>🧾 Queue Number:</strong>
-                    <span th:text="${appointment.queueNumber != null ? appointment.queueNumber : '—'}"></span>
-                </li>
-                <li class="list-group-item">
-                    <strong>📞 Receptionist:</strong>
-                    <span th:text="${appointment.receptionist != null ? appointment.receptionist.fullName : '—'}"></span>
-                </li>
-                <li class="list-group-item">
-                    <strong>💬 Notes:</strong>
-                    <span th:text="${appointment.notes != null ? appointment.notes : '—'}"></span>
-                </li>
-                <li class="list-group-item" th:if="${appointment.cancelReason != null}">
-                    <strong>❌ Cancel Reason:</strong>
-                    <span th:text="${appointment.cancelReason}"></span>
-                </li>
-            </ul>
+                    <!-- 🧾 Appointment Info -->
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item">
+                            <strong> Doctor:</strong>
+                            <span th:text="${appointment.doctor != null ? appointment.doctor.user.fullName : 'None'}"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong> Date:</strong>
+                            <span th:text="${#temporals.format(appointment.appointmentDate, 'dd/MM/yyyy')}"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong> Created At:</strong>
+                            <span th:text="${appointment.createdAt != null ? #temporals.format(appointment.createdAt, 'dd/MM/yyyy HH:mm') : '—'}"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong> Queue Number:</strong>
+                            <span th:text="${appointment.queueNumber != null ? appointment.queueNumber : '—'}"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong> Receptionist:</strong>
+                            <span th:text="${appointment.receptionist != null ? appointment.receptionist.fullName : '—'}"></span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong> Notes:</strong>
+                            <span th:text="${appointment.notes != null ? appointment.notes : '—'}"></span>
+                        </li>
+                        <li class="list-group-item" th:if="${appointment.cancelReason != null}">
+                            <strong> Cancel Reason:</strong>
+                            <span th:text="${appointment.cancelReason}"></span>
+                        </li>
+                    </ul>
 
-            <!-- 🎯 Action Buttons -->
-            <div class="text-center mt-4">
-                <a th:href="@{/patient/appointment/manage}" class="btn btn-outline-primary me-2">
-                    <i class="bi bi-arrow-left-circle"></i> Back
-                </a>
-                <a th:if="${appointment.status.value == T(com.group4.clinicmanagement.enums.AppointmentStatus).PENDING.value}"
-                   th:href="@{/patient/appointment/edit/{id}(id=${appointment.appointmentId})}"
-                   class="btn btn-warning">
-                    <i class="bi bi-pencil-square"></i> Edit
-                </a>
+                    <!-- 🎯 Action Buttons -->
+                    <div class="text-center mt-4">
+                        <a th:href="@{/patient/appointment/manage}" class="btn btn-outline-primary me-2">
+                            <i class="bi bi-arrow-left-circle"></i> Back
+                        </a>
+                        <a th:if="${appointment.status.value == T(com.group4.clinicmanagement.enums.AppointmentStatus).PENDING.value}"
+                           th:href="@{/patient/appointment/edit/{id}(id=${appointment.appointmentId})}"
+                           class="btn btn-warning">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
 
 
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ✅ Bootstrap JS -->
-<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+        <!-- ✅ Bootstrap JS -->
+        <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
