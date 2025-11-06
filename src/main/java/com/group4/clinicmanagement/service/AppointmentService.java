@@ -157,15 +157,9 @@ public class AppointmentService {
         return appointmentRepository.countTodayAppointments(doctorId);
     }
 
-    public int countWaitingAppointments(Integer doctorId) {
-        int totalToday = appointmentRepository.countTodayAppointments(doctorId);
-        int examinedToday = appointmentRepository.countExaminedTodayAppointments(doctorId);
-        return totalToday - examinedToday;
-    }
-
-    public Page<AppointmentDTO> getTodayAppointmentsPaged(Integer doctorId, String patientName, AppointmentStatus status, int page, int size) {
+    public Page<AppointmentDTO> getTodayAppointmentsPaged(Integer doctorId, String patientName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Appointment> appointments = appointmentRepository.findTodayAppointmentsPaged(doctorId, patientName, status, pageable);
+        Page<Appointment> appointments = appointmentRepository.findTodayAppointmentsPaged(doctorId, patientName, pageable);
 
         return appointments
                 .map(a -> new AppointmentDTO(
@@ -181,6 +175,11 @@ public class AppointmentService {
                         a.getNotes(),
                         a.getCancelReason()
                 ));
+    }
+
+    // method to do submit medical examination
+    public Appointment submitAppointment(Appointment appointment) {
+        return appointmentRepository.save(appointment);
     }
 
 }

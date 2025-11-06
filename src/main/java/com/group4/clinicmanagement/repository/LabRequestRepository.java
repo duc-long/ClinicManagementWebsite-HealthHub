@@ -2,12 +2,14 @@ package com.group4.clinicmanagement.repository;
 
 import com.group4.clinicmanagement.entity.LabRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LabRequestRepository extends JpaRepository<LabRequest, Integer> {
@@ -43,4 +45,7 @@ public interface LabRequestRepository extends JpaRepository<LabRequest, Integer>
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate
     );
+
+    @Query(value = "SELECT * FROM LabRequest WHERE record_id = :recordId", nativeQuery = true)
+    Optional<LabRequest> findByRecordId(@Param("recordId") int recordId);
 }

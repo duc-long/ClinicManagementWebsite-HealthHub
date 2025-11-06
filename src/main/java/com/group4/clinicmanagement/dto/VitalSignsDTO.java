@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 public class VitalSignsDTO {
     private int vitalId;
     private int recordId;    // ID của MedicalRecord
-    private int nurseId;     // ID của y tá (User)
-    private String nurseName;    // thêm để hiển thị tên y tá nếu cần
     private int systolic;     // tạm để nhập số trên
     private int diastolic;    // tạm để nhập số dưới
     private double heightCm;
@@ -20,4 +18,9 @@ public class VitalSignsDTO {
     private int heartRate;
     private double temperature;
     private LocalDateTime recordedAt;
+
+    public void updateBloodPressure() {
+        this.bloodPressure = systolic + "/" + diastolic;
+    }
+
 }

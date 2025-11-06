@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface PrescriptionDetailRepository extends JpaRepository<PrescriptionDetail, Integer> {
     @Modifying
@@ -21,7 +23,10 @@ public interface PrescriptionDetailRepository extends JpaRepository<Prescription
                                   @Param("drugId") int drugId,
                                   @Param("quantity") int quantity,
                                   @Param("dosage") String dosage,
-                                  @Param("frequency") int frequency,
+                                  @Param("frequency") String frequency,
                                   @Param("durationDay") int durationDay,
                                   @Param("instruction") String instruction);
+
+
+    List<PrescriptionDetail> findByPrescription_PrescriptionId(int prescriptionId);
 }

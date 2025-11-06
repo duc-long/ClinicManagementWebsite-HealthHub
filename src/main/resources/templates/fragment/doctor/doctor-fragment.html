@@ -12,17 +12,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card-soft">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="text-muted small">Waiting</div>
-                        <div class="h4 fw-bold" th:text="${waitingCount}">3</div>
-                    </div>
-                    <i class="fa-solid fa-hourglass-half fa-xl"></i>
-                </div>
-            </div>
-        </div>
     </div>
     <hr/>
     <div class="card p-3">
@@ -36,17 +25,6 @@
             <div class="col-md-4">
                 <input type="text" name="patientName" class="form-control"
                        placeholder="Search by patient name" th:value="${param.patientName}">
-            </div>
-            <div class="col-md-4">
-                <select name="status" class="form-select" th:value="${param.status}">
-                    <option value="">All statuses</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="CONFIRMED">Confirmed</option>
-                    <option value="CANCELLED">Cancelled</option>
-                    <option value="PAID">Paid</option>
-                    <option value="CHECKED_IN">Checked In</option>
-                    <option value="EXAMINED">Examined</option>
-                </select>
             </div>
             <div class="col-md-4">
                 <button class="btn btn-primary w-100" type="submit">
@@ -280,7 +258,7 @@
                 <a th:if="${recordId != null}"
                    type="button"
                    class="btn btn-outline-hm-primary"
-                   th:href="@{/doctor/records/detail/{id}(id=${recordId})}">
+                   th:href="@{/doctor/records/detail/{recordId}(recordId=${recordId})}">
                     <i class="fa-solid fa-file-medical me-1"></i> View Medical Record
                 </a>
             </div>
@@ -711,150 +689,6 @@
 
 </div>
 
-<!-- Medical Record List -->
-<div th:fragment="medicalRecordList">
-    <style>
-        :root {
-            --hm-blue: #005691;
-            --hm-green: #008744;
-            --hm-light: #f8fafc;
-            --hm-border: #e5e7eb;
-        }
-
-        .section-title {
-            font-size: 22px;
-            font-weight: 600;
-            color: var(--hm-blue);
-            margin-bottom: 20px;
-        }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #fff;
-            border: 1px solid var(--hm-border);
-            border-radius: 10px;
-            padding: 12px 18px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .search-bar input {
-            border: none;
-            outline: none;
-            width: 280px;
-        }
-
-        .search-bar input:focus {
-            box-shadow: none;
-        }
-
-        .btn-create {
-            background-color: var(--hm-green);
-            color: #fff;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: 0.2s;
-        }
-
-        .btn-create:hover {
-            background-color: #00703c;
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .status-open {
-            background-color: #dbeafe;
-            color: #005691;
-        }
-
-        .status-closed {
-            background-color: #e5e7eb;
-            color: #374151;
-        }
-
-        .table th {
-            color: var(--hm-blue);
-        }
-    </style>
-
-    <div class="section-title">
-        <i class="fa-solid fa-file-medical me-2"></i>
-        Medical Records
-    </div>
-
-    <!-- 🧭 Search Bar & Create Button -->
-    <div class="search-bar">
-        <form th:action="@{/doctor/records}" method="get" class="d-flex align-items-center mb-0">
-            <input type="text" name="keyword" class="form-control me-2"
-                   placeholder="Search by patient name or record ID"
-                   th:value="${param.keyword}">
-            <button class="btn btn-outline-primary" type="submit">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-        </form>
-
-        <a th:href="@{/doctor/records/create}" class="btn-create">
-            <i class="fa-solid fa-plus me-1"></i> Create Medical Record
-        </a>
-    </div>
-
-    <!-- 📋 Medical Record Table -->
-    <div class="card p-3">
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead class="table-light">
-                <tr>
-                    <th>#</th>
-                    <th>Record ID</th>
-                    <th>Patient Name</th>
-                    <th>Date Created</th>
-                    <th>Diagnosis</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="rec, iter : ${records}">
-                    <td th:text="${iter.count}"></td>
-                    <td th:text="${rec.recordId}"></td>
-                    <td th:text="${rec.patientName}"></td>
-                    <td th:text="${#temporals.format(rec.createdAt, 'dd/MM/yyyy')}"></td>
-                    <td th:text="${rec.diagnosis ?: '-'}"></td>
-                    <td>
-                        <span th:switch="${rec.recordStatus.value}">
-                            <span th:case="1" class="badge bg-success">Open</span>
-                            <span th:case="0" class="badge bg-danger">Closed</span>
-<!--                            <span th:case="*">Unknown</span>-->
-                        </span>
-                    </td>
-                    <td>
-                        <a th:href="@{'/doctor/medical-records/detail/' + ${rec.recordId}}"
-                           class="btn btn-outline-primary btn-sm">
-                            <i class="fa-solid fa-eye"></i> View
-                        </a>
-                    </td>
-                </tr>
-
-                <tr th:if="${#lists.isEmpty(records)}">
-                    <td colspan="7" class="text-center text-muted py-4">
-                        <i class="fa-solid fa-inbox me-2"></i>No medical records found
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
 <!-- Create Medical Record -->
 <div th:fragment="create-record">
     <style>
@@ -889,7 +723,7 @@
         .form-section {
             background-color: #fff;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             padding: 2rem;
         }
     </style>
@@ -913,22 +747,25 @@
             <div class="mb-3">
                 <label for="diagnosis" class="form-label">Diagnose <span class="text-danger">*</span></label>
                 <textarea id="diagnosis" class="form-control" rows="3"
-                          th:field="*{diagnosis}" placeholder="Enter your doctor's diagnosis..." required></textarea>
-                <div class="text-danger small" th:if="${#fields.hasErrors('diagnosis')}" th:errors="*{diagnosis}"></div>
+                          th:field="*{record.diagnosis}" placeholder="Enter your doctor's diagnosis..."
+                          required></textarea>
+                <div class="text-danger small" th:if="${#fields.hasErrors('diagnosis')}"
+                     th:errors="*{record.diagnosis}"></div>
             </div>
 
             <!-- Ghi chú -->
             <div class="mb-3">
                 <label for="notes" class="form-label">Note</label>
                 <textarea id="notes" class="form-control" rows="4"
-                          th:field="*{notes}" placeholder="Additional notes about condition, medication, test results..."></textarea>
-                <div class="text-danger small" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></div>
+                          th:field="*{record.notes}"
+                          placeholder="Additional notes about condition, medication, test results..."></textarea>
+                <div class="text-danger small" th:if="${#fields.hasErrors('notes')}" th:errors="*{record.notes}"></div>
             </div>
 
             <!-- Trạng thái -->
             <div class="mb-3">
                 <label for="status" class="form-label">Status</label>
-                <select id="status" class="form-select" th:field="*{recordStatus}">
+                <select id="status" class="form-select" th:field="*{record.recordStatus}">
                     <option th:each="s : ${T(com.group4.clinicmanagement.enums.RecordStatus).values()}"
                             th:value="${s.name()}"
                             th:text="${s.name() == 'OPEN' ? 'Open' : 'Close'}">>
@@ -947,6 +784,7 @@
     </div>
 </div>
 
+<!-- Record Detail -->
 <div th:fragment="record-detail">
     <div class="card p-4 shadow-sm">
         <h5 class="text-primary mb-4">
@@ -959,29 +797,59 @@
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>Record ID:</strong> <span th:text="${record.recordId}"></span></p>
-                    <p><strong>Doctor:</strong> <span th:text="${record.doctor.user.fullName}"></span></p>
+                    <p><strong>Doctor:</strong> <span th:text="${record.doctorName}"></span></p>
                     <p><strong>Status:</strong>
-                        <span th:text="${record.status}"
-                              th:classappend="${record.status.name() == 'COMPLETED'} ? 'badge bg-success' : 'badge bg-warning text-dark'"></span>
+                        <span th:text="${record.recordStatus}"
+                              th:classappend="${record.recordStatus.name() == 'COMPLETED'} ? 'badge bg-success' : 'badge bg-warning text-dark'"></span>
                     </p>
                 </div>
                 <div class="col-md-6">
                     <p><strong>Created At:</strong>
                         <span th:text="${#temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm')}"></span></p>
-                    <p><strong>Appointment ID:</strong> <span th:text="${record.appointment.appointmentId}"></span></p>
-                    <p><strong>Patient:</strong> <span th:text="${record.appointment.patient.user.fullName}"></span></p>
+                    <p><strong>Appointment ID:</strong> <span th:text="${record.appointmentId}"></span></p>
+                    <p><strong>Patient:</strong> <span th:text="${record.patientName}"></span></p>
                 </div>
             </div>
         </div>
 
         <hr/>
 
-        <!-- ✅ Symptoms, Diagnosis, Treatment -->
-        <div class="mb-4">
-            <h6 class="fw-bold text-secondary mb-2">🧠 Medical Details</h6>
-            <p><strong>Symptoms:</strong> <span th:text="${record.symptoms ?: '-'}"></span></p>
-            <p><strong>Diagnosis:</strong> <span th:text="${record.diagnosis ?: '-'}"></span></p>
-            <p><strong>Treatment Plan:</strong> <span th:text="${record.treatmentPlan ?: '-'}"></span></p>
+        <!-- ✅ Medical Details -->
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <!-- Tiêu đề và nút Update trên cùng -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold text-secondary mb-0">
+                        <i class="fa-solid fa-brain me-2 text-primary"></i> Record Details
+                    </h6>
+                    <!-- create medical record -->
+                    <a th:if="${record.recordId == null}"
+                       th:href="@{'/doctor/records/create?appointmentId=' + ${appointmentId}}"
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="fa-solid fa-plus me-1"></i> Create Medical Record
+                    </a>
+
+                    <!-- update medical record -->
+                    <a th:if="${record.recordId != null and record.recordStatus.name() != 'CLOSED'}"
+                       th:href="@{/doctor/records/update/{id}(id=${record.recordId})}"
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="fa-solid fa-pen-to-square me-1"></i> Update Record
+                    </a>
+                </div>
+
+
+                <!-- Nội dung chi tiết -->
+                <div class="ps-1">
+                    <p class="mb-1">
+                        <strong>Diagnosis:</strong>
+                        <span th:text="${record.diagnosis ?: '-'}"></span>
+                    </p>
+                    <p class="mb-0">
+                        <strong>Treatment Plan:</strong>
+                        <span th:text="${record.notes ?: '-'}"></span>
+                    </p>
+                </div>
+            </div>
         </div>
 
         <hr/>
@@ -990,17 +858,26 @@
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h6 class="fw-bold text-secondary">💓 Vital Signs</h6>
-                <a th:href="@{'/doctor/vitals/create?recordId=' + ${record.recordId}}"
+
+                <!-- 👉 Nếu có vitalSigns thì chỉ hiện Update, nếu chưa có thì hiện Create -->
+                <a th:if="${vitalSigns == null}"
+                   th:href="@{'/doctor/vitals/create?recordId=' + ${record.recordId}}"
                    class="btn btn-outline-primary btn-sm">
                     <i class="fa-solid fa-plus"></i> Add Vital Signs
                 </a>
+
+                <a th:if="${vitalSigns != null}"
+                   th:href="@{/doctor/vitals/update/{id}(id = ${vitalSigns.vitalId})}"
+                   class="btn btn-outline-primary btn-sm">
+                    <i class="fa-solid fa-pen-to-square me-1"></i> Update Vital Signs
+                </a>
             </div>
 
-            <div th:if="${#lists.isEmpty(vitalSigns)}" class="text-muted fst-italic">
+            <div th:if="${vitalSigns == null}" class="text-muted fst-italic">
                 No vital signs recorded yet.
             </div>
 
-            <div th:if="${!#lists.isEmpty(vitalSigns)}" class="table-responsive">
+            <div th:if="${vitalSigns != null}" class="table-responsive">
                 <table class="table table-sm align-middle">
                     <thead class="table-light">
                     <tr>
@@ -1013,13 +890,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="v : ${vitalSigns}">
-                        <td th:text="${#temporals.format(v.recordedAt, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td th:text="${v.heightCm}"></td>
-                        <td th:text="${v.weightKg}"></td>
-                        <td th:text="${v.bloodPressure}"></td>
-                        <td th:text="${v.heartRate}"></td>
-                        <td th:text="${v.temperature}"></td>
+                    <tr>
+                        <td th:text="${#temporals.format(vitalSigns.recordedAt, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${vitalSigns.heightCm + ' cm'}"></td>
+                        <td th:text="${vitalSigns.weightKg + ' kg'}"></td>
+                        <td th:text="${vitalSigns.bloodPressure + ' mmHg'}"></td>
+                        <td th:text="${vitalSigns.heartRate + ' bpm'}"></td>
+                        <td th:text="${vitalSigns.temperature + ' °C'}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -1032,9 +909,18 @@
         <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h6 class="fw-bold text-secondary">💊 Prescription</h6>
-                <a th:href="@{'/doctor/prescription/create?recordId=' + ${record.recordId}}"
+
+                <!-- 👉 Nếu có prescription thì chỉ hiện Update, nếu chưa có thì hiện Create -->
+                <a th:if="${prescription == null}"
+                   th:href="@{'/doctor/prescription/create?recordId=' + ${record.recordId}}"
                    class="btn btn-outline-primary btn-sm">
                     <i class="fa-solid fa-plus"></i> Add Prescription
+                </a>
+
+                <a th:if="${prescription != null}"
+                   th:href="@{/doctor/prescription/update/{id}(id=${prescription.prescriptionId})}"
+                   class="btn btn-outline-primary btn-sm">
+                    <i class="fa-solid fa-pen-to-square me-1"></i> Update Prescription
                 </a>
             </div>
 
@@ -1044,7 +930,8 @@
 
             <div th:if="${prescription != null}">
                 <p><strong>Prescription ID:</strong> <span th:text="${prescription.prescriptionId}"></span></p>
-                <div th:if="${!#lists.isEmpty(prescription.details)}" class="table-responsive">
+
+                <div th:if="${prescription.prescriptionDetails}" class="table-responsive">
                     <table class="table table-sm align-middle">
                         <thead class="table-light">
                         <tr>
@@ -1056,12 +943,12 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="d, iter : ${prescription.details}">
+                        <tr th:each="d, iter : ${prescription.prescriptionDetails}">
                             <td th:text="${iter.index + 1}"></td>
-                            <td th:text="${d.drug.drugName}"></td>
+                            <td th:text="${d.drugName}"></td>
                             <td th:text="${d.dosage}"></td>
                             <td th:text="${d.quantity}"></td>
-                            <td th:text="${d.notes ?: '-'}"></td>
+                            <td th:text="${d.instruction ?: '-'}"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -1069,10 +956,136 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-end">
-            <a th:href="@{/doctor/records/list}" class="btn btn-outline-secondary">
-                <i class="fa-solid fa-arrow-left"></i> Back
-            </a>
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- back to medical record detail -->
+            <div class="d-flex justify-content-end">
+                <a th:href="@{/doctor/appointments/detail/{id}(id=${appointmentId})}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </a>
+            </div>
+
+            <!-- submit form for patient -->
+            <div class="d-flex justify-content-end mb-3"
+                 th:if="${record.recordId != null and vitalSigns != null and prescription != null}">
+                <form th:action="@{/doctor/submit}" method="post">
+                    <input type="hidden" name="appointmentId" th:value="${appointmentId}">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-circle-check me-1"></i> Submit Record
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
+</div>
+
+<!-- fragment/doctor/lab-request.html -->
+<div th:fragment="lab-request">
+    <style>
+        :root {
+            --hm-blue: #005691;
+            --hm-light: #eaf4fb;
+        }
+
+        body {
+            background: #f8fafc;
+            font-family: "Inter", sans-serif;
+        }
+
+        .card {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            background: var(--hm-light);
+            font-weight: 600;
+            color: var(--hm-blue);
+        }
+
+        .btn-hm {
+            background: var(--hm-blue);
+            color: white;
+            border-radius: 8px;
+        }
+
+        .btn-hm:hover {
+            background: #003f6f;
+        }
+    </style>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-primary fw-semibold">
+                <i class="fa-solid fa-flask-vial me-2"></i> Create Lab Request
+            </h3>
+        </div>
+
+        <form th:action="@{/doctor/lab/save}" method="post" th:object="${lab}">
+
+            <input type="hidden" th:field="*{recordId}">
+            <input type="hidden" th:field="*{doctorId}">
+
+            <div class="card mb-4">
+                <div class="card-header"><i class="fa-solid fa-vial me-1"></i> Select Lab Tests</div>
+                <div class="card-body">
+
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Test</th>
+                            <th>Quantity</th>
+                            <th>Note</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="labBody">
+                        <tr class="lab-row">
+                            <td>
+                                <select class="form-select" name="testIds">
+                                    <option value="">-- Choose Test --</option>
+                                    <option th:each="t : ${tests}"
+                                            th:value="${t.testId}"
+                                            th:text="${t.name}"></option>
+                                </select>
+                            </td>
+                            <td><input type="number" name="quantities" class="form-control text-center" min="1"
+                                       required></td>
+                            <td><input type="text" name="instructions" class="form-control" placeholder="Optional note">
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-row"><i
+                                        class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <button type="button" id="addRow" class="btn btn-outline-primary rounded-pill">
+                        <i class="fa-solid fa-plus me-1"></i> Add Test
+                    </button>
+
+                </div>
+            </div>
+
+            <button class="btn btn-hm w-100 py-2 fw-semibold">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Save Lab Request
+            </button>
+        </form>
+
+    </div>
+
+    <script>
+        document.getElementById("addRow").onclick = () => {
+            let row = document.querySelector(".lab-row").cloneNode(true);
+            row.querySelectorAll("input").forEach(i => i.value = "");
+            row.querySelector("select").selectedIndex = 0;
+            document.getElementById("labBody").appendChild(row);
+        };
+
+        document.addEventListener("click", e => {
+            if (e.target.closest(".remove-row")) {
+                if (document.querySelectorAll(".lab-row").length > 1)
+                    e.target.closest(".lab-row").remove();
+            }
+        });
+    </script>
 </div>

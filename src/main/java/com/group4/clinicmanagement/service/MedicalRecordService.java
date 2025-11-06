@@ -48,6 +48,15 @@ public class MedicalRecordService {
         );
     }
 
+    public int updateRecord(MedicalRecord medicalRecord) {
+        return medicalRecordRepository.updateMedicalRecord(
+                medicalRecord.getRecordId(),
+                medicalRecord.getDiagnosis(),
+                medicalRecord.getNotes(),
+                medicalRecord.getStatusValue()
+        );
+    }
+
     public MedicalRecord findById(int recordId) {
         return  medicalRecordRepository.findByRecordId(recordId).orElse(null);
     }

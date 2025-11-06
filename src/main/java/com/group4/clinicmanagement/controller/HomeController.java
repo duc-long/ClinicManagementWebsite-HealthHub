@@ -38,12 +38,7 @@ public class HomeController {
     }
 
     @GetMapping()
-    public String guestHome(Model model, @RequestParam(defaultValue = "1") int page, HttpSession session, Principal principal) {
-        User user = userService.findUserByUsername(principal.getName());
-        if (!user.getRole().getName().equals("Patient")) {
-            return "redirect:/patient/login";
-        }
-
+    public String guestHome(Model model, @RequestParam(defaultValue = "1") int page, HttpSession session) {
         int pageSize = 3; // hiển thị 3 feedback mỗi trang
         if (page < 1) {
             return "redirect:/home?page=1";

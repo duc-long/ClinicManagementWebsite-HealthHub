@@ -70,4 +70,8 @@ public class LabRequestService {
         return dtoList;
     }
 
+//    public LabRequestDTO findLabRequestByRecordId(int recordId) {
+//        return labRequestRepository.fin
+//    }
+
 }
