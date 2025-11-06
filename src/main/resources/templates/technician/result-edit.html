@@ -3,112 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Edit Test Result - HealHub</title>
+    <title>Edit Result - HealHub</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <style>
-        body { background-color: #f6f7fb; }
-        .container-narrow { max-width: 1080px; }
-        .section-title { font-weight: 600; }
+        body {
+            background-color: #f6f7fb;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #fff;
+            border-radius: .75rem;
+            box-shadow: 0 2px 12px #0001;
+            padding: 1rem;
+            height: calc(100vh - 84px);
+            position: sticky;
+            top: 72px;
+            overflow: auto;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            border-radius: .5rem;
+            padding: .5rem .75rem;
+        }
+        .sidebar .nav-link.active,
+        .sidebar .nav-link:hover {
+            background: #e9f2ff;
+            color: #0d6efd;
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar {
+                height: auto;
+                position: relative;
+                top: auto;
+            }
+        }
     </style>
 </head>
-<body>
 
-<!-- Navbar -->
+<body>
 <nav th:replace="~{fragment/technician/techinician-fragment :: navBar}"></nav>
 
-
-<!-- Main -->
-<main class="container container-narrow py-4">
-    <h1 class="h4 mb-3">Edit Test Result RES-<span th:text="${result.resultId}"></span></h1>
-
+<main class="container-fluid py-3 py-lg-4">
     <div class="row g-3">
-        <!-- Patient info -->
-        <div class="col-12 col-lg-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white section-title">Patient & Test</div>
-                <div class="card-body">
-                    <dl class="row">
-                        <dt class="col-4">Patient</dt>
-                        <dd class="col-8" th:text="${result.patientName}"></dd>
-                        <dt class="col-4">Test</dt>
-                        <dd class="col-8" th:text="${result.testName}"></dd>
-                    </dl>
 
-                    <div class="text-muted small">
+        <!-- Sidebar -->
+        <aside class="col-12 col-lg-3"
+               th:replace="~{/fragment/technician/techinician-fragment :: sidebar}">
+        </aside>
+
+        <section class="col-12 col-lg-9">
+            <h1 class="h4 mb-3">Edit Test Result RES-<span th:text="${result.resultId}"></span></h1>
+
+            <div class="row g-3">
+                <!-- Patient info -->
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-white section-title">Patient & Test</div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-4">Patient</dt>
+                                <dd class="col-8" th:text="${result.patientName}"></dd>
+                                <dt class="col-4">Test</dt>
+                                <dd class="col-8" th:text="${result.testName}"></dd>
+                            </dl>
+
+                            <div class="text-muted small">
                         <span th:classappend="
                             ${result.labRequestStatus == 'REQUESTED'} ? 'badge bg-secondary' :
                             (${result.labRequestStatus == 'PAID'} ? 'badge bg-primary' : 'badge bg-success')"
                               th:text="${result.labRequestStatus}"></span>
-                    </div>
-                    <div th:if="${result.labRequestStatus == 'COMPLETED'}"
-                         th:text="${#temporals.format(result.createdAt, 'dd/MM/yyyy HH:mm:ss')}"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit form -->
-        <div class="col-12 col-lg-8">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white section-title">Update Result</div>
-                <div class="card-body">
-                    <form th:action="@{/technician/result-edit/{id}(id=${result.resultId})}"
-                          th:object="${result}" method="post" enctype="multipart/form-data">
-
-                        <!-- Hidden fields -->
-                        <input type="hidden" th:field="*{resultId}"/>
-                        <input type="hidden" th:field="*{labRequestId}"/>
-                        <input type="hidden" th:field="*{technicianName}"/>
-
-                        <!-- Result description -->
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Result Description</label>
-                            <textarea th:field="*{resultText}" class="form-control" rows="4"
-                                      placeholder="Enter or update result details..."></textarea>
+                            </div>
+                            <div th:if="${result.labRequestStatus == 'COMPLETED'}"
+                                 th:text="${#temporals.format(result.createdAt, 'dd/MM/yyyy HH:mm:ss')}"></div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- X-ray section -->
-                        <div th:if="${result.testName == 'X-Ray'}">
-                            <label class="form-label fw-semibold">Current X-Ray Images</label>
+                <!-- Edit form -->
+                <div class="col-12 col-lg-8">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-white section-title">Update Result</div>
+                        <div class="card-body">
+                            <form th:action="@{/technician/result-edit/{id}(id=${result.resultId})}"
+                                  th:object="${result}" method="post" enctype="multipart/form-data">
 
-                            <div class="row g-3 mt-1" th:if="${result.images != null and !#lists.isEmpty(result.images)}">
-                                <div class="col-md-6" th:each="img : ${result.images}">
-                                    <div class="border rounded shadow-sm p-2">
-                                        <img th:src="@{${img.filePath}}" alt="X-ray Image" class="img-fluid rounded mb-2">
-                                        <input type="hidden" name="imageIds" th:value="${img.imageId}">
-                                        <label class="form-label small text-muted">Description</label>
-                                        <input type="text" class="form-control form-control-sm mb-2"
-                                               name="imageDescriptions" th:value="${img.description}">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox"
-                                                   name="deleteImageIds" th:value="${img.imageId}">
-                                            <label class="form-check-label text-danger small">Delete</label>
+                                <!-- Hidden fields -->
+                                <input type="hidden" th:field="*{resultId}"/>
+                                <input type="hidden" th:field="*{labRequestId}"/>
+                                <input type="hidden" th:field="*{technicianName}"/>
+
+                                <!-- Result description -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Result Description</label>
+                                    <textarea th:field="*{resultText}" class="form-control" rows="4"
+                                              placeholder="Enter or update result details..."></textarea>
+                                </div>
+
+                                <!-- X-ray section -->
+                                <div th:if="${result.testName == 'X-Ray'}">
+                                    <label class="form-label fw-semibold">Current X-Ray Images</label>
+
+                                    <div class="row g-3 mt-1" th:if="${result.images != null and !#lists.isEmpty(result.images)}">
+                                        <div class="col-md-6" th:each="img : ${result.images}">
+                                            <div class="border rounded shadow-sm p-2">
+                                                <img th:src="@{${img.filePath}}" alt="X-ray Image" class="img-fluid rounded mb-2">
+                                                <input type="hidden" name="imageIds" th:value="${img.imageId}">
+                                                <label class="form-label small text-muted">Description</label>
+                                                <input type="text" class="form-control form-control-sm mb-2"
+                                                       name="imageDescriptions" th:value="${img.description}">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           name="deleteImageIds" th:value="${img.imageId}">
+                                                    <label class="form-check-label text-danger small">Delete</label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <!-- Upload new images -->
+                                    <div class="mt-3">
+                                        <label class="form-label fw-semibold">Upload New Images</label>
+                                        <input type="file" name="xrayFiles" multiple class="form-control mb-2"/>
+                                        <label class="form-label">New Image Descriptions (match order)</label>
+                                        <input type="text" name="newDescriptions" class="form-control"
+                                               placeholder="Enter descriptions for new uploads (comma separated)">
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Upload new images -->
-                            <div class="mt-3">
-                                <label class="form-label fw-semibold">Upload New Images</label>
-                                <input type="file" name="xrayFiles" multiple class="form-control mb-2"/>
-                                <label class="form-label">New Image Descriptions (match order)</label>
-                                <input type="text" name="newDescriptions" class="form-control"
-                                       placeholder="Enter descriptions for new uploads (comma separated)">
-                            </div>
+                                <!-- Submit buttons -->
+                                <div class="mt-4 d-flex justify-content-end gap-2">
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="fa-solid fa-floppy-disk me-1"></i>Save Changes
+                                    </button>
+                                    <a th:href="@{/technician/result-list}" class="btn btn-outline-secondary px-4">Cancel</a>
+                                </div>
+                            </form>
                         </div>
-
-                        <!-- Submit buttons -->
-                        <div class="mt-4 d-flex justify-content-end gap-2">
-                            <button type="submit" class="btn btn-primary px-4">
-                                <i class="fa-solid fa-floppy-disk me-1"></i>Save Changes
-                            </button>
-                            <a th:href="@{/technician/result-list}" class="btn btn-outline-secondary px-4">Cancel</a>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 </main>
 

@@ -4,14 +4,23 @@
     <meta charset="UTF-8">
     <title>Confirm Result</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <style>body {
+        background-color: #f6f7fb;
+    }
+
+    .container-narrow {
+        max-width: 1080px;
+    }
+
+    .section-title {
+        font-weight: 600
+    }</style>
 </head>
 <body class="bg-light">
 <nav th:replace="~{fragment/technician/techinician-fragment :: navBar}"></nav>
-<main class="container py-2">
+<main class="container container-narrow py-4">
+    <h1 class="h4 mb-3">Confirm Result – RES-<span th:text="${result.resultId}"></span></h1>
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white fw-bold">
-            Confirm Result – RES-<span th:text="${result.resultId}"></span>
-        </div>
         <div class="card-body">
             <p><strong>Patient:</strong> <span th:text="${result.patientName}"></span></p>
             <p><strong>Test:</strong> <span th:text="${result.testName}"></span></p>

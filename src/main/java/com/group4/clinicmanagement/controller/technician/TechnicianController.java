@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +51,8 @@ public class TechnicianController {
         labResultDTOS.removeIf(r -> !"RUNNING".equals(r.getLabRequestStatus()));
 
         List<LabRequestDTO> labRequestDTOS = new ArrayList<>(labRequestService.getAllLabRequestDTO());
-        labRequestDTOS.removeIf(r -> !r.getStatus().equals(LabRequestStatus.REQUESTED));
+        labRequestDTOS.removeIf(r -> !(r.getStatus().equals(LabRequestStatus.REQUESTED)
+        || r.getStatus().equals(LabRequestStatus.RUNNING)));
 
         model.addAttribute("labRequestDTOS", labRequestDTOS);
         model.addAttribute("labResultDTOS", labResultDTOS);
@@ -121,15 +123,6 @@ public class TechnicianController {
         }
 
         return "auth/technician/login";
-    }
-
-    @PostMapping("/delete-account")
-    public String deleteAccount(Authentication authentication, HttpServletRequest request) throws ServletException {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        technicianService.deactivateAccount(userDetails.getUserId());
-
-        request.logout();
-        return "redirect:/technician/login";
     }
 
 }

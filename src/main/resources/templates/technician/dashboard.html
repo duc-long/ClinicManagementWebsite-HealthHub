@@ -12,10 +12,6 @@
             background-color: #f6f7fb;
         }
 
-        .container-wide {
-            max-width: 1200px;
-        }
-
         .dashboard-summary {
             display: flex;
             gap: 1.5rem;
@@ -89,7 +85,7 @@
 <body>
 <nav th:replace="~{fragment/technician/techinician-fragment :: navBar}"></nav>
 
-<main class="container container-wide py-3 py-lg-4">
+<main class="container-fluid py-3 py-lg-4">
     <div class="row g-3">
         <!-- Sidebar for large screens -->
         <aside th:replace="~{/fragment/technician/techinician-fragment :: sidebar}"></aside>
