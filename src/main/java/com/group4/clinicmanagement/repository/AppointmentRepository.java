@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment,Integer> {
@@ -68,4 +69,42 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
                                                  @Param("patientName") String patientName,
                                                  @Param("status") AppointmentStatus status,
                                                  Pageable pageable);
+
+    @Query(
+            value = """
+        SELECT a FROM Appointment a
+        LEFT JOIN a.patient p
+        LEFT JOIN p.user pu
+        LEFT JOIN a.doctor d
+        LEFT JOIN d.user du
+        LEFT JOIN a.receptionist r
+        WHERE a.statusValue = :status
+        ORDER BY a.appointmentDate DESC
+    """,
+            countQuery = "SELECT COUNT(a) FROM Appointment a WHERE a.statusValue = :status"
+    )
+    Page<Appointment> findStatusValueDesc(@Param("status") int status, Pageable pageable);
+
+    @Query("""
+    SELECT a FROM Appointment a
+    LEFT JOIN FETCH a.patient p
+    LEFT JOIN FETCH p.user pu
+    LEFT JOIN FETCH a.doctor d
+    LEFT JOIN FETCH d.user du
+    LEFT JOIN FETCH a.receptionist r
+    WHERE a.appointmentId = :id
+      AND a.statusValue IN(0,1,2,4,5)
+""")
+    Optional<Appointment> findIdWithStatusRange(@Param("id") int id);
+
+    @Query("""
+    SELECT COALESCE(MAX(a.queueNumber), 0)
+    FROM Appointment a
+    WHERE a.doctor.doctorId = :doctorId
+      AND a.appointmentDate = :date
+""")
+    Integer findMaxQueueNumber(@Param("doctorId") int doctorId,
+                                              @Param("date") LocalDate date);
+
+
 }

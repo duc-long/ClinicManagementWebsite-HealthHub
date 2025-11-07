@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.AppointmentDTO;
+import com.group4.clinicmanagement.dto.ReceptionistAppointmentDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.DoctorDailySlot;
@@ -96,29 +97,33 @@ public class AppointmentService {
         return !date.isBefore(today);
     }
 
-    public List<Doctor> getAvailableDoctors(LocalDate date) {
-        return doctorRepository.findAvailableDoctorsOnDate(date);
+    public List<Doctor> getAvailableDoctors(Integer departmentId, LocalDate date) {
+        if(departmentId==null){
+            return List.of();
+        }
+        if(date==null){
+            return List.of();
+        }
+        return doctorRepository.findAvailableDoctors(departmentId,date);
     }
 
     @Transactional
-    public void updateAppointment(Appointment updated) {
+    public void scheduleAppointment(Appointment updated) {
         Appointment existing = appointmentRepository.findById(updated.getAppointmentId())
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
         AppointmentStatus oldStatus = existing.getStatus();
         AppointmentStatus newStatus = updated.getStatus();
 
-        Doctor oldDoctor = existing.getDoctor();
         Doctor newDoctor = updated.getDoctor();
         LocalDate date = existing.getAppointmentDate();
 
         existing.setCancelReason(updated.getCancelReason());
-        existing.setNotes(updated.getNotes());
         existing.setDoctor(newDoctor);
         existing.setStatus(newStatus);
         existing.fillStatusValue();
 
-        // Case 1: Assign doctor & was pending → auto CONFIRM + slot -1
+        // Assign doctor & was pending → auto CONFIRM + slot -1
         if (oldStatus == AppointmentStatus.PENDING && newDoctor != null) {
             existing.setStatus(AppointmentStatus.CONFIRMED);
 
@@ -140,16 +145,33 @@ public class AppointmentService {
             slotRepository.save(slot);
         }
 
-        //Case 2: Cancel confirmed appointment → slot +1
-        if (newStatus == AppointmentStatus.CANCELLED && oldStatus == AppointmentStatus.CONFIRMED && oldDoctor != null) {
-            DoctorDailySlot slot = slotRepository.findByDoctorAndSlotDate(oldDoctor, date).orElse(null);
-            if (slot != null && slot.getAvailableSlots() < slot.getTotalSlots()) {
-                slot.setAvailableSlots(slot.getAvailableSlots() + 1);
-                slotRepository.save(slot);
-            }
+        appointmentRepository.save(existing);
+    }
+
+    @Transactional
+    public void checkInAppointment(int appointmentId) {
+         Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+
+         if (appointment.getStatus() != AppointmentStatus.CONFIRMED) {
+            throw new IllegalStateException("Only confirmed appointments can be checked in.");
         }
 
-        appointmentRepository.save(existing);
+        Doctor doctor = appointment.getDoctor();
+        LocalDate date = appointment.getAppointmentDate();
+
+        if (doctor == null) {
+            throw new IllegalStateException("Cannot check in — appointment has no assigned doctor.");
+        }
+
+       Integer maxQueue = appointmentRepository.findMaxQueueNumber(doctor.getDoctorId(), date);
+        int nextQueue = (maxQueue == null ? 1 : maxQueue + 1);
+
+        appointment.setQueueNumber(nextQueue);
+        appointment.setStatus(AppointmentStatus.CHECKED_IN);
+        appointment.fillStatusValue();
+
+        appointmentRepository.save(appointment);
     }
 
 
@@ -183,5 +205,30 @@ public class AppointmentService {
                 ));
     }
 
+    public Page<ReceptionistAppointmentDTO> getStatusAppointmentPage(int statusValue, int page, int size){
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);;
+        Page<Appointment> appointments = appointmentRepository.findStatusValueDesc(statusValue, pageable);
+        return appointments
+                .map(a -> new ReceptionistAppointmentDTO(
+                        a.getAppointmentId(),
+                        a.getPatient().getPatientId(),
+                        a.getDoctor() != null && a.getDoctor().getUser() != null ? a.getDoctor().getUser().getFullName() : "Not Assigned",
+                        a.getPatient() != null && a.getPatient().getUser() != null ? a.getPatient().getUser().getFullName() : "Unknown",
+                        a.getReceptionist() != null ? a.getReceptionist().getFullName() : "N/A",
+                        a.getPatient().getUser().getPhone(),
+                        a.getAppointmentDate(),
+                        a.getCreatedAt(),
+                        AppointmentStatus.fromInt(a.getStatusValue()),
+                        a.getQueueNumber() != null ? a.getQueueNumber() : 0,
+                        a.getNotes(),
+                        a.getCancelReason(),
+                        (a.getStatusValue() == AppointmentStatus.CONFIRMED.getValue() //check checkin
+                        && a.getAppointmentDate().equals(LocalDate.now()))
+                ));
+    }
+
+    public Appointment getAppointmentForReceptionist(int id){
+        return appointmentRepository.findIdWithStatusRange(id).orElse(null);
+    }
 }
 

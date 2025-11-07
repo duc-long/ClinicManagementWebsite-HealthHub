@@ -76,6 +76,14 @@
                         <div class="label">Phone</div>
                         <input type="text" th:field="*{phone}" class="form-control"/>
                     </div>
+                    <div class="group-info">
+                        <label class="form-label fw-bold">Gender</label>
+                        <select class="form-select" th:field="*{gender}" required>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="button-row mt-3">
