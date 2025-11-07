@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div >
+    <aside th:fragment = "sidebar" class="col-lg-3 d-none d-lg-block">
+        <div class="sidebar">
+            <nav class="nav flex-column">
+                <a class="nav-link active d-flex align-items-center mb-1" th:href="@{/technician}"><i
+                        class="fa-solid fa-house-medical me-2"></i>Dashboard</a>
+                <a class="nav-link d-flex align-items-center mb-1" th:href="@{/technician/request-list}"><i
+                        class="fa-solid fa-list-check me-2"></i>Requests</a>
+                <a class="nav-link d-flex align-items-center mb-1" th:href="@{/technician/result-list}"><i
+                        class="fa-solid fa-vials me-2"></i>Lab Tests</a>
+                <a class="nav-link d-flex align-items-center mb-1" th:href="@{/technician/profile}"><i
+                        class="fa-solid fa-user me-2"></i>Profile</a>
+                <div class="mt-3">
+                    <a class="btn btn-outline-danger btn-sm w-100" th:href="@{/technician/logout}"><i
+                            class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+</div>
+
+
+</body>
+</html>

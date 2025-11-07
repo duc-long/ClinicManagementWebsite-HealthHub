@@ -72,12 +72,14 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
         <div class="col" th:each="doctor : ${doctors}">
             <div class="position-relative rounded overflow-hidden">
-                <img src="https://placehold.co/300x350?text=Doctor"
-                     class="img-fluid"
-                     alt="Doctor Image"
+                <img th:src="${doctor.avatarFilename} != null ?
+                  @{/images/avatars/{file}(file=${doctor.avatarFilename})} :
+                  @{/images/avatars/default-avatar.png}"
+                     alt="Avatar"
+                     class="shadow avatar-img"
                      style="height: 350px; object-fit: cover; width: 100%;">
                 <div class="position-absolute bottom-0 start-0 w-100 px-3 py-2 bg-info bg-opacity-75 text-white text-start">
-                    <strong th:text="${doctor.user.fullName}">Dr. Name</strong><br>
+                    <strong th:text="${doctor.fullName}">Dr. Name</strong><br>
                     <small th:text="${doctor.specialty}">Doctor's Title</small>
                 </div>
             </div>
@@ -98,15 +100,10 @@
             <div class="dropdown">
                 <a class="dropdown-toggle text-primary text-decoration-none fw-semibold"
                    id="dropdownSpecialty" data-bs-toggle="dropdown" aria-expanded="false">
-                    Specialty
+                    Departments
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
-                    <li th:each="s : ${session.specialties}">
-                        <a class="dropdown-item"
-                           th:href="@{/home/specialty/{specialty}(specialty=${s})}"
-                           th:text="${s}">
-                        </a>
-                    </li>
+                    <li th:each="s : ${departments}"><a class="dropdown-item" th:href="@{/home/department/{departmentName}(departmentName=${s.name})}" th:text="${s.name}"></a></li>
                 </ul>
             </div>
 

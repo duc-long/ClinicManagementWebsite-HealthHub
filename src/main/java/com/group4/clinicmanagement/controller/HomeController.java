@@ -1,9 +1,13 @@
 package com.group4.clinicmanagement.controller;
 
+import com.group4.clinicmanagement.dto.DepartmentDTO;
+import com.group4.clinicmanagement.dto.DoctorHomeDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.Feedback;
 import com.group4.clinicmanagement.security.CustomUserDetails;
+import com.group4.clinicmanagement.service.AppointmentService;
+import com.group4.clinicmanagement.service.DepartmentService;
 import com.group4.clinicmanagement.service.DoctorService;
 import com.group4.clinicmanagement.service.FeedbackService;
 import jakarta.servlet.http.HttpSession;
@@ -26,24 +30,26 @@ public class HomeController {
 
     private final DoctorService doctorService;
     private final FeedbackService feedbackService;
+    private final DepartmentService departmentService;
 
-    public HomeController(DoctorService doctorService, FeedbackService feedbackService) {
+    public HomeController(DoctorService doctorService, FeedbackService feedbackService, DepartmentService departmentService) {
         this.feedbackService = feedbackService;
         this.doctorService = doctorService;
+        this.departmentService = departmentService;
     }
 
     @GetMapping()
     public String guestHome(Model model,@RequestParam(defaultValue = "1") int page, HttpSession session) {
-        int pageSize = 3; // hiển thị 3 feedback mỗi trang
+        int pageSize = 3;
         if (page < 1) {
             return "redirect:/home?page=1";
         }
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("createdAt").descending());
 
-        List<Doctor> doctors = doctorService.findAllDoctors();
-        model.addAttribute("doctors", doctors);
-        List<String> specialties = doctorService.findAllDistinctSpecialties();
-        session.setAttribute("specialties", specialties);
+        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findTopDoctors(PageRequest.of(0, 4));
+        model.addAttribute("doctors", doctorUserDTOS);
+        List<DepartmentDTO> departments = departmentService.findAll();
+        model.addAttribute("departments", departments);
         double averageRating = feedbackService.getAverageRating();
         model.addAttribute("averageRating", averageRating);
 
@@ -51,7 +57,7 @@ public class HomeController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Integer userId = null;
         if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
-            userId = userDetails.getUserId(); // lấy từ CustomUserDetails
+            userId = userDetails.getUserId();
 
             List<Appointment> eligibleAppointments = feedbackService.getEligibleAppointmentsForFeedback(userId);
             model.addAttribute("eligibleAppointments", eligibleAppointments);
@@ -63,7 +69,7 @@ public class HomeController {
 
             feedbackPage = feedbackService.getFeedbackPageExcludeUser(userId, pageable);
             model.addAttribute("feedbacks", feedbackPage);
-            model.addAttribute("userFeedbacks", userFeedbacks); // hiển thị riêng phần đầu
+            model.addAttribute("userFeedbacks", userFeedbacks);
         } else {
             feedbackPage = feedbackService.getFeedbackPage(pageable);
             model.addAttribute("feedbacks", feedbackPage);
@@ -78,51 +84,49 @@ public class HomeController {
 
     @GetMapping(value = "/list-doctor")
     public String listDoctor(Model model) {
-        List<Doctor> doctors = doctorService.findAllDoctors();
-        model.addAttribute("doctors", doctors);
-        List<String> specialties = doctorService.findAllDistinctSpecialties();
-        model.addAttribute("specialties", specialties);
+        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findAllVisibleAndActiveDoctorsDoctorUserDTOS();
+        model.addAttribute("doctors", doctorUserDTOS);
+        List<DepartmentDTO> departments = departmentService.findAll();
+        model.addAttribute("departments", departments);
         return "home/doctor-list";
     }
 
     @GetMapping(value = "/search-doctor")
     public String searchDoctor(Model model) {
-        List<String> specialties = doctorService.findAllDistinctSpecialties();
-        List<Doctor> doctors = null;
         model.addAttribute("doctors", null);
-        model.addAttribute("specialties", specialties);
+        List<DepartmentDTO> departments = departmentService.findAll();
+        model.addAttribute("departments", departments);
         return "home/doctor-search";
     }
 
-    @PostMapping(value = "/search-doctor")
-    public String searchDoctor(@RequestParam(name = "specialty") String specialty,
+    @GetMapping(value = "/search-doctor-result")
+    public String searchDoctor(@RequestParam(name = "departmentId") Integer departmentId,
                                @RequestParam(name = "doctorName") String doctorName,
                                Model model) {
-        List<Doctor> doctors = doctorService.findDoctorByNameAndSpecialty(doctorName, specialty);
-        model.addAttribute("doctors", doctors);
-        List<String> specialties = doctorService.findAllDistinctSpecialties();
-        model.addAttribute("specialties", specialties);
-        model.addAttribute("pageTitle", "Search Results" + "(" + doctors.size() + " doctors found)");
+        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findByNameContainingIgnoreCaseAndDepartmentId(doctorName, departmentId);
+        model.addAttribute("doctors", doctorUserDTOS);
+        List<DepartmentDTO> departments = departmentService.findAll();
+        model.addAttribute("departments", departments);
+        model.addAttribute("pageTitle", "Search Results" + "(" + doctorUserDTOS.size() + " doctors found)");
         return "home/doctor-search";
     }
 
     @GetMapping(value = "/doctor-profile/{doctorId}")
     public String viewDetailDoctor(Model model, @PathVariable(name = "doctorId") int doctorId) {
-        Doctor doctor = doctorService.findDoctorById(doctorId);
-        model.addAttribute("doctor", doctor);
-        List<String> specialties = doctorService.findAllDistinctSpecialties();
-        model.addAttribute("specialties", specialties);
+        DoctorHomeDTO doctorUserDTO = doctorService.findVisibleActiveDoctorById(doctorId);
+        model.addAttribute("doctor", doctorUserDTO);
+        List<DepartmentDTO> departments = departmentService.findAll();
+        model.addAttribute("departments", departments);
         return "home/doctor-profile";
     }
 
-    @GetMapping(value = "/specialty/{specialty}")
-    public String viewDoctorSpecialty(Model model, @PathVariable(name = "specialty") String specialty) {
-        List<Doctor> doctors = doctorService.getDoctorBySpecialtyIgnoreCase(specialty);
+    @GetMapping(value = "/department/{departmentName}")
+    public String viewDoctorSpecialty(Model model, @PathVariable(name = "departmentName") String departmentName) {
+        List<DoctorHomeDTO> doctors = doctorService.findVisibleActiveDoctorsByDepartment(departmentName);
         model.addAttribute("doctors", doctors);
-        List<String> specialties = doctorService.findAllDistinctSpecialties();
-        model.addAttribute("specialties", specialties);
-        model.addAttribute("specialty", specialty);
+        List<DepartmentDTO> departments = departmentService.findAll();
+        model.addAttribute("departments", departments);
+        model.addAttribute("departmentName", departmentName);
         return "home/department-doctor-list";
     }
-
 }

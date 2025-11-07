@@ -1,12 +1,16 @@
 package com.group4.clinicmanagement.repository;
 
+import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
@@ -22,8 +26,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                                 @Param("gender") Integer gender);
 
     Optional<User> findUserByUsername(String username);
+
     Optional<User> findByUsername(String username);
+
     Optional<User> findByUserId(int userId);
+
     @Modifying
     @Query("UPDATE User u SET u.avatar = :filename WHERE u.username = :username")
     void updateAvatarFilename(@Param("username") String username,
@@ -47,5 +54,18 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 
     User getReferenceByUserId(Integer userId);
+
+
+    @Query("SELECT u FROM User u WHERE u.role.roleId = 3")
+    Page<User> findAllByRoleReceptionist(Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE u.role.roleId = 4")
+    Page<User> findAllByRoleCashier(Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE u.role.roleId = 5")
+    Page<User> findAllByRoleTechnician(Pageable pageable);
+
+    Optional<User> getUserByUserIdAndRole_RoleId(Integer userId, int roleRoleId);
+
 
 }

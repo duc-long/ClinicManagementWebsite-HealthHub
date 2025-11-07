@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Update Patient</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,8 +14,13 @@
             --hm-light-green: #e6f7ef;
         }
 
-        .text-hm-blue { color: var(--hm-blue) !important; }
-        .text-hm-green { color: var(--hm-green) !important; }
+        .text-hm-blue {
+            color: var(--hm-blue) !important;
+        }
+
+        .text-hm-green {
+            color: var(--hm-green) !important;
+        }
 
         .btn-hm-green {
             background-color: var(--hm-green);
@@ -83,12 +88,20 @@
     <div class="sidebar p-3 shadow">
         <h4 class="text-white mb-4">CLINIC HUB</h4>
         <ul class="nav nav-pills flex-column">
-            <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-chart-line me-2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link active" href="#"><i class="fas fa-users me-2"></i> Patients</a></li>
-            <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-user-md me-2"></i> Doctors</a></li>
-            <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-hospital-user me-2"></i> Receptionists</a></li>
-            <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-cash-register me-2"></i> Cashiers</a></li>
-            <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-user-gear me-2"></i> Technicians</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/dashboard}"><i
+                    class="fas fa-chart-line me-2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/admin/patient}"><i
+                    class="fas fa-users me-2"></i> Patients</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i>
+                Doctors</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/receptionist}"><i
+                    class="fas fa-hospital-user me-2"></i>
+                Receptionists</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/cashier}"><i
+                    class="fas fa-cash-register me-2"></i> Cashiers</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/technician}"><i
+                    class="fas fa-user-gear me-2"></i> Technicians</a></li>
         </ul>
     </div>
 
@@ -109,7 +122,8 @@
                     <div class="card-body">
 
                         <!-- Form for update -->
-                        <form th:action="@{/admin/patient/edit-result}" th:object="${patientDTO}" method="post" enctype="multipart/form-data">
+                        <form th:action="@{/admin/patient/edit-result}" th:object="${patientDTO}" method="post"
+                              enctype="multipart/form-data">
 
                             <!-- Avatar center -->
                             <div class="d-flex flex-column align-items-center mb-4">
@@ -132,7 +146,7 @@
                                 </div>
                             </div>
 
-                            <input th:field="*{patientId}" hidden />
+                            <input th:field="*{patientId}" hidden/>
 
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Username</label>
@@ -145,8 +159,9 @@
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Full Name</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" th:field="*{fullName}" />
-                                    <div class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                                    <input type="text" class="form-control" th:field="*{fullName}"/>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('fullName')}"
+                                         th:errors="*{fullName}"></div>
                                 </div>
                             </div>
 
@@ -154,8 +169,9 @@
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Email</label>
                                 <div class="col-sm-10">
-                                    <input type="email" class="form-control" th:field="*{email}" />
-                                    <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                    <input type="email" class="form-control" th:field="*{email}"/>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('email')}"
+                                         th:errors="*{email}"></div>
                                 </div>
                             </div>
 
@@ -163,8 +179,10 @@
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Phone</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" th:field="*{phone}" pattern="[0-9]{10}" title="Enter the correct 10 digits" />
-                                    <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                    <input type="text" class="form-control" th:field="*{phone}" pattern="[0-9]{10}"
+                                           title="Enter the correct 10 digits"/>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('phone')}"
+                                         th:errors="*{phone}"></div>
                                 </div>
                             </div>
 
@@ -174,10 +192,14 @@
                                 <div class="col-sm-10">
                                     <select class="form-select" th:field="*{gender}">
                                         <option value="" disabled>-- Select Gender --</option>
-                                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}">Male</option>
-                                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}">Female</option>
+                                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}">Male
+                                        </option>
+                                        <option th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}">
+                                            Female
+                                        </option>
                                     </select>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></div>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('gender')}"
+                                         th:errors="*{gender}"></div>
                                 </div>
                             </div>
 
@@ -185,8 +207,9 @@
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Address</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" th:field="*{address}" />
-                                    <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                                    <input type="text" class="form-control" th:field="*{address}"/>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('address')}"
+                                         th:errors="*{address}"></div>
                                 </div>
                             </div>
 
@@ -194,8 +217,9 @@
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Date of Birth</label>
                                 <div class="col-sm-10">
-                                    <input type="date" class="form-control" th:field="*{birthDate}" />
-                                    <div class="text-danger" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></div>
+                                    <input type="date" class="form-control" th:field="*{birthDate}"/>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('birthDate')}"
+                                         th:errors="*{birthDate}"></div>
                                 </div>
                             </div>
 

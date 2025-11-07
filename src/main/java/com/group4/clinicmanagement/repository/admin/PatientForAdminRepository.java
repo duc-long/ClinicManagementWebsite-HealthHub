@@ -9,8 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PatientForAdminRepository extends JpaRepository<Patient,Integer> {
+public interface PatientForAdminRepository extends JpaRepository<Patient, Integer> {
     Page<Patient> findAll(Pageable pageable);
 
     Optional<Patient> getPatientsByPatientId(Integer patientId);
+
+
 }

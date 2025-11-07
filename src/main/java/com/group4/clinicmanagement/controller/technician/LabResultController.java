@@ -5,6 +5,7 @@ import com.group4.clinicmanagement.dto.LabResultDTO;
 import com.group4.clinicmanagement.entity.LabRequest;
 import com.group4.clinicmanagement.entity.LabResult;
 import com.group4.clinicmanagement.entity.LabTestCatalog;
+import com.group4.clinicmanagement.enums.LabRequestStatus;
 import com.group4.clinicmanagement.security.CustomUserDetails;
 import com.group4.clinicmanagement.service.CustomUserDetailsService;
 import com.group4.clinicmanagement.service.LabRequestService;
@@ -141,6 +142,29 @@ public class LabResultController {
 
         labResultService.confirmResult(id);
         redirectAttributes.addFlashAttribute("successMessage", "Result confirmed successfully!");
+        return "redirect:/technician/result-list";
+    }
+
+    @GetMapping(value ="/result-delete/{id}")
+    public String deleteResultForm(@PathVariable(name = "id") int id,
+                               RedirectAttributes redirectAttributes,
+                               Model model) {
+        LabResultDTO result = labResultService.findById(id);
+
+        if(result.getLabRequestStatus().equals(LabRequestStatus.COMPLETED.name())){
+            redirectAttributes.addFlashAttribute("errorMessage", "Result has been completed!");
+            return "redirect:technician/result-list";
+        }
+        model.addAttribute("result", result);
+
+        return "/technician/result-delete";
+    }
+
+    @PostMapping(value = "/result-delete/{id}")
+    public String deleteResult(@PathVariable(name = "id") int id, RedirectAttributes redirectAttributes) {
+
+        labResultService.deleteResult(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Delete successfully!");
         return "redirect:/technician/result-list";
     }
 

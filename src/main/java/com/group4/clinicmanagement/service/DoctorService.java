@@ -1,19 +1,24 @@
 package com.group4.clinicmanagement.service;
 
+import com.group4.clinicmanagement.dto.DoctorHomeDTO;
 import com.group4.clinicmanagement.entity.Department;
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
 import com.group4.clinicmanagement.repository.DoctorRepository;
 import com.group4.clinicmanagement.repository.UserRepository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,21 +42,84 @@ public class DoctorService {
         return doctorRepository.findAll();
     }
 
-    public List<String> findAllDistinctSpecialties() {
-        return doctorRepository.findAllDistinctSpecialties();
+    @Transactional
+    public DoctorHomeDTO toDTO(Doctor doctor) {
+        User user = doctor.getUser();
+        Department dept = doctor.getDepartment();
+
+        return DoctorHomeDTO.builder()
+                .doctorId(doctor.getDoctorId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .gender(user.getGender())
+                .licenseNo(doctor.getLicenseNo())
+                .specialty(doctor.getSpecialty())
+                .degree(doctor.getDegree())
+                .yearsExperience(doctor.getYearsExperience())
+                .bio(doctor.getBio())
+                .profileVisibility(Boolean.TRUE.equals(doctor.getProfileVisibility()))
+                .departmentName(dept != null ? dept.getName() : null)
+                .avatarFilename(user.getAvatar())
+                .build();
     }
 
-    public List<Doctor> findDoctorByNameAndSpecialty(String name, String specialty) {
-        return doctorRepository.findDoctorByNameAndSpecialty(name, specialty);
+    @Transactional
+    public List<DoctorHomeDTO> findAllVisibleAndActiveDoctorsDoctorUserDTOS() {
+        List<Doctor> doctors = doctorRepository.findAllVisibleAndActiveDoctors();
+        List<DoctorHomeDTO> result = new ArrayList<>();
 
+        for (Doctor doctor : doctors) {
+            DoctorHomeDTO dto = toDTO(doctor);
+            result.add(dto);
+        }
+
+        return result;
+    }
+
+    @Transactional
+    public List<DoctorHomeDTO> findByNameContainingIgnoreCaseAndDepartmentId(String name, Integer departmentId) {
+        List<Doctor> doctors = doctorRepository.findByNameContainingIgnoreCaseAndDepartmentId(name, departmentId);
+        List<DoctorHomeDTO> result = new ArrayList<>();
+
+        for (Doctor doctor : doctors) {
+            DoctorHomeDTO dto = toDTO(doctor);
+            result.add(dto);
+        }
+        return result;
+    }
+
+    @Transactional
+    public DoctorHomeDTO findVisibleActiveDoctorById(Integer id) {
+        Doctor doctor = doctorRepository.findVisibleActiveDoctorById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor not found"));
+        return toDTO(doctor);
+    }
+
+    @Transactional
+    public List<DoctorHomeDTO> findVisibleActiveDoctorsByDepartment(String departmentName) {
+        List<Doctor> doctors = doctorRepository.findVisibleActiveDoctorsByDepartment(departmentName);
+        List<DoctorHomeDTO> result = new ArrayList<>();
+        for (Doctor doctor : doctors) {
+            DoctorHomeDTO dto = toDTO(doctor);
+            result.add(dto);
+        }
+        return result;
+    }
+
+    @Transactional
+    public List<DoctorHomeDTO> findTopDoctors(Pageable pageable) {
+        List<Doctor> topDoctors = doctorRepository.findTopDoctors(pageable);
+        List<DoctorHomeDTO> result = new ArrayList<>();
+        for (Doctor doctor : topDoctors) {
+            DoctorHomeDTO dto = toDTO(doctor);
+            result.add(dto);
+        }
+        return result;
     }
 
     public Doctor findDoctorById(int id) {
         return doctorRepository.getDoctorByDoctorId(id);
-    }
-
-    public List<Doctor> getDoctorBySpecialtyIgnoreCase(String specialty) {
-        return doctorRepository.getDoctorBySpecialtyIgnoreCase(specialty);
     }
 
 

@@ -19,6 +19,6 @@ public class BcryptGenerator {
 
         BCryptPasswordEncoder encoder2 = new BCryptPasswordEncoder();
         boolean result = encoder2.matches("123", "$2a$10$Or2SCfwiuycrSAPyUODcNOI82tCWFPttYlF4fFBbmVKp15vhG/L2W");
-        System.out.println("✅ matches: " + result);
+        System.out.println("matches: " + result);
     }
 }

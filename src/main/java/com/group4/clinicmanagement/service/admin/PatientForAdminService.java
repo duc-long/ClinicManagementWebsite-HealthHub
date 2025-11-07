@@ -11,9 +11,7 @@ import com.group4.clinicmanagement.repository.admin.PatientForAdminRepository;
 import com.group4.clinicmanagement.util.PasswordUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +32,7 @@ public class PatientForAdminService {
     private final PatientRepository patientRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final PasswordUtil  passwordUtil;
+    private final PasswordUtil passwordUtil;
 
 
     public PatientForAdminService(PatientForAdminRepository patientForAdminRepository, PatientRepository patientRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordUtil passwordUtil) {
@@ -72,7 +70,8 @@ public class PatientForAdminService {
 
     @Transactional
     public PatientDTO findById(Integer id) {
-        Patient patient = patientForAdminRepository.getPatientsByPatientId(id).orElseThrow(() -> new RuntimeException("Patient not found"));;
+        Patient patient = patientForAdminRepository.getPatientsByPatientId(id).orElseThrow(() -> new RuntimeException("Patient not found"));
+        ;
         return mapToPatientDTO(patient);
     }
 
@@ -127,7 +126,7 @@ public class PatientForAdminService {
     }
 
     @Transactional
-    public Patient newPatient(PatientDTO dto, MultipartFile avatar) {
+    public Integer newPatient(PatientDTO dto, MultipartFile avatar) {
         Patient patient = new Patient();
         User user = new User();
         String encodePassword = passwordEncoder.encode(PasswordUtil.PASSWORD);
@@ -176,7 +175,7 @@ public class PatientForAdminService {
                 throw new RuntimeException("Upload avatar failed", e);
             }
         }
-        return patient;
+        return patient.getPatientId();
     }
 
 

@@ -1,64 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Department Doctors - HealHub</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-        <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Department Doctors - HealHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <div th:replace="~{fragment/fragment.html :: css}"></div>
 
-        <style>
-            body { background-color: #f6f7fb; }
-            .container-wide { max-width: 1200px; }
-            .card { border-radius: 1rem; box-shadow: 0 2px 12px #0001; }
-            .doctor-card { transition: transform 0.2s; }
-            .doctor-card:hover { transform: translateY(-2px); }
-            .specialty-badge { font-size: 0.8rem; }
-            .rating-stars { color: #ffc107; }
-        </style>
-    </head>
-    <body>
-    <div>
-        <div th:replace="~{fragment/fragment :: navBar}"></div>
+    <style>
+        body { background-color: #f6f7fb; }
+        .container-wide { max-width: 1200px; }
+        .card { border-radius: 1rem; box-shadow: 0 2px 12px #0001; }
+        .doctor-card { transition: transform 0.2s; }
+        .doctor-card:hover { transform: translateY(-2px); }
+        .specialty-badge { font-size: 0.8rem; }
+        .rating-stars { color: #ffc107; }
+    </style>
+</head>
+<body>
+<div>
+    <div th:replace="~{fragment/fragment.html :: navBar}"></div>
+</div>
+<main class="container container-wide py-4">
+    <div class="d-flex align-items-center mb-4">
+        <i class="fa-solid fa-heart-pulse fa-2x text-primary me-2"></i>
+        <h1 class="h3 mb-0 me-3" th:text="${departmentName} + '  Department'"></h1>
+        <span th:text=" ${doctors.size()} + ' Doctors Available' " class="badge bg-primary bg-opacity-10 text-white fw-normal align-middle" style="margin-top: 8px;">8 Doctors Available</span>
     </div>
-        <main class="container container-wide py-4">
-            <div class="d-flex align-items-center mb-4">
-                <i class="fa-solid fa-heart-pulse fa-2x text-primary me-2"></i>
-                <h1 class="h3 mb-0 me-3" th:text="${specialty} + '  Department'"></h1>
-                <span th:text=" ${doctors.size()} + ' Doctors Available' " class="badge bg-primary bg-opacity-10 text-white fw-normal align-middle" style="margin-top: 8px;">8 Doctors Available</span>
-            </div>
 
-            <div class="row g-4">
-                <div class="col-md-12">
-                    <div class="card p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0" th:text="${specialty} + ' Specialists'"></h5>
-                        </div>
+    <div class="row g-4">
+        <div class="col-md-12">
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0" th:text="${departmentName} + ' Specialists'"></h5>
+                </div>
 
-                        <div class="row g-3">
-                            <div class="col-md-6" th:each="doctor, iterStat : ${doctors}">
-                                <div class="card doctor-card h-100">
-                                    <div class="card-body text-center">
-                                        <div class="mb-3">
-                                            <i class="fa-solid fa-user-doctor text-primary" style="font-size: 3rem;"></i>
-                                        </div>
-                                        <h5 class="card-title" th:text="${doctor.user.fullName}"></h5>
-                                        <div class="mb-3">
-                                            <span class="badge bg-primary bg-opacity-10 text-white specialty-badge me-1" th:text="${doctor.specialty}"></span>
-                                        </div>
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <a th:href="@{/home/doctor-profile/{doctorId}(doctorId=${doctor.doctorId})}" class="btn btn-outline-primary btn-sm">View Profile</a>
-                                        </div>
-                                    </div>
+                <div class="row g-3">
+                    <div class="col-md-6" th:each="doctor, iterStat : ${doctors}">
+                        <div class="card doctor-card h-100">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <img th:src="${doctor.avatarFilename} != null ?
+                  @{/images/avatars/{file}(file=${doctor.avatarFilename})} :
+                  @{/images/avatars/default-avatar.png}"
+                                         alt="Avatar"
+                                         class="rounded-circle shadow avatar-img" style="height: 150px; object-fit: cover; width: 150px;">
+                                </div>
+                                <h5 class="card-title" th:text="${doctor.fullName}"></h5>
+                                <div class="mb-3">
+                                    <span class="badge bg-primary bg-opacity-10 text-white specialty-badge me-1" th:text="${doctor.specialty}"></span>
+                                </div>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{/home/doctor-profile/{doctorId}(doctorId=${doctor.doctorId})}" class="btn btn-outline-primary btn-sm">View Profile</a>
                                 </div>
                             </div>
-<!--                        <div class="text-center mt-4">-->
-<!--                            <button class="btn btn-outline-primary">Load More Doctors</button>-->
-<!--                        </div>-->
+                        </div>
                     </div>
+                    <!--                        <div class="text-center mt-4">-->
+                    <!--                            <button class="btn btn-outline-primary">Load More Doctors</button>-->
+                    <!--                        </div>-->
                 </div>
             </div>
-        </main>
-    <script th:src="@{assets/js/bootstrap.bundle.min.js}"></script>
-    </body>
+        </div>
+</main>
+<script th:src="@{assets/js/bootstrap.bundle.min.js}"></script>
+</body>
 </html>
