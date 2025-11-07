@@ -41,6 +41,7 @@
     </style>
 </head>
 <body>
+<div th:insert="~{fragment/toast/toast :: toast}"></div>
 <div class="app" id="appLayout">
     <!-- SIDEBAR -->
     <aside class="sidebar">
@@ -111,7 +112,19 @@
                     <td th:text="${a.patientName}"></td>
                     <td th:text="${a.phonePatient}"></td>
                     <td th:text="${a.appointmentDate != null ? #temporals.format(a.appointmentDate, 'dd/MM/yyyy') : 'N/A'}"></td>
-                    <td th:text="${a.status}"></td>
+                    <td>
+    <span class="badge"
+          th:text="${a.status}"
+          th:classappend="
+            ${a.status.name() == 'PENDING'} ? ' bg-warning text-dark' :
+            (${a.status.name() == 'CONFIRMED'} ? ' bg-info text-dark' :
+            (${a.status.name() == 'CHECKED_IN'} ? ' bg-primary' :
+            (${a.status.name() == 'CANCELLED'} ? ' bg-danger' :
+            (${a.status.name() == 'PAID'} ? ' bg-success' :
+            ' bg-secondary'))))">
+    </span>
+                    </td>
+
                     <td th:text="${a.doctorName != null ? a.doctorName : 'Not Assigned'}"></td>
 
                     <td>
@@ -126,16 +139,17 @@
 
                         <!-- Nếu status là CONFIRMED và đúng ngày -->
                         <span th:if="${a.status.name() == 'CONFIRMED' and a.canCheckin}">
-   <form id="checkinForm__${a.appointmentId}"
-         th:action="@{'/receptionist/appointment/checkin/' + ${a.appointmentId}}"
-         method="post"
-         style="display:inline;">
+ <form th:id="'checkinForm__' + ${a.appointmentId}"
+       th:action="@{'/receptionist/appointment/checkin/' + ${a.appointmentId}}"
+       method="post"
+       style="display:inline;">
     <button type="button"
             class="btn btn-primary btn-sm btn-checkin"
             th:attr="data-id=${a.appointmentId}, data-name=${a.patientName}">
         Check-in
     </button>
 </form>
+
 
 </span>
                     </td>
@@ -238,5 +252,7 @@
         });
     });
 </script>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/toast.js}"></script>
 </body>
 </html>

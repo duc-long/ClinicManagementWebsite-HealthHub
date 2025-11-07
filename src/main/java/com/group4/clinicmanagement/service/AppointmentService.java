@@ -5,18 +5,16 @@ import com.group4.clinicmanagement.dto.ReceptionistAppointmentDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.DoctorDailySlot;
+import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
-import com.group4.clinicmanagement.repository.AppointmentRepository;
-import com.group4.clinicmanagement.repository.DoctorDailySlotRepository;
-import com.group4.clinicmanagement.repository.DoctorRepository;
-import com.group4.clinicmanagement.repository.FeedbackRepository;
+import com.group4.clinicmanagement.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -27,15 +25,15 @@ public class AppointmentService {
     private final DoctorDailySlotRepository slotRepository;
     private final DoctorRepository doctorRepository;
     private final FeedbackRepository feedbackRepository;
+    private final UserRepository userRepository;
 
     // constructor
-    public AppointmentService(AppointmentRepository appointmentRepository, DoctorDailySlotRepository slotRepository,
-                              DoctorRepository doctorRepository, FeedbackRepository feedbackRepository) {
-
-        this.feedbackRepository = feedbackRepository;
+    public AppointmentService(AppointmentRepository appointmentRepository, DoctorDailySlotRepository slotRepository, DoctorRepository doctorRepository, FeedbackRepository feedbackRepository, UserRepository userRepository) {
         this.appointmentRepository = appointmentRepository;
         this.slotRepository = slotRepository;
         this.doctorRepository = doctorRepository;
+        this.feedbackRepository = feedbackRepository;
+        this.userRepository = userRepository;
     }
 
     // method to find all Appointment by patient ID
@@ -98,26 +96,30 @@ public class AppointmentService {
     }
 
     public List<Doctor> getAvailableDoctors(Integer departmentId, LocalDate date) {
-        if(departmentId==null){
+        if (departmentId == null) {
             return List.of();
         }
-        if(date==null){
+        if (date == null) {
             return List.of();
         }
-        return doctorRepository.findAvailableDoctors(departmentId,date);
+        return doctorRepository.findAvailableDoctors(departmentId, date);
     }
 
     @Transactional
-    public void scheduleAppointment(Appointment updated) {
+    public void scheduleAppointment(Appointment updated, User receptionist) {
         Appointment existing = appointmentRepository.findById(updated.getAppointmentId())
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
-
+        if (existing.getStatus() != AppointmentStatus.PENDING) {
+            throw new IllegalStateException("Only pending appointments can be scheduled");
+        }
         AppointmentStatus oldStatus = existing.getStatus();
         AppointmentStatus newStatus = updated.getStatus();
 
         Doctor newDoctor = updated.getDoctor();
         LocalDate date = existing.getAppointmentDate();
 
+
+        existing.setReceptionist(receptionist);
         existing.setCancelReason(updated.getCancelReason());
         existing.setDoctor(newDoctor);
         existing.setStatus(newStatus);
@@ -150,10 +152,10 @@ public class AppointmentService {
 
     @Transactional
     public void checkInAppointment(int appointmentId) {
-         Appointment appointment = appointmentRepository.findById(appointmentId)
+        Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
-         if (appointment.getStatus() != AppointmentStatus.CONFIRMED) {
+        if (appointment.getStatus() != AppointmentStatus.CONFIRMED) {
             throw new IllegalStateException("Only confirmed appointments can be checked in.");
         }
 
@@ -164,7 +166,7 @@ public class AppointmentService {
             throw new IllegalStateException("Cannot check in — appointment has no assigned doctor.");
         }
 
-       Integer maxQueue = appointmentRepository.findMaxQueueNumber(doctor.getDoctorId(), date);
+        Integer maxQueue = appointmentRepository.findMaxQueueNumber(doctor.getDoctorId(), date);
         int nextQueue = (maxQueue == null ? 1 : maxQueue + 1);
 
         appointment.setQueueNumber(nextQueue);
@@ -205,8 +207,8 @@ public class AppointmentService {
                 ));
     }
 
-    public Page<ReceptionistAppointmentDTO> getStatusAppointmentPage(int statusValue, int page, int size){
-        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);;
+    public Page<ReceptionistAppointmentDTO> getStatusAppointmentPage(int statusValue, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);
         Page<Appointment> appointments = appointmentRepository.findStatusValueDesc(statusValue, pageable);
         return appointments
                 .map(a -> new ReceptionistAppointmentDTO(
@@ -223,11 +225,11 @@ public class AppointmentService {
                         a.getNotes(),
                         a.getCancelReason(),
                         (a.getStatusValue() == AppointmentStatus.CONFIRMED.getValue() //check checkin
-                        && a.getAppointmentDate().equals(LocalDate.now()))
+                                && a.getAppointmentDate().equals(LocalDate.now()))
                 ));
     }
 
-    public Appointment getAppointmentForReceptionist(int id){
+    public Appointment getAppointmentForReceptionist(int id) {
         return appointmentRepository.findIdWithStatusRange(id).orElse(null);
     }
 }
