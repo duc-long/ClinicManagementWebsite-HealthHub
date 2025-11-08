@@ -2,8 +2,10 @@ package com.group4.clinicmanagement.controller.admin;
 
 import com.group4.clinicmanagement.dto.DepartmentDTO;
 import com.group4.clinicmanagement.dto.admin.*;
+import com.group4.clinicmanagement.entity.Feedback;
 import com.group4.clinicmanagement.repository.admin.DoctorForAdminRepository;
 import com.group4.clinicmanagement.service.DepartmentService;
+import com.group4.clinicmanagement.service.FeedbackService;
 import com.group4.clinicmanagement.service.UserService;
 import com.group4.clinicmanagement.service.admin.*;
 import jakarta.validation.Valid;
@@ -32,8 +34,9 @@ public class AdminController {
     private final ReceptionistForAdminService receptionistService;
     private final CashierForAdminService CashierService;
     private final TechnicianForAdminService TechnicianService;
+    private final FeedbackService feedbackService;
 
-    public AdminController(PatientForAdminService patientService, DoctorForAdminService doctorService, UserService userService, DepartmentService departmentService, DoctorForAdminRepository doctorForAdminRepository, ReceptionistForAdminService receptionistService, CashierForAdminService cashierService, TechnicianForAdminService technicianService) {
+    public AdminController(PatientForAdminService patientService, DoctorForAdminService doctorService, UserService userService, DepartmentService departmentService, DoctorForAdminRepository doctorForAdminRepository, ReceptionistForAdminService receptionistService, CashierForAdminService cashierService, TechnicianForAdminService technicianService, FeedbackService feedbackService) {
         this.patientService = patientService;
         this.doctorService = doctorService;
         this.userService = userService;
@@ -42,6 +45,7 @@ public class AdminController {
         this.receptionistService = receptionistService;
         this.CashierService = cashierService;
         this.TechnicianService = technicianService;
+        this.feedbackService = feedbackService;
     }
 
     @GetMapping(value = "/patient")
@@ -600,4 +604,25 @@ public class AdminController {
 
         }
     }
+
+    // Dashboard
+    @GetMapping(value = "/dashboard")
+    public String showAdminDashboard(Model model) {
+//        Page<Feedback> feedbacks = feedbackService.getFeedbackPage();
+//        long totalPatients = patientService.countPatients();
+//        long totalDoctors = doctorService.countDoctors();
+//        long totalReceptionists = receptionistService.countReceptionists();
+//        long totalCashiers = CashierService.countCashiers();
+//        long totalTechnicians = TechnicianService.countTechnicians();
+
+//        model.addAttribute("totalPatients", totalPatients);
+//        model.addAttribute("totalDoctors", totalDoctors);
+//        model.addAttribute("totalReceptionists", totalReceptionists);
+//        model.addAttribute("totalCashiers", totalCashiers);
+//        model.addAttribute("totalTechnicians", totalTechnicians);
+//
+        return "admin/admin-dashboard";
+    }
+
+
 }
