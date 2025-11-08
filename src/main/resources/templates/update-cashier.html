@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Update Doctor</title>
+    <title>Update Cashier</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
@@ -70,16 +70,16 @@
             color: var(--hm-blue);
         }
 
+        .text-pink {
+            color: #d63384 !important;
+        }
+
         .avatar-img {
             width: 120px;
             height: 120px;
             object-fit: cover;
         }
 
-        .text-danger {
-            font-size: 0.9rem;
-            font-style: italic;
-        }
     </style>
 </head>
 <body>
@@ -92,13 +92,12 @@
                     class="fas fa-chart-line me-2"></i> Dashboard</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/patient}"><i
                     class="fas fa-users me-2"></i> Patients</a></li>
-            <li class="nav-item"><a class="nav-link active" th:href="@{/admin/doctor}"><i
-                    class="fas fa-user-md me-2"></i>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i>
                 Doctors</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/receptionist}"><i
                     class="fas fa-hospital-user me-2"></i>
                 Receptionists</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/admin/cashier}"><i
+            <li class="nav-item"><a class="nav-link active" th:href="@{/admin/cashier}"><i
                     class="fas fa-cash-register me-2"></i> Cashiers</a>
             </li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/technician}"><i
@@ -116,27 +115,29 @@
 
         <!-- Page Content -->
         <div class="p-4">
-            <h2 class="section-title">Update Doctor</h2>
+            <h2 class="section-title">Update cashier</h2>
 
             <div class="d-flex justify-content-center">
                 <div class="card shadow-sm w-75">
                     <div class="card-body">
 
                         <!-- Form for update -->
-                        <form th:action="@{/admin/doctor/edit-result}" th:object="${doctorDTO}" method="post"
+                        <form th:action="@{/admin/cashier/edit-result}" th:object="${cashierDTO}"
+                              method="post"
                               enctype="multipart/form-data">
+
+                            <!-- Avatar center -->
                             <div class="d-flex flex-column align-items-center mb-4">
-                                <img th:if="${doctorDTO != null}"
-                                     th:src="${doctorDTO.avatarFilename != null} ?
-                                        @{/images/avatars/{file}(file=${doctorDTO.avatarFilename})} :
-                                        @{/images/avatars/default-avatar.png}"
+                                <img th:src="${cashierDTO.avatarFilename != null} ?
+             @{/images/avatars/{file}(file=${cashierDTO.avatarFilename})} :
+             @{/images/avatars/default-avatar.png}"
                                      alt="Avatar"
                                      class="rounded-circle shadow avatar-img"
                                      style="width: 150px; height: 150px; object-fit: cover;"/>
                                 <input type="file" class="form-control w-50" name="avatar">
                             </div>
 
-                            <h4 class="mb-4 text-hm-blue text-center">Edit Doctor Information</h4>
+                            <h4 class="mb-4 text-hm-blue text-center">Edit cashier Information</h4>
 
                             <!-- USER INFO -->
                             <div class="mb-3 row">
@@ -145,8 +146,6 @@
                                     <input type="text" class="form-control" th:field="*{userId}" readonly/>
                                 </div>
                             </div>
-
-                            <input th:field="*{doctorId}" hidden/>
 
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Username</label>
@@ -180,7 +179,7 @@
                                 <label class="col-sm-2 col-form-label fw-bold">Phone</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" th:field="*{phone}" pattern="[0-9]{10}"
-                                           title="Enter 10 digits"/>
+                                           title="Enter the correct 10 digits"/>
                                     <div class="text-danger" th:if="${#fields.hasErrors('phone')}"
                                          th:errors="*{phone}"></div>
                                 </div>
@@ -203,80 +202,6 @@
                                 </div>
                             </div>
 
-                            <!-- License No -->
-                            <div class="mb-3 row">
-                                <label class="col-sm-2 col-form-label fw-bold">License No</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" th:field="*{licenseNo}"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('licenseNo')}"
-                                         th:errors="*{licenseNo}"></div>
-                                </div>
-                            </div>
-
-                            <!-- Specialty -->
-                            <div class="mb-3 row">
-                                <label class="col-sm-2 col-form-label fw-bold">Specialty</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" th:field="*{specialty}"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('specialty')}"
-                                         th:errors="*{specialty}"></div>
-                                </div>
-                            </div>
-
-                            <!-- Degree -->
-                            <div class="mb-3 row">
-                                <label class="col-sm-2 col-form-label fw-bold">Degree</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" th:field="*{degree}"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('degree')}"
-                                         th:errors="*{degree}"></div>
-                                </div>
-                            </div>
-
-                            <!-- Years Experience -->
-                            <div class="mb-3 row">
-                                <label class="col-sm-2 col-form-label fw-bold">Years Experience</label>
-                                <div class="col-sm-10">
-                                    <input type="number" class="form-control" th:field="*{yearsExperience}" min="0"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('yearsExperience')}"
-                                         th:errors="*{yearsExperience}"></div>
-                                </div>
-                            </div>
-
-                            <!-- Bio -->
-                            <div class="mb-3 row">
-                                <label class="col-sm-2 col-form-label fw-bold">Bio</label>
-                                <div class="col-sm-10">
-                                    <textarea class="form-control" th:field="*{bio}" rows="3"></textarea>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('bio')}"
-                                         th:errors="*{bio}"></div>
-                                </div>
-                            </div>
-
-                            <!-- Department -->
-                            <div class="mb-3 row">
-                                <label class="col-sm-2 col-form-label fw-bold">Department</label>
-                                <div class="col-sm-10">
-                                    <select class="form-select" th:field="*{department.departmentId}">
-                                        <option th:each="dep : ${patientDTOList}"
-                                                th:value="${dep.departmentId}"
-                                                th:text="${dep.name}"></option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Profile Visibility -->
-                            <div class="mb-3 row">
-                                <label class="col-sm-2 col-form-label fw-bold">Profile Visibility</label>
-                                <div class="col-sm-10">
-                                    <select class="form-select fw-bold" th:field="*{profileVisibility}">
-                                        <option th:value="true" class="text-success">Visible</option>
-                                        <option th:value="false" class="text-danger">Hidden</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Status -->
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Status</label>
                                 <div class="col-sm-10">
@@ -289,7 +214,7 @@
 
                             <!-- ACTIONS -->
                             <div class="text-end">
-                                <a th:href="@{/admin/doctor}" class="btn btn-secondary me-2">
+                                <a th:href="@{/admin/cashier}" class="btn btn-secondary me-2">
                                     <i class="fas fa-arrow-left me-1"></i> Cancel
                                 </a>
                                 <button type="submit" class="btn btn-hm-green">
@@ -301,25 +226,10 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
-
-
-<!--&lt;!&ndash; xu li anh&ndash;&gt;-->
-<!--<script>-->
-<!--    function previewAvatar(input) {-->
-<!--        const file = input.files[0];-->
-<!--        if (file) {-->
-<!--            const reader = new FileReader();-->
-<!--            reader.onload = e => {-->
-<!--                document.getElementById('avatarPreview').src = e.target.result;-->
-<!--            };-->
-<!--            reader.readAsDataURL(file);-->
-<!--        }-->
-<!--    }-->
-<!--</script>-->
-
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

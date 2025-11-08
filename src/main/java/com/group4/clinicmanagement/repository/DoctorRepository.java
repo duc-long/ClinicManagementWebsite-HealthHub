@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.repository;
 
 import com.group4.clinicmanagement.entity.Doctor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -8,29 +9,58 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
-    @Query("SELECT DISTINCT d.specialty FROM Doctor d")
-    List<String> findAllDistinctSpecialties();
-
-    @Query("SELECT d FROM Doctor d JOIN d.user u WHERE " +
-            "(:name = '' OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
-            "(:specialty = 'All' OR d.specialty = :specialty)")
-    List<Doctor> findDoctorByNameAndSpecialty(@Param("name") String name, @Param("specialty") String specialty);
 
     Doctor getDoctorByDoctorId(Integer doctorId);
 
-    List<Doctor> getDoctorBySpecialtyIgnoreCase(String specialty);
+    @Query("""
+            SELECT d FROM Doctor d
+            WHERE d.doctorId NOT IN (
+                SELECT s.doctor.doctorId
+                FROM DoctorDailySlot s
+                WHERE s.slotDate = :date
+                AND s.availableSlots <= 0
+            )
+            """)
+    List<Doctor> findAvailableDoctorsOnDate(LocalDate date);
 
     @Query("""
-           SELECT d FROM Doctor d
-           WHERE d.doctorId NOT IN (
-               SELECT s.doctor.doctorId
-               FROM DoctorDailySlot s
-               WHERE s.slotDate = :date
-               AND s.availableSlots <= 0
-           )
-           """)
-    List<Doctor> findAvailableDoctorsOnDate(LocalDate date);
+            SELECT d FROM Doctor d
+            WHERE d.user.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}
+              AND d.profileVisibility = true
+            """)
+    List<Doctor> findAllVisibleAndActiveDoctors();
+
+
+    @Query("""
+            SELECT d FROM Doctor d
+            WHERE LOWER(d.user.fullName) LIKE LOWER(CONCAT('%', :name, '%'))
+              AND (:departmentId = 0 OR d.department.departmentId = :departmentId)
+              AND d.user.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}
+              AND d.profileVisibility = true""")
+    List<Doctor> findByNameContainingIgnoreCaseAndDepartmentId(@Param("name") String name, @Param("departmentId") Integer departmentId);
+
+
+    @Query("""
+            SELECT d FROM Doctor d
+            WHERE d.doctorId = :id
+              AND d.user.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}
+              AND d.profileVisibility = true""")
+    Optional<Doctor> findVisibleActiveDoctorById(@Param("id") Integer id);
+
+    @Query("""
+            SELECT d FROM Doctor d
+            WHERE d.department.name = :departmentName
+              AND d.user.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}
+              AND d.profileVisibility = true""")
+    List<Doctor> findVisibleActiveDoctorsByDepartment(@Param("departmentName") String departmentName);
+
+    @Query("""
+            SELECT d FROM Doctor d
+            WHERE d.user.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value} AND d.profileVisibility = true
+            ORDER BY d.createdAt DESC""")
+    List<Doctor> findTopDoctors(Pageable pageable);
 }
