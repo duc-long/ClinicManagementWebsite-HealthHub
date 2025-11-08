@@ -27,7 +27,7 @@ public class PatientUserDTO {
     @Email(message = "Invalid email address")
     private String email;
 
-    @Pattern(regexp = "^[0-9]{9,11}$", message = "Phone number must contain 9–11 digits")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must contain 10 digits")
     @NotBlank(message = "Phone must not be blank")
     private String phone;
 
@@ -42,6 +42,7 @@ public class PatientUserDTO {
 
     @Past(message = "Date of birth must be in the past")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "Date of birth cannot be null")
     private LocalDate dateOfBirth;
 
     @AssertTrue(message = "Age must be between 10 and 120 years")

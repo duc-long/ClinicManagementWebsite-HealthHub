@@ -8,11 +8,7 @@
                href="#collapseInfo"
                role="button"
                aria-expanded="false"
-               aria-controls="collapseInfo"
-               th:classappend="${currentPath != null and
-           (currentPath.startsWith('/patient/profile')
-           or currentPath.startsWith('/patient/edit-profile')
-           or currentPath.startsWith('/patient/change-password'))} ? ' active'">
+               aria-controls="collapseInfo">
                 <span><i class="bi bi-person-circle"></i> Information</span>
                 <i class="bi bi-caret-down-fill small"></i>
             </a>

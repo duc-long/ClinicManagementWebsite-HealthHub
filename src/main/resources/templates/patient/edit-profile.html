@@ -27,7 +27,7 @@
             <form class="profile-card" th:action="@{/patient/save-profile}" method="post" th:object="${patient}"
                   enctype="multipart/form-data">
                 <input type="hidden" th:field="*{username}">
-                <div class="profile-title">Change profile</div>
+                <div class="profile-title">Edit profile</div>
                 <div class="avatar-container avatar-upload">
                     <img th:src="${patient.avatarFilename != null} ? '/images/avatars/' + ${patient.avatarFilename} : '/images/avatars/default-avatar.png'"
                          class="avatar"
@@ -45,15 +45,22 @@
                         <input type="text" th:value="${#authentication.name}" disabled readonly class="input"/>
                     </div>
                     <div class="group-info">
-                        <div class="label">Name</div>
-                        <input type="text" th:field="*{fullName}" class="input" required/>
+                        <div class="label">Full name</div>
+                        <input type="text" th:field="*{fullName}" class="input" required
+                               minlength="5"
+                               maxlength="100"
+                               pattern="^[\p{L}\s']+$"
+                               title="Name must be 5-100 characters and contain only letters and spaces."/>
                         <div class="error-message"
                              th:if="${#fields.hasErrors('fullName')}"
                              th:errors="*{fullName}"></div>
                     </div>
                     <div class="group-info">
                         <div class="label">Email</div>
-                        <input type="email" th:field="*{email}" class="input" required/>
+                        <input type="email" th:field="*{email}" class="input" required
+                               maxlength="100"
+                               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                               title="Please enter a valid email address (e.g., user@example.com)." />
                         <div class="error-message"
                              th:if="${#fields.hasErrors('email')}"
                              th:errors="*{email}"></div>
@@ -76,14 +83,21 @@
                     </div>
                     <div class="group-info">
                         <div class="label">Phone</div>
-                        <input type="text" th:field="*{phone}" class="input" required/>
+                        <input type="tel" th:field="*{phone}" class="input" required
+                               pattern="(0[3|5|7|8|9])+([0-9]{8})\b"
+                               maxlength="10"
+                               inputmode="numeric"
+                               title="Please enter a valid 10-digit phone number (e.g., 09xxxxxxxx)."/>
                         <div class="error-message"
                              th:if="${#fields.hasErrors('phone')}"
                              th:errors="*{phone}"></div>
                     </div>
                     <div class="group-info">
                         <div class="label">Address</div>
-                        <input type="text" th:field="*{address}" class="input" required/>
+                        <input type="text" th:field="*{address}" class="input" required
+                               minlength="10"
+                               maxlength="255"
+                               title="Address must be between 10 and 255 characters."/>
                         <div class="error-message"
                              th:if="${#fields.hasErrors('address')}"
                              th:errors="*{address}"></div>
@@ -93,7 +107,10 @@
                         <input type="date"
                                th:field="*{dateOfBirth}"
                                th:value="${#temporals.format(patient.dateOfBirth, 'yyyy-MM-dd')}"
-                               class="input" required/>
+                               class="input" required
+                               min="1900-01-01"
+                               th:max="${T(java.time.LocalDate).now().format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd'))}"
+                               title="Date of birth cannot be in the future."/>
                         <div class="error-message"
                              th:if="${#fields.hasErrors('dateOfBirth')}"
                              th:errors="*{dateOfBirth}"></div>
@@ -114,7 +131,29 @@
 <script>
     function previewAvatar(input) {
         const file = input.files[0];
+        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+
+        // Lấy nguồn ảnh hiện tại (để khôi phục nếu file lỗi)
+        const currentAvatarSrc = document.getElementById('avatarPreview').src;
+
         if (file) {
+            // 1. Kiểm tra kích thước file
+            if (file.size > maxSizeInBytes) {
+                alert("File is too large! The maximum size is 5MB.");
+                input.value = ""; // Xóa file đã chọn
+                document.getElementById('avatarPreview').src = currentAvatarSrc; // Khôi phục ảnh cũ
+                return;
+            }
+
+            // 2. Kiểm tra loại file (đã có accept="image/*" nhưng JS chắc chắn hơn)
+            if (!file.type.startsWith('image/')) {
+                alert("Only image files (JPG, PNG, GIF...) are accepted.");
+                input.value = "";
+                document.getElementById('avatarPreview').src = currentAvatarSrc;
+                return;
+            }
+
+            // 3. Hiển thị preview
             const reader = new FileReader();
             reader.onload = e => {
                 document.getElementById('avatarPreview').src = e.target.result;
@@ -212,6 +251,6 @@
     });
 </script>
 <script src="/assets/js/bootstrap.bundle.min.js"></script>
-
-<div th:replace="~{fragment/popup :: popup}"></div>>
+<footer th:insert="~{fragment/fragment :: footer}"></footer>
+<div th:replace="~{fragment/popup :: popup}"></div>
 </html>

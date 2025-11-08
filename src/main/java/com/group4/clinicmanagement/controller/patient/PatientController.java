@@ -1,6 +1,8 @@
 package com.group4.clinicmanagement.controller.patient;
 
 import com.group4.clinicmanagement.dto.*;
+import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.repository.UserRepository;
 import com.group4.clinicmanagement.service.LabService;
 import com.group4.clinicmanagement.service.MedicalRecordService;
 import com.group4.clinicmanagement.service.PatientService;
@@ -37,6 +39,9 @@ public class PatientController {
 
     @Autowired
     private LabService labService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -92,6 +97,13 @@ public class PatientController {
                                 Principal principal) {
         System.out.println("DTO BEFORE MERGE: " + dto);
         String username = getCurrentUsername();
+
+        Optional<User> existing = userRepository.findByEmail(dto.getEmail());
+        if (existing.isPresent() && !existing.get().getUsername().equals(username)) {
+            // Email đã tồn tại và không phải của người dùng hiện tại
+            result.rejectValue("email", "error.email", "Email is already in use by someone else.");
+        }
+
         if (result.hasErrors()) {
             // ✅ Lấy dữ liệu cũ từ DB
             PatientUserDTO oldData = patientService.getPatientsByUsername(username)

@@ -2,7 +2,6 @@ package com.group4.clinicmanagement.controller.patient;
 
 import com.group4.clinicmanagement.dto.registerpatient.PatientRegisterDTO;
 import com.group4.clinicmanagement.dto.registerpatient.SetPasswordDTO;
-import com.group4.clinicmanagement.service.PasswordResetService;
 import com.group4.clinicmanagement.service.RegistrationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/auth")
+//@RequestMapping("/auth")
 public class AuthPatientController {
-
-    @Autowired
-    private PasswordResetService passwordResetService;
-
     @Autowired
     private RegistrationService registrationService;
+
 
     // ===================== FORGOT PASSWORD =====================
     @GetMapping("/forgot-password")
@@ -31,7 +27,7 @@ public class AuthPatientController {
     @PostMapping("/forgot-password")
     public String sendReset(@Valid @RequestParam(value = "email", required = false) String email, Model model) {
         try {
-            passwordResetService.sendResetLink(email);
+            registrationService.createAndSendOtp(email);
             model.addAttribute("success", "OTP sent to your email.");
             model.addAttribute("email", email);
             return "auth/patient/verify-otp";
@@ -45,28 +41,49 @@ public class AuthPatientController {
     public String verifyOtp(@RequestParam("email") String email,
                             @RequestParam(value = "otp", required = false) String otp,
                             Model model) {
-        if (otp == null || otp.trim().isEmpty()) {
+        if (otp == null || otp.trim().isEmpty() ) {
             model.addAttribute("error", "Please enter your OTP code.");
             model.addAttribute("email", email);
             return "auth/patient/verify-otp";
         }
 
+        if (!otp.matches("\\d{6}")) {
+            model.addAttribute("error", "OTP code must be 6 digits.");
+            model.addAttribute("email", email);
+            return "auth/patient/verify-otp";
+        }
+
         try {
-            boolean valid = registrationService.verifyOtp(email, otp);
-            if (!valid) {
-                model.addAttribute("error", "Invalid or expired OTP!");
+            // 1. Nhận kết quả là int
+            int verificationResult = registrationService.verifyOtp(email, otp);
+
+            // 2. Phiên dịch kết quả
+            if (verificationResult == 1) {
+                var user = registrationService.getUserByEmail(email);
+                model.addAttribute("email", email);
+                model.addAttribute("username", user.getUsername());
+                model.addAttribute("email", email);
+                model.addAttribute("setPassword", new SetPasswordDTO());
+                return "auth/patient/create-password";
+
+            } else if (verificationResult == 0) {
+                model.addAttribute("error", "Invalid OTP!");
+                model.addAttribute("email", email);
+                return "auth/patient/verify-otp";
+
+            }else if (verificationResult == -2) {
+                model.addAttribute("error", "OTP expired. Please request a new one.");
+                model.addAttribute("email", email);
+                return "auth/patient/verify-otp";
+
+            } else {
+                model.addAttribute("error", "OTP has been deleted due to too many incorrect attempts.");
                 model.addAttribute("email", email);
                 return "auth/patient/verify-otp";
             }
 
-            // ✅ OTP đúng → sang form tạo mật khẩu
-            var user = passwordResetService.getUserByEmail(email);
-            model.addAttribute("email", email);
-            model.addAttribute("username", user.getUsername());
-            model.addAttribute("email", email);
-            model.addAttribute("setPassword", new SetPasswordDTO());
-            return "auth/patient/create-password";
         } catch (RuntimeException e) {
+            // Bắt các lỗi khác (như OTP expired, OTP not found)
             model.addAttribute("error", e.getMessage());
             model.addAttribute("email", email);
             return "auth/patient/verify-otp";

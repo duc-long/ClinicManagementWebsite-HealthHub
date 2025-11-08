@@ -1,6 +1,46 @@
 <div th:fragment="popup">
 <div id="toast-container"></div>
+<style>
+    .toast {
+    position: relative;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    display: none;  /* Ẩn toast ban đầu */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 
+    /* Màu sắc cho thông báo thành công (success) */
+    .toast-success {
+    background-color: #28a745;  /* Xanh lá cây */
+    }
+
+    /* Màu sắc cho thông báo lỗi (error) */
+    .toast-error {
+    background-color: #dc3545;  /* Đỏ */
+    }
+
+    /* Hiệu ứng khi toast hiện ra */
+    .toast.show {
+    display: block;
+    opacity: 1;
+    }
+
+    /* Tiến trình của toast (nếu bạn muốn hiển thị một thanh tiến trình) */
+    .toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.5);
+    animation: toast-progress-animation 3s linear forwards;
+    }
+    </style>
 <script th:inline="javascript">
     // ✅ Hàm hiển thị toast
     function showToast(message, type = 'success') {
