@@ -141,4 +141,41 @@ public class FeedbackService {
         feedbackRepository.delete(feedback);
         return true;
     }
+
+    public List<Feedback> getFeedbackByFilter(String filter) {
+        LocalDateTime now = LocalDateTime.now();
+        switch (filter.toLowerCase()) {
+            case "today":
+                return feedbackRepository.getFeedbackToday(now);
+            case "year":
+                return feedbackRepository.getFeedbackThisYear(now.getYear());
+            default: // month
+                return feedbackRepository.getFeedbackThisMonth(now.getYear(), now.getMonthValue());
+        }
+    }
+
+    public double getAvgRatingByFilter(String filter) {
+        List<Feedback> feedbacks = new ArrayList<>();
+        switch (filter.toLowerCase()) {
+            case "today": {
+                feedbacks.addAll(feedbackRepository.getFeedbackToday(LocalDateTime.now()));
+            }
+            case "year": {
+                feedbacks.addAll(feedbackRepository.getFeedbackThisYear(LocalDateTime.now().getYear()));
+            }
+            default: {
+                feedbacks.addAll(feedbackRepository.getFeedbackThisMonth(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue()));
+            }
+        }
+        if (feedbacks.isEmpty()) {
+            return 0;
+        }
+        int avg = 0;
+        int total = 0;
+        for (Feedback feedback : feedbacks) {
+            total += feedback.getRating();
+        }
+        avg = total / feedbacks.size();
+        return avg;
+    }
 }

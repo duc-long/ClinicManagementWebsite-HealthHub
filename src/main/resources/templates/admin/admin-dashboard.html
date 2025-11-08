@@ -1,11 +1,10 @@
-<!DOCTYPE html >
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinic Dashboard (Hoan My Tone)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard</title>
 
-    <!-- Bootstrap & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,236 +13,158 @@
         :root {
             --hm-green: #008744;
             --hm-blue: #005691;
-            --hm-light-green: #e6f7ef;
-            --hm-light-blue: #f0f7ff;
         }
+
         .sidebar {
             width: 250px;
             background-color: var(--hm-blue);
             color: white;
             min-height: 100vh;
         }
+
         .sidebar .nav-link {
             color: white;
             padding: 10px 15px;
-            margin-bottom: 5px;
         }
-        .sidebar .nav-link:hover { background-color: rgba(255,255,255,0.1); }
-        .sidebar .active { background-color: var(--hm-green); font-weight: bold; }
-        .text-hm-green { color: var(--hm-green); }
-        .text-hm-blue { color: var(--hm-blue); }
-        .card-kpi { border-left: 5px solid var(--hm-green); }
+
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .card-kpi {
+            border-left: 5px solid var(--hm-green);
+        }
+
+        .text-hm-green {
+            color: var(--hm-green);
+        }
+
+        .text-hm-blue {
+            color: var(--hm-blue);
+        }
     </style>
 </head>
 
 <body>
+<div class="d-flex">
 
-        <div class="d-flex">
-            <!-- Sidebar -->
-            <div class="sidebar p-3 shadow">
-                <h4 class="text-white mb-4">CLINIC HUB</h4>
-                <ul class="nav nav-pills flex-column">
-                    <li class="nav-item"><a class="nav-link active" id="nav-admin" href="" onclick="showDashboard('admin')">
-                        <i class="fas fa-chart-line me-2"></i> Admin Dashboard
-                    </a>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/patient}"><i
-                            class="fas fa-users me-2"></i> Patients</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i>
-                        Doctors</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/receptionist}"><i
-                            class="fas fa-hospital-user me-2"></i>
-                        Receptionists</a></li>
-                    <li class="nav-item"><a class="nav-link active" th:href="@{/admin/cashier}"><i
-                            class="fas fa-cash-register me-2"></i> Cashiers</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/technician}"><i
-                            class="fas fa-user-gear me-2"></i> Technicians</a></li>
-                </ul>
+    <!-- Sidebar -->
+    <div class="sidebar p-3 shadow">
+        <h4 class="text-white mb-4">CLINIC HUB</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link active" href="/admin/dashboard"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/patient}"><i class="fas fa-users me-2"></i>Patients</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i>Doctors</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/receptionist}"><i class="fas fa-hospital-user me-2"></i>Receptionists</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/cashier}"><i class="fas fa-cash-register me-2"></i>Cashiers</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/admin/technician}"><i class="fas fa-user-gear me-2"></i>Technicians</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1 p-4 bg-light">
+
+        <h2 class="text-hm-blue mb-4">Admin Dashboard</h2>
+
+        <!-- Filter Dropdown -->
+        <div class="dropdown mb-4">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                Filter: <span th:text="${filter == 'today' ? 'Today' : (filter == 'year' ? 'This Year' : 'This Month')}"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" th:href="@{/admin/dashboard(filter='today')}">Today</a></li>
+                <li><a class="dropdown-item" th:href="@{/admin/dashboard(filter='month')}">This Month</a></li>
+                <li><a class="dropdown-item" th:href="@{/admin/dashboard(filter='year')}">This Year</a></li>
+            </ul>
+        </div>
+
+        <!-- KPI Section -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card card-kpi p-3 shadow-sm">
+                    <div class="text-secondary"
+                         th:text="${filter == 'today' ? 'Revenue (Today)' : (filter == 'year' ? 'Revenue (This Year)' : 'Revenue (This Month)')}"></div>
+                    <h3 class="text-hm-green" th:text="${#numbers.formatCurrency(revenue)}"></h3>
+                </div>
             </div>
 
-    <!-- Main -->
-    <div class="flex-grow-1 p-4 bg-light">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 id="dashboard-title" class="text-hm-blue mb-0">Admin Dashboard</h1>
+            <div class="col-md-4">
+                <div class="card card-kpi p-3 shadow-sm">
+                    <div class="text-secondary">Total Patients</div>
+                    <h3 class="text-hm-blue" th:text="${totalPatients}"></h3>
+                </div>
+            </div>
 
-            <!-- Dropdown Filter -->
-            <div class="dropdown">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button"
-                        id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Filter: <span id="filter-label">This Month</span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="filterDropdown">
-                    <li><a class="dropdown-item" href="#" onclick="setFilter('today')">Today</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="setFilter('month')">This Month</a></li>
-                </ul>
+            <div class="col-md-4">
+                <div class="card card-kpi p-3 shadow-sm">
+                    <div class="text-secondary">Avg Rating</div>
+                    <h3 class="text-hm-green" th:text="${#numbers.formatDecimal(avgRating,1,1)}"></h3>
+                </div>
             </div>
         </div>
 
-        <div id="admin-dashboard" class="dashboard-content"></div>
+        <!-- Chart Section -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card p-3 shadow-sm">
+                    <h5 class="text-hm-blue">Revenue Trend</h5>
+                    <canvas id="revenueChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="card p-3 shadow-sm">
+            <h5 class="text-hm-green mb-3"><i class="fas fa-comments me-2"></i>Recent Feedback</h5>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Patient Name</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="fb : ${feedbacks}">
+                    <td th:text="${fb.feedbackId}"></td>
+                    <td th:text="${fb.patient.user.fullName}"></td>
+                    <td><span class="badge bg-success" th:text="${fb.rating}"></span></td>
+                    <td th:text="${fb.comment}"></td>
+                    <td th:text="${#temporals.format(fb.createdAt,'dd-MM-yyyy')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </div>
 
-<!-- Bootstrap Bundle (includes Popper for dropdown) -->
+<script th:inline="javascript">
+    let labels = /*[[${chartLabels}]]*/ [];
+    let revenueData = /*[[${chartRevenue}]]*/ [];
+
+    const ctx = document.getElementById('revenueChart');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Revenue ($)',
+                data: revenueData,
+                borderColor: '#008744',
+                backgroundColor: 'rgba(0, 135, 68, 0.2)',
+                fill: true,
+                tension: 0.3
+            }]
+        }
+    });
+</script>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    let currentChart1 = null;
-    let currentChart2 = null;
-    let currentFilter = 'month';
-
-    function showDashboard(role) {
-        document.getElementById('dashboard-title').innerText = `${role.charAt(0).toUpperCase() + role.slice(1)} Dashboard`;
-        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-        document.getElementById(`nav-${role}`).classList.add('active');
-
-        if (currentChart1) currentChart1.destroy();
-        if (currentChart2) currentChart2.destroy();
-        document.getElementById('admin-dashboard').innerHTML = getAdminHTML();
-        setTimeout(() => initAdminCharts(currentFilter), 50);
-    }
-
-    function getAdminHTML() {
-        return `
-    <!-- KPI Section -->
-    <div class="row mb-4">
-      <div class="col-md-3">
-        <div class="card card-kpi p-3 shadow-sm">
-          <div class="text-secondary">Revenue (${currentFilter === 'today' ? 'Today' : 'This Month'})</div>
-          <h3 class="text-hm-green">${currentFilter === 'today' ? '$5,000' : '$75,000'}</h3>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card card-kpi p-3 shadow-sm">
-          <div class="text-secondary">Total Patients</div>
-          <h3 class="text-hm-blue">${currentFilter === 'today' ? '12' : '458'}</h3>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card card-kpi p-3 shadow-sm">
-          <div class="text-secondary">Confirmed Appointments</div>
-          <h3 class="text-hm-blue">${currentFilter === 'today' ? '89%' : '92%'}</h3>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card card-kpi p-3 shadow-sm">
-          <div class="text-secondary">⭐ Avg Rating</div>
-          <h3 class="text-hm-green">4.7 / 5.0</h3>
-        </div>
-      </div>
-    </div>
-
-    <!-- Charts Section -->
-    <div class="row">
-      <div class="col-md-8 mb-4">
-        <div class="card p-3 shadow-sm">
-          <h5 class="text-hm-blue">Revenue Trend</h5>
-          <canvas id="revenueChart" height="150"></canvas>
-        </div>
-      </div>
-      <div class="col-md-4 mb-4">
-        <div class="card p-3 shadow-sm">
-          <h5 class="text-hm-blue">Patient Visit Statistics</h5>
-          <canvas id="visitChart" height="150"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- Feedback Table -->
-    <div class="card p-3 shadow-sm">
-      <h5 class="text-hm-green mb-3"><i class="fas fa-comments me-2"></i>Recent Patient Feedback</h5>
-      <table class="table table-striped">
-        <thead class="table-light">
-          <tr>
-            <th>ID</th>
-            <th>Patient</th>
-            <th>Rating</th>
-            <th>Comment</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td th:te>101</td>
-            <td>John Nguyen</td>
-            <td><span class="badge bg-success">5.0</span></td>
-            <td>Dr. Smith was very caring and professional.</td>
-            <td>2025-11-05</td>
-          </tr>
-          <tr>
-            <td>102</td>
-            <td>Emily Tran</td>
-            <td><span class="badge bg-warning text-dark">3.5</span></td>
-            <td>Service was okay, but waiting time was long.</td>
-            <td>2025-11-04</td>
-          </tr>
-          <tr>
-            <td>103</td>
-            <td>Michael Pham</td>
-            <td><span class="badge bg-success">4.8</span></td>
-            <td>Quick and smooth process at reception.</td>
-            <td>2025-11-03</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>`;
-    }
-
-    function initAdminCharts(filter) {
-        const revenueCtx = document.getElementById('revenueChart');
-        const visitCtx = document.getElementById('visitChart');
-
-        const chartData = {
-            today: {
-                labels: ['8 AM', '10 AM', '12 PM', '2 PM', '4 PM', '6 PM'],
-                revenue: [1, 1.5, 2, 0.8, 1, 0.7],
-                visits: [10, 12, 8, 15]
-            },
-            month: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                revenue: [250, 280, 320, 300, 350, 410],
-                visits: [150, 80, 120, 50]
-            }
-        };
-
-        const data = chartData[filter];
-
-        currentChart1 = new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    label: 'Revenue ($)',
-                    data: data.revenue,
-                    borderColor: 'var(--hm-green)',
-                    backgroundColor: 'rgba(0,135,68,0.2)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-
-        currentChart2 = new Chart(visitCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Internal Medicine', 'Cardiology', 'Dermatology', 'Neurology'],
-                datasets: [{
-                    label: 'Visits',
-                    data: data.visits,
-                    backgroundColor: 'var(--hm-blue)'
-                }]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-    }
-
-    function setFilter(type) {
-        currentFilter = type;
-        document.getElementById('filter-label').innerText = type === 'today' ? 'Today' : 'This Month';
-        showDashboard('admin');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => showDashboard('admin'));
-</script>
 </body>
 </html>

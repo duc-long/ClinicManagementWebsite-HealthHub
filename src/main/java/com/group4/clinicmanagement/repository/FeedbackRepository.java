@@ -25,4 +25,14 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
     Page<Feedback> findByPatient_PatientIdNot(@Param("userId") Integer userId, Pageable pageable);
 
     List<Feedback> findAllByPatient_PatientIdOrderByCreatedAtDesc(Integer userId);
+
+    @Query("SELECT f FROM Feedback f WHERE CAST(f.createdAt AS date) = CAST(:today AS date) ORDER BY f.createdAt DESC")
+    List<Feedback> getFeedbackToday(@Param("today") LocalDateTime today);
+
+    @Query("SELECT f FROM Feedback f WHERE YEAR(f.createdAt) = :year AND MONTH(f.createdAt) = :month ORDER BY f.createdAt DESC")
+    List<Feedback> getFeedbackThisMonth(@Param("year") int year, @Param("month") int month);
+
+    @Query("SELECT f FROM Feedback f WHERE YEAR(f.createdAt) = :year ORDER BY f.createdAt DESC")
+    List<Feedback> getFeedbackThisYear(@Param("year") int year);
+
 }

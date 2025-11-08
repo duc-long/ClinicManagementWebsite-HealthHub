@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.service.admin;
 
 import com.group4.clinicmanagement.dto.admin.PatientDTO;
+import com.group4.clinicmanagement.entity.Feedback;
 import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.entity.Role;
 import com.group4.clinicmanagement.entity.User;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -178,5 +180,18 @@ public class PatientForAdminService {
         return patient.getPatientId();
     }
 
-
+    public long getTotalPatientByFilter(String filter) {
+        long totalPatients = 0;
+        switch (filter.toLowerCase()) {
+            case "today": {
+                return totalPatients = patientRepository.countPatientsToday(LocalDateTime.now());
+            }
+            case "year": {
+                return totalPatients = patientRepository.countPatientsThisYear(LocalDateTime.now().getYear());
+            }
+            default: {
+                return totalPatients = patientRepository.countPatientsThisMonth(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue());
+            }
+        }
+    }
 }

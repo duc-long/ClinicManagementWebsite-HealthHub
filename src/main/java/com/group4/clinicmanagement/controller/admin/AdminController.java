@@ -4,6 +4,7 @@ import com.group4.clinicmanagement.dto.DepartmentDTO;
 import com.group4.clinicmanagement.dto.admin.*;
 import com.group4.clinicmanagement.entity.Feedback;
 import com.group4.clinicmanagement.repository.admin.DoctorForAdminRepository;
+import com.group4.clinicmanagement.service.BillService;
 import com.group4.clinicmanagement.service.DepartmentService;
 import com.group4.clinicmanagement.service.FeedbackService;
 import com.group4.clinicmanagement.service.UserService;
@@ -35,8 +36,9 @@ public class AdminController {
     private final CashierForAdminService CashierService;
     private final TechnicianForAdminService TechnicianService;
     private final FeedbackService feedbackService;
+    private final BillService billService;
 
-    public AdminController(PatientForAdminService patientService, DoctorForAdminService doctorService, UserService userService, DepartmentService departmentService, DoctorForAdminRepository doctorForAdminRepository, ReceptionistForAdminService receptionistService, CashierForAdminService cashierService, TechnicianForAdminService technicianService, FeedbackService feedbackService) {
+    public AdminController(PatientForAdminService patientService, DoctorForAdminService doctorService, UserService userService, DepartmentService departmentService, DoctorForAdminRepository doctorForAdminRepository, ReceptionistForAdminService receptionistService, CashierForAdminService cashierService, TechnicianForAdminService technicianService, FeedbackService feedbackService, BillService billService) {
         this.patientService = patientService;
         this.doctorService = doctorService;
         this.userService = userService;
@@ -46,6 +48,7 @@ public class AdminController {
         this.CashierService = cashierService;
         this.TechnicianService = technicianService;
         this.feedbackService = feedbackService;
+        this.billService = billService;
     }
 
     @GetMapping(value = "/patient")
@@ -607,20 +610,27 @@ public class AdminController {
 
     // Dashboard
     @GetMapping(value = "/dashboard")
-    public String showAdminDashboard(Model model) {
-//        Page<Feedback> feedbacks = feedbackService.getFeedbackPage();
-//        long totalPatients = patientService.countPatients();
-//        long totalDoctors = doctorService.countDoctors();
-//        long totalReceptionists = receptionistService.countReceptionists();
-//        long totalCashiers = CashierService.countCashiers();
-//        long totalTechnicians = TechnicianService.countTechnicians();
+    public String showAdminDashboard(Model model,
+                                     @RequestParam(defaultValue = "month") String filter,
+                                     @RequestParam(required = false) Integer month,
+                                     @RequestParam(required = false) Integer year) {
 
-//        model.addAttribute("totalPatients", totalPatients);
-//        model.addAttribute("totalDoctors", totalDoctors);
-//        model.addAttribute("totalReceptionists", totalReceptionists);
-//        model.addAttribute("totalCashiers", totalCashiers);
-//        model.addAttribute("totalTechnicians", totalTechnicians);
-//
+        List<Feedback> feedbacks = feedbackService.getFeedbackByFilter(filter);
+        long totalPatients = patientService.getTotalPatientByFilter(filter);
+        Double revenue = billService.getRevenue(filter,month,year);
+        Double avgRating = feedbackService.getAvgRatingByFilter(filter);
+
+        model.addAttribute("filter", filter);
+        model.addAttribute("feedbacks", feedbacks);
+        model.addAttribute("chartLabels", billService.getLabels(filter));
+        model.addAttribute("chartRevenue", billService.getRevenueData(filter));
+        model.addAttribute("totalPatients", totalPatients);
+        model.addAttribute("revenue", revenue);
+        model.addAttribute("avgRating", avgRating);
+
+        System.out.println( billService.getLabels(filter));
+        System.out.println( billService.getRevenueData(filter));
+
         return "admin/admin-dashboard";
     }
 
