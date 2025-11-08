@@ -79,7 +79,15 @@ public class LabRequestController {
 
     @GetMapping(value = "/request/{id}")
     public String requestDetail(@PathVariable(name = "id") int id, Model model){
-        model.addAttribute("request", labRequestService.findLabRequestById(id));
+
+        LabRequest labRequest = labRequestService.findLabRequestById(id);
+
+        if (labRequest == null){
+            model.addAttribute("mess", "Lab request not found");
+            return "technician/request-detail";
+        }
+
+        model.addAttribute("request", labRequest);
         return "technician/request-detail";
     }
 

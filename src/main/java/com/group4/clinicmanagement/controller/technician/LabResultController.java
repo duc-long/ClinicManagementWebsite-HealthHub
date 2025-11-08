@@ -83,6 +83,11 @@ public class LabResultController {
     public String resultDetail(@PathVariable(name = "id") int id, Model model) {
 
         LabResultDTO result = labResultService.findById(id);
+
+        if (result == null) {
+            model.addAttribute("mess", "Result not found!!!");
+            return "technician/result-detail";
+        }
         model.addAttribute("result", result);
 
         return "technician/result-detail";
@@ -92,6 +97,12 @@ public class LabResultController {
     public String updateForm(@PathVariable(name = "id") int id, Model model) {
 
         LabResultDTO result = labResultService.findById(id);
+
+        if (result == null) {
+            model.addAttribute("mess", "Result not found!!!");
+            return "technician/result-edit";
+        }
+
         model.addAttribute("result", result);
 
         return "technician/result-edit";
@@ -125,16 +136,23 @@ public class LabResultController {
     @GetMapping(value = "/result-confirm/{id}")
     public String confirmForm(@PathVariable(name = "id") int id, Model model) {
         LabResultDTO result = labResultService.findById(id);
+
+        if (result == null) {
+            model.addAttribute("mess", "Result not found!!!");
+            return "technician/result-edit";
+        }
+
         model.addAttribute("result", result);
 
         return "technician/result-confirm";
     }
+
     @PostMapping(value = "/result-confirm/{id}")
     public String confirm(@PathVariable int id,
                           @Valid @ModelAttribute("result") LabResultDTO dto,
                           BindingResult bindingResult,
                           RedirectAttributes redirectAttributes,
-                          Model model){
+                          Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("result", dto);
             return "technician/result-confirm";
@@ -145,16 +163,21 @@ public class LabResultController {
         return "redirect:/technician/result-list";
     }
 
-    @GetMapping(value ="/result-delete/{id}")
+    @GetMapping(value = "/result-delete/{id}")
     public String deleteResultForm(@PathVariable(name = "id") int id,
-                               RedirectAttributes redirectAttributes,
-                               Model model) {
+                                   RedirectAttributes redirectAttributes,
+                                   Model model) {
         LabResultDTO result = labResultService.findById(id);
 
-        if(result.getLabRequestStatus().equals(LabRequestStatus.COMPLETED.name())){
+        if (result == null) {
+            model.addAttribute("mess", "Result not found!!!");
+            return "technician/result-delete";
+        }
+        if (result.getLabRequestStatus().equals(LabRequestStatus.COMPLETED.name())) {
             redirectAttributes.addFlashAttribute("errorMessage", "Result has been completed!");
             return "redirect:technician/result-list";
         }
+
         model.addAttribute("result", result);
 
         return "/technician/result-delete";

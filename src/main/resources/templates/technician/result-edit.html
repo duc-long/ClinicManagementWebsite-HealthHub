@@ -56,7 +56,12 @@
                th:replace="~{/fragment/technician/techinician-fragment :: sidebar}">
         </aside>
 
-        <section class="col-12 col-lg-9">
+        <section class="col-12 col-lg-9" th:if="${mess}">
+            <div class="alert alert-danger alert-dismissible fade show">
+                <h2 th:text="${mess}"></h2>
+            </div>
+        </section>
+        <section class="col-12 col-lg-9" th:unless="${mess}">
             <h1 class="h4 mb-3">Edit Test Result RES-<span th:text="${result.resultId}"></span></h1>
 
             <div class="row g-3">

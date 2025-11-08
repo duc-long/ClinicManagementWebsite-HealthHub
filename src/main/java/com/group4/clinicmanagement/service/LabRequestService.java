@@ -23,8 +23,8 @@ public class LabRequestService {
     }
 
     public LabRequest findLabRequestById(int id) {
-        LabRequest labRequest = this.labRequestRepository.findById(id).orElseThrow();
-        return labRequestRepository.getReferenceById(id);
+        LabRequest labRequest = labRequestRepository.findById(id).orElse(null);
+        return labRequest;
     }
 
     public LabRequestDTO toDTO(LabRequest entity) {

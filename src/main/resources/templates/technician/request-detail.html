@@ -57,7 +57,12 @@
         </aside>
 
         <!-- ✅ Bạn chỉ cần điền nội dung ở đây -->
-        <section class="col-12 col-lg-9">
+        <section class="col-12 col-lg-9" th:if="${mess}">
+            <div class="alert alert-danger alert-dismissible fade show">
+                <h2 th:text="${mess}"></h2>
+            </div>
+        </section>
+        <section class="col-12 col-lg-9" th:unless="${mess}">
 
             <h1 class="h4 mb-3">Request REQ-<span th:text="${request.labRequestId}"></span></h1>
             <div class="row g-3">
@@ -91,7 +96,7 @@
                                 <dd class="col-8">
                             <span th:switch="${request.status.name()}">
                                 <span th:case="'REQUESTED'" class="badge bg-secondary">Requested</span>
-                                <span th:case="'PAID'" class="badge bg-yellow">Paid</span>
+                                <span th:case="'PAID'" class="badge bg-warning">Paid</span>
                                 <span th:case="'COMPLETED'" class="badge bg-success">Completed</span>
                                 <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
                                 <span th:case="'RUNNING'" class="badge bg-primary">Running</span>

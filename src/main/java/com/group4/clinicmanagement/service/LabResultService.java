@@ -77,7 +77,10 @@ public class LabResultService {
 
     public LabResultDTO findById(Integer id) {
         LabResult result = labResultRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Result not found"));
+                .orElse(null);
+        if (result == null){
+            return null;
+        }
         return LabResultDTO.fromEntity(result);
     }
 

@@ -153,7 +153,7 @@
                                 <td>
                             <span th:switch="*{status.name()}">
                                 <span th:case="'REQUESTED'" class="badge bg-secondary">Requested</span>
-                                <span th:case="'PAID'" class="badge bg-yellow">Paid</span>
+                                <span th:case="'PAID'" class="badge bg-warning">Paid</span>
                                 <span th:case="'COMPLETED'" class="badge bg-success">Completed</span>
                                 <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
                                 <span th:case="'RUNNING'" class="badge bg-primary">Running</span>
@@ -177,5 +177,13 @@
 </main>
 
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script>
+    setTimeout(() => {
+        const alert = document.getElementById("autoClose");
+        if (alert) {
+            alert.classList.remove("show");
+        }
+    }, 3000);
+</script>
 </body>
 </html>

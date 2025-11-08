@@ -1,59 +1,117 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Confirm Result</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Result Detail - HealHub</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
-    <style>body {
-        background-color: #f6f7fb;
-    }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    .container-narrow {
-        max-width: 1080px;
-    }
+    <style>
+        body {
+            background-color: #f6f7fb;
+        }
 
-    .section-title {
-        font-weight: 600
-    }</style>
+        /* Sidebar */
+        .sidebar {
+            background: #fff;
+            border-radius: .75rem;
+            box-shadow: 0 2px 12px #0001;
+            padding: 1rem;
+            height: calc(100vh - 84px);
+            position: sticky;
+            top: 72px;
+            overflow: auto;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            border-radius: .5rem;
+            padding: .5rem .75rem;
+        }
+
+        .sidebar .nav-link.active,
+        .sidebar .nav-link:hover {
+            background: #e9f2ff;
+            color: #0d6efd;
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar {
+                height: auto;
+                position: relative;
+                top: auto;
+            }
+        }
+    </style>
 </head>
-<body class="bg-light">
-<nav th:replace="~{fragment/technician/techinician-fragment :: navBar}"></nav>
-<main class="container container-narrow py-4">
-    <h1 class="h4 mb-3">Confirm Result – RES-<span th:text="${result.resultId}"></span></h1>
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <p><strong>Patient:</strong> <span th:text="${result.patientName}"></span></p>
-            <p><strong>Test:</strong> <span th:text="${result.testName}"></span></p>
-            <p><strong>Technician:</strong> <span th:text="${result.technicianName}"></span></p>
-            <p><strong>Description:</strong></p>
-            <p th:text="${result.resultText}"></p>
 
-            <!-- Hiển thị ảnh nếu có -->
-            <div th:if="${result.images != null and !#lists.isEmpty(result.images)}">
-                <hr>
-                <h6>Attached X-Ray / Lab Images:</h6>
-                <div class="row g-3">
-                    <div class="col-md-4" th:each="img : ${result.images}">
-                        <div class="border rounded p-2 shadow-sm">
-                            <img th:src="'/images/labs/' + ${img.filePath}"
-                                 alt="X-ray Result Image"
-                                 class="img-fluid w-100">
-                            <p class="small text-muted" th:text="${img.description}"></p>
+<body>
+<nav th:replace="~{fragment/technician/techinician-fragment :: navBar}"></nav>
+
+<main class="container-fluid py-3 py-lg-4">
+    <div class="row g-3">
+
+        <!-- Sidebar -->
+        <aside class="col-12 col-lg-3"
+               th:replace="~{/fragment/technician/techinician-fragment :: sidebar}">
+        </aside>
+
+        <section class="col-12 col-lg-9" th:if="${mess}">
+            <div class="alert alert-danger alert-dismissible fade show">
+                <h2 th:text="${mess}"></h2>
+            </div>
+        </section>
+        <section class="col-12 col-lg-9" th:unless="${mess}">
+                <h1 class="h4 mb-3">Confirm Result – RES-<span th:text="${result.resultId}"></span></h1>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <p><strong>Patient:</strong> <span th:text="${result.patientName}"></span></p>
+                        <p><strong>Test:</strong> <span th:text="${result.testName}"></span></p>
+                        <p><strong>Technician:</strong> <span th:text="${result.technicianName}"></span></p>
+                        <p><strong>Description:</strong></p>
+                        <p th:text="${result.resultText}"></p>
+
+                        <!-- Hiển thị ảnh nếu có -->
+                        <div th:if="${result.images != null and !#lists.isEmpty(result.images)}">
+                            <hr>
+                            <h6>Attached X-Ray / Lab Images:</h6>
+                            <div class="row g-3">
+                                <div class="col-md-4" th:each="img : ${result.images}">
+                                    <div class="border rounded p-2 shadow-sm">
+                                        <img th:src="'/images/labs/' + ${img.filePath}"
+                                             alt="X-ray Result Image"
+                                             class="img-fluid w-100">
+                                        <p class="small text-muted" th:text="${img.description}"></p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+                        <form th:action="@{/technician/result-confirm/{id}(id=${result.resultId})}" method="post">
+                            <div class="mt-4 d-flex justify-content-end gap-2">
+                                <a th:href="@{/technician/result-list}" class="btn btn-outline-secondary px-4">Back</a>
+                                <button type="submit" class="btn btn-success px-4">
+                                    <i class="fa-solid fa-check me-1"></i>Confirm Result
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </div>
-
-            <form th:action="@{/technician/result-confirm/{id}(id=${result.resultId})}" method="post">
-                <div class="mt-4 d-flex justify-content-end gap-2">
-                    <a th:href="@{/technician/result-list}" class="btn btn-outline-secondary px-4">Back</a>
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="fa-solid fa-check me-1"></i>Confirm Result
-                    </button>
-                </div>
-            </form>
-        </div>
+        </section>
     </div>
 </main>
+
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toastEl = document.getElementById("successToast");
+        if (toastEl) {
+            const toast = new bootstrap.Toast(toastEl, {delay: 2500});
+            toast.show();
+        }
+    });
+</script>
 </body>
 </html>

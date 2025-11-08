@@ -57,58 +57,32 @@
                th:replace="~{/fragment/technician/techinician-fragment :: sidebar}">
         </aside>
 
-        <!-- ✅ Bạn chỉ cần điền nội dung ở đây -->
-        <section class="col-12 col-lg-9">
+        <section class="col-12 col-lg-9" th:if="${mess}">
+            <div class="alert alert-danger alert-dismissible fade show">
+                <h2 th:text="${mess}"></h2>
+            </div>
+        </section>
+        <section class="col-12 col-lg-9" th:unless="${mess}">
+            <h1 class="h4 mb-3">Lab Result Detail – RES-<span th:text="${result.resultId}"></span></h1>
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p><strong>Patient:</strong> <span th:text="${result.patientName}"></span></p>
+                    <p><strong>Test:</strong> <span th:text="${result.testName}"></span></p>
+                    <p><strong>Technician:</strong> <span th:text="${result.technicianName}"></span></p>
+                    <p><strong>Description:</strong></p>
+                    <p th:text="${result.resultText}"></p>
 
-            <h1 class="h4 mb-3">Lab Test Result RES-<span th:text="${result.resultId}"></span></h1>
-            <div class="row g-3">
-                <div class="col-12 col-lg-4">
-                    <div class="card shadow-sm border-0 h-100">
-                        <div class="card-header bg-white section-title">Patient & Test</div>
-                        <div class="card-body">
-                            <dl class="row">
-                                <dt class="col-4">Patient</dt>
-                                <dd class="col-8" th:text="${result.patientName}"></dd>
-                                <dt class="col-4">Test</dt>
-                                <dd class="col-8" th:text="${result.testName}"></dd>
-                                <dt class="col-4"></dt>
-                                <dd class="col-8">
-                                </dd>
-                            </dl>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <div class="text-muted small">
-                                <span th:classappend="
-                                ${result.labRequestStatus == 'REQUESTED'} ? 'badge bg-secondary' :
-                                (${result.labRequestStatus == 'PAID'} ? 'badge bg-primary' : 'badge bg-success')"
-                                      th:text="${result.labRequestStatus}">
-                                </span>
-                                    </div>
-                                    <div th:if="${result.labRequestStatus == 'COMPLETED'}"
-                                         th:text="${#temporals.format(result.createdAt, 'dd/MM/yyyy HH:mm:ss')}"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-8">
-                    <div class="card shadow-sm border-0 h-100">
-                        <div class="card-header bg-white section-title">Result Details</div>
-                        <div class="card-body">
-
-                            <p th:text="${result.resultText}" class="mb-3"></p>
-
-                            <!--If test is X-ray -->
-                            <div th:if="${result.testName == 'X-Ray'}">
-                                <div class="row g-3 mt-2">
-                                    <div class="col-md-6" th:each="img : ${result.images}">
-                                        <div class="border rounded overflow-hidden shadow-sm">
-                                            <img th:src="'/images/labs/' + ${img.filePath}"
-                                                 alt="X-ray Result Image"
-                                                 class="img-fluid w-100">
-                                        </div>
-                                        <p class="small text-muted mt-1" th:text="${img.description}"></p>
-                                    </div>
+                    <!-- Hiển thị ảnh nếu có -->
+                    <div th:if="${result.images != null and !#lists.isEmpty(result.images)}">
+                        <hr>
+                        <h6>Attached X-Ray / Lab Images:</h6>
+                        <div class="row g-3">
+                            <div class="col-md-4" th:each="img : ${result.images}">
+                                <div class="border rounded p-2 shadow-sm">
+                                    <img th:src="'/images/labs/' + ${img.filePath}"
+                                         alt="X-ray Result Image"
+                                         class="img-fluid w-100">
+                                    <p class="small text-muted" th:text="${img.description}"></p>
                                 </div>
                             </div>
                         </div>
