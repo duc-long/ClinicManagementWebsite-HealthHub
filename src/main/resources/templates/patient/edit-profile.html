@@ -50,7 +50,7 @@
                                minlength="5"
                                maxlength="100"
                                pattern="^[\p{L}\s']+$"
-                               title="Name must be 5-100 characters and contain only letters and spaces."/>
+                               title="Full name must be 5-100 characters and contain only letters and spaces.">
                         <div class="error-message"
                              th:if="${#fields.hasErrors('fullName')}"
                              th:errors="*{fullName}"></div>
@@ -220,36 +220,45 @@
     }
 </style>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector(".profile-card");
-        const modal = new bootstrap.Modal(document.getElementById('confirmSaveModal'));
-        const confirmButton = document.getElementById('confirmSaveBtn');
+<!--<script>-->
+<!--    document.addEventListener("DOMContentLoaded", function () {-->
+<!--        const form = document.querySelector(".profile-card");-->
+<!--        const modal = new bootstrap.Modal(document.getElementById('confirmSaveModal'));-->
+<!--        const confirmButton = document.getElementById('confirmSaveBtn');-->
 
-        form.addEventListener("submit", function (e) {
-            e.preventDefault(); // ngăn gửi form ngay lập tức
-            modal.show();
-        });
+<!--        form.addEventListener("submit", function (e) {-->
+<!--            // 1. Luôn ngăn chặn việc gửi form mặc định-->
+<!--            e.preventDefault();-->
 
-        confirmButton.addEventListener("click", function () {
-            modal.hide();
-            form.submit(); // gửi form sau khi người dùng đồng ý
-        });
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('#collapseInfo .nav-link').forEach(link => {
-            link.addEventListener('click', function () {
-                const collapse = document.getElementById('collapseInfo');
-                const bsCollapse = bootstrap.Collapse.getInstance(collapse);
-                if (bsCollapse) {
-                    bsCollapse.hide();
-                }
-            });
-        });
-    });
-</script>
+<!--            // 2. Kiểm tra xem form có hợp lệ không-->
+<!--            if (form.checkValidity()) {-->
+<!--                // 3. Nếu HỢP LỆ -> hiển thị modal-->
+<!--                modal.show();-->
+<!--            } else {-->
+<!--                // 4. Nếu KHÔNG HỢP LỆ -> yêu cầu trình duyệt hiển thị lỗi-->
+<!--                form.reportValidity();-->
+<!--            }-->
+<!--        });-->
+
+<!--        confirmButton.addEventListener("click", function () {-->
+<!--            modal.hide();-->
+<!--            form.submit(); // 5. Gửi form sau khi người dùng đồng ý-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function () {-->
+<!--        document.querySelectorAll('#collapseInfo .nav-link').forEach(link => {-->
+<!--            link.addEventListener('click', function () {-->
+<!--                const collapse = document.getElementById('collapseInfo');-->
+<!--                const bsCollapse = bootstrap.Collapse.getInstance(collapse);-->
+<!--                if (bsCollapse) {-->
+<!--                    bsCollapse.hide();-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
 <script src="/assets/js/bootstrap.bundle.min.js"></script>
 <footer th:insert="~{fragment/fragment :: footer}"></footer>
 <div th:replace="~{fragment/popup :: popup}"></div>
