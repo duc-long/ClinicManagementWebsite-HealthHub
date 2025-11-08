@@ -822,21 +822,30 @@
                     <h6 class="fw-bold text-secondary mb-0">
                         <i class="fa-solid fa-brain me-2 text-primary"></i> Record Details
                     </h6>
-                    <!-- create medical record -->
-                    <a th:if="${record.recordId == null}"
-                       th:href="@{'/doctor/records/create?appointmentId=' + ${appointmentId}}"
-                       class="btn btn-outline-primary btn-sm">
-                        <i class="fa-solid fa-plus me-1"></i> Create Medical Record
-                    </a>
+                    <div class="d-flex align-items-center">
+                        <a th:if="${record.recordId != null and labRequest == null}"
+                           th:href="@{/doctor/labs/create/{id}(id=${record.recordId})}"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-plus me-1"></i> Request Lab Test
+                        </a>
 
-                    <!-- update medical record -->
-                    <a th:if="${record.recordId != null and record.recordStatus.name() != 'CLOSED'}"
-                       th:href="@{/doctor/records/update/{id}(id=${record.recordId})}"
-                       class="btn btn-outline-primary btn-sm">
-                        <i class="fa-solid fa-pen-to-square me-1"></i> Update Record
-                    </a>
+                        <a th:if="${record.recordId != null
+                            and labRequest != null
+                            and labRequest.status != T(com.group4.clinicmanagement.enums.LabRequestStatus).CANCELLED}"
+                           th:href="@{/doctor/labs/view/{id}(id=${labRequest.labRequestId})}"
+                           class="btn btn-outline-primary btn-sm me-xxl-3">
+                            <i class="fa-solid fa-eye me-1"></i> View Request Lab Test
+                        </a>
+
+
+                        <!-- update medical record -->
+                        <a th:if="${record.recordId != null and record.recordStatus.name() != 'CLOSED'}"
+                           th:href="@{/doctor/records/update/{id}(id=${record.recordId})}"
+                           class="btn btn-outline-primary btn-sm ms-3">
+                            <i class="fa-solid fa-pen-to-square me-1"></i> Update Record
+                        </a>
+                    </div>
                 </div>
-
 
                 <!-- Nội dung chi tiết -->
                 <div class="ps-1">
@@ -978,114 +987,3 @@
     </div>
 </div>
 
-<!-- fragment/doctor/lab-request.html -->
-<div th:fragment="lab-request">
-    <style>
-        :root {
-            --hm-blue: #005691;
-            --hm-light: #eaf4fb;
-        }
-
-        body {
-            background: #f8fafc;
-            font-family: "Inter", sans-serif;
-        }
-
-        .card {
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .card-header {
-            background: var(--hm-light);
-            font-weight: 600;
-            color: var(--hm-blue);
-        }
-
-        .btn-hm {
-            background: var(--hm-blue);
-            color: white;
-            border-radius: 8px;
-        }
-
-        .btn-hm:hover {
-            background: #003f6f;
-        }
-    </style>
-    <div class="container mt-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="text-primary fw-semibold">
-                <i class="fa-solid fa-flask-vial me-2"></i> Create Lab Request
-            </h3>
-        </div>
-
-        <form th:action="@{/doctor/lab/save}" method="post" th:object="${lab}">
-
-            <input type="hidden" th:field="*{recordId}">
-            <input type="hidden" th:field="*{doctorId}">
-
-            <div class="card mb-4">
-                <div class="card-header"><i class="fa-solid fa-vial me-1"></i> Select Lab Tests</div>
-                <div class="card-body">
-
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                        <tr>
-                            <th>Test</th>
-                            <th>Quantity</th>
-                            <th>Note</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody id="labBody">
-                        <tr class="lab-row">
-                            <td>
-                                <select class="form-select" name="testIds">
-                                    <option value="">-- Choose Test --</option>
-                                    <option th:each="t : ${tests}"
-                                            th:value="${t.testId}"
-                                            th:text="${t.name}"></option>
-                                </select>
-                            </td>
-                            <td><input type="number" name="quantities" class="form-control text-center" min="1"
-                                       required></td>
-                            <td><input type="text" name="instructions" class="form-control" placeholder="Optional note">
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-danger remove-row"><i
-                                        class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <button type="button" id="addRow" class="btn btn-outline-primary rounded-pill">
-                        <i class="fa-solid fa-plus me-1"></i> Add Test
-                    </button>
-
-                </div>
-            </div>
-
-            <button class="btn btn-hm w-100 py-2 fw-semibold">
-                <i class="fa-solid fa-floppy-disk me-1"></i> Save Lab Request
-            </button>
-        </form>
-
-    </div>
-
-    <script>
-        document.getElementById("addRow").onclick = () => {
-            let row = document.querySelector(".lab-row").cloneNode(true);
-            row.querySelectorAll("input").forEach(i => i.value = "");
-            row.querySelector("select").selectedIndex = 0;
-            document.getElementById("labBody").appendChild(row);
-        };
-
-        document.addEventListener("click", e => {
-            if (e.target.closest(".remove-row")) {
-                if (document.querySelectorAll(".lab-row").length > 1)
-                    e.target.closest(".lab-row").remove();
-            }
-        });
-    </script>
-</div>

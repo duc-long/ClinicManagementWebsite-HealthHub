@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab Result Overview</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+    <style>
+        :root {
+            --hm-blue: #005691;
+            --hm-green: #00a67e;
+            --hm-light: #eef6fb;
+        }
+
+        body { background: #f4f8fb; font-family: "Inter", sans-serif; }
+
+        .hero-header {
+            background: linear-gradient(135deg, var(--hm-blue), var(--hm-green));
+            border-radius: 14px;
+            padding: 20px 26px;
+            color: white;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+            margin-bottom: 24px;
+        }
+
+        .card { border-radius: 14px; border: 1px solid #d8e2ec; }
+        .card-header { background: var(--hm-light); border-radius: 14px 14px 0 0; color: var(--hm-blue); font-weight: 600; }
+
+        .image-thumb {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-4" style="max-width: 900px;">
+
+    <!-- Header -->
+    <div class="hero-header d-flex align-items-center justify-content-between">
+        <h4 class="m-0"><i class="fa-solid fa-flask-vial me-2"></i> Lab Result Overview</h4>
+        <a th:href="@{/doctor/labs/view/{id}(id=${lab.labRequestId})}" class="btn btn-light btn-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back
+        </a>
+    </div>
+
+    <!-- Result Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><i class="fa-solid fa-file-waveform me-2"></i> Lab Result</div>
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label class="text-muted small">Test Name</label>
+                <div class="form-control" th:text="${lab.test.name}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label class="text-muted small">Result Value</label>
+                <div class="form-control" th:text="${result.resultValue}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label class="text-muted small">Reference Range</label>
+                <div class="form-control" th:text="${result.referenceRange}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label class="text-muted small">Conclusion / Notes</label>
+                <textarea class="form-control" rows="4" disabled th:text="${result.doctorNote}"></textarea>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Lab Images -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><i class="fa-solid fa-images me-2"></i> Attached Lab Images</div>
+        <div class="card-body">
+
+            <div th:if="${#lists.isEmpty(images)}" class="text-center text-muted py-3">
+                <i class="fa-solid fa-circle-exclamation me-1"></i> No images attached.
+            </div>
+
+            <div class="row g-3" th:if="${!#lists.isEmpty(images)}">
+                <div class="col-md-4" th:each="img : ${images}">
+                    <a th:href="@{|/uploads/lab/${img.fileName}|}" target="_blank">
+                        <img class="image-thumb shadow-sm" th:src="@{|/uploads/lab/${img.fileName}|}" th:alt="${img.fileName}">
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

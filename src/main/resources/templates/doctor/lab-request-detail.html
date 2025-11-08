@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab Request Detail</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+    <style>
+        :root {
+            --hm-blue: #005691;
+            --hm-green: #00a67e;
+            --hm-light: #eef6fb;
+        }
+
+        body {
+            background: #f4f8fb;
+            font-family: "Inter", sans-serif;
+        }
+
+        .hero-header {
+            background: linear-gradient(135deg, var(--hm-blue), var(--hm-green));
+            border-radius: 14px;
+            padding: 22px 26px;
+            color: white;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+            margin-bottom: 24px;
+        }
+
+        .hero-header h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .card {
+            border-radius: 14px;
+            border: 1px solid #d8e2ec;
+            background: #fff;
+        }
+
+        .card-header {
+            background: var(--hm-light);
+            color: var(--hm-blue);
+            font-weight: 600;
+            border-radius: 14px 14px 0 0;
+            font-size: 1.05rem;
+        }
+
+        .btn-hm-main {
+            background: var(--hm-blue);
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        .btn-hm-main:hover {
+            background: #003f6f;
+        }
+
+        .btn-hm-success {
+            background: var(--hm-green);
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        .kv {
+            margin-bottom: .45rem;
+            font-size: 0.95rem;
+        }
+
+        .kv .k {
+            width: 180px;
+            color: #6b7280;
+        }
+
+        .kv .v {
+            font-weight: 550;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container mt-4" style="max-width: 860px;">
+
+    <!-- Header -->
+    <div class="hero-header d-flex align-items-center justify-content-between">
+        <h3><i class="fa-solid fa-flask-vial me-2"></i> Lab Request Detail</h3>
+        <a th:href="@{/doctor/records/detail/{id}(id = ${lab.medicalRecordId})}" class="btn btn-light">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back
+        </a>
+    </div>
+
+    <!-- Main Info Card -->
+    <div class="card shadow-sm">
+        <div class="card-header"><i class="fa-solid fa-file-medical me-2"></i> Request Information</div>
+        <div class="card-body pb-4">
+
+            <!-- Status -->
+            <div class="mb-4 text-center">
+                <span class="badge px-4 py-2 text-uppercase"
+                      th:classappend="${lab.status.name() == 'REQUESTED'} ? ' bg-secondary' :
+                                       (${lab.status.name() == 'PAID'} ? ' bg-info text-dark' :
+                                       (${lab.status.name() == 'RUNNING'} ? ' bg-primary' :
+                                       (${lab.status.name() == 'COMPLETED'} ? ' bg-success' :
+                                       ' bg-danger'))) "
+                      th:text="${lab.status.name()}"></span>
+            </div>
+
+            <div class="row px-2">
+                <div class="col-md-6 mb-3">
+                    <label class="text-muted small">Lab Request ID</label>
+                    <div class="form-control" th:text="${lab.labRequestId}"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="text-muted small">Requested At</label>
+                    <div class="form-control" th:text="${#temporals.format(lab.requestedAt,'dd/MM/yyyy HH:mm')}"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="text-muted small">Test</label>
+                    <div class="form-control" th:text="${test.name}"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="text-muted small">Medical Record ID</label>
+                    <div class="form-control" th:text="${lab.medicalRecordId}"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Action Buttons (Always at the bottom) -->
+        <div class="card-footer d-flex justify-content-end gap-2">
+            <a th:if="${lab.status == T(com.group4.clinicmanagement.enums.LabRequestStatus).REQUESTED}"
+               th:href="@{/doctor/labs/edit/{id}(id = ${lab.labRequestId})}"
+               class="btn btn-warning">
+                <i class="fa-solid fa-pen-to-square me-1"></i> Edit
+            </a>
+
+            <button th:if="${lab.status == T(com.group4.clinicmanagement.enums.LabRequestStatus).REQUESTED}"
+                    type="button"
+                    class="btn btn-danger"
+                    data-bs-toggle="modal" data-bs-target="#cancelModal">
+                <i class="fa-solid fa-ban me-1"></i> Cancel
+            </button>
+
+            <!-- view detail -->
+            <a th:if="${lab.status == T(com.group4.clinicmanagement.enums.LabRequestStatus).COMPLETED}"
+               th:href="@{/doctor/labs/view/result/{id}(id=${lab.labRequestId})}"
+               class="btn btn-outline-primary">
+                <i class="fa-solid fa-eye me-1"></i> View Details
+            </a>
+        </div>
+    </div>
+
+    <!-- Cancel Modal -->
+    <div class="modal fade" id="cancelModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form class="modal-content" th:action="@{/doctor/labs/cancel/{id}(id=${lab.labRequestId})}" method="post">
+                <div class="modal-header"><h5 class="text-danger"><i class="fa-solid fa-ban me-1"></i> Confirm Cancel
+                </h5></div>
+                <div class="modal-body">Are you sure you want to cancel this request?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-danger">Cancel Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

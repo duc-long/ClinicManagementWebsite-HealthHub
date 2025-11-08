@@ -3,6 +3,7 @@ package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.PrescriptionDetailDTO;
 
+import com.group4.clinicmanagement.dto.doctor.PrescriptionDTO;
 import com.group4.clinicmanagement.entity.Prescription;
 import com.group4.clinicmanagement.entity.PrescriptionDetail;
 import com.group4.clinicmanagement.enums.PrescriptionStatus;
@@ -24,6 +25,21 @@ public class PrescriptionService {
     @Transactional
     public List<PrescriptionDetailDTO> getPrescriptionDetailsByRecordId(Integer recordId) {
         return prescriptionRepository.findByPatientIdAndRecordId(recordId);
+    }
+
+    public PrescriptionDTO getPrescriptionDTOByRecordId(Integer recordId) {
+        Prescription prescription = prescriptionRepository.findPrescriptionByRecordId(recordId).orElse(null);
+        if (prescription == null) {
+            return null;
+        }
+
+        PrescriptionDTO prescriptionDTO = new PrescriptionDTO();
+        prescriptionDTO.setPrescriptionId(prescription.getPrescriptionId());
+        prescriptionDTO.setDoctorId(prescription.getDoctor() != null ? prescription.getDoctor().getDoctorId() : 0);
+        prescriptionDTO.setDoctorName(prescription.getDoctor() != null ? prescription.getDoctor().getUser().getFullName() : null);
+        prescriptionDTO.setStatus(prescription.getStatus());
+
+        return prescriptionDTO;
     }
 
     public Prescription findPrescriptionById(int prescriptionId) {

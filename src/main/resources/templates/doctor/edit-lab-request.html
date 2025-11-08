@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Lab Request</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+    <style>
+        :root {
+            --hm-blue: #005691;
+            --hm-green: #00a67e;
+            --hm-light: #eef6fb;
+        }
+
+        body {
+            background: #f4f8fb;
+            font-family: "Inter", sans-serif;
+        }
+
+        .hero-header {
+            background: linear-gradient(135deg, var(--hm-blue), var(--hm-green));
+            border-radius: 14px;
+            padding: 20px 26px;
+            color: white;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+            margin-bottom: 24px;
+        }
+
+        .card {
+            border-radius: 14px;
+            border: 1px solid #d8e2ec;
+        }
+
+        .card-header {
+            background: var(--hm-light);
+            border-radius: 14px 14px 0 0;
+            color: var(--hm-blue);
+            font-weight: 600;
+        }
+
+        .btn-hm-main {
+            background: var(--hm-blue);
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        .btn-hm-main:hover {
+            background: #003f6f;
+        }
+
+        .btn-hm-secondary {
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-4" style="max-width: 720px;">
+
+    <!-- Header -->
+    <div class="hero-header d-flex align-items-center justify-content-between">
+        <h4 class="m-0"><i class="fa-solid fa-pen-to-square me-2"></i> Edit Lab Request</h4>
+        <a th:href="@{/doctor/labs/view/{id}(id = ${lab.labRequestId})}" class="btn btn-light btn-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back
+        </a>
+    </div>
+
+    <!-- Request Status -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><i class="fa-solid fa-file-medical me-2"></i> Request Information</div>
+        <div class="card-body text-center">
+
+            <span class="badge px-4 py-2 text-uppercase"
+                  th:classappend="${lab.status.name() == 'REQUESTED'} ? ' bg-secondary' :
+                                   (${lab.status.name() == 'PAID'} ? ' bg-info text-dark' :
+                                   (${lab.status.name() == 'RUNNING'} ? ' bg-primary' :
+                                   (${lab.status.name() == 'COMPLETED'} ? ' bg-success' :
+                                   ' bg-danger'))) "
+                  th:text="${lab.status.name()}"></span>
+
+        </div>
+    </div>
+
+    <!-- Form Edit -->
+    <form th:action="@{/doctor/labs/edit}" method="post" class="card p-4 shadow-sm" th:object="${lab}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div class="mb-3">
+            <label class="form-label text-muted small">Lab Request ID</label>
+            <input class="form-control" th:field="*{labRequestId}" disabled/>
+            <input type="hidden" th:field="*{labRequestId}"/>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-muted small">Test Type</label>
+            <select class="form-select" name="testId">
+                <option th:each="t : ${tests}"
+                        th:value="${t.testId}"
+                        th:text="${t.name}"
+                        th:selected="${lab.labTestCatalogId != null and lab.labTestCatalogId == t.testId}">
+                </option>
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+            <a th:href="@{/doctor/labs/view/{id}(id=${lab.labRequestId})}"
+               class="btn btn-outline-secondary btn-hm-secondary">
+                Cancel
+            </a>
+            <button type="submit" class="btn btn-hm-main">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Save Changes
+            </button>
+        </div>
+    </form>
+
+</div>
+
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -88,8 +88,8 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .clearAuthentication(true)
-                        .permitAll())
-                .csrf(csrf -> csrf.disable());
+                        .permitAll());
+//                .csrf(csrf -> csrf.disable());
         return http.build();
     }
 

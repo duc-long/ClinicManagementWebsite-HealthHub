@@ -70,8 +70,61 @@ public class LabRequestService {
         return dtoList;
     }
 
-//    public LabRequestDTO findLabRequestByRecordId(int recordId) {
-//        return labRequestRepository.fin
-//    }
+    // method to save lab request
+    public LabRequest saveLabRequest(LabRequest labRequest) {
+        return labRequestRepository.save(labRequest);
+    }
+
+    // method to check if exist lab request
+    public LabRequest isExistLabRequest(int labRequestId) {
+        return labRequestRepository.findByRecordId(labRequestId).orElse(null);
+    }
+
+    public com.group4.clinicmanagement.dto.doctor.LabRequestDTO findLabRequestDTOById(int labId) {
+        LabRequest labRequest = labRequestRepository.findById(labId).orElse(null);
+
+        if (labRequest == null) {
+            return null;
+        }
+
+        com.group4.clinicmanagement.dto.doctor.LabRequestDTO labRequestDTO =  new com.group4.clinicmanagement.dto.doctor.LabRequestDTO();
+        labRequestDTO.setLabRequestId(labRequest.getLabRequestId());
+        labRequestDTO.setMedicalRecordId(labRequest.getMedicalRecord().getRecordId());
+        labRequestDTO.setLabTestCatalogId(labRequest.getTest().getTestId());
+        labRequestDTO.setStatus(labRequest.getStatus());
+        labRequestDTO.setDoctorId(labRequest.getDoctor().getDoctorId());
+        labRequestDTO.setRequestedAt(labRequest.getRequestedAt());
+
+        return labRequestDTO;
+    }
+
+    // method to delete lab request by ID
+    public boolean deleteRequestById(Integer requestId) {
+        LabRequest labRequest = labRequestRepository.findById(requestId).orElse(null);
+        if (labRequest == null) {
+            return false;
+        }
+
+        labRequestRepository.delete(labRequest);
+        return true;
+    }
+
+    // method to get lab request DTO
+    public com.group4.clinicmanagement.dto.doctor.LabRequestDTO findLabRequestDTOById(Integer LabId) {
+        if (LabId == null) {return null;}
+        LabRequest labRequest = labRequestRepository.findById(LabId).orElse(null);
+
+        if (labRequest == null) {return null;}
+        com.group4.clinicmanagement.dto.doctor.LabRequestDTO dto = new com.group4.clinicmanagement.dto.doctor.LabRequestDTO();
+        dto.setLabRequestId(labRequest.getLabRequestId());
+        dto.setMedicalRecordId(labRequest.getMedicalRecord().getRecordId());
+        dto.setDoctorId(labRequest.getDoctor().getDoctorId());
+        dto.setLabTestCatalogId(labRequest.getTest().getTestId());
+        dto.setStatusValue(labRequest.getStatusValue());
+        dto.setStatus(labRequest.getStatus());
+        dto.setRequestedAt(labRequest.getRequestedAt());
+
+        return dto;
+    }
 
 }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment Detail | Clinic</title>
 
-    <!-- ✅ Bootstrap & Fonts -->
+    <!-- Bootstrap & Fonts -->
     <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -49,7 +49,7 @@
                 Appointment #<span th:text="${appointment.appointmentId}"></span>
             </h5>
 
-            <!-- 🩵 Appointment Status -->
+            <!-- Appointment Status -->
             <div class="text-center mb-4">
                 <span th:switch="${appointment.statusValue}">
                     <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).PENDING.value}"
@@ -68,7 +68,7 @@
                 </span>
             </div>
 
-            <!-- 🧾 Appointment Info -->
+            <!-- Appointment Info -->
             <ul class="list-group list-group-flush mb-3">
                 <li class="list-group-item">
                     <strong>👨‍⚕️ Doctor:</strong>
@@ -100,7 +100,7 @@
                 </li>
             </ul>
 
-            <!-- 🎯 Action Buttons -->
+            <!-- Action Buttons -->
             <div class="text-center mt-4">
                 <a th:href="@{/patient/appointment/manage}" class="btn btn-outline-primary me-2">
                     <i class="bi bi-arrow-left-circle"></i> Back
@@ -117,7 +117,7 @@
     </div>
 </div>
 
-<!-- ✅ Bootstrap JS -->
+<!-- Bootstrap JS -->
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

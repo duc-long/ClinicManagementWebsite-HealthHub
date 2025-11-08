@@ -1,9 +1,9 @@
 package com.group4.clinicmanagement.service;
 
+import com.group4.clinicmanagement.dto.doctor.PrescriptionDetailDTO;
 import com.group4.clinicmanagement.entity.DrugCatalog;
 import com.group4.clinicmanagement.entity.Prescription;
 import com.group4.clinicmanagement.entity.PrescriptionDetail;
-import com.group4.clinicmanagement.enums.PrescriptionStatus;
 import com.group4.clinicmanagement.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,11 +88,9 @@ public class PrescriptionDetailService {
                              List<Integer> durationDays,
                              List<String> instructions) {
 
-        // Lấy danh sách cũ trong DB
         List<PrescriptionDetail> existingDetails =
                 prescriptionDetailRepository.findByPrescription_PrescriptionId(prescriptionId);
 
-        // Danh sách ID giữ lại (những dòng còn tồn tại sau khi cập nhật)
         List<Integer> keepIds = new java.util.ArrayList<>();
 
         int size = drugIds.size();
@@ -101,12 +99,12 @@ public class PrescriptionDetailService {
             PrescriptionDetail detail;
 
             if (detailId == null || detailId == 0) {
-                // Thêm mới
+                // craete new
                 detail = createDetail(prescriptionId, drugIds.get(i), quantities.get(i),
                         dosages.get(i), frequencies.get(i),
                         durationDays.get(i), instructions.get(i));
             } else {
-                // Cập nhật
+                // update
                 detail = updateDetail(detailId, drugIds.get(i), quantities.get(i),
                         dosages.get(i), frequencies.get(i),
                         durationDays.get(i), instructions.get(i));
@@ -123,4 +121,30 @@ public class PrescriptionDetailService {
         }
     }
 
+    public List<PrescriptionDetailDTO> getDetailsDTOByPrescriptionID(int prescriptionId) {
+        // check null list
+        Prescription prescription = prescriptionRepository.findById(prescriptionId).orElse(null);
+        if (prescription == null) {
+            return null;
+        }
+
+        // get list prescription detail
+        List<PrescriptionDetail> details = prescription.getDetails();
+
+        return details.stream()
+                .map(detail -> {
+                    PrescriptionDetailDTO dto = new PrescriptionDetailDTO();
+                    dto.setPrescriptionDetailId(detail.getDetailId());
+                    dto.setPrescriptionId(prescription.getPrescriptionId());
+                    dto.setDrugId(detail.getDrug() != null ? detail.getDrug().getDrugId() : 0);
+                    dto.setDrugName(detail.getDrug() != null ? detail.getDrug().getName() : null);
+                    dto.setDosage(detail.getDosage());
+                    dto.setQuantity(detail.getQuantity() != null ? detail.getQuantity() : 0);
+                    dto.setDuration(detail.getDuration_days() != null ? detail.getDuration_days() : 0);
+                    dto.setInstruction(detail.getInstruction());
+                    dto.setFrequency(detail.getFrequency());
+                    return dto;
+                })
+                .toList();
+    }
 }

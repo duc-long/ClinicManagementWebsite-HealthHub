@@ -55,7 +55,40 @@ public class VitalSignsService {
         return vitalSignsRepository.save(existing);
     }
 
-    public VitalSigns findVitalSignsById(int recordId) {
-        return vitalSignsRepository.findByRecordId(recordId).orElse(null);
+    // method to get vital signs dto
+    public VitalSignsDTO findVitalSignsDTOById(int recordId) {
+        VitalSigns vitalSigns = vitalSignsRepository.findByRecordId(recordId).orElse(null);
+
+        VitalSignsDTO vitalSignsDTO = new VitalSignsDTO();
+        if (vitalSigns != null) {
+            vitalSignsDTO.setVitalId(vitalSigns.getVitalId());
+            vitalSignsDTO.setRecordId(recordId);
+            vitalSignsDTO.setHeightCm(vitalSigns.getHeightCm());
+            vitalSignsDTO.setWeightKg(vitalSigns.getWeightKg());
+            vitalSignsDTO.setBloodPressure(vitalSigns.getBloodPressure());
+            vitalSignsDTO.setHeartRate(vitalSigns.getHeartRate());
+            vitalSignsDTO.setTemperature(vitalSigns.getTemperature());
+            vitalSignsDTO.setRecordedAt(vitalSigns.getRecordedAt());
+
+            // split systolic/diastolic
+            String bp = vitalSigns.getBloodPressure();
+            if (bp != null && bp.contains("/")) {
+                try {
+                    String[] parts = bp.split("/");
+                    vitalSignsDTO.setSystolic(Integer.parseInt(parts[0].trim()));
+                    vitalSignsDTO.setDiastolic(Integer.parseInt(parts[1].trim()));
+                } catch (Exception ignored) {
+                }
+            }
+        } else {
+            return null;
+        }
+
+        return vitalSignsDTO;
+    }
+
+    // method to get vital sign
+    public VitalSigns findVitalSignById(int vitalId) {
+        return vitalSignsRepository.findByRecordId(vitalId).orElse(null);
     }
 }

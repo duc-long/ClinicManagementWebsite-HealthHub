@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Lab Request</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+    <style>
+        :root {
+            --hm-blue: #005691;
+            --hm-green: #16a34a;
+            --hm-gray: #6b7280;
+            --hm-light: #f1f7fb;
+        }
+
+        body {
+            background: #f8fafc;
+            font-family: "Inter", sans-serif;
+        }
+
+        .page-title {
+            color: var(--hm-blue);
+            font-weight: 600;
+        }
+
+        .info-card {
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        .info-card-header {
+            background: var(--hm-light);
+            border-bottom: 1px solid #e2e8f0;
+            border-radius: 14px 14px 0 0;
+            font-weight: 600;
+            color: var(--hm-blue);
+        }
+
+        .btn-hm {
+            background: var(--hm-blue);
+            color: white;
+            border-radius: 10px;
+            transition: .25s;
+        }
+
+        .btn-hm:hover {
+            background: #003f6f;
+            transform: translateY(-1px);
+        }
+
+        #descBox {
+            border-left: 4px solid var(--hm-blue);
+            animation: fadeIn .25s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+    </style>
+</head>
+
+<body>
+<div class="container mt-5" style="max-width: 700px;">
+
+    <!-- Title -->
+    <h3 class="page-title mb-4">
+        <i class="fa-solid fa-flask-vial me-2"></i> Create Lab Request
+    </h3>
+
+    <!-- 🟢 Medical Record Info -->
+    <div class="info-card mb-4 shadow-sm">
+        <div class="info-card-header p-3">
+            <i class="fa-solid fa-notes-medical me-2"></i> Medical Record Details
+        </div>
+        <div class="p-3">
+            <p class="mb-1"><strong>Patient:</strong> <span th:text="${record.patientName}"></span></p>
+            <p class="mb-1"><strong>Diagnosis:</strong> <span th:text="${record.diagnosis}"></span></p>
+            <p class="mb-0"><strong>Notes:</strong> <span th:text="${record.notes}"></span></p>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form th:action="@{/doctor/labs/create}" method="post">
+        <input type="hidden" name="recordId" th:value="${recordId}">
+        <input type="hidden" name="doctorId" th:value="${doctorId}">
+        <div class="info-card mb-4 shadow-sm">
+            <div class="info-card-header p-3">
+                <i class="fa-solid fa-vials me-2"></i> Select Lab Test
+            </div>
+            <div class="p-3">
+                <label class="form-label fw-semibold">Lab Test</label>
+                <select class="form-select form-select-lg" name="testId" id="testSelect" required>
+                    <option value="">-- Choose a Test --</option>
+                    <option th:each="t : ${labCatalogs}"
+                            th:value="${t.testId}"
+                            th:text="${t.name}"
+                            th:data-description="${t.description}">
+                    </option>
+                </select>
+
+                <!-- Description -->
+                <div id="descBox" class="mt-3 p-3 bg-light rounded" style="display:none;">
+                    <strong>Description:</strong>
+                    <p class="text-secondary small mb-0" id="testDesc"></p>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-hm w-100 py-3 fw-semibold shadow-sm">
+            <i class="fa-solid fa-paper-plane me-2"></i> Submit Lab Request
+        </button>
+    </form>
+</div>
+
+<script>
+    const select = document.getElementById("testSelect");
+    const descBox = document.getElementById("descBox");
+    const testDesc = document.getElementById("testDesc");
+
+    select.addEventListener("change", () => {
+        const opt = select.selectedOptions[0];
+        if (!opt.value) {
+            descBox.style.display = "none";
+            return;
+        }
+        testDesc.textContent = opt.dataset.description || "No description.";
+        descBox.style.display = "block";
+    });
+</script>
+
+</body>
+</html>
