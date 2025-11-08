@@ -25,12 +25,25 @@
         }
 
         .card { border-radius: 14px; border: 1px solid #d8e2ec; }
-        .card-header { background: var(--hm-light); border-radius: 14px 14px 0 0; color: var(--hm-blue); font-weight: 600; }
+        .card-header { background: var(--hm-light); color: var(--hm-blue); font-weight: 600; }
 
         .image-thumb {
             width: 100%;
-            height: 180px;
+            height: 170px;
             object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        .image-thumb:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+        }
+
+        /* Modal Image Viewer */
+        #imageModalImg {
+            width: 100%;
             border-radius: 10px;
         }
     </style>
@@ -38,46 +51,48 @@
 
 <body>
 
-<div class="container mt-4" style="max-width: 900px;">
+<div class="container mt-4" style="max-width: 950px;">
 
     <!-- Header -->
     <div class="hero-header d-flex align-items-center justify-content-between">
         <h4 class="m-0"><i class="fa-solid fa-flask-vial me-2"></i> Lab Result Overview</h4>
-        <a th:href="@{/doctor/labs/view/{id}(id=${lab.labRequestId})}" class="btn btn-light btn-sm">
-            <i class="fa-solid fa-arrow-left me-1"></i> Back
-        </a>
+        <div class="d-flex gap-2">
+            <a th:href="@{/doctor/records/detail/{id}(id=${lab.medicalRecordId})}" class="btn btn-light btn-sm">
+                <i class="fa-solid fa-notes-medical me-1"></i> Record Detail
+            </a>
+            <a th:href="@{/doctor/labs/view/{id}(id=${lab.labRequestId})}" class="btn btn-light btn-sm">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back
+            </a>
+        </div>
     </div>
 
-    <!-- Result Information -->
+    <!-- Result Info -->
     <div class="card shadow-sm mb-4">
         <div class="card-header"><i class="fa-solid fa-file-waveform me-2"></i> Lab Result</div>
         <div class="card-body">
 
-            <div class="mb-3">
-                <label class="text-muted small">Test Name</label>
-                <div class="form-control" th:text="${lab.test.name}"></div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="text-muted small">Test Name</label>
+                    <div class="form-control" th:text="${test.name}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="text-muted small">Performed By</label>
+                    <div class="form-control" th:text="${result.technicianName}"></div>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label class="text-muted small">Result Value</label>
-                <div class="form-control" th:text="${result.resultValue}"></div>
-            </div>
-
-            <div class="mb-3">
-                <label class="text-muted small">Reference Range</label>
-                <div class="form-control" th:text="${result.referenceRange}"></div>
-            </div>
-
-            <div class="mb-3">
-                <label class="text-muted small">Conclusion / Notes</label>
-                <textarea class="form-control" rows="4" disabled th:text="${result.doctorNote}"></textarea>
+            <div class="mt-3">
+                <label class="text-muted small">Result Details</label>
+                <textarea class="form-control" rows="6" disabled th:text="${result.resultText}"></textarea>
             </div>
 
         </div>
     </div>
 
-    <!-- Lab Images -->
-    <div class="card shadow-sm mb-4">
+    <!-- Images -->
+    <div class="card shadow-sm mb-5">
         <div class="card-header"><i class="fa-solid fa-images me-2"></i> Attached Lab Images</div>
         <div class="card-body">
 
@@ -86,10 +101,13 @@
             </div>
 
             <div class="row g-3" th:if="${!#lists.isEmpty(images)}">
-                <div class="col-md-4" th:each="img : ${images}">
-                    <a th:href="@{|/uploads/lab/${img.fileName}|}" target="_blank">
-                        <img class="image-thumb shadow-sm" th:src="@{|/uploads/lab/${img.fileName}|}" th:alt="${img.fileName}">
-                    </a>
+                <div class="col-6 col-md-4 col-lg-3" th:each="img : ${images}">
+                    <img class="image-thumb shadow-sm"
+                         th:src="@{|/uploads/lab/${img.filePath}|}"
+                         th:alt="${img.description}"
+                         th:data-src="@{|/uploads/lab/${img.filePath}|}"
+                         onclick="showImage(this)">
+                    <p class="text-muted small text-center mt-1" th:text="${img.description}"></p>
                 </div>
             </div>
 
@@ -98,6 +116,21 @@
 
 </div>
 
+<!-- Modal Viewer -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0">
+            <img id="imageModalImg" src="">
+        </div>
+    </div>
+</div>
+
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script>
+    function showImage(el) {
+        document.getElementById("imageModalImg").src = el.getAttribute("data-src");
+        new bootstrap.Modal(document.getElementById('imageModal')).show();
+    }
+</script>
 </body>
 </html>

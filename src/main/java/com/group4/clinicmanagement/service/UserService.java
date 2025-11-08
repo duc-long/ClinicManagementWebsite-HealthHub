@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.service;
 
+import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,6 +28,22 @@ public class UserService {
         User user = userRepository.findUserByUsername(username)
                 .orElse(null);
         return user;
+    }
+
+    // method to get user DTO by username
+    public UserDTO findUserDTOByUsername(String username) {
+        User user = userRepository.findUserByUsername(username)
+                .orElse(null);
+
+        if (user == null) {
+            return null;
+        }
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(user.getUsername());
+        user.setGender(user.getGender());
+        user.setPhone(user.getPhone());
+
+        return userDTO;
     }
 
     @Transactional

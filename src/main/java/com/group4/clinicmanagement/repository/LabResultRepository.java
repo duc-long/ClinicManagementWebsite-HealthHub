@@ -34,5 +34,7 @@ public interface LabResultRepository extends JpaRepository<LabResult,Integer> {
             @Param("date") LocalDate date
     );
 
-
+    // method to find lab result by lab request ID
+    @Query(value = "SELECT * FROM LabResult WHERE lab_request_id = :requestId", nativeQuery = true)
+    Optional<LabResult> findByLabRequestId(@Param("requestId") Integer id);
 }

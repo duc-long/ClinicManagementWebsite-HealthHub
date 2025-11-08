@@ -1,14 +1,17 @@
 package com.group4.clinicmanagement.controller.doctor;
 
 import com.group4.clinicmanagement.dto.*;
+import com.group4.clinicmanagement.dto.admin.PatientDTO;
 import com.group4.clinicmanagement.dto.doctor.*;
 import com.group4.clinicmanagement.dto.doctor.LabRequestDTO;
+import com.group4.clinicmanagement.dto.doctor.LabResultDTO;
 import com.group4.clinicmanagement.dto.doctor.PrescriptionDetailDTO;
 import com.group4.clinicmanagement.entity.*;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
 import com.group4.clinicmanagement.service.*;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,6 +37,7 @@ public class DoctorController {
     private final PrescriptionDetailService prescriptionDetailService;
     private final VitalSignsService vitalSignsService;
     private final LabRequestService labRequestService;
+    private final LabResultService labResultService;
     private final LabTestCatalogService labTestCatalogService;
     private final PatientService patientService;
 
@@ -41,7 +46,8 @@ public class DoctorController {
                             DrugCatalogService drugCatalogService, MedicalRecordService medicalRecordService,
                             PrescriptionService prescriptionService, VitalSignsService vitalSignsService,
                             PrescriptionDetailService prescriptionDetailService, PatientService patientService,
-                            LabRequestService labRequestService, LabTestCatalogService labTestCatalogService) {
+                            LabRequestService labRequestService, LabTestCatalogService labTestCatalogService,
+                            LabResultService labResultService) {
         this.doctorService = doctorService;
         this.userService = userService;
         this.departmentRepository = departmentRepository;
@@ -55,6 +61,7 @@ public class DoctorController {
         this.patientService = patientService;
         this.prescriptionDetailService = prescriptionDetailService;
         this.labTestCatalogService = labTestCatalogService;
+        this.labResultService = labResultService;
     }
 
     // method to load home view doctor
@@ -62,9 +69,7 @@ public class DoctorController {
     public String home(Model model,
                        Principal principal,
                        @RequestParam(value = "patientName", required = false) String patientName,
-                       @RequestParam(value = "status", required = false) AppointmentStatus status,
-                       @RequestParam(value = "page", defaultValue = "0") int page,
-                       @RequestParam(value = "size", defaultValue = "10") int size) {
+                       @RequestParam(value = "status", required = false) AppointmentStatus status) {
         User user = userService.findUserByUsername(principal.getName());
 
         // check user null
@@ -73,10 +78,8 @@ public class DoctorController {
         }
 
         model.addAttribute("todayCount", appointmentService.countTodayAppointments(user.getUserId()));
-        Page<AppointmentDTO> appointments = appointmentService.getTodayAppointmentsPaged(user.getUserId(), patientName, page, size);
-        model.addAttribute("appointments", appointments.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", appointments.getTotalPages());
+        List<AppointmentDTO> appointments = appointmentService.getTodayAppointments(user.getUserId(), patientName);
+        model.addAttribute("appointments", appointments);
         model.addAttribute("patientName", patientName);
         model.addAttribute("status", status);
         model.addAttribute("section", "home");
@@ -711,7 +714,7 @@ public class DoctorController {
 
     // method to edit lab request information
     @GetMapping("/labs/edit/{id}")
-    public String editLabRequest(@PathVariable("id") Integer labId , Model model, RedirectAttributes redirectAttributes) {
+    public String editLabRequest(@PathVariable("id") Integer labId, Model model, RedirectAttributes redirectAttributes) {
 
         LabRequestDTO lab = labRequestService.findLabRequestDTOById(labId);
         if (lab == null) {
@@ -735,7 +738,7 @@ public class DoctorController {
 
     // method to do edit lab request
     @PostMapping("/labs/edit")
-    public String updateLabRequest(@ModelAttribute(name = "lab") LabRequestDTO dto,                                   @RequestParam("testId") Integer testId,
+    public String updateLabRequest(@ModelAttribute(name = "lab") LabRequestDTO dto, @RequestParam("testId") Integer testId,
                                    RedirectAttributes redirectAttributes) {
         LabRequest labRequest = labRequestService.findLabRequestById(dto.getLabRequestId());
         if (labRequest == null) {
@@ -766,10 +769,130 @@ public class DoctorController {
         return "redirect:/doctor/records/detail/" + labRequest.getMedicalRecord().getRecordId();
     }
 
+    // method to get lab result view
     @GetMapping("/labs/view/result/{id}")
-    public String viewLabResult(@PathVariable(name="id") Integer labId, RedirectAttributes redirectAttributes) {
+    public String viewLabResult(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
+        // check null for lab ID
+        if (id == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Lab Request does not exist!");
+            return "redirect:/doctor/home";
+        }
 
+        // get lab request DTO
+        LabRequestDTO labRequest = labRequestService.findLabRequestDTOById(id);
+        if (labRequest == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Lab Request does not exist!");
+            return "redirect:/doctor/home";
+        }
+
+        // get lab result DTO
+        LabResultDTO result = labResultService.getResultByLabRequestId(labRequest.getLabRequestId());
+        if (result == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Lab Request does not exist!");
+            return "redirect:/doctor/home";
+        }
+
+        // get lab test
+        LabTestCatalogDTO test = labTestCatalogService.getLabTestCatalogDTOByTestId(labRequest.getLabTestCatalogId());
+        if (test == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Lab Test does not exist!");
+            return "redirect:/doctor/home";
+        }
+
+        // add to model
+        model.addAttribute("test", test);
+        model.addAttribute("lab", labRequest);
+        model.addAttribute("result", result);
+        model.addAttribute("images", result.getImages());
+
+        return "doctor/lab-result-view";
     }
+
+    // method to show create re-examination for patient
+    @GetMapping("/re-examination/create")
+    public String createExamination(Model model, Principal principal) {
+        User user = userService.findUserByUsername(principal.getName());
+        List<AppointmentDTO> appointmentDTOS = appointmentService.getTodayAppointmentsByDoctorId(user.getUserId());
+
+
+        model.addAttribute("appointments", appointmentDTOS);
+        model.addAttribute("appointment", new AppointmentDTO());
+        return "doctor/make-re-examination-appointment";
+    }
+
+    // method to do create appointment re-examination for patient
+    @PostMapping("/make-appointment")
+    public String doMakeAppointment(@ModelAttribute("appointment") Appointment appointment,
+                                    @RequestParam(value = "patientId", required = false) Integer patientId,
+                                    RedirectAttributes redirectAttributes,
+                                    Principal principal) {
+
+        if (patientId == null) {
+            redirectAttributes.addFlashAttribute("message", "Please select an appointment / patient first.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/doctor/re-examination/create";
+        }
+
+        Patient patient = patientService.findPatientById(patientId);
+        if (patient == null) {
+            redirectAttributes.addFlashAttribute("message", "Selected patient not found.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/doctor/re-examination/create";
+        }
+
+        LocalDate apptDate = appointment.getAppointmentDate();
+        if (apptDate == null) {
+            redirectAttributes.addFlashAttribute("message", "Please choose an appointment date.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/doctor/re-examination/create";
+        }
+
+        if (!appointmentService.canBookAppointment(patient.getPatientId())) {
+            redirectAttributes.addFlashAttribute("message", "❌ You already limit book an appointment. Please choose another day.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/doctor/re-examination/create";
+        }
+
+        if (!appointmentService.isBookAppointmentValidDate(apptDate)) {
+            redirectAttributes.addFlashAttribute("message", "Invalid booking date. You must book at least 2 days in advance.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/doctor/re-examination/create";
+        }
+
+        appointment.setPatient(patient);
+        appointment.setStatus(AppointmentStatus.EXAMINED);
+
+        if (principal != null) {
+            User user = userService.findUserByUsername(principal.getName());
+            if (user != null && user.getDoctor() != null) {
+                appointment.setDoctor(user.getDoctor());
+            }
+        }
+
+        try {
+            Appointment saved = appointmentService.saveAppointment(appointment);
+            if (saved != null) {
+                redirectAttributes.addFlashAttribute("message", "Create Appointment Successfully");
+                redirectAttributes.addFlashAttribute("messageType", "success");
+                return "redirect:/doctor/home";
+            } else {
+                redirectAttributes.addFlashAttribute("message", "Failed to create Appointment.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/doctor/re-examination/create";
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            redirectAttributes.addFlashAttribute("message", "An error occurred while creating the appointment.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/doctor/re-examination/create";
+        }
+    }
+
+
 
     // method to submit finish appointment for patient
     @PostMapping("/submit")

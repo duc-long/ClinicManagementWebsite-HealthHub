@@ -46,16 +46,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
           AND a.appointmentDate = CURRENT_DATE
           AND a.statusValue = 5
         ORDER BY a.appointmentDate DESC
-    """,
-            countQuery = """
-        SELECT COUNT(a) FROM Appointment a
-        JOIN a.patient p
-        JOIN p.user u
-        WHERE a.doctor.doctorId = :doctorId
-          AND (:patientName IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :patientName, '%')))
-          AND a.appointmentDate = CURRENT_DATE
     """)
-    Page<Appointment> findTodayAppointmentsPaged(@Param("doctorId") Integer doctorId,
-                                                 @Param("patientName") String patientName,
-                                                 Pageable pageable);
+    List<Appointment> findTodayAppointments(@Param("doctorId") Integer doctorId,
+                                                 @Param("patientName") String patientName);
+
+    @Query("SELECT a FROM Appointment a WHERE a.doctor.doctorId = :doctorId AND a.statusValue = 5 " +
+            "AND a.appointmentDate = CURRENT_DATE ORDER BY a.appointmentDate DESC")
+    List<Appointment> findTodayAppointmentsByDoctorId(@Param("doctorId") Integer doctorId);
 }
