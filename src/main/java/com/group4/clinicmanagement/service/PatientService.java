@@ -4,10 +4,12 @@ import com.group4.clinicmanagement.dto.PatientUserDTO;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.repository.PatientRepository;
 import com.group4.clinicmanagement.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,6 +67,10 @@ public class PatientService {
         savePatientUser(username, dto);
 
         if (avatar != null && !avatar.isEmpty()) {
+            long maxFileSize = 20 * 1024 * 1024;
+            if (avatar.getSize() > maxFileSize) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File size exceeds the maximum allowed size of 20MB");
+            }
             try {
                 String uploadDir = System.getProperty("user.dir") + "/uploads/avatars";
                 Files.createDirectories(Paths.get(uploadDir));

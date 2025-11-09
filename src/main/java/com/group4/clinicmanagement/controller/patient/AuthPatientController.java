@@ -90,38 +90,6 @@ public class AuthPatientController {
         }
     }
 
-    // ===================== REGISTRATION FLOW =====================
-    @GetMapping("/register")
-    public String showRegisterForm(Model model) {
-        model.addAttribute("patient", new PatientRegisterDTO());
-        return "auth/patient/register-patient";
-    }
-
-    /**
-     * 🟢 Bước 1: Đăng ký → Gửi OTP
-     */
-    @PostMapping("/register")
-    public String registerPatient(
-            @Valid @ModelAttribute("patient") PatientRegisterDTO dto,
-            BindingResult result,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-
-        if (result.hasErrors()) {
-            return "auth/patient/register-patient";
-        }
-
-        try {
-            registrationService.createPendingAccount(dto);
-            model.addAttribute("success", "OTP has been sent to your email for verification.");
-            model.addAttribute("email", dto.getEmail());
-            return "auth/patient/verify-otp";
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/patient/login";
-        }
-    }
-
     /**
      * 🟢 Bước 3: Tạo mật khẩu & kích hoạt tài khoản
      */
@@ -164,5 +132,37 @@ public class AuthPatientController {
             model.addAttribute("error", e.getMessage());
         }
         return "auth/patient/verify-otp";
+    }
+
+    // ===================== REGISTRATION FLOW =====================
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("patient", new PatientRegisterDTO());
+        return "auth/patient/register-patient";
+    }
+
+    /**
+     * 🟢 Bước 1: Đăng ký → Gửi OTP
+     */
+    @PostMapping("/register")
+    public String registerPatient(
+            @Valid @ModelAttribute("patient") PatientRegisterDTO dto,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        if (result.hasErrors()) {
+            return "auth/patient/register-patient";
+        }
+
+        try {
+            registrationService.createPendingAccount(dto);
+            model.addAttribute("success", "OTP has been sent to your email for verification.");
+            model.addAttribute("email", dto.getEmail());
+            return "auth/patient/verify-otp";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/patient/login";
+        }
     }
 }

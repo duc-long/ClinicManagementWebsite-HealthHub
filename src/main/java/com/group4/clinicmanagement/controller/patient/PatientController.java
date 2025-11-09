@@ -137,6 +137,9 @@ public class PatientController {
         String username = getCurrentUsername();
         Integer patientId = (Integer) session.getAttribute("patientId");
         Optional<MedicalRecordDetailDTO> medicalRecordDetailDTO = medicalRecordService.getMedicalRecordDetailsByPatientId(patientId, recordId);
+        if(!medicalRecordDetailDTO.isPresent()){
+            return "redirect:/patient/list-medical-records";
+        }
         List<PrescriptionDetailDTO> prescriptions = prescriptionService.getPrescriptionDetailsByRecordId(recordId);
         List<LabDTO> labs = labService.findLabResultByRecordId(recordId);
         model.addAttribute("prescriptions", prescriptions);

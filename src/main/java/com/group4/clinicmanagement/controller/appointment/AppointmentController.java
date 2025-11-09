@@ -121,25 +121,24 @@ public class AppointmentController {
     @Transactional
     @PostMapping("/make-appointment")
     public String doMakeAppointment(@ModelAttribute("appointment") Appointment appointment,
-                                    HttpSession session, Model model,
+                                    Model model,
                                     RedirectAttributes redirectAttributes) {
-//        User currentUser = (User) session.getAttribute("user");
         Patient patient = new Patient();
         patient.setPatientId(11);
 
         // check span in the same day
         if (!appointmentService.canBookAppointment(patient.getPatientId())) {
             redirectAttributes.addFlashAttribute("message", "❌ You already limit book an appointment. \nPlease choose another day.");
-            redirectAttributes.addFlashAttribute("error");
+            redirectAttributes.addFlashAttribute("messageType","error");
             System.out.println("You already limit book an appointment ");
-            return "redirect:/patient/appointment/manage";
+            return "redirect:/patient/appointment/make-appointment";
         }
 
         // check valid booking appointment date
         if (!appointmentService.isBookAppointmentVailDate(appointment.getAppointmentDate())) {
-            model.addAttribute("message", "Invalid booking date, you cannot book a date before the current date");
-            model.addAttribute("messageType", "error");
-            return "patient/make-appointment";
+            redirectAttributes.addFlashAttribute("message", "Invalid booking date, you cannot book a date before the current date");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/make-appointment";
         }
 
         appointment.setPatient(patient);

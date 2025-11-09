@@ -25,7 +25,7 @@ public class PatientUserDTO {
 
     @NotBlank(message = "Email must not be blank")
     @Email(message = "Invalid email address")
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+    @Pattern(regexp = "^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
             message = "Please enter a valid email address (e.g., user@example.com).")
     private String email;
 
@@ -38,6 +38,7 @@ public class PatientUserDTO {
 
     @NotBlank(message = "Address must not be blank")
     @Size(max = 500, message = "Address must not exceed 500 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9\\s,.'-]+$", message = "Address must contain only letters, numbers, spaces, commas, periods, and hyphens")
     private String address;
 
     private String avatarFilename;
@@ -46,12 +47,12 @@ public class PatientUserDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Date of birth cannot be null")
     private LocalDate dateOfBirth;
-
-    @AssertTrue(message = "Age must be between 10 and 120 years")
+    // truoc nam 1990
+    @AssertTrue(message = "Age must be between 10 and 100 years")
     public boolean isValidAge() {
         if (dateOfBirth == null) return true;
         int age = Period.between(dateOfBirth, LocalDate.now()).getYears();
-        return age >= 10 && age <= 120;
+        return age >= 10 && age <= 100;
     }
 
     public PatientUserDTO(Integer userId, Integer patientId, String username, String fullName,

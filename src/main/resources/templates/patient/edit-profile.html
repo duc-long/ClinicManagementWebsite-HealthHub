@@ -37,6 +37,7 @@
                         <span class="upload-text">Change</span>
                         <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(this)">
                     </label>
+                    <div id="error-message" style="color: red; display: none;"></div>
                 </div>
 
                 <div class="info">
@@ -131,15 +132,24 @@
 <script>
     function previewAvatar(input) {
         const file = input.files[0];
-        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+        const maxSizeInBytes = 20 * 1024 * 1024; // 20MB
 
         // Lấy nguồn ảnh hiện tại (để khôi phục nếu file lỗi)
         const currentAvatarSrc = document.getElementById('avatarPreview').src;
 
+        // Xóa thông báo lỗi trước đó
+        const errorMessage = document.getElementById('error-message');
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
+        }
+
         if (file) {
             // 1. Kiểm tra kích thước file
             if (file.size > maxSizeInBytes) {
-                alert("File is too large! The maximum size is 5MB.");
+                // Hiển thị thông báo lỗi dưới dạng một phần tử HTML
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.innerHTML = "File is too large! The maximum size is 20MB.";
+                errorDiv.style.display = 'block'; // Hiển thị lỗi
                 input.value = ""; // Xóa file đã chọn
                 document.getElementById('avatarPreview').src = currentAvatarSrc; // Khôi phục ảnh cũ
                 return;
@@ -147,7 +157,9 @@
 
             // 2. Kiểm tra loại file (đã có accept="image/*" nhưng JS chắc chắn hơn)
             if (!file.type.startsWith('image/')) {
-                alert("Only image files (JPG, PNG, GIF...) are accepted.");
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.innerHTML = "Only image files (JPG, PNG, GIF...) are accepted.";
+                errorDiv.style.display = 'block'; // Hiển thị lỗi
                 input.value = "";
                 document.getElementById('avatarPreview').src = currentAvatarSrc;
                 return;
