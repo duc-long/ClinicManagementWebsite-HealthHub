@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -36,6 +37,14 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
     @Query("UPDATE User u SET u.passwordHash = :newHash WHERE u.username = :username")
     void updatePasswordHashByUsername(@Param("username") String username, @Param("newHash") String newHash);
 
+    @Query("SELECT COUNT(p) FROM Patient p WHERE CAST(p.createdAt AS date) = CAST(:today AS date)")
+    long countPatientsToday(@Param("today") LocalDateTime today);
+
+    @Query("SELECT COUNT(p) FROM Patient p WHERE YEAR(p.createdAt) = :year AND MONTH(p.createdAt) = :month")
+    long countPatientsThisMonth(@Param("year") int year, @Param("month") int month);
+
+    @Query("SELECT COUNT(p) FROM Patient p WHERE YEAR(p.createdAt) = :year")
+    long countPatientsThisYear(@Param("year") int year);
 
 }
 

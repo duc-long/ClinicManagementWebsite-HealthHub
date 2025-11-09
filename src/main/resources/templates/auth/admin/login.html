@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <div th:replace="~{fragment/fragment.html :: css}"></div>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .login-wrapper {
+            min-height: calc(100vh - 70px); /* trừ chiều cao navbar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 40px;
+        }
+
+        .login-card {
+            width: 400px;
+            background: #fff;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px 35px;
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 30px;
+            font-weight: 700;
+            color: #009bab;
+            margin-bottom: 25px;
+        }
+
+        label {
+            font-weight: 500;
+            color: #007d88;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1.5px solid #cfd9de;
+            padding: 10px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .form-control:focus {
+            border-color: #009bab;
+            box-shadow: 0 0 0 0.15rem rgba(0, 155, 171, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #009bab;
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .btn-primary:hover {
+            background-color: #007d88;
+        }
+
+        .text-center a {
+            color: #009bab;
+            text-decoration: none;
+        }
+
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+
+        .alert-danger {
+            font-size: 14px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg py-3">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/home}">
+                <span style="
+                    font-size: 40px;
+                    font-weight: 800;
+                    color: #009bab;
+                    letter-spacing: 0.5px;
+                    font-family: 'Segoe UI', sans-serif;
+                ">Health<span style="color:#005f65;">Hub</span></span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+                aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+            <ul class="navbar-nav align-items-center">
+                <!-- Guest -->
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="btn btn-login ms-2" th:href="@{/patient/login}">Login</a>
+                </li>
+
+                <!-- Logged In -->
+                <div class="dropdown" sec:authorize="isAuthenticated()">
+                    <button class="user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Hi, <span th:text="${#authentication.principal.fullName}">User</span>
+                    </button>
+                    <ul class="dropdown-menu shadow-sm border-0 mt-2">
+                        <li><a class="dropdown-item text-danger" th:href="@{/admin/logout}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="d-flex align-items-center justify-content-center vh-100">
+    <div class="login-card">
+        <div class="login-title">Admin Login</div>
+
+        <div th:if="${param.error}" class="alert alert-danger text-center py-2">
+            <span th:text="${session.LOGIN_ERROR_MESSAGE != null ?
+                session.LOGIN_ERROR_MESSAGE :
+                'Invalid username or password'}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-warning text-center" role="alert">
+            <span th:text="${error}"></span>
+        </div>
+
+        <form action="/admin/login" method="post">
+            <!-- Username -->
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" id="username" name="username" class="form-control"
+                       placeholder="Enter username" required>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-control"
+                       placeholder="Enter password" required>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

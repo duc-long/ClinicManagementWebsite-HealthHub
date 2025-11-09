@@ -46,8 +46,10 @@
         <div class="topbar">
             <h4 class="mb-0">Appointment Details</h4>
         </div>
-
-        <div class="content">
+        <div th:if="${#lists.isEmpty(appointment)}">
+            <p>Id is empty or you haven't access</p>
+        </div>
+        <div class="content" th:if="${!#lists.isEmpty(appointment)}">
             <div class="card-soft">
                 <p><strong>Appointment ID:</strong> <span th:text="${appointment.appointmentId}"></span></p>
                 <p><strong>Patient:</strong> <span th:text="${appointment.patient.user.fullName}"></span></p>

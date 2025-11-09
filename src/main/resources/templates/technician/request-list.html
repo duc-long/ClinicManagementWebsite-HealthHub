@@ -3,171 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Technician Dashboard - HealHub</title>
+    <title>Request List - HealHub</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <style>
         body {
             background-color: #f6f7fb;
         }
 
-        .container-wide {
-            max-width: 1200px;
+        /* Sidebar */
+        .sidebar {
+            background: #fff;
+            border-radius: .75rem;
+            box-shadow: 0 2px 12px #0001;
+            padding: 1rem;
+            height: calc(100vh - 84px);
+            position: sticky;
+            top: 72px;
+            overflow: auto;
         }
 
-        select.form-select-sm {
-            font-size: 0.9rem;
+        .sidebar .nav-link {
+            color: #495057;
+            border-radius: .5rem;
+            padding: .5rem .75rem;
+        }
+        .sidebar .nav-link.active,
+        .sidebar .nav-link:hover {
+            background: #e9f2ff;
+            color: #0d6efd;
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar {
+                height: auto;
+                position: relative;
+                top: auto;
+            }
         }
     </style>
 </head>
+
 <body>
-<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
-    <div class="container-fluid">
-        <div class="d-flex align-items-center">
-            <button class="btn btn-outline-primary d-lg-none me-2" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#sidebarMobile" aria-controls="sidebarMobile">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <a class="navbar-brand fw-bold text-primary" th:href="@{/technician/dashboard}">
-                <i class="fa-solid fa-heart-pulse me-2"></i>HealHub
-            </a>
-        </div>
-        <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
-            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/request-list}">
-                <i class="fa-solid fa-list-check me-1"></i>Requests
-            </a>
-            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/test-list}">
-                <i class="fa-solid fa-vials me-1"></i>Lab Tests
-            </a>
-            <a class="btn btn-outline-secondary btn-sm" th:href="@{/technician/profile}">
-                <i class="fa-solid fa-user me-1"></i>Profile
-            </a>
-            <a class="btn btn-outline-danger btn-sm" th:href="@{/logout}">
-                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout
-            </a>
-        </div>
-    </div>
-</nav>
+<nav th:replace="~{fragment/technician/techinician-fragment :: navBar}"></nav>
 
-<main class="container container-wide py-4">
-    <h1 class="h4 mb-3">Test Request List</h1>
+<main class="container-fluid py-3 py-lg-4">
+    <div class="row g-3">
 
-    <!-- ========== FILTER FORM ========== -->
-    <div class="card shadow-sm border-0 mb-3">
-        <div class="card-body">
-            <form class="row g-2" th:action="@{/technician/request-list}" method="get">
-                <!-- Patient -->
-                <div class="col-12 col-md-3">
-                    <label class="form-label" for="patientId">Patient ID</label>
-                    <input type="text" class="form-control form-control-sm" id="patientId" name="patientId"
-                           th:value="${patientId}">
-                </div>
+        <!-- Sidebar -->
+        <aside class="col-12 col-lg-3"
+               th:replace="~{/fragment/technician/techinician-fragment :: sidebar}">
+        </aside>
 
-                <!-- Doctor -->
-                <div class="col-12 col-md-3">
-                    <label class="form-label" for="doctorName">Doctor</label>
-                    <select class="form-select form-select-sm" id="doctorName" name="doctorName">
-                        <option value="">All doctors</option>
-                        <option th:each="doctor : ${doctors}"
-                                th:value="${doctor.user.fullName}"
-                                th:text="${doctor.user.fullName}"
-                                th:selected="${doctor.user.fullName == doctorName}">
-                        </option>
-                    </select>
-                </div>
-                <!-- Status -->
-                <div class="col-12 col-md-3">
-                    <label class="form-label" for="status">Status</label>
-                    <select class="form-select form-select-sm" id="status" name="status">
-                        <option value="">All Status</option>
-                        <option value="REQUESTED" th:selected="${status == 'REQUESTED'}">Requested</option>
-                        <option value="PAID" th:selected="${status == 'PAID'}">Paid</option>
-                        <option value="RUNNING" th:selected="${status == 'RUNNING'}">Running</option>
-                        <option value="COMPLETED" th:selected="${status == 'COMPLETED'}">Completed</option>
-                        <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
-                    </select>
-                </div>
+        <section class="col-12 col-lg-9">
+            <h1 class="h4 mb-3">Test Request List</h1>
+            <!-- ========== FILTER FORM ========== -->
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body">
+                    <form class="row g-2" th:action="@{/technician/request-list}" method="get">
+                        <!-- Patient -->
+                        <div class="col-12 col-md-3">
+                            <label class="form-label" for="patientId">Patient ID</label>
+                            <input type="text" class="form-control form-control-sm" id="patientId" name="patientId"
+                                   th:value="${patientId}">
+                        </div>
 
-                <!-- Test -->
-                <div class="col-12 col-md-3">
-                    <label class="form-label" for="testName">Test</label>
-                    <select class="form-select form-select-sm" id="testName" name="testName">
-                        <option value="">All tests</option>
-                        <option th:each="test : ${labTestCatalogs}"
-                                th:value="${test.name}"
-                                th:text="${test.name}"
-                                th:selected="${test.name == testName}">
-                        </option>
-                    </select>
-                </div>
+                        <!-- Doctor -->
+                        <div class="col-12 col-md-3">
+                            <label class="form-label" for="doctorName">Doctor</label>
+                            <select class="form-select form-select-sm" id="doctorName" name="doctorName">
+                                <option value="">All doctors</option>
+                                <option th:each="doctor : ${doctors}"
+                                        th:value="${doctor.user.fullName}"
+                                        th:text="${doctor.user.fullName}"
+                                        th:selected="${doctor.user.fullName == doctorName}">
+                                </option>
+                            </select>
+                        </div>
+                        <!-- Status -->
+                        <div class="col-12 col-md-3">
+                            <label class="form-label" for="status">Status</label>
+                            <select class="form-select form-select-sm" id="status" name="status">
+                                <option value="">All Status</option>
+                                <option value="REQUESTED" th:selected="${status == 'REQUESTED'}">Requested</option>
+                                <option value="PAID" th:selected="${status == 'PAID'}">Paid</option>
+                                <option value="RUNNING" th:selected="${status == 'RUNNING'}">Running</option>
+                                <option value="COMPLETED" th:selected="${status == 'COMPLETED'}">Completed</option>
+                                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
+                            </select>
+                        </div>
 
-                <!-- Date filters -->
-                <div class="col-6 col-md-3">
-                    <label class="form-label" for="fromDate">From</label>
-                    <input type="date" class="form-control form-control-sm" id="fromDate" name="fromDate"
-                           th:value="${fromDate}">
-                </div>
-                <div class="col-6 col-md-3">
-                    <label class="form-label" for="toDate">To</label>
-                    <input type="date" class="form-control form-control-sm" id="toDate" name="toDate"
-                           th:value="${toDate}">
-                </div>
+                        <!-- Test -->
+                        <div class="col-12 col-md-3">
+                            <label class="form-label" for="testName">Test</label>
+                            <select class="form-select form-select-sm" id="testName" name="testName">
+                                <option value="">All tests</option>
+                                <option th:each="test : ${labTestCatalogs}"
+                                        th:value="${test.name}"
+                                        th:text="${test.name}"
+                                        th:selected="${test.name == testName}">
+                                </option>
+                            </select>
+                        </div>
 
-                <!-- Buttons -->
-                <div class="col-12 d-flex gap-2 mt-2">
-                    <button class="btn btn-sm btn-primary" type="submit">Filter</button>
-                    <a class="btn btn-sm btn-outline-secondary" th:href="@{/technician/request-list}">Reset</a>
-                </div>
-            </form>
-        </div>
-    </div>
+                        <!-- Date filters -->
+                        <div class="col-6 col-md-3">
+                            <label class="form-label" for="fromDate">From</label>
+                            <input type="date" class="form-control form-control-sm" id="fromDate" name="fromDate"
+                                   th:value="${fromDate}">
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <label class="form-label" for="toDate">To</label>
+                            <input type="date" class="form-control form-control-sm" id="toDate" name="toDate"
+                                   th:value="${toDate}">
+                        </div>
 
-    <!-- ========== TABLE LIST ========== -->
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table align-middle mb-0">
-                    <thead class="table-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Patient</th>
-                        <th>Test</th>
-                        <th>Doctor</th>
-                        <th>Status</th>
-                        <th>Requested At</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="request : ${labRequests}" th:object="${request}">
-                        <td th:text="*{labRequestId}"></td>
-                        <td th:text="*{medicalRecordId}"></td>
-                        <td th:text="*{labTestCatalog.name}"></td>
-                        <td th:text="*{doctor.user.fullName}"></td>
-                        <td>
+                        <!-- Buttons -->
+                        <div class="col-12 d-flex gap-2 mt-2">
+                            <button class="btn btn-sm btn-primary" type="submit">Filter</button>
+                            <a class="btn btn-sm btn-outline-secondary" th:href="@{/technician/request-list}">Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ========== TABLE LIST ========== -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Test</th>
+                                <th>Doctor</th>
+                                <th>Status</th>
+                                <th>Requested At</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="request : ${labRequests}" th:object="${request}">
+                                <td th:text="*{labRequestId}"></td>
+                                <td th:text="*{medicalRecordId}"></td>
+                                <td th:text="*{labTestCatalog.name}"></td>
+                                <td th:text="*{doctor.user.fullName}"></td>
+                                <td>
                             <span th:switch="*{status.name()}">
                                 <span th:case="'REQUESTED'" class="badge bg-secondary">Requested</span>
-                                <span th:case="'PAID'" class="badge bg-yellow">Paid</span>
+                                <span th:case="'PAID'" class="badge bg-warning">Paid</span>
                                 <span th:case="'COMPLETED'" class="badge bg-success">Completed</span>
                                 <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
                                 <span th:case="'RUNNING'" class="badge bg-primary">Running</span>
                             </span>
-                        </td>
-                        <td th:text="*{#temporals.format(requestedAt, 'dd-MM-yyyy HH:mm')}"></td>
-                        <td>
-                            <a class="btn btn-sm btn-outline-primary me-1" th:href="@{/technician/request/{id}(id=*{labRequestId})}"><i class="fa-solid fa-eye"></i></a>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(labRequests)}">
-                        <td colspan="7" class="text-center text-muted py-3">No requests found</td>
-                    </tr>
-                    </tbody>
-                </table>
+                                </td>
+                                <td th:text="*{#temporals.format(requestedAt, 'dd-MM-yyyy HH:mm')}"></td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-primary me-1" th:href="@{/technician/request/{id}(id=*{labRequestId})}"><i class="fa-solid fa-eye"></i></a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(labRequests)}">
+                                <td colspan="7" class="text-center text-muted py-3">No requests found</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
     </div>
 </main>
 
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script>
+    setTimeout(() => {
+        const alert = document.getElementById("autoClose");
+        if (alert) {
+            alert.classList.remove("show");
+        }
+    }, 3000);
+</script>
 </body>
 </html>

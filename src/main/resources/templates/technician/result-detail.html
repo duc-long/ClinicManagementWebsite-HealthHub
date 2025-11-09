@@ -3,142 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Technician Dashboard - HealHub</title>
+    <title>Result Detail - HealHub</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>body {
-        background-color: #f6f7fb;
-    }
 
-    .container-narrow {
-        max-width: 1080px;
-    }
+    <style>
+        body {
+            background-color: #f6f7fb;
+        }
 
-    .section-title {
-        font-weight: 600
-    }</style>
+        /* Sidebar */
+        .sidebar {
+            background: #fff;
+            border-radius: .75rem;
+            box-shadow: 0 2px 12px #0001;
+            padding: 1rem;
+            height: calc(100vh - 84px);
+            position: sticky;
+            top: 72px;
+            overflow: auto;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            border-radius: .5rem;
+            padding: .5rem .75rem;
+        }
+
+        .sidebar .nav-link.active,
+        .sidebar .nav-link:hover {
+            background: #e9f2ff;
+            color: #0d6efd;
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar {
+                height: auto;
+                position: relative;
+                top: auto;
+            }
+        }
+    </style>
 </head>
 
 <body>
-<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
-    <div class="container-fluid">
-        <div class="d-flex align-items-center">
-            <button class="btn btn-outline-primary d-lg-none me-2" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#sidebarMobile" aria-controls="sidebarMobile">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <a class="navbar-brand fw-bold text-primary" th:href="@{/technician/dashboard}">
-                <i class="fa-solid fa-heart-pulse me-2"></i>HealHub
-            </a>
-        </div>
-        <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
-            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/request-list}">
-                <i class="fa-solid fa-list-check me-1"></i>Requests
-            </a>
-            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician/test-list}">
-                <i class="fa-solid fa-vials me-1"></i>Lab Tests
-            </a>
-            <a class="btn btn-outline-secondary btn-sm" th:href="@{/technician/profile}">
-                <i class="fa-solid fa-user me-1"></i>Profile
-            </a>
-            <a class="btn btn-outline-danger btn-sm" th:href="@{/logout}">
-                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout
-            </a>
-        </div>
-    </div>
-</nav>
-<main class="container container-narrow py-4">
-    <h1 class="h4 mb-3">Lab Test Result RES-<span th:text="${result.resultId}"></span></h1>
+<nav th:replace="~{fragment/technician/techinician-fragment :: navBar}"></nav>
+
+<main class="container-fluid py-3 py-lg-4">
     <div class="row g-3">
-        <div class="col-12 col-lg-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white section-title">Patient & Test</div>
-                <div class="card-body">
-                    <dl class="row">
-                        <dt class="col-4">Patient</dt>
-                        <dd class="col-8" th:text="${result.patientName}"></dd>
-                        <dt class="col-4">Test</dt>
-                        <dd class="col-8" th:text="${result.testName}"></dd>
-                        <dt class="col-4"></dt>
-                        <dd class="col-8">
-                        </dd>
-                    </dl>
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <div class="text-muted small">
-                                <span th:classappend="
-                                ${result.labRequestStatus == 'REQUESTED'} ? 'badge bg-secondary' :
-                                (${result.labRequestStatus == 'PAID'} ? 'badge bg-primary' : 'badge bg-success')"
-                                      th:text="${result.labRequestStatus}">
-                                </span>
-                            </div>
-                            <div th:if="${result.labRequestStatus == 'COMPLETED'}"
-                                    th:text="${#temporals.format(result.createdAt, 'dd/MM/yyyy HH:mm:ss')}"></div>
-                        </div>
-                    </div>
-                </div>
+
+        <!-- Sidebar -->
+        <aside class="col-12 col-lg-3"
+               th:replace="~{/fragment/technician/techinician-fragment :: sidebar}">
+        </aside>
+
+        <section class="col-12 col-lg-9" th:if="${mess}">
+            <div class="alert alert-danger alert-dismissible fade show">
+                <h2 th:text="${mess}"></h2>
             </div>
-        </div>
-        <div class="col-12 col-lg-8">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white section-title">Result Details</div>
+        </section>
+        <section class="col-12 col-lg-9" th:unless="${mess}">
+            <h1 class="h4 mb-3">Lab Result Detail – RES-<span th:text="${result.resultId}"></span></h1>
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
+                    <p><strong>Patient:</strong> <span th:text="${result.patientName}"></span></p>
+                    <p><strong>Test:</strong> <span th:text="${result.testName}"></span></p>
+                    <p><strong>Technician:</strong> <span th:text="${result.technicianName}"></span></p>
+                    <p><strong>Description:</strong></p>
+                    <p th:text="${result.resultText}"></p>
 
-                    <p th:text="${result.resultText}" class="mb-3"></p>
-
-                    <!--If test is X-ray -->
-                    <div th:if="${result.testName == 'X-Ray'}">
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-6" th:each="img : ${result.images}">
-                                <div class="border rounded overflow-hidden shadow-sm">
+                    <!-- Hiển thị ảnh nếu có -->
+                    <div th:if="${result.images != null and !#lists.isEmpty(result.images)}">
+                        <hr>
+                        <h6>Attached X-Ray / Lab Images:</h6>
+                        <div class="row g-3">
+                            <div class="col-md-4" th:each="img : ${result.images}">
+                                <div class="border rounded p-2 shadow-sm">
                                     <img th:src="'/images/labs/' + ${img.filePath}"
                                          alt="X-ray Result Image"
                                          class="img-fluid w-100">
+                                    <p class="small text-muted" th:text="${img.description}"></p>
                                 </div>
-                                <p class="small text-muted mt-1" th:text="${img.description}"></p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="mt-3 d-flex gap-2 justify-content-end">
-        <a class="btn btn-outline-success"
-           th:if="${result.labRequestStatus != 'COMPLETED'}"
-           th:href="@{/technician/result-confirm/{id}(id=${result.resultId})}">Confirm</a>
-        <a class="btn btn-outline-primary"
-           th:if="${result.labRequestStatus != 'COMPLETED'}"
-           th:href="@{/technician/result-edit/{id}(id=${result.resultId})}">Update</a>
-        <a class="btn btn-outline-danger"
-           th:if="${result.labRequestStatus != 'COMPLETED'}"
-           th:href="@{/technician/result-delete/{id}(id=${result.resultId})}">Delete</a>
-    </div>
-    <div th:if="${successMessage}"
-         class="toast align-items-center text-bg-success border-0 position-fixed top-25 start-50 translate-middle-x mt-4 show"
-         role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
-        <div class="d-flex">
-            <div class="toast-body fw-semibold text-center">
-                <i class="fa-solid fa-circle-check me-2"></i>
-                <span th:text="${successMessage}"></span>
+            <div class="mt-3 d-flex gap-2 justify-content-end">
+                <a class="btn btn-outline-success"
+                   th:if="${result.labRequestStatus != 'COMPLETED'}"
+                   th:href="@{/technician/result-confirm/{id}(id=${result.resultId})}">Confirm</a>
+                <a class="btn btn-outline-primary"
+                   th:if="${result.labRequestStatus != 'COMPLETED'}"
+                   th:href="@{/technician/result-edit/{id}(id=${result.resultId})}">Update</a>
+                <a class="btn btn-outline-danger"
+                   th:if="${result.labRequestStatus != 'COMPLETED'}"
+                   th:href="@{/technician/result-delete/{id}(id=${result.resultId})}">Delete</a>
             </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                    data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
+            <div th:if="${successMessage}"
+                 class="toast align-items-center text-bg-success border-0 position-fixed top-25 start-50 translate-middle-x mt-4 show"
+                 role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+                <div class="d-flex">
+                    <div class="toast-body fw-semibold text-center">
+                        <i class="fa-solid fa-circle-check me-2"></i>
+                        <span th:text="${successMessage}"></span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </section>
     </div>
-
 </main>
 
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const toastEl = document.getElementById("successToast");
         if (toastEl) {
-            const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
+            const toast = new bootstrap.Toast(toastEl, {delay: 2500});
             toast.show();
         }
     });
 </script>
-
 </body>
 </html>

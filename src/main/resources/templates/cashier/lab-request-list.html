@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Requests – HealHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body>
+<div th:insert="~{fragment/toast/toast :: toast}"></div>
+<div class="app" id="appLayout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">CSH</div>
+            <div class="title hide-when-collapsed">HealHub · Cashier</div>
+        </div>
+        <button id="toggleSidebar" class="toggle-btn" type="button">
+            <i class="fa-solid fa-angles-left"></i>
+            <span class="hide-when-collapsed">Collapse</span>
+        </button>
+
+        <nav class="nav" id="sideNav">
+            <small class="hide-when-collapsed">OVERVIEW</small>
+            <a th:href="@{/cashier/appointment-list}">
+                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="hide-when-collapsed">Appointments</span>
+            </a>
+            <a th:href="@{/cashier/lab-request-list}" class="active">
+                <span class="icon"><i class="fa-solid fa-vial"></i></span>
+                <span class="hide-when-collapsed">Lab Requests</span>
+            </a>
+            <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+            <a th:href="@{/cashier/profile}">
+                <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+                <span class="hide-when-collapsed">Profile</span>
+            </a>
+            <form th:action="@{/cashier/logout}" method="post" style="margin-top:.5rem;">
+                <button class="toggle-btn" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hide-when-collapsed">Logout</span>
+                </button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <h4 class="mb-0">Lab Request Management</h4>
+        </div>
+
+        <div class="content">
+            <div class="status-tabs">
+                <a th:href="@{/cashier/lab-request-list(status='REQUESTED')}"
+                   th:classappend="${activeStatus == 'REQUESTED'} ? 'active'">Requested</a>
+                <a th:href="@{/cashier/lab-request-list(status='PAID')}"
+                   th:classappend="${activeStatus == 'PAID'} ? 'active'">Paid</a>
+            </div>
+
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Test Name</th>
+                    <th>Cost</th>
+                    <th>Requested At</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${labRequests.content}">
+                    <td th:text="${r.labRequestId}"></td>
+                    <td th:text="${r.patientName}"></td>
+                    <td th:text="${r.doctorName}"></td>
+                    <td th:text="${r.testName}"></td>
+                    <td th:text="${#numbers.formatDecimal(r.cost, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+                    <td th:text="${#temporals.format(r.requestedAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <span class="badge"
+                              th:text="${r.status}"
+                              th:classappend="(${r.status.name() == 'REQUESTED'} ? ' bg-warning text-dark' :
+                                              (${r.status.name() == 'PAID'} ? ' bg-success' :
+                                              ' bg-secondary'))">
+                        </span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/cashier/lab-request/' + ${r.labRequestId}}"
+                           class="btn btn-info btn-sm">Details</a>
+
+                        <!-- Nếu chưa có bill -->
+                        <form th:if="${r.canCreateBill}"
+                              th:action="@{'/cashier/lab-request/' + ${r.labRequestId} + '/create-bill'}"
+                              method="post"
+                              style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fa-solid fa-file-invoice-dollar"></i> Create Bill
+                            </button>
+                        </form>
+
+                        <!-- Nếu đã có bill -->
+                        <a th:if="${r.billId != null}"
+                           th:href="@{'/cashier/bill/' + ${r.billId}}"
+                           class="btn btn-warning btn-sm">
+                            <i class="fa-solid fa-eye"></i> View Bill
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <nav th:if="${labRequests.totalPages > 1}" aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${labRequests.first} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/cashier/lab-request-list(status=${activeStatus}, page=${currentPage - 1})}">Previous</a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(1, labRequests.totalPages)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:text="${i}"
+                           th:href="@{/cashier/lab-request-list(status=${activeStatus}, page=${i})}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${labRequests.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/cashier/lab-request-list(status=${activeStatus}, page=${currentPage + 1})}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </main>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/toast.js}"></script>
+<script>
+    const app = document.getElementById('appLayout');
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const overlay = document.getElementById('overlay');
+    toggleBtn.addEventListener('click', () => app.classList.toggle('collapsed'));
+    overlay.addEventListener('click', () => app.classList.remove('show-sidebar'));
+</script>
+</body>
+</html>

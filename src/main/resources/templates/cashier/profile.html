@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receptionist Profile – HealHub</title>
+
+    <!-- Font & Icon -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="app" id="appLayout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">R</div>
+            <div class="title hide-when-collapsed">HealHub · Receptionist</div>
+        </div>
+
+        <button id="toggleSidebar" class="toggle-btn" type="button">
+            <i class="fa-solid fa-angles-left"></i>
+            <span class="hide-when-collapsed">Collapse</span>
+        </button>
+
+        <nav class="nav" id="sideNav">
+            <small class="hide-when-collapsed">OVERVIEW</small>
+            <a th:href="@{/cashier/appointment-list}">
+                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="hide-when-collapsed">Appointments</span>
+            </a>
+            <a th:href="@{/cashier/payment-list}" class="active">
+                <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
+                <span class="hide-when-collapsed">Payments</span>
+            </a>
+            <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+            <a th:href="@{/cashier/profile}">
+                <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+                <span class="hide-when-collapsed">Profile</span>
+            </a>
+            <form th:action="@{/cashier/logout}" method="post" style="margin-top:.5rem;">
+                <button class="toggle-btn" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hide-when-collapsed">Logout</span>
+                </button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+        <div class="topbar">
+            <h4 class="mb-0">Receptionist Profile</h4>
+        </div>
+
+        <div class="content">
+            <div class="page-container" th:object="${cashier}">
+                <div class="profile-card">
+                    <div class="profile-title">Receptionist's Profile</div>
+                    <img th:src="${cashier.avatarFilename != null} ?
+                                 '/images/avatars/' + ${cashier.avatarFilename} :
+                                 '/images/avatars/default-avatar.png'"
+                         class="avatar" id="avatarPreview" alt="Avatar"/>
+
+                    <div class="info">
+                        <div class="group-info">
+                            <div class="label">Username</div>
+                            <div class="value" th:text="*{username}"></div>
+                        </div>
+                        <div class="group-info">
+                            <div class="label">Name</div>
+                            <div class="value" th:text="*{fullName}"></div>
+                        </div>
+                        <div class="group-info">
+                            <div class="label">Email</div>
+                            <div class="value" th:text="*{email}"></div>
+                        </div>
+                        <div class="group-info">
+                            <div class="label">Gender</div>
+                            <div class="value" th:switch="*{gender?.value}">
+                                <span th:case="1">Male</span>
+                                <span th:case="2">Female</span>
+                                <span th:case="*">Unknown</span>
+                            </div>
+                        </div>
+                        <div class="group-info">
+                            <div class="label">Phone</div>
+                            <div class="value" th:text="*{phone}"></div>
+                        </div>
+                    </div>
+
+                    <div class="button-row">
+                        <a th:href="@{/cashier/edit-profile}" class="btn-label change-profile-label">Change profile</a>
+                        <a th:href="@{/cashier/change-password}" class="btn-label change-password-label">Change password</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- JS -->
+<script>
+    const app = document.getElementById('appLayout');
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const overlay = document.getElementById('overlay');
+
+    toggleBtn.addEventListener('click', () => {
+        app.classList.toggle('collapsed');
+    });
+
+    overlay.addEventListener('click', () => {
+        app.classList.remove('show-sidebar');
+    });
+</script>
+</body>
+</html>

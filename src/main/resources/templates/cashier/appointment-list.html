@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier - Appointments | HealHub</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
+
+    <style>
+        .status-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e3e3e3;
+            padding-bottom: 0.5rem;
+        }
+
+        .status-tabs a {
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 4px 4px 0 0;
+            color: #333;
+            border: 1px solid transparent;
+        }
+
+        .status-tabs a.active {
+            color: #0d6efd;
+            border-color: #dee2e6 #dee2e6 transparent;
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .status-tabs a:hover {
+            color: #0a58ca;
+        }
+
+        .badge {
+            font-size: 0.85rem;
+            padding: 6px 10px;
+        }
+
+        .btn {
+            margin-right: 4px;
+        }
+    </style>
+</head>
+
+<body>
+<div th:insert="~{fragment/toast/toast :: toast}"></div>
+
+<div class="app" id="appLayout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">R</div>
+            <div class="title hide-when-collapsed">HealHub · Receptionist</div>
+        </div>
+
+        <button id="toggleSidebar" class="toggle-btn" type="button">
+            <i class="fa-solid fa-angles-left"></i>
+            <span class="hide-when-collapsed">Collapse</span>
+        </button>
+
+        <nav class="nav" id="sideNav">
+            <small class="hide-when-collapsed">OVERVIEW</small>
+            <a th:href="@{/cashier/appointment-list}">
+                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="hide-when-collapsed">Appointments</span>
+            </a>
+            <a th:href="@{/cashier/payment-list}" class="active">
+                <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
+                <span class="hide-when-collapsed">Payments</span>
+            </a>
+            <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+            <a th:href="@{/cashier/profile}">
+                <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+                <span class="hide-when-collapsed">Profile</span>
+            </a>
+            <form th:action="@{/cashier/logout}" method="post" style="margin-top:.5rem;">
+                <button class="toggle-btn" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hide-when-collapsed">Logout</span>
+                </button>
+            </form>
+        </nav>
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <div class="topbar">
+            <h4 class="mb-0">Appointment Management</h4>
+        </div>
+
+        <div class="content">
+            <!-- STATUS FILTER -->
+            <div class="status-tabs">
+                <a th:href="@{/cashier/appointment-list(status='CHECKED_IN')}"
+                   th:classappend="${activeStatus == 'CHECKED_IN'} ? 'active'">Check-in (Today)</a>
+                <a th:href="@{/cashier/appointment-list(status='PAID')}"
+                   th:classappend="${activeStatus == 'PAID'} ? 'active'">Paid</a>
+            </div>
+
+            <!-- TABLE -->
+            <table class="table table-bordered table-striped mt-3 align-middle text-center">
+                <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Phone</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Doctor</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="a : ${appointments.content}">
+                    <td th:text="${a.appointmentId}"></td>
+                    <td th:text="${a.patientName}"></td>
+                    <td th:text="${a.phonePatient}"></td>
+                    <td th:text="${a.appointmentDate != null ? #temporals.format(a.appointmentDate, 'dd/MM/yyyy') : 'N/A'}"></td>
+
+                    <td>
+                        <span class="badge"
+                              th:text="${a.status}"
+                              th:classappend="
+                                (${a.status.name() == 'CHECKED_IN'} ? ' bg-primary' :
+                                (${a.status.name() == 'PAID'} ? ' bg-success' :
+                                ' bg-secondary'))">
+                        </span>
+                    </td>
+
+                    <td th:text="${a.doctorName != null ? a.doctorName : 'Not Assigned'}"></td>
+
+                    <!-- Actions -->
+                    <td>
+                        <a th:href="@{'/cashier/appointment/' + ${a.appointmentId}}"
+                           class="btn btn-info btn-sm">
+                            <i class="fa-solid fa-circle-info"></i> Details
+                        </a>
+
+                        <!-- Create Bill -->
+                        <form th:if="${a.status.name() == 'CHECKED_IN'
+                                      and a.appointmentDate == T(java.time.LocalDate).now()
+                                      and a.canCheckin}"
+                              th:action="@{'/cashier/appointment/' + ${a.appointmentId} + '/create-bill'}"
+                              method="post"
+                              style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fa-solid fa-file-invoice-dollar"></i> Create Bill
+                            </button>
+                        </form>
+
+                        <!-- View Bill -->
+                        <a th:if="${a.billId != null}"
+                           th:href="@{'/cashier/bill/' + ${a.billId}}"
+                           class="btn btn-warning btn-sm">
+                            <i class="fa-solid fa-eye"></i> View Bill
+                        </a>
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- PAGINATION -->
+            <nav aria-label="Page navigation example" th:if="${appointments.totalPages > 1}">
+                <ul class="pagination justify-content-center mt-3">
+                    <li class="page-item" th:classappend="${appointments.first} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/cashier/appointment-list(status=${activeStatus}, page=${currentPage - 1})}">Previous</a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(1, appointments.totalPages)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/cashier/appointment-list(status=${activeStatus}, page=${i})}"
+                           th:text="${i}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${appointments.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/cashier/appointment-list(status=${activeStatus}, page=${currentPage + 1})}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </main>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/toast.js}"></script>
+<script>
+    const app = document.getElementById('appLayout');
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const overlay = document.getElementById('overlay');
+
+    toggleBtn.addEventListener('click', () => app.classList.toggle('collapsed'));
+    overlay.addEventListener('click', () => app.classList.remove('show-sidebar'));
+</script>
+</body>
+</html>

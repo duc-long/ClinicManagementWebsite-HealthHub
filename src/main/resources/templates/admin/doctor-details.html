@@ -252,6 +252,19 @@
         </div>
     </div>
 </div>
+<!-- xu li anh-->
+<script>
+    function previewAvatar(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('avatarPreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

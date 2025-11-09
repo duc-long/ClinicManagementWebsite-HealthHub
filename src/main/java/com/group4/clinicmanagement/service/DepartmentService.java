@@ -1,5 +1,10 @@
 package com.group4.clinicmanagement.service;
 
+
+import com.group4.clinicmanagement.entity.Department;
+import com.group4.clinicmanagement.repository.DepartmentRepository;
+import org.springframework.stereotype.Service;
+
 import com.group4.clinicmanagement.dto.DepartmentDTO;
 import com.group4.clinicmanagement.dto.admin.DoctorDTO;
 import com.group4.clinicmanagement.entity.Department;
@@ -14,8 +19,14 @@ import java.util.List;
 @Service
 public class DepartmentService {
     private final DepartmentRepository departmentRepository;
+
     public DepartmentService(DepartmentRepository departmentRepository) {
         this.departmentRepository = departmentRepository;
+    }
+
+    public List<Department> getAllDepartment() {
+        List<Department> list = departmentRepository.findAll();
+        return list;
     }
 
     public DepartmentDTO toDTO(Department department) {
@@ -37,5 +48,6 @@ public class DepartmentService {
             result.add(dto);
         }
         return result;
+
     }
 }

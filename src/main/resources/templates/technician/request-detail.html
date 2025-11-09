@@ -3,83 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Technician Dashboard - HealHub</title>
+    <title>Request Detail - HealHub</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>body {
-        background-color: #f6f7fb;
-    }
 
-    .container-narrow {
-        max-width: 1080px;
-    }</style>
+    <style>
+        body {
+            background-color: #f6f7fb;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #fff;
+            border-radius: .75rem;
+            box-shadow: 0 2px 12px #0001;
+            padding: 1rem;
+            height: calc(100vh - 84px);
+            position: sticky;
+            top: 72px;
+            overflow: auto;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            border-radius: .5rem;
+            padding: .5rem .75rem;
+        }
+        .sidebar .nav-link.active,
+        .sidebar .nav-link:hover {
+            background: #e9f2ff;
+            color: #0d6efd;
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar {
+                height: auto;
+                position: relative;
+                top: auto;
+            }
+        }
+    </style>
 </head>
-<body>
-<nav class="navbar navbar-light bg-white border-bottom sticky-top shadow-sm">
-    <div class="container-fluid">
-        <div class="d-flex align-items-center">
-            <button class="btn btn-outline-primary d-lg-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMobile" aria-controls="sidebarMobile">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <a class="navbar-brand fw-bold text-primary" th:href="@{/technician}"><i class="fa-solid fa-heart-pulse me-2"></i>HealHub</a>
-        </div>
-        <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
-            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician}"><i class="fa-solid fa-list-check me-1"></i>Requests</a>
-            <a class="btn btn-outline-primary btn-sm" th:href="@{/technician}"><i class="fa-solid fa-vials me-1"></i>Lab Tests</a>
-            <a class="btn btn-outline-secondary btn-sm" th:href="@{/technician/profile}"><i class="fa-solid fa-user me-1"></i>Profile</a>
-            <a class="btn btn-outline-danger btn-sm" th:href="@{/technician}"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
-        </div>
-    </div>
-</nav>
 
-<main class="container container-narrow py-4">
-    <h1 class="h4 mb-3">Request REQ-<span th:text="${request.labRequestId}"></span></h1>
+<body>
+<nav th:replace="~{fragment/technician/techinician-fragment :: navBar}"></nav>
+
+<main class="container-fluid py-3 py-lg-4">
     <div class="row g-3">
-        <div class="col-12 col-lg-6">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white">Patient</div>
-                <div class="card-body">
-                    <dl class="row">
-                        <dt class="col-4">ID</dt>
-                        <dd class="col-8" th:text="${request.medicalRecord.patient.patientId}"></dd>
-                        <dt class="col-4">Name</dt>
-                        <dd class="col-8" th:text="${request.medicalRecord.patient.user.fullName}"></dd>
-                        <dt class="col-4">Phone</dt>
-                        <dd class="col-8" th:text="${request.medicalRecord.patient.user.phone}"></dd>
-                    </dl>
-                </div>
+
+        <!-- Sidebar -->
+        <aside class="col-12 col-lg-3"
+               th:replace="~{/fragment/technician/techinician-fragment :: sidebar}">
+        </aside>
+
+        <!-- ✅ Bạn chỉ cần điền nội dung ở đây -->
+        <section class="col-12 col-lg-9" th:if="${mess}">
+            <div class="alert alert-danger alert-dismissible fade show">
+                <h2 th:text="${mess}"></h2>
             </div>
-        </div>
-        <div class="col-12 col-lg-6">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white">Request info</div>
-                <div class="card-body">
-                    <dl class="row">
-                        <dt class="col-4">Test</dt>
-                        <dd class="col-8" th:text="${request.test.name}"></dd>
-                        <dt class="col-4">Doctor Request</dt>
-                        <dd class="col-8" th:text="${request.medicalRecord.doctor.user.fullName}"></dd>
-                        <dt class="col-4">Requested</dt>
-                        <dd class="col-8" th:text="${#temporals.format(request.requestedAt,'dd-MM-yyyy HH:mm')}"></dd>
-                        <dt class="col-4">Status</dt>
-                        <dd class="col-8">
+        </section>
+        <section class="col-12 col-lg-9" th:unless="${mess}">
+
+            <h1 class="h4 mb-3">Request REQ-<span th:text="${request.labRequestId}"></span></h1>
+            <div class="row g-3">
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-white">Patient</div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-4">ID</dt>
+                                <dd class="col-8" th:text="${request.medicalRecord.patient.patientId}"></dd>
+                                <dt class="col-4">Name</dt>
+                                <dd class="col-8" th:text="${request.medicalRecord.patient.user.fullName}"></dd>
+                                <dt class="col-4">Phone</dt>
+                                <dd class="col-8" th:text="${request.medicalRecord.patient.user.phone}"></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-white">Request info</div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-4">Test</dt>
+                                <dd class="col-8" th:text="${request.test.name}"></dd>
+                                <dt class="col-4">Doctor Request</dt>
+                                <dd class="col-8" th:text="${request.medicalRecord.doctor.user.fullName}"></dd>
+                                <dt class="col-4">Requested</dt>
+                                <dd class="col-8" th:text="${#temporals.format(request.requestedAt,'dd-MM-yyyy HH:mm')}"></dd>
+                                <dt class="col-4">Status</dt>
+                                <dd class="col-8">
                             <span th:switch="${request.status.name()}">
                                 <span th:case="'REQUESTED'" class="badge bg-secondary">Requested</span>
-                                <span th:case="'PAID'" class="badge bg-yellow">Paid</span>
+                                <span th:case="'PAID'" class="badge bg-warning">Paid</span>
                                 <span th:case="'COMPLETED'" class="badge bg-success">Completed</span>
                                 <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
                                 <span th:case="'RUNNING'" class="badge bg-primary">Running</span>
                             </span>
-                        </dd>
-                    </dl>
-                    <div class="d-flex gap-2">
-                        <a th:if="${request.status.name() == 'PAID'}"
-                                class="btn btn-primary"
-                           th:href="@{/technician/create-test/{id}(id = ${request.labRequestId})}">Create Lab Test</a>
+                                </dd>
+                            </dl>
+                            <div class="d-flex gap-2">
+                                <a th:if="${request.status.name() == 'PAID'}"
+                                   class="btn btn-primary"
+                                   th:href="@{/technician/create-test/{id}(id = ${request.labRequestId})}">Create Lab Test</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 </main>
 

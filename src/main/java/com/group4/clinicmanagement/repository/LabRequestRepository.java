@@ -1,6 +1,8 @@
 package com.group4.clinicmanagement.repository;
 
 import com.group4.clinicmanagement.entity.LabRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -45,7 +47,33 @@ public interface LabRequestRepository extends JpaRepository<LabRequest, Integer>
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate
     );
-
     @Query(value = "SELECT * FROM LabRequest WHERE record_id = :recordId", nativeQuery = true)
     Optional<LabRequest> findByRecordId(@Param("recordId") int recordId);
+
+    @Query("""
+        SELECT l FROM LabRequest l
+        JOIN FETCH l.medicalRecord mr
+        JOIN FETCH mr.patient p
+        JOIN FETCH p.user pu
+        JOIN FETCH l.doctor d
+        JOIN FETCH d.user du
+        JOIN FETCH l.test t
+        WHERE l.statusValue IN (0, 1)
+        ORDER BY l.requestedAt DESC
+    """)
+    Page<LabRequest> findRequestedAndPaid(Pageable pageable);
+
+    @Query("""
+        SELECT l FROM LabRequest l
+        JOIN FETCH l.medicalRecord mr
+        JOIN FETCH mr.patient p
+        JOIN FETCH p.user pu
+        JOIN FETCH l.doctor d
+        JOIN FETCH d.user du
+        JOIN FETCH l.test t
+        WHERE l.statusValue = :status
+        ORDER BY l.requestedAt DESC
+    """)
+    Page<LabRequest> findByStatus(@Param("status") int status, Pageable pageable);
+
 }
