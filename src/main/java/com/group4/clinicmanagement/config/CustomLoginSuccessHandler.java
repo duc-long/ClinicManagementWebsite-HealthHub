@@ -38,7 +38,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         // ==================== CASHIER ====================
         else if(requestURI.startsWith("/cashier/login")) {
             if(hasRole(roles, "ROLE_Cashier")) {
-                redirectURL = "/cashier/dashboard";
+                redirectURL = "/cashier/appointment-list";
             } else {
                 response.sendRedirect("/cashier/login?error=invalid_role");
                 return;

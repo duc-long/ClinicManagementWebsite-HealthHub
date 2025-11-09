@@ -28,7 +28,7 @@ public class DepartmentService {
         List<Department> list = departmentRepository.findAll();
         return list;
     }
-    
+
     public DepartmentDTO toDTO(Department department) {
         if (department == null) return null;
 

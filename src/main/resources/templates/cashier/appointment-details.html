@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Appointment Details – HealHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="app" id="appLayout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">R</div>
+            <div class="title hide-when-collapsed">HealHub · Receptionist</div>
+        </div>
+
+        <button id="toggleSidebar" class="toggle-btn" type="button">
+            <i class="fa-solid fa-angles-left"></i>
+            <span class="hide-when-collapsed">Collapse</span>
+        </button>
+
+        <nav class="nav" id="sideNav">
+            <small class="hide-when-collapsed">OVERVIEW</small>
+            <a th:href="@{/cashier/appointment-list}">
+                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="hide-when-collapsed">Appointments</span>
+            </a>
+            <a th:href="@{/cashier/payment-list}" class="active">
+                <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
+                <span class="hide-when-collapsed">Payments</span>
+            </a>
+            <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+            <a th:href="@{/cashier/profile}">
+                <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+                <span class="hide-when-collapsed">Profile</span>
+            </a>
+            <form th:action="@{/cashier/logout}" method="post" style="margin-top:.5rem;">
+                <button class="toggle-btn" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hide-when-collapsed">Logout</span>
+                </button>
+            </form>
+        </nav>
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+        <div class="topbar">
+            <h4 class="mb-0">Appointment Details</h4>
+        </div>
+        <div th:if="${#lists.isEmpty(appointment)}">
+            <p>Id is empty or you haven't access</p>
+        </div>
+        <div class="content" th:if="${!#lists.isEmpty(appointment)}">
+            <div class="card-soft">
+                <p><strong>Appointment ID:</strong> <span th:text="${appointment.appointmentId}"></span></p>
+                <p><strong>Patient:</strong> <span th:text="${appointment.patient.user.fullName}"></span></p>
+                <p><strong>Phone:</strong> <span th:text="${appointment.patient.user.phone}"></span></p>
+                <p><strong>Date:</strong> <span th:text="${appointment.appointmentDate}"></span></p>
+                <p><strong>Status:</strong> <span th:text="${appointment.status}"></span></p>
+                <p><strong>Notes:</strong> <span th:text="${appointment.notes}"></span></p>
+                <p><strong>Doctor:</strong>
+                    <span th:text="${appointment.doctor != null ? appointment.doctor.user.fullName : 'Not Assigned'}"></span>
+                </p>
+                <a th:href="@{/cashier/appointment-list}" class="btn btn-secondary mt-3">Back to List</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<script>
+    const app = document.getElementById('appLayout');
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const overlay = document.getElementById('overlay');
+
+    toggleBtn.addEventListener('click', () => app.classList.toggle('collapsed'));
+    overlay.addEventListener('click', () => app.classList.remove('show-sidebar'));
+</script>
+</body>
+</html>

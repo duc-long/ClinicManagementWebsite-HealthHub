@@ -51,6 +51,7 @@ public class Appointment {
     private LocalDateTime createdAt;
     @Column(name="queue_number")
     private Integer queueNumber;
+
     @PostLoad
     public void fillStatusEnum() {
         this.status = AppointmentStatus.fromInt(this.statusValue);

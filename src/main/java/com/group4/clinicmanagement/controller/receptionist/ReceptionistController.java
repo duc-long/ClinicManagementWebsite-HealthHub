@@ -1,8 +1,7 @@
 package com.group4.clinicmanagement.controller.receptionist;
 
-import com.group4.clinicmanagement.dto.ReceptionistAppointmentDTO;
+import com.group4.clinicmanagement.dto.RecepCashAppointmentDTO;
 import com.group4.clinicmanagement.dto.ReceptionistUserDTO;
-import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Department;
 import com.group4.clinicmanagement.entity.Doctor;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,10 +38,6 @@ public class ReceptionistController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/home")
-    public String home() {
-        return "receptionist/receptionist-home";
-    }
 
     @GetMapping("/profile")
     public String viewProfile(Model model, Authentication authentication) {
@@ -73,7 +67,7 @@ public class ReceptionistController {
     public String listAppointments(@RequestParam(required = false, defaultValue = "ALL") String status,
                                    @RequestParam(defaultValue = "1") String page,
             @RequestParam(defaultValue = "10") int size,Model model) {
-        Page<ReceptionistAppointmentDTO> appointments;
+        Page<RecepCashAppointmentDTO> appointments;
         int currentPage = 1;
         try {
             currentPage = Integer.parseInt(page);

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReceptionistUserDTO {
+public class CashierUserDTO {
     private Integer userId;
     private String username;
     @NotBlank(message = "Full name must not be blank")

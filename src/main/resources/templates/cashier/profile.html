@@ -31,16 +31,20 @@
 
         <nav class="nav" id="sideNav">
             <small class="hide-when-collapsed">OVERVIEW</small>
-            <a th:href="@{/receptionist/appointment-list}">
+            <a th:href="@{/cashier/appointment-list}">
                 <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
                 <span class="hide-when-collapsed">Appointments</span>
             </a>
+            <a th:href="@{/cashier/payment-list}" class="active">
+                <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
+                <span class="hide-when-collapsed">Payments</span>
+            </a>
             <small class="hide-when-collapsed mt-2">ACCOUNT</small>
-            <a th:href="@{/receptionist/profile}">
+            <a th:href="@{/cashier/profile}">
                 <span class="icon"><i class="fa-solid fa-id-card"></i></span>
                 <span class="hide-when-collapsed">Profile</span>
             </a>
-            <form th:action="@{/receptionist/logout}" method="post" style="margin-top:.5rem;">
+            <form th:action="@{/cashier/logout}" method="post" style="margin-top:.5rem;">
                 <button class="toggle-btn" type="submit">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span class="hide-when-collapsed">Logout</span>
@@ -56,11 +60,11 @@
         </div>
 
         <div class="content">
-            <div class="page-container" th:object="${receptionist}">
+            <div class="page-container" th:object="${cashier}">
                 <div class="profile-card">
                     <div class="profile-title">Receptionist's Profile</div>
-                    <img th:src="${receptionist.avatarFilename != null} ?
-                                 '/images/avatars/' + ${receptionist.avatarFilename} :
+                    <img th:src="${cashier.avatarFilename != null} ?
+                                 '/images/avatars/' + ${cashier.avatarFilename} :
                                  '/images/avatars/default-avatar.png'"
                          class="avatar" id="avatarPreview" alt="Avatar"/>
 
@@ -92,8 +96,8 @@
                     </div>
 
                     <div class="button-row">
-                        <a th:href="@{/receptionist/edit-profile}" class="btn-label change-profile-label">Change profile</a>
-                        <a th:href="@{/receptionist/change-password}" class="btn-label change-password-label">Change password</a>
+                        <a th:href="@{/cashier/edit-profile}" class="btn-label change-profile-label">Change profile</a>
+                        <a th:href="@{/cashier/change-password}" class="btn-label change-password-label">Change password</a>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.AppointmentDTO;
-import com.group4.clinicmanagement.dto.ReceptionistAppointmentDTO;
+import com.group4.clinicmanagement.dto.RecepCashAppointmentDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.DoctorDailySlot;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -166,10 +165,10 @@ public class AppointmentService {
             throw new IllegalStateException("Cannot check in — appointment has no assigned doctor.");
         }
 
-        Integer maxQueue = appointmentRepository.findMaxQueueNumber(doctor.getDoctorId(), date);
-        int nextQueue = (maxQueue == null ? 1 : maxQueue + 1);
-
-        appointment.setQueueNumber(nextQueue);
+//        Integer maxQueue = appointmentRepository.findMaxQueueNumber(doctor.getDoctorId(), date);
+//        int nextQueue = (maxQueue == null ? 1 : maxQueue + 1);
+//
+//        appointment.setQueueNumber(nextQueue);
         appointment.setStatus(AppointmentStatus.CHECKED_IN);
         appointment.fillStatusValue();
 
@@ -207,11 +206,11 @@ public class AppointmentService {
                 ));
     }
 
-    public Page<ReceptionistAppointmentDTO> getStatusAppointmentPage(int statusValue, int page, int size) {
+    public Page<RecepCashAppointmentDTO> getStatusAppointmentPage(int statusValue, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);
         Page<Appointment> appointments = appointmentRepository.findStatusValueDesc(statusValue, pageable);
         return appointments
-                .map(a -> new ReceptionistAppointmentDTO(
+                .map(a -> new RecepCashAppointmentDTO(
                         a.getAppointmentId(),
                         a.getPatient().getPatientId(),
                         a.getDoctor() != null && a.getDoctor().getUser() != null ? a.getDoctor().getUser().getFullName() : "Not Assigned",
@@ -225,12 +224,13 @@ public class AppointmentService {
                         a.getNotes(),
                         a.getCancelReason(),
                         (a.getStatusValue() == AppointmentStatus.CONFIRMED.getValue() //check checkin
-                                && a.getAppointmentDate().equals(LocalDate.now()))
+                                && a.getAppointmentDate().equals(LocalDate.now())),
+                        null
                 ));
     }
 
     public Appointment getAppointmentForReceptionist(int id) {
-        return appointmentRepository.findIdWithStatusRange(id).orElse(null);
+        return appointmentRepository.findIdWithStatusRangeforRecep(id).orElse(null);
     }
 }
 

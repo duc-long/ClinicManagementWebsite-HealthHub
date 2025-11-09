@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bill Details – HealHub</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+<div th:insert="~{fragment/toast/toast :: toast}"></div>
+
+<div class="app" id="appLayout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">R</div>
+            <div class="title hide-when-collapsed">HealHub · Receptionist</div>
+        </div>
+
+        <button id="toggleSidebar" class="toggle-btn" type="button">
+            <i class="fa-solid fa-angles-left"></i>
+            <span class="hide-when-collapsed">Collapse</span>
+        </button>
+
+        <nav class="nav" id="sideNav">
+            <small class="hide-when-collapsed">OVERVIEW</small>
+            <a th:href="@{/cashier/appointment-list}">
+                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="hide-when-collapsed">Appointments</span>
+            </a>
+            <a th:href="@{/cashier/payment-list}" class="active">
+                <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
+                <span class="hide-when-collapsed">Payments</span>
+            </a>
+            <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+            <a th:href="@{/cashier/profile}">
+                <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+                <span class="hide-when-collapsed">Profile</span>
+            </a>
+            <form th:action="@{/cashier/logout}" method="post" style="margin-top:.5rem;">
+                <button class="toggle-btn" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hide-when-collapsed">Logout</span>
+                </button>
+            </form>
+        </nav>
+    </aside>
+
+
+    <main class="main">
+        <div class="topbar">
+            <h4>Bill Details</h4>
+        </div>
+
+        <div class="content">
+            <div class="card p-4 shadow-sm" style="max-width:700px; margin:auto;">
+
+                <h5 class="mb-3">Bill #<span th:text="${bill.billId}"></span></h5>
+                <p><strong>Status:</strong>
+                    <span class="badge"
+                          th:classappend="${bill.status.name() == 'PAID'} ? 'bg-success' : 'bg-warning text-dark'"
+                          th:text="${bill.status}"></span>
+                </p>
+                <p><strong>Created:</strong>
+                    <span th:text="${#temporals.format(bill.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                </p>
+
+                <!-- Nếu là bill của Appointment -->
+                <div th:if="${isAppointmentBill}">
+                    <hr>
+                    <h6 class="text-primary">Appointment Bill</h6>
+                    <p><strong>Patient:</strong> <span th:text="${bill.appointment.patient.user.fullName}"></span></p>
+                    <p><strong>Phone:</strong> <span th:text="${bill.appointment.patient.user.phone}"></span></p>
+                    <p><strong>Doctor:</strong>
+                        <span th:text="${bill.appointment.doctor.user.fullName}"></span></p>
+                    <p><strong>Appointment Date:</strong>
+                        <span th:text="${#temporals.format(bill.appointment.appointmentDate, 'dd/MM/yyyy')}"></span></p>
+                    <p><strong>Amount:</strong>
+                        <span class="fw-bold text-success" th:text="${#numbers.formatDecimal(bill.amount,1,2)} + ' ₫'"></span></p>
+                </div>
+
+                <!-- Nếu là bill của Lab Request -->
+                <div th:if="${isLabBill}">
+                    <hr>
+                    <h6 class="text-primary">Lab Request Bill</h6>
+                    <p><strong>Patient:</strong>
+                        <span th:text="${bill.labRequest.medicalRecord.patient.user.fullName}"></span></p>
+                    <p><strong>Phone:</strong>
+                        <span th:text="${bill.labRequest.medicalRecord.patient.user.phone}"></span></p>
+                    <p><strong>Requested By:</strong>
+                        <span th:text="${bill.labRequest.doctor.user.fullName}"></span></p>
+                    <p><strong>Test:</strong>
+                        <span th:text="${bill.labRequest.test.name}"></span></p>
+                    <p><strong>Cost:</strong>
+                        <span class="fw-bold text-success"
+                              th:text="${#numbers.formatDecimal(bill.labRequest.test.cost,1,2)} + ' ₫'"></span></p>
+                </div>
+
+                <!-- Paid info -->
+                <div th:if="${bill.status.name() == 'PAID'}" class="mt-3">
+                    <p class="text-success">
+                        <i class="fa-solid fa-check-circle"></i>
+                        Paid at <span th:text="${#temporals.format(bill.paidAt, 'dd/MM/yyyy HH:mm')}"></span>
+                    </p>
+                </div>
+
+                <div class="mt-3 text-end">
+                    <a th:href="@{/cashier/appointment-list}" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </a>
+
+                    <form th:if="${bill.status.name() != 'PAID'}"
+                          th:action="@{'/cashier/bill/' + ${bill.billId} + '/mark-paid'}"
+                          method="post" id="markPaidForm" style="display:inline;">
+                        <button type="button" class="btn btn-success" onclick="confirmMarkPaid()">
+                            <i class="fa-solid fa-money-bill-wave"></i> Mark as Paid
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script>
+    function confirmMarkPaid() {
+        Swal.fire({
+            title: 'Confirm Payment',
+            text: 'Mark this bill as paid?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, Mark Paid'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('markPaidForm').submit();
+            }
+        });
+    }
+</script>
+</body>
+</html>

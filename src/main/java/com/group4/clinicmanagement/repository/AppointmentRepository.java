@@ -95,7 +95,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
     WHERE a.appointmentId = :id
       AND a.statusValue IN(0,1,2,4,5)
 """)
-    Optional<Appointment> findIdWithStatusRange(@Param("id") int id);
+    Optional<Appointment> findIdWithStatusRangeforRecep(@Param("id") int id);
 
     @Query("""
     SELECT COALESCE(MAX(a.queueNumber), 0)
@@ -107,4 +107,15 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
                                               @Param("date") LocalDate date);
 
 
+    @Query("""
+    SELECT a FROM Appointment a
+    LEFT JOIN FETCH a.patient p
+    LEFT JOIN FETCH p.user pu
+    LEFT JOIN FETCH a.doctor d
+    LEFT JOIN FETCH d.user du
+    LEFT JOIN FETCH a.receptionist r
+    WHERE a.appointmentId = :id
+      AND a.statusValue IN(3,5)
+""")
+    Optional<Appointment> findIdWithStatusRangeforCash(@Param("id") int id);
 }

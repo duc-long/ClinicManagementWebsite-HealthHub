@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReceptionistAppointmentDTO {
+public class RecepCashAppointmentDTO {
     private int appointmentId;
     private int patientId;
     private String doctorName;
@@ -27,5 +27,7 @@ public class ReceptionistAppointmentDTO {
     private String cancelReason;
 
     //use to check if status confirm and appointment date equal date now
-    private boolean canCheckin;
+    private boolean canCheck;
+
+    private Integer billId;
 }
