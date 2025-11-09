@@ -71,6 +71,21 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, In
                             @Param("statusValue") int statusValue,
                             @Param("createdAt") LocalDateTime createdAt);
 
+    // method to update medical record
+    @Modifying
+    @Transactional
+    @Query(value = """
+        UPDATE MedicalRecord
+        SET diagnosis = :diagnosis,
+            notes = :notes,
+            status = :statusValue
+        WHERE record_id = :recordId
+        """, nativeQuery = true)
+    int updateMedicalRecord(@Param("recordId") int recordId,
+                            @Param("diagnosis") String diagnosis,
+                            @Param("notes") String notes,
+                            @Param("statusValue") int statusValue);
+
     // method to get list medical record by doctor ID and record status
     @Query(value = "SELECT * FROM MedicalRecord WHERE doctor_id = :doctorId AND status = :status", nativeQuery = true)
     List<MedicalRecord> findByDoctorIdAndStatusValue(@Param("doctorId") int doctorId,
@@ -78,5 +93,7 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, In
 
     @Query(value = "SELECT * FROM dbo.MedicalRecord WHERE record_id = :id", nativeQuery = true)
     Optional<MedicalRecord> findByRecordId(@Param("id") int id);
+
+    Optional<MedicalRecord> findMedicalRecordByAppointment_AppointmentId(int appointmentId);
 }
 

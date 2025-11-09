@@ -19,14 +19,9 @@ public class VitalSigns {
     @Column(name = "vital_id")
     private Integer vitalId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "record_id", nullable = false)
     private MedicalRecord medicalRecord; // FK -> MedicalRecord
-
-    @ManyToOne
-    @JoinColumn(name = "nurse_id", nullable = false)
-    private User nurse; // FK -> Users (y tá)
-
     private Double heightCm;
     private Double weightKg;
     private String bloodPressure;

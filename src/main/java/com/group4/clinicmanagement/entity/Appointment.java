@@ -64,5 +64,8 @@ public class Appointment {
         }
     }
 
-
+    public void setStatus(AppointmentStatus status) {
+        this.status = status;
+        this.statusValue = (status != null) ? status.getValue() : null;
+    }
 }

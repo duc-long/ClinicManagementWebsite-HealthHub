@@ -22,7 +22,7 @@
 
         <button id="toggleSidebar" class="toggle-btn d-none d-lg-flex" type="button">
             <i class="fa-solid fa-angles-left"></i>
-            <span class="hide-when-collapsed">Thu gọn</span>
+            <span class="hide-when-collapsed">Collapse</span>
         </button>
 
         <nav class="nav flex-column" id="sideNav">
@@ -34,7 +34,7 @@
                 <span class="hide-when-collapsed">Home</span>
             </a>
 
-            <a th:href="@{/doctor/appointments}" th:classappend="${active == 'appointments'} ? ' active'">
+            <a th:href="@{/doctor/re-examination/create}" th:classappend="${active == 'appointments'} ? ' active'">
                 <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
                 <span class="hide-when-collapsed">Appointments</span>
             </a>
@@ -52,7 +52,7 @@
                 <span class="hide-when-collapsed">Medical Records</span>
             </a>
 
-            <a th:href="@{/doctor/lab-requests}" th:classappend="${active == 'labs'} ? ' active'">
+            <a th:href="@{/doctor/labs/create}" th:classappend="${active == 'labs'} ? ' active'">
                 <span class="icon"><i class="fa-solid fa-flask"></i></span>
                 <span class="hide-when-collapsed">Lab Requests</span>
             </a>
@@ -65,14 +65,6 @@
             <a th:href="@{/doctor/followup}" th:classappend="${active == 'followup'} ? ' active'">
                 <span class="icon"><i class="fa-solid fa-repeat"></i></span>
                 <span class="hide-when-collapsed">Follow-up</span>
-            </a>
-
-            <!-- ===== COMMUNICATION ===== -->
-            <small class="hide-when-collapsed text-muted fw-semibold mt-3 mb-1">COMMUNICATION</small>
-
-            <a th:href="@{/doctor/messages}" th:classappend="${active == 'messages'} ? ' active'">
-                <span class="icon"><i class="fa-solid fa-message"></i></span>
-                <span class="hide-when-collapsed">Messages</span>
             </a>
 
             <!-- ===== ACCOUNT ===== -->

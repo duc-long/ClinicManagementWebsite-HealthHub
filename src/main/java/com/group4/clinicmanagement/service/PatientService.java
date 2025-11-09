@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.PatientUserDTO;
+import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.repository.PatientRepository;
 import com.group4.clinicmanagement.repository.UserRepository;
@@ -31,6 +32,10 @@ public class PatientService {
 
     public Optional<PatientUserDTO> getPatientsByUsername(String username) {
         return patientRepository.fetchPatientWithUserInfoByUsername(username);
+    }
+
+    public Patient findPatientById(int id) {
+        return patientRepository.findById(id).orElse(null);
     }
 
     @Transactional

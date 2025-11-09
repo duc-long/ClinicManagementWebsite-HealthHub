@@ -3,6 +3,7 @@ package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.MedicalRecordDetailDTO;
 import com.group4.clinicmanagement.dto.MedicalRecordListDTO;
+import com.group4.clinicmanagement.dto.doctor.MedicalRecordDTO;
 import com.group4.clinicmanagement.repository.MedicalRecordRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,12 +49,44 @@ public class MedicalRecordService {
         );
     }
 
-    public MedicalRecord findById(int recordId) {
-        return  medicalRecordRepository.findByRecordId(recordId).orElse(null);
+    public int updateRecord(MedicalRecord medicalRecord) {
+        return medicalRecordRepository.updateMedicalRecord(
+                medicalRecord.getRecordId(),
+                medicalRecord.getDiagnosis(),
+                medicalRecord.getNotes(),
+                medicalRecord.getStatusValue()
+        );
+    }
+
+    public MedicalRecord findById(int medicalRecordId) {
+        return  medicalRecordRepository.findById(medicalRecordId).orElse(null);
+    }
+
+    public MedicalRecordDTO findDTOById(int recordId) {
+        MedicalRecord record = medicalRecordRepository.findByRecordId(recordId).orElse(null);
+        MedicalRecordDTO recordDTO = new MedicalRecordDTO();
+        recordDTO.setRecordId(record.getRecordId());
+        recordDTO.setDiagnosis(record.getDiagnosis());
+        recordDTO.setCreatedAt(record.getCreatedAt());
+        recordDTO.setDoctorName(record.getDoctor() != null ? record.getDoctor().getUser().getFullName() : null);
+        recordDTO.setNotes(record.getNotes());
+        recordDTO.setRecordStatus(record.getStatus());
+        recordDTO.setDoctorId(record.getDoctor() != null ? record.getDoctor().getDoctorId() : 0);
+        recordDTO.setPatientId(record.getPatient() != null ? record.getPatient().getPatientId() : 0);
+        recordDTO.setAppointmentId(record.getAppointment() != null ? record.getAppointment().getAppointmentId() : 0);
+        recordDTO.setPatientName(record.getPatient() != null ? record.getPatient().getUser().getFullName() : null);
+
+        return recordDTO;
     }
 
     public List<MedicalRecord> findMedicalRecordByDoctorIdAndStatus(int doctorId) {
         return medicalRecordRepository.findByDoctorIdAndStatusValue(doctorId, 0);
+    }
+
+    // method to find medical record by appointment ID
+    public MedicalRecord findByAppointmentId(int appointmentId) {
+        return medicalRecordRepository.findMedicalRecordByAppointment_AppointmentId(appointmentId)
+                .orElse(null);
     }
 }
 

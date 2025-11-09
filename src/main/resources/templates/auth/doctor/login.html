@@ -20,6 +20,7 @@
     <span>Logout Successfully</span>
     </div>
     <form action="/doctor/login" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <input type="hidden" name="doctor">
         <!-- Username -->
         <div class="mb-3">

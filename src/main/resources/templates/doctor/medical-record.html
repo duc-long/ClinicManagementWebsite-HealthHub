@@ -2,8 +2,11 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Medical Records – HealHub</title>
+    <title th:text="${mode == 'update'} ? 'Update Medical Record – HealHub' : 'Create Medical Record – HealHub'">
+        Create Medical Record – HealHub
+    </title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
             --hm-blue: #005691;
@@ -22,93 +25,81 @@
 
         .btn-hm:hover {
             background-color: #003f6f;
-            color: #fff;
+            color: white;
         }
 
-        .table-hover tbody tr:hover {
-            background-color: #f5f8fb;
+        .form-label {
+            font-weight: 500;
         }
 
-        .badge-status {
-            font-size: 0.85rem;
+        textarea {
+            resize: vertical;
+        }
+
+        .form-section {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 2rem;
         }
     </style>
 </head>
-<body>
-<div th:fragment="medicalRecordFragment">
+<body class="bg-light">
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="section-title mb-0"><i class="fa-solid fa-file-medical me-2"></i>Hồ sơ bệnh án</h4>
-        <a th:href="@{/doctor/records/new}" class="btn btn-hm">
-            <i class="fa-solid fa-plus me-1"></i> Thêm hồ sơ
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="section-title mb-0">
+            <i class="fa-solid fa-file-medical me-2"></i>
+            <span th:text="${mode == 'update'} ? 'Update Medical Record' : 'Create Medical Record'"></span>
+        </h3>
+        <a th:href="@{/doctor/records/detail/{id}(id = ${record.recordId})}" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Back to Appointment
         </a>
     </div>
 
-    <!-- Filter/Search -->
-    <form th:action="@{/doctor/records}" method="get" class="row g-2 mb-3">
-        <div class="col-md-4">
-            <input type="text" name="keyword" th:value="${keyword}" class="form-control"
-                   placeholder="Tìm theo tên bệnh nhân hoặc chẩn đoán...">
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-outline-primary w-100">
-                <i class="fa-solid fa-search me-1"></i> Lọc
-            </button>
-        </div>
-    </form>
+    <div class="form-section">
+        <form th:action="@{/doctor/records/update}" th:object="${record}" method="post">
+            <!-- Hidden fields -->
+            <input type="hidden" name="recordId" th:value="*{recordId}">
 
-    <!-- Table -->
-    <div class="table-responsive shadow-sm rounded bg-white p-3">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>Patient</th>
-                <th>Diagnose</th>
-                <th>Note</th>
-                <th>Status</th>
-                <th>Create Date</th>
-                <th class="text-center">Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="record, iStat : ${records}">
-                <td th:text="${iStat.index + 1}"></td>
-                <td th:text="${record.patient.fullName}"></td>
-                <td th:text="${#strings.abbreviate(record.diagnosis, 40)}"></td>
-                <td th:text="${#strings.abbreviate(record.notes, 40)}"></td>
+            <!-- Chuẩn đoán -->
+            <div class="mb-3">
+                <label for="diagnosis" class="form-label">Diagnose <span class="text-danger">*</span></label>
+                <textarea id="diagnosis" class="form-control" rows="3"
+                          th:field="*{diagnosis}" placeholder="Enter your doctor's diagnosis..." required></textarea>
+                <div class="text-danger small" th:if="${#fields.hasErrors('diagnosis')}" th:errors="*{diagnosis}"></div>
+            </div>
 
-                <td>
-                    <span th:switch="${record.status.name()}">
-                        <span th:case="'OPEN'" class="badge bg-success badge-status">Mở</span>
-                        <span th:case="'IN_PROGRESS'" class="badge bg-warning text-dark badge-status">Đang xử lý</span>
-                        <span th:case="'CLOSED'" class="badge bg-secondary badge-status">Đã đóng</span>
-                        <span th:case="*"
-                              class="badge bg-light text-dark badge-status">Không xác định</span>
-                    </span>
-                </td>
+            <!-- Ghi chú -->
+            <div class="mb-3">
+                <label for="notes" class="form-label">Note</label>
+                <textarea id="notes" class="form-control" rows="4"
+                          th:field="*{notes}" placeholder="Additional notes about condition, medication, test results..."></textarea>
+                <div class="text-danger small" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></div>
+            </div>
 
-                <td th:text="${#temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+            <!-- Trạng thái -->
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select id="status" class="form-select" name="recordStatus">
+                    <option th:each="s : ${T(com.group4.clinicmanagement.enums.RecordStatus).values()}"
+                            th:value="${s.name()}"
+                            th:text="${s.name() == 'OPEN' ? 'Open' : 'Closed'}"
+                            th:selected="${record.recordStatus?.name() == s.name()}">
+                    </option>
+                </select>
+            </div>
 
-                <td class="text-center">
-                    <a th:href="@{'/doctor/records/' + ${record.recordId}}" class="btn btn-sm btn-outline-info me-1">
-                        <i class="fa-solid fa-eye"></i>
-                    </a>
-                    <a th:href="@{'/doctor/records/edit/' + ${record.recordId}}" class="btn btn-sm btn-outline-primary">
-                        <i class="fa-solid fa-pen"></i>
-                    </a>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(records)}">
-                <td colspan="7" class="text-center text-muted py-3">
-                    <i class="fa-regular fa-folder-open me-1"></i> Chưa có hồ sơ nào được tạo
-                </td>
-            </tr>
-            </tbody>
-        </table>
+            <!-- Submit -->
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-hm px-4">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Save the file
+                </button>
+            </div>
+
+        </form>
     </div>
-
 </div>
+
 </body>
 </html>

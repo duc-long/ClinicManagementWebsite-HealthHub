@@ -7,14 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.group4.clinicmanagement.entity.Prescription;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription, Integer> {
 
@@ -38,5 +35,8 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Inte
 
     @Query(value = "SELECT TOP 1 prescription_id FROM dbo.Prescription ORDER BY prescription_id DESC", nativeQuery = true)
     int findLastInsertedId();
+
+    @Query(value = "SELECT * FROM Prescription WHERE record_id = :id", nativeQuery = true)
+    Optional<Prescription> findPrescriptionByRecordId(@Param("id") Integer recordId);
 }
 

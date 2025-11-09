@@ -2,6 +2,7 @@ package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.LabRequestDTO;
 import com.group4.clinicmanagement.dto.LabResultDTO;
+import com.group4.clinicmanagement.dto.doctor.LabImageDTO;
 import com.group4.clinicmanagement.entity.LabImage;
 import com.group4.clinicmanagement.entity.LabRequest;
 import com.group4.clinicmanagement.entity.LabResult;
@@ -181,5 +182,31 @@ public class LabResultService {
         labResultRepository.deleteById(resultId);
     }
 
+    // method to get lab result DTO
+    public com.group4.clinicmanagement.dto.doctor.LabResultDTO getResultByLabRequestId(Integer labRequestId) {
+        LabResult result = labResultRepository.findByLabRequestId(labRequestId).orElse(null);
+        if (result == null) {
+            return null;
+        }
 
+        com.group4.clinicmanagement.dto.doctor.LabResultDTO dto = new com.group4.clinicmanagement.dto.doctor.LabResultDTO();
+        dto.setResultId(result.getResultId());
+        dto.setLabRequestId(result.getLabRequest().getLabRequestId());
+        dto.setTechnicianName(result.getTechnician().getFullName());
+        dto.setResultText(result.getResultText());
+        dto.setCreatedAt(result.getCreatedAt());
+
+        // map images
+        List<LabImageDTO> imageDTOs = result.getImages()
+                .stream()
+                .map(img -> new LabImageDTO(
+                        img.getImageId(),
+                        img.getFilePath(),
+                        img.getDescription(),
+                        img.getCreatedAt()
+                ))
+                .toList();
+        dto.setImages(imageDTOs);
+        return dto;
+    }
 }

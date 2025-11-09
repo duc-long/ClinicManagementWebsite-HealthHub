@@ -4,6 +4,7 @@ import com.group4.clinicmanagement.entity.*;
 import com.group4.clinicmanagement.enums.LabRequestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 

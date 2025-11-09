@@ -20,7 +20,7 @@ public class Prescription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer prescriptionId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "record_id", nullable = false)
     private MedicalRecord medicalRecord;
 

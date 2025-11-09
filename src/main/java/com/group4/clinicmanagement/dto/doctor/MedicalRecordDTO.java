@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MedicalRecordDTO {
-    private int recordId;
+    private Integer recordId;
     private String diagnosis;
     private LocalDateTime createdAt;
     private String doctorName;

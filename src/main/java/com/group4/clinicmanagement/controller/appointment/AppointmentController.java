@@ -5,6 +5,7 @@ import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
+import com.group4.clinicmanagement.repository.PatientRepository;
 import com.group4.clinicmanagement.repository.UserRepository;
 import com.group4.clinicmanagement.service.AppointmentService;
 import jakarta.servlet.http.HttpSession;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -21,11 +23,13 @@ import java.util.List;
 public class AppointmentController {
     private final AppointmentService appointmentService;
     private final UserRepository userRepository;
+    private final PatientRepository patientRepository;
 
     // constructor
-    public AppointmentController(AppointmentService appointmentService, UserRepository userRepository) {
+    public AppointmentController(AppointmentService appointmentService, UserRepository userRepository, PatientRepository patientRepository) {
         this.appointmentService = appointmentService;
         this.userRepository = userRepository;
+        this.patientRepository = patientRepository;
     }
 
     // method show the main view appointment
@@ -95,9 +99,8 @@ public class AppointmentController {
 
     // method to show appointment detail
     @GetMapping("/detail/{id}")
-    public String viewAppointmentDetail(@PathVariable("id") int id, Model model, HttpSession session) {
-//        User currentUser = (User) session.getAttribute("user");
-        User currentUser = userRepository.findByUserId(11).orElse(null);
+    public String viewAppointmentDetail(@PathVariable("id") int id, Model model, Principal principal) {
+        User currentUser = userRepository.findUserByUsername(principal.getName()).orElse(null);
         if (currentUser == null) {
             return "redirect:/login";
         }
@@ -121,25 +124,24 @@ public class AppointmentController {
     @Transactional
     @PostMapping("/make-appointment")
     public String doMakeAppointment(@ModelAttribute("appointment") Appointment appointment,
-                                    HttpSession session, Model model,
+                                    Model model,
                                     RedirectAttributes redirectAttributes) {
-//        User currentUser = (User) session.getAttribute("user");
         Patient patient = new Patient();
         patient.setPatientId(11);
 
         // check span in the same day
         if (!appointmentService.canBookAppointment(patient.getPatientId())) {
             redirectAttributes.addFlashAttribute("message", "❌ You already limit book an appointment. \nPlease choose another day.");
-            redirectAttributes.addFlashAttribute("error");
+            redirectAttributes.addFlashAttribute("messageType","error");
             System.out.println("You already limit book an appointment ");
-            return "redirect:/patient/appointment/manage";
+            return "redirect:/patient/appointment/make-appointment";
         }
 
         // check valid booking appointment date
-        if (!appointmentService.isBookAppointmentVailDate(appointment.getAppointmentDate())) {
-            model.addAttribute("message", "Invalid booking date, you cannot book a date before the current date");
-            model.addAttribute("messageType", "error");
-            return "patient/make-appointment";
+        if (!appointmentService.isBookAppointmentValidDate(appointment.getAppointmentDate())) {
+            redirectAttributes.addFlashAttribute("message", "Invalid booking date, You can only book an appointment after 2 days.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/make-appointment";
         }
 
         appointment.setPatient(patient);

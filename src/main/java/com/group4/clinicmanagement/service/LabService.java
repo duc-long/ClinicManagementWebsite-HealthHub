@@ -16,4 +16,6 @@ public class LabService {
     public List<LabDTO> findLabResultByRecordId(Integer recordId) {
         return labRepository.findLabDetailsByMedicalRecordId(recordId);
     }
+
+
 }

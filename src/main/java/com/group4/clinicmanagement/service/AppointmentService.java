@@ -90,10 +90,10 @@ public class AppointmentService {
     }
 
     // method to check if the booking date is after current date
-    public boolean isBookAppointmentVailDate(LocalDate date) {
+    public boolean isBookAppointmentValidDate(LocalDate date) {
         LocalDate today = LocalDate.now(ZoneOffset.UTC);
-
-        return !date.isBefore(today);
+        LocalDate earliestAllowed = today.plusDays(2); // phải sau ít nhất 2 ngày
+        return !date.isBefore(earliestAllowed);
     }
 
     public List<Doctor> getAvailableDoctors(LocalDate date) {
@@ -157,17 +157,11 @@ public class AppointmentService {
         return appointmentRepository.countTodayAppointments(doctorId);
     }
 
-    public int countWaitingAppointments(Integer doctorId) {
-        int totalToday = appointmentRepository.countTodayAppointments(doctorId);
-        int examinedToday = appointmentRepository.countExaminedTodayAppointments(doctorId);
-        return totalToday - examinedToday;
-    }
-
-    public Page<AppointmentDTO> getTodayAppointmentsPaged(Integer doctorId, String patientName, AppointmentStatus status, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Appointment> appointments = appointmentRepository.findTodayAppointmentsPaged(doctorId, patientName, status, pageable);
+    public List<AppointmentDTO> getTodayAppointments(Integer doctorId, String patientName) {
+        List<Appointment> appointments = appointmentRepository.findTodayAppointments(doctorId, patientName);
 
         return appointments
+                .stream()
                 .map(a -> new AppointmentDTO(
                         a.getAppointmentId(),
                         a.getPatient().getPatientId(),
@@ -180,7 +174,33 @@ public class AppointmentService {
                         a.getQueueNumber(),
                         a.getNotes(),
                         a.getCancelReason()
-                ));
+                ))
+                .toList();
+    }
+
+    public List<AppointmentDTO> getTodayAppointmentsByDoctorId(Integer doctorId) {
+        List<Appointment> appointments = appointmentRepository.findTodayAppointmentsByDoctorId(doctorId);
+        return appointments
+                .stream()
+                .map(a -> new AppointmentDTO(
+                        a.getAppointmentId(),
+                        a.getPatient().getPatientId(),
+                        a.getDoctor().getUser().getFullName(),
+                        a.getPatient().getUser().getFullName(),
+                        a.getReceptionist() != null ? a.getReceptionist().getFullName() : "N/A",
+                        a.getAppointmentDate(),
+                        a.getCreatedAt(),
+                        a.getStatus(),
+                        a.getQueueNumber(),
+                        a.getNotes(),
+                        a.getCancelReason()
+                ))
+                .toList();
+    }
+
+    // method to do submit medical examination
+    public Appointment submitAppointment(Appointment appointment) {
+        return appointmentRepository.save(appointment);
     }
 
 }
