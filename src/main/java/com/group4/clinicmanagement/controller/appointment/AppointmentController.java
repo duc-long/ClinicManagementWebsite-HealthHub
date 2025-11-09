@@ -139,7 +139,7 @@ public class AppointmentController {
 
         // check valid booking appointment date
         if (!appointmentService.isBookAppointmentValidDate(appointment.getAppointmentDate())) {
-            redirectAttributes.addFlashAttribute("message", "Invalid booking date, you cannot book a date before the current date");
+            redirectAttributes.addFlashAttribute("message", "Invalid booking date, you ca book a date before the current date");
             redirectAttributes.addFlashAttribute("messageType", "error");
             return "redirect:/patient/appointment/make-appointment";
         }
