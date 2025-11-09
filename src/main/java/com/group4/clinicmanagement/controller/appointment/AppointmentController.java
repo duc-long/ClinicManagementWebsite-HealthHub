@@ -121,29 +121,27 @@ public class AppointmentController {
     }
 
     // method to create an appointment
+    @Transactional
     @PostMapping("/make-appointment")
-    public String doMakeAppointment(@ModelAttribute("appointment") Appointment appointment, Model model,
-                                    RedirectAttributes redirectAttributes, Principal principal) {
-        User currentUser = userRepository.findUserByUsername(principal.getName()).orElse(null);
-        if (currentUser == null) {
-            return "redirect:/patient/login";
-        }
+    public String doMakeAppointment(@ModelAttribute("appointment") Appointment appointment,
+                                    Model model,
+                                    RedirectAttributes redirectAttributes) {
+        Patient patient = new Patient();
+        patient.setPatientId(11);
 
-        Patient patient = patientRepository.findById(currentUser.getUserId()).orElse(null);
-        patient.setPatientId(patient.getPatientId());
         // check span in the same day
         if (!appointmentService.canBookAppointment(patient.getPatientId())) {
             redirectAttributes.addFlashAttribute("message", "❌ You already limit book an appointment. \nPlease choose another day.");
-            redirectAttributes.addFlashAttribute("error");
+            redirectAttributes.addFlashAttribute("messageType","error");
             System.out.println("You already limit book an appointment ");
-            return "redirect:/patient/appointment/manage";
+            return "redirect:/patient/appointment/make-appointment";
         }
 
         // check valid booking appointment date
         if (!appointmentService.isBookAppointmentValidDate(appointment.getAppointmentDate())) {
-            model.addAttribute("message", "Invalid booking date. You must book at least 2 days in advance.");
-            model.addAttribute("messageType", "error");
-            return "patient/make-appointment";
+            redirectAttributes.addFlashAttribute("message", "Invalid booking date, you cannot book a date before the current date");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/make-appointment";
         }
 
         appointment.setPatient(patient);

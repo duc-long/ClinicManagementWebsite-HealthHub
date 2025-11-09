@@ -133,7 +133,7 @@
 
 <body>
 <div th:replace="~{fragment/fragment.html :: navBar}"></div>
-
+<div th:insert="~{fragment/toast/toast :: toast}"></div>
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -185,5 +185,6 @@
 
 <footer th:insert="~{fragment/fragment :: footer}"></footer>
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/toast.js}" ></script>
 </body>
 </html>
