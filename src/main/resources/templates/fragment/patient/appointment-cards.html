@@ -7,9 +7,9 @@
                     <h6 class="fw-bold text-success mb-1"
                         th:text="${#temporals.format(a.appointmentDate, 'dd/MM/yyyy')}"></h6>
                     <p class="text-secondary small mb-0">
-                        👨‍⚕️ Doctor: <strong th:text="${a.doctor.user.fullName}"></strong>
+                        Doctor: <strong th:text="${a.doctor.user.fullName}"></strong>
                     </p>
-                    <p class="text-muted small mb-0">🕒 Checked at:
+                    <p class="text-muted small mb-0"> Checked at:
                         <span th:text="${#temporals.format(a.createdAt, 'HH:mm dd/MM')}"></span>
                     </p>
                 </div>
@@ -17,7 +17,7 @@
             </div>
 
             <hr>
-            <p class="text-muted mb-2">🩺 Notes: <span th:text="${a.notes != null ? a.notes : '—'}"></span></p>
+            <p class="text-muted mb-2"> Notes: <span th:text="${a.notes != null ? a.notes : '—'}"></span></p>
             <div class="d-flex gap-2 flex-wrap mt-2">
                 <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View Detail</a>
@@ -44,7 +44,7 @@
                     <h6 class="fw-bold text-warning mb-1"
                         th:text="${#temporals.format(a.appointmentDate, 'dd/MM/yyyy')}"></h6>
                     <p class="small text-secondary mb-0">
-                        👨‍⚕️ <strong th:text="${a.doctor != null ? a.doctor.user.fullName : 'No doctor assigned'}"></strong>
+                        <strong th:text="${a.doctor != null ? a.doctor.user.fullName : 'No doctor assigned'}"></strong>
                     </p>
                 </div>
 
@@ -65,7 +65,7 @@
                 </span>
             </div>
             <hr>
-            <p class="text-muted mb-2">🩺 Reason: <span th:text="${a.notes}"></span></p>
+            <p class="text-muted mb-2">Reason: <span th:text="${a.notes}"></span></p>
             <div class="d-flex gap-2 flex-wrap">
                 <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>
@@ -93,7 +93,7 @@
                 <span class="badge bg-danger px-3 py-2">Cancelled</span>
             </div>
             <hr>
-            <p class="text-muted mb-2">❌ Reason:
+            <p class="text-muted mb-2">Reason:
                 <span th:text="${a.cancelReason != null ? a.cancelReason : 'No reason provided'}"></span>
             </p>
             <div class="d-flex gap-2 flex-wrap">
@@ -120,7 +120,7 @@
                     <h6 class="fw-bold text-info mb-1"
                         th:text="${#temporals.format(a.appointmentDate, 'dd/MM/yyyy')}"></h6>
                     <p class="small text-secondary mb-0">
-                        👨‍⚕️ <strong th:text="${a.doctor.user.fullName}"></strong>
+                        <strong th:text="${a.doctor.user.fullName}"></strong>
                     </p>
                 </div>
                 <span class="badge bg-info text-dark px-3 py-2">Checked-in</span>
@@ -128,10 +128,10 @@
 
             <hr>
             <p class="fw-bold text-primary mb-0">
-                🩺 Queue number: <span th:text="${a.queueNumber}"></span>
+                Queue number: <span th:text="${a.queueNumber}"></span>
             </p>
             <p class="text-muted small mb-1">
-                ⏰ Created at: <span th:text="${#temporals.format(a.createdAt, 'HH:mm dd/MM')}"></span>
+                Created at: <span th:text="${#temporals.format(a.createdAt, 'HH:mm dd/MM')}"></span>
             </p>
 
             <div class="d-flex gap-2 flex-wrap mt-2">
@@ -156,13 +156,13 @@
                     <h6 class="fw-bold text-warning mb-1"
                         th:text="${#temporals.format(a.appointmentDate, 'dd/MM/yyyy')}"></h6>
                     <p class="small text-secondary mb-0">
-                        👨‍⚕️ <strong th:text="${a.doctor != null ? a.doctor.user.fullName : 'No doctor assigned'}"></strong>
+                        <strong th:text="${a.doctor != null ? a.doctor.user.fullName : 'No doctor assigned'}"></strong>
                     </p>
                 </div>
                 <span class="badge bg-warning text-dark px-3 py-2">Pending</span>
             </div>
             <hr>
-            <p class="text-muted mb-2">🩺 Reason: <span th:text="${a.notes}"></span></p>
+            <p class="text-muted mb-2">Reason: <span th:text="${a.notes}"></span></p>
             <div class="d-flex gap-2 flex-wrap">
                 <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>

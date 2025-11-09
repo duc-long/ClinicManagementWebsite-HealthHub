@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("✅ appointment.js loaded");
 
-    document.querySelectorAll('.list-group-item').forEach(item => {
+    document.querySelectorAll('.nav-link-app').forEach(item => {
         item.addEventListener('click', e => {
             e.preventDefault();
             const type = item.id.replace('filter-', ''); // current, history, submitted, cancelled
 
             // change active sidebar
-            document.querySelectorAll('.list-group-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.nav-link-app').forEach(i => i.classList.remove('active'));
             item.classList.add('active');
 
             // container thật sự hiển thị danh sách

@@ -27,9 +27,11 @@ public class PatientRegisterDTO {
 
     @Email(message = "Invalid email address")
     @NotBlank(message = "Email must not be blank")
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            message = "Please enter a valid email address (e.g., user@example.com).")
     private String email;
 
-    @Pattern(regexp = "^[0-9]{9,11}$", message = "Phone number must contain 9–11 digits")
+    @Pattern(regexp = "(0[3|5|7|8|9])+([0-9]{8})\\b", message = "Please enter a valid 10-digit phone number and start with 03, 05, 07, 08, or 09")
     @NotBlank(message = "Phone must not be blank")
     private String phone;
 
@@ -37,6 +39,7 @@ public class PatientRegisterDTO {
     private Gender gender;
 
     @NotBlank(message = "Address must not be blank")
+    @Size(max = 500, message = "Address must not exceed 500 characters")
     private String address;
 
     @Past(message = "Date of birth must be in the past")

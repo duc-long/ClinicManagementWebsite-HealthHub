@@ -20,14 +20,16 @@ public class PatientUserDTO {
     private String username;
 
     @NotBlank(message = "Full name must not be blank")
-    @Size(min = 3, max = 100, message = "Full name must be between 3 and 100 characters")
+    @Size(min = 5, max = 100, message = "Full name must be between 5 and 100 characters")
     private String fullName;
 
     @NotBlank(message = "Email must not be blank")
     @Email(message = "Invalid email address")
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            message = "Please enter a valid email address (e.g., user@example.com).")
     private String email;
 
-    @Pattern(regexp = "^[0-9]{9,11}$", message = "Phone number must contain 9–11 digits")
+    @Pattern(regexp = "(0[3|5|7|8|9])+([0-9]{8})\\b", message = "Please enter a valid 10-digit phone number and start with 03, 05, 07, 08, or 09")
     @NotBlank(message = "Phone must not be blank")
     private String phone;
 
@@ -42,6 +44,7 @@ public class PatientUserDTO {
 
     @Past(message = "Date of birth must be in the past")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "Date of birth cannot be null")
     private LocalDate dateOfBirth;
 
     @AssertTrue(message = "Age must be between 10 and 120 years")

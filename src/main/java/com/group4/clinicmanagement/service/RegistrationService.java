@@ -32,6 +32,8 @@ public class RegistrationService {
 
     private final PatientRepository patientRepository;
 
+    private static final int MAX_ATTEMPTS = 5;
+
     public  RegistrationService(UserRepository userRepository,
                                 PasswordResetTokenRepository tokenRepository,
                                 EmailService emailService,
@@ -87,16 +89,90 @@ public class RegistrationService {
         patientRepository.save(patient);
 
         // ➕ Tạo và gửi OTP
-        createAndSendOtp(dto.getEmail(), dto.getFullName());
+        createAndSendOtp(dto.getEmail());
     }
 
-    @Transactional
-    public boolean verifyOtp(String email, String otp) {
-        PasswordResetToken token = tokenRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("OTP not found"));
+//    @Transactional
+//    public boolean verifyOtp(String email, String otp) {
+//        PasswordResetToken token = tokenRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("OTP not found"));
+//
+//        if (token.getAttempts() >= MAX_ATTEMPTS) {
+//            tokenRepository.deleteByEmail(email);
+//            throw new RuntimeException("Too many incorrect attempts. Please request a new OTP.");
+//        }
+//
+//        if (token.isExpired()) {
+//            tokenRepository.delete(token);
+//            throw new RuntimeException("OTP expired");
+//        }
+//        // Kiểm tra OTP
+//        if (token.getOtpCode().equals(otp)) {
+//            // Reset số lần thử nếu OTP đúng
+//            token.setAttempts(0);
+//            tokenRepository.saveAndFlush(token);
+//            tokenRepository.flush();
+//            return true;
+//        } else {
+//            // Tăng số lần thử nếu OTP sai
+//            token.setAttempts(token.getAttempts() + 1);
+//            tokenRepository.saveAndFlush(token);
+//            tokenRepository.flush();
+//
+//            // Nếu đã vượt quá số lần thử, xóa OTP
+//            if (token.getAttempts() >= MAX_ATTEMPTS) {
+//                System.out.println(token.getAttempts());
+//                System.out.println(email);
+//                tokenRepository.deleteByEmail(email);  // Xóa OTP nếu sai quá 5 lần
+//                throw new RuntimeException("OTP has been deleted due to too many incorrect attempts.");
+//            }
+//            return false;
+//        }
+//    }
 
-        if (token.isExpired()) throw new RuntimeException("OTP expired");
-        return token.getOtpCode().equals(otp);
+    @Transactional
+    public int verifyOtp(String email, String otp) {
+        PasswordResetToken token = tokenRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("OTP not found")); // Lỗi này OK vì nó là trường hợp ngoại lệ
+
+        if (token.getAttempts() >= MAX_ATTEMPTS) {
+            tokenRepository.deleteByEmail(email);
+            // THAY ĐỔI 1: Không ném lỗi, chỉ trả về mã -1
+            return -1;
+        }
+
+        if (token.isExpired()) {
+            tokenRepository.deleteByEmail(email);
+            return -2;
+//            throw new RuntimeException("OTP expired"); // Lỗi này OK
+        }
+
+        // Kiểm tra OTP
+        if (token.getOtpCode().equals(otp)) {
+            // Reset số lần thử nếu OTP đúng
+            token.setAttempts(0);
+            tokenRepository.saveAndFlush(token);
+            tokenRepository.flush();
+            // THAY ĐỔI 2: Trả về mã 1
+            return 1;
+        } else {
+            // Tăng số lần thử nếu OTP sai
+            token.setAttempts(token.getAttempts() + 1);
+            tokenRepository.saveAndFlush(token);
+            tokenRepository.flush();
+
+            // Nếu đã vượt quá số lần thử, xóa OTP
+            if (token.getAttempts() >= MAX_ATTEMPTS) {
+                System.out.println(token.getAttempts());
+                System.out.println(email);
+                tokenRepository.deleteByEmail(email);  // Xóa OTP nếu sai quá 5 lần
+
+                // THAY ĐỔI 3: Không ném lỗi, chỉ trả về mã -1
+                return -1;
+            }
+            // THAY ĐỔI 4: Trả về mã 0
+            return 0;
+        }
     }
 
     @Transactional
@@ -114,11 +190,16 @@ public class RegistrationService {
     @Transactional
     public void resendOtp(String email) {
         tokenRepository.deleteByEmail(email);
-        createAndSendOtp(email, "User");
+        createAndSendOtp(email);
     }
 
 
-    private void createAndSendOtp(String email, String fullName) {
+    @Transactional
+    public void createAndSendOtp(String email) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email not found"));
+        tokenRepository.deleteByEmail(email);
+
         String otp = String.format("%06d", new Random().nextInt(999999));
 
         PasswordResetToken token = new PasswordResetToken();
@@ -126,6 +207,7 @@ public class RegistrationService {
         token.setOtpCode(otp);
         token.setToken(UUID.randomUUID().toString());
         token.setExpirationDate(LocalDateTime.now().plusMinutes(15));
+        token.setAttempts(0);  // Khởi tạo số lần thử là 0
         tokenRepository.save(token);
 
         String subject = "HealthHub - Verify your registration";
@@ -141,8 +223,13 @@ public class RegistrationService {
                 
                 Regards,
                 HealthHub Support
-                """.formatted(fullName, otp);
+                """.formatted(user.getFullName(), otp);
 
         emailService.sendEmail(email, subject, body);
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found for email: " + email));
     }
 }

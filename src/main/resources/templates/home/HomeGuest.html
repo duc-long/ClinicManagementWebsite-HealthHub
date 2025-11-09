@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,13 +14,15 @@
     <div th:replace="~{fragment/fragment.html :: css}"></div>
     <style>
         body {
-            background-color: #f6f7fb;
+            background-color: #ffffff;
         }
 
         .card-img-overlay {
             background: rgba(0, 0, 0, 0.4);
             border-radius: 0.5rem;
         }
+
+
 
     </style>
 </head>
@@ -33,32 +35,34 @@
 <section class="container py-5">
     <div class="row align-items-center">
         <div class="col-md-6">
-            <h1 class="text-primary fw-bold mb-3">FPT’s Trusted Healthcare System</h1>
+            <h1 class="fw-bold mb-3" style="color: #009bab">FPT’s Trusted Healthcare System</h1>
             <p class="text-muted">HealthHub features five specialties: Cardiology, Internal Medicine, OB-GYN,
                 Orthopedics, and Pediatrics – giving you more choices and consistent care.</p>
         </div>
         <div class="col-md-6 text-center">
-            <img src="https://placehold.co/600x400" alt="Hero Image" class="img-fluid rounded">
+            <img th:src="${'/images/giaodien/banner.jpg'}" alt="Hero Image" class="img-fluid rounded">
         </div>
     </div>
 </section>
+<!--<section class="hero-banner">-->
+<!--    <div class="hero-content text-center">-->
+<!--        <h1 class="fw-bold mb-3" style="color: #009bab;">FPT’s Trusted Healthcare System</h1>-->
+<!--        <p class="text-muted">HealthHub features five specialties: Cardiology, Internal Medicine, OB-GYN, Orthopedics, and Pediatrics – giving you more choices and consistent care.</p>-->
+<!--    </div>-->
+<!--    <img th:src="${'/images/giaodien/banner.jpg'}" alt="Hero Image" class="img-fluid hero-image">-->
+<!--</section>-->
 
 
 <!-- ACTION BUTTONS BOX -->
 <section class="container py-4">
-    <div class="card p-5 shadow text-center border-primary border-1">
+    <div class="card p-5 shadow text-center border-1" style="border-color: #009bab">
         <div class="d-flex justify-content-center gap-4 flex-wrap">
-            <a th:href="@{/home/search-doctor}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5"
-               style="width: 380px;">
+            <a th:href="@{/home/search-doctor}" class="btn btn-lg px-5 py-3 fs-5"
+               style="width: 380px; color: #009bab; border-color: #009bab">
                 <i class="fa-solid fa-user-doctor me-2"></i>Find A Doctors
             </a>
-            <a href="#"
-               class="btn btn-outline-primary btn-lg px-4 py-3 fs-5"
-               style="width: 380px;">
-                <i class="fa-solid fa-star me-2"></i>View Feedback
-            </a>
             <a th:href="@{/appointment/make-appointment}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5"
-               style="width: 380px;">
+               style="width: 380px; color: #009bab; border-color: #009bab">
                 <i class="fa-solid fa-calendar-check me-2"></i>Book Appointment
             </a>
         </div>
@@ -68,9 +72,10 @@
 
 <!-- DOCTORS SECTION -->
 <section class="container py-5">
-    <h2 class="text-center text-primary fw-bold mb-4">Our Doctors</h2>
+    <h2 class="text-center fw-bold mb-4" style="color: #009bab;">Our Doctors</h2>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
         <div class="col" th:each="doctor : ${doctors}">
+            <a th:href="@{/home/doctor-profile/{id}(id=${doctor.doctorId})}">
             <div class="position-relative rounded overflow-hidden">
                 <img th:src="${doctor.avatarFilename} != null ?
                   @{/images/avatars/{file}(file=${doctor.avatarFilename})} :
@@ -83,8 +88,8 @@
                     <small th:text="${doctor.specialty}">Doctor's Title</small>
                 </div>
             </div>
+            </a>
         </div>
-
     </div>
 </section>
 
@@ -92,14 +97,14 @@
     <div class="row align-items-center g-4">
         <!-- LEFT CONTENT -->
         <div class="col-md-4">
-            <h2 class="text-primary fw-bold mb-3">Our Specialties</h2>
+            <h2 class=" fw-bold mb-3 " style="color: #009bab;">Our Specialties</h2>
             <p class="text-muted">
                 HealthHub provides a wide range of medical specialties and expert care teams, ensuring every patient
                 receives trusted, personalized treatment using modern technology and evidence-based practices.
             </p>
             <div class="dropdown">
-                <a class="dropdown-toggle text-primary text-decoration-none fw-semibold"
-                   id="dropdownSpecialty" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="dropdown-toggle text-decoration-none fw-semibold"
+                   id="dropdownSpecialty" data-bs-toggle="dropdown" aria-expanded="false" style="color: #009bab;">
                     Departments
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownSpecialty">
@@ -140,32 +145,14 @@
 <div class="feedback-container">
     <div th:replace="~{fragment/patient/page :: pagination-feedback}"></div>
 
-    <div th:replace="~{fragment/patient/feedback :: feedback}">
+    <div sec:authorize="isAuthenticated()" th:replace="~{fragment/patient/feedback :: feedback}">
 
     </div>
 </div>
 
 
 <!-- FOOTER -->
-<footer class="bg-primary text-white py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <h4 class="fw-bold">HealthHub</h4>
-                <p>FPT’s Trusted Healthcare System</p>
-                <p><i class="fa fa-map-marker-alt me-2"></i>666 Nguyen Van Cu, Can Tho</p>
-                <p><i class="fa fa-phone me-2"></i>+84 123 456 789</p>
-            </div>
-            <div class="col-md-4 mb-3">
-                <h6 class="fw-bold">Links</h6>
-                <ul class="list-unstyled">
-                    <li><a th:href="@{/home/list-doctor}" class="text-white text-decoration-none">Doctor</a></li>
-                    <li><a href="#" class="text-white text-decoration-none">Appointment</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</footer>
+<footer th:insert="~{fragment/fragment :: footer}"></footer>
 <!-- Bootstrap JS -->
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

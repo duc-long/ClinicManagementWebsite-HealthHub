@@ -41,6 +41,10 @@
                                 <div class="result-label">Doctor</div>
                                 <div class="result-value" th:text="${record.doctorFullName}"></div>
                             </div>
+                            <div class="result-row">
+                                <div class="result-label text-dark" >Click view details</div>
+<!--                                <div class="result-value" th:text="${record.doctorFullName}"></div>-->
+                            </div>
                         </a>
                     </div>
                 </div>
@@ -49,5 +53,6 @@
     </div> <!-- row -->
 </div> <!-- container-fluid -->
 </body>
+<footer th:insert="~{fragment/fragment :: footer}"></footer>
 <script src="/assets/js/bootstrap.bundle.min.js"></script>
 </html>

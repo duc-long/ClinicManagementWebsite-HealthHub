@@ -1,0 +1,112 @@
+<!-- SIDEBAR -->
+<div class="col-md-3 col-12 sidebar p-4 border-end" th:fragment="sidebar-app-patient">
+    <h5 class="sidebar-title">Account</h5>
+    <ul class="nav flex-column sidebar-nav">
+        <li class="nav-item">
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse"
+               href="#collapseInfo"
+               role="button"
+               aria-expanded="false"
+               aria-controls="collapseInfo"
+               th:classappend="${currentPath != null and
+           (currentPath.startsWith('/patient/profile')
+           or currentPath.startsWith('/patient/edit-profile')
+           or currentPath.startsWith('/patient/change-password'))} ? ' active'">
+                <span><i class="bi bi-person-circle"></i> Information</span>
+                <i class="bi bi-caret-down-fill small"></i>
+            </a>
+
+            <div class="collapse ps-3" id="collapseInfo"
+                 data-bs-parent=".sidebar-nav"
+                 th:classappend="${currentPath != null and
+            (currentPath.startsWith('/patient/profile')
+            or currentPath.startsWith('/patient/edit-profile')
+            or currentPath.startsWith('/patient/change-password'))} ? ' show'">
+                <ul class="nav flex-column mt-1">
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           th:href="@{/patient/profile}"
+                           th:classappend="${currentPath != null and currentPath.startsWith('/patient/profile')} ? ' active'">
+                            <i class="bi bi-person"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           th:href="@{/patient/edit-profile}"
+                           th:classappend="${currentPath != null and currentPath.startsWith('/patient/edit-profile')} ? ' active'">
+                            <i class="bi bi-pencil-square"></i> Edit profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           th:href="@{/patient/change-password}"
+                           th:classappend="${currentPath != null and currentPath.startsWith('/patient/change-password')} ? ' active'">
+                            <i class="bi bi-key-fill"></i> Change password
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse"
+               href="#collapseApp"
+               role="button"
+               aria-expanded="false"
+               aria-controls="collapseApp"
+               th:classappend="${currentPath != null and currentPath.startsWith('/patient/appointment/manage') ? ' active' : ''}">
+                <span><i class="bi bi-calendar-check"></i> Manage appointments</span>
+                <i class="bi bi-caret-down-fill small"></i>
+            </a>
+
+            <div class="collapse ps-3" id="collapseApp"
+                 data-bs-parent=".sidebar-nav"
+                 th:classappend="${currentPath != null and currentPath.startsWith('/patient/appointment/manage') ? ' show' : ''}">
+                <ul class="nav flex-column mt-1">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link-app"
+                           th:classappend="${currentPath != null and currentPath.startsWith('/patient/appointment/manage/current') ? ' active' : ''}" id="filter-current">
+                            <i class="bi bi-eye"></i>View</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link-app"
+                           th:classappend="${currentPath != null and currentPath.startsWith('/patient/appointment/manage/history') ? ' active' : ''}" id="filter-history">
+                            <i class="bi bi-clock-history"></i>History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link-app"
+                           th:classappend="${currentPath != null and currentPath.startsWith('/patient/appointment/manage/submitted') ? ' active' : ''}" id="filter-submitted">
+                            <i class="bi bi-file-earmark-check"></i>Submitted</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link-app"
+                           th:classappend="${currentPath != null and currentPath.startsWith('/patient/appointment/manage/cancelled') ? ' active' : ''}" id="filter-cancelled">
+                            <i class="bi bi-x-circle"></i>Cancelled</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link-app"
+                           th:classappend="${currentPath != null and currentPath.startsWith('/patient/appointment/manage/examined') ? ' active' : ''}" id="filter-examined">
+                            <i class="bi bi-check-circle"></i>Re-Examined</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/patient/list-medical-records}"
+               th:classappend="${currentPath != null and (currentPath.startsWith('/patient/list-medical-records')) or
+       currentPath != null and (currentPath.startsWith('/patient/medical-records'))} ? ' active'">
+                <i class="bi bi-journal-medical"></i> List medical records
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link logout" th:href="@{/patient/logout}">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+        </li>
+    </ul>
+</div>
+
+

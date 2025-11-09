@@ -86,7 +86,7 @@
 <div class="register-container">
     <div class="register-title">Register Account</div>
 
-    <form th:action="@{/auth/register}" th:object="${patient}" method="post">
+    <form th:action="@{/register}" th:object="${patient}" method="post">
         <div class="row g-4">
 
             <!-- Username -->
@@ -99,21 +99,35 @@
             <!-- Full Name -->
             <div class="col-md-6">
                 <label class="form-label">Full Name</label>
-                <input type="text" th:field="*{fullName}" class="form-control" required placeholder="Enter full name">
+                <input type="text" th:field="*{fullName}" class="form-control" required
+                       minlength="5"
+                       maxlength="100"
+                       pattern="^[\p{L}\s']+$"
+                       placeholder="Enter full name"
+                       title="Full name must be 5-100 characters and contain only letters and spaces.">
                 <div class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
             </div>
 
             <!-- Email -->
             <div class="col-md-6">
                 <label class="form-label">Email</label>
-                <input type="email" th:field="*{email}" class="form-control" required placeholder="Enter email">
+                <input type="email" th:field="*{email}" class="form-control" required
+                       maxlength="100"
+                       pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                       placeholder="Enter email"
+                       title="Please enter a valid email address (e.g., user@example.com)." />
                 <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
             </div>
 
             <!-- Phone -->
             <div class="col-md-6">
                 <label class="form-label">Phone</label>
-                <input type="text" th:field="*{phone}" class="form-control" required placeholder="Enter phone number">
+                <input type="tel" th:field="*{phone}" class="form-control" required
+                       pattern="(0[3|5|7|8|9])+([0-9]{8})\b"
+                       maxlength="10"
+                       inputmode="numeric"
+                       placeholder="Enter phone number"
+                       title="Please enter a valid 10-digit phone number (e.g., 09xxxxxxxx)."/>
                 <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
             </div>
 
@@ -130,14 +144,24 @@
             <!-- Address -->
             <div class="col-md-6">
                 <label class="form-label">Address</label>
-                <input type="text" th:field="*{address}" class="form-control" required placeholder="Enter address">
+                <input type="text" th:field="*{address}" class="form-control" required
+                       minlength="5"
+                       maxlength="255"
+                       placeholder="Enter address"
+                       title="Address must be between 5 and 255 characters."/>
                 <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
             </div>
 
             <!-- Date of Birth -->
             <div class="col-md-6">
                 <label class="form-label">Date of Birth</label>
-                <input type="date" th:field="*{dateOfBirth}" required class="form-control">
+                <input type="date"
+                       th:field="*{dateOfBirth}"
+                       th:value="${#temporals.format(patient.dateOfBirth, 'yyyy-MM-dd')}"
+                       class="form-control" required
+                       min="1900-01-01"
+                       th:max="${T(java.time.LocalDate).now().format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd'))}"
+                       title="Date of birth cannot be in the future."/>
                 <div class="text-danger" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
             </div>
 

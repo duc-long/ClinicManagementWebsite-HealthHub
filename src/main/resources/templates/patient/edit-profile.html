@@ -27,7 +27,7 @@
             <form class="profile-card" th:action="@{/patient/save-profile}" method="post" th:object="${patient}"
                   enctype="multipart/form-data">
                 <input type="hidden" th:field="*{username}">
-                <div class="profile-title">Change profile</div>
+                <div class="profile-title">Edit profile</div>
                 <div class="avatar-container avatar-upload">
                     <img th:src="${patient.avatarFilename != null} ? '/images/avatars/' + ${patient.avatarFilename} : '/images/avatars/default-avatar.png'"
                          class="avatar"
@@ -45,15 +45,22 @@
                         <input type="text" th:value="${#authentication.name}" disabled readonly class="input"/>
                     </div>
                     <div class="group-info">
-                        <div class="label">Name</div>
-                        <input type="text" th:field="*{fullName}" class="input"/>
+                        <div class="label">Full name</div>
+                        <input type="text" th:field="*{fullName}" class="input" required
+                               minlength="5"
+                               maxlength="100"
+                               pattern="^[\p{L}\s']+$"
+                               title="Full name must be 5-100 characters and contain only letters and spaces.">
                         <div class="error-message"
                              th:if="${#fields.hasErrors('fullName')}"
                              th:errors="*{fullName}"></div>
                     </div>
                     <div class="group-info">
                         <div class="label">Email</div>
-                        <input type="email" th:field="*{email}" class="input"/>
+                        <input type="email" th:field="*{email}" class="input" required
+                               maxlength="100"
+                               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                               title="Please enter a valid email address (e.g., user@example.com)." />
                         <div class="error-message"
                              th:if="${#fields.hasErrors('email')}"
                              th:errors="*{email}"></div>
@@ -63,11 +70,11 @@
                         <div class="checkbox-group">
                             <label>
                                 <input type="radio" th:field="*{gender}"
-                                       th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}"/> Male
+                                       th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}" required/> Male
                             </label>
                             <label>
                                 <input type="radio" th:field="*{gender}"
-                                       th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}"/> Female
+                                       th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}" required/> Female
                             </label>
                         </div>
                         <div class="error-message"
@@ -76,14 +83,21 @@
                     </div>
                     <div class="group-info">
                         <div class="label">Phone</div>
-                        <input type="text" th:field="*{phone}" class="input"/>
+                        <input type="tel" th:field="*{phone}" class="input" required
+                               pattern="(0[3|5|7|8|9])+([0-9]{8})\b"
+                               maxlength="10"
+                               inputmode="numeric"
+                               title="Please enter a valid 10-digit phone number (e.g., 09xxxxxxxx)."/>
                         <div class="error-message"
                              th:if="${#fields.hasErrors('phone')}"
                              th:errors="*{phone}"></div>
                     </div>
                     <div class="group-info">
                         <div class="label">Address</div>
-                        <input type="text" th:field="*{address}" class="input"/>
+                        <input type="text" th:field="*{address}" class="input" required
+                               minlength="10"
+                               maxlength="255"
+                               title="Address must be between 10 and 255 characters."/>
                         <div class="error-message"
                              th:if="${#fields.hasErrors('address')}"
                              th:errors="*{address}"></div>
@@ -93,7 +107,10 @@
                         <input type="date"
                                th:field="*{dateOfBirth}"
                                th:value="${#temporals.format(patient.dateOfBirth, 'yyyy-MM-dd')}"
-                               class="input"/>
+                               class="input" required
+                               min="1900-01-01"
+                               th:max="${T(java.time.LocalDate).now().format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd'))}"
+                               title="Date of birth cannot be in the future."/>
                         <div class="error-message"
                              th:if="${#fields.hasErrors('dateOfBirth')}"
                              th:errors="*{dateOfBirth}"></div>
@@ -114,7 +131,29 @@
 <script>
     function previewAvatar(input) {
         const file = input.files[0];
+        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+
+        // Lấy nguồn ảnh hiện tại (để khôi phục nếu file lỗi)
+        const currentAvatarSrc = document.getElementById('avatarPreview').src;
+
         if (file) {
+            // 1. Kiểm tra kích thước file
+            if (file.size > maxSizeInBytes) {
+                alert("File is too large! The maximum size is 5MB.");
+                input.value = ""; // Xóa file đã chọn
+                document.getElementById('avatarPreview').src = currentAvatarSrc; // Khôi phục ảnh cũ
+                return;
+            }
+
+            // 2. Kiểm tra loại file (đã có accept="image/*" nhưng JS chắc chắn hơn)
+            if (!file.type.startsWith('image/')) {
+                alert("Only image files (JPG, PNG, GIF...) are accepted.");
+                input.value = "";
+                document.getElementById('avatarPreview').src = currentAvatarSrc;
+                return;
+            }
+
+            // 3. Hiển thị preview
             const reader = new FileReader();
             reader.onload = e => {
                 document.getElementById('avatarPreview').src = e.target.result;
@@ -123,7 +162,104 @@
         }
     }
 </script>
+<!-- Beautiful Confirm Modal -->
+<div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0 rounded-3">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" style="color:#007d88;">Confirm Save</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-1 pb-3" style="font-size: 15px;">
+                Are you sure you want to save your profile changes?
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-cancel px-4 py-2" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmSaveBtn" class="btn btn-save px-4 py-2">Yes, Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<style>
+    .btn-cancel {
+        background-color: #e0e0e0;
+        color: #333;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: 0.2s;
+    }
 
-<div th:replace="~{fragment/popup :: popup}"></div>>
+    .btn-cancel:hover {
+        background-color: #ccc;
+    }
+
+    .btn-save {
+        background-color: #009bab;
+        color: white;
+        border-radius: 8px;
+        font-weight: 600;
+        box-shadow: 0 4px 8px rgba(0, 155, 171, 0.3);
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-save:hover {
+        background-color: #007d88;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(0, 155, 171, 0.4);
+    }
+
+    .modal-content {
+        font-family: "Lexend", sans-serif;
+        animation: fadeIn 0.25s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+</style>
+
+<!--<script>-->
+<!--    document.addEventListener("DOMContentLoaded", function () {-->
+<!--        const form = document.querySelector(".profile-card");-->
+<!--        const modal = new bootstrap.Modal(document.getElementById('confirmSaveModal'));-->
+<!--        const confirmButton = document.getElementById('confirmSaveBtn');-->
+
+<!--        form.addEventListener("submit", function (e) {-->
+<!--            // 1. Luôn ngăn chặn việc gửi form mặc định-->
+<!--            e.preventDefault();-->
+
+<!--            // 2. Kiểm tra xem form có hợp lệ không-->
+<!--            if (form.checkValidity()) {-->
+<!--                // 3. Nếu HỢP LỆ -> hiển thị modal-->
+<!--                modal.show();-->
+<!--            } else {-->
+<!--                // 4. Nếu KHÔNG HỢP LỆ -> yêu cầu trình duyệt hiển thị lỗi-->
+<!--                form.reportValidity();-->
+<!--            }-->
+<!--        });-->
+
+<!--        confirmButton.addEventListener("click", function () {-->
+<!--            modal.hide();-->
+<!--            form.submit(); // 5. Gửi form sau khi người dùng đồng ý-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function () {-->
+<!--        document.querySelectorAll('#collapseInfo .nav-link').forEach(link => {-->
+<!--            link.addEventListener('click', function () {-->
+<!--                const collapse = document.getElementById('collapseInfo');-->
+<!--                const bsCollapse = bootstrap.Collapse.getInstance(collapse);-->
+<!--                if (bsCollapse) {-->
+<!--                    bsCollapse.hide();-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<footer th:insert="~{fragment/fragment :: footer}"></footer>
+<div th:replace="~{fragment/popup :: popup}"></div>
 </html>

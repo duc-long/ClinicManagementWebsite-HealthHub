@@ -22,6 +22,9 @@ public class PasswordResetToken {
     private String otpCode;
     private LocalDateTime expirationDate;
 
+    @Column(name = "attempts")
+    private int attempts = 0;
+
     public boolean isExpired() {
         return expirationDate.isBefore(LocalDateTime.now());
     }

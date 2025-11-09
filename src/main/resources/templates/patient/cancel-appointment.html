@@ -8,43 +8,25 @@
     <!-- ✅ Bootstrap & Icons -->
     <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/profile.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/side-bar-patient.css">
+    <div th:replace="~{fragment/fragment.html :: css}"></div>
     <style>
-        body {
-            background-color: #f9fbfd;
-            font-family: 'Inter', sans-serif;
-            color: #2c3e50;
-        }
-        .container { max-width: 700px; }
-        .card {
-            border: none;
-            border-radius: 14px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-        }
-        h2 {
-            font-weight: 700;
-            color: #dc3545;
-        }
-        .info-label {
-            font-weight: 600;
-            color: #007bff;
-        }
-        .form-control {
-            border-radius: 8px;
-            padding: 10px;
-        }
-        .btn {
-            border-radius: 8px;
-            font-weight: 600;
-        }
     </style>
 </head>
 
 <body>
 <div th:replace="~{fragment/fragment.html :: navBar}"></div>
-<div class="container py-5">
-    <h2 class="text-center mb-4">❌ Cancel Appointment</h2>
+<div class="container-fluid" th:object="${patient}">
+    <div class="row">
+        <div th:replace="~{fragment/patient/side-bar :: sidebar-patient}"></div>
+        <div class="col-md-9 col-12 p-4">
+            <div class="profile-card-appointment">
+                <div class="profile-title">Cancel Appointment</div>
     <p class="text-center text-muted mb-5">
         Please review your appointment details carefully before confirming the cancellation.
     </p>
@@ -56,23 +38,23 @@
 
             <!-- Appointment Information -->
             <div class="mb-3">
-                <p><span class="info-label">👨‍⚕️ Doctor:</span>
+                <p><span class="info-label">Doctor:</span>
                     <span th:text="${appointment.doctor != null ? appointment.doctor.user.fullName : 'None'}"></span>
                 </p>
-                <p><span class="info-label">📅 Date:</span>
+                <p><span class="info-label">Date:</span>
                     <span th:text="${#temporals.format(appointment.appointmentDate, 'dd/MM/yyyy')}"></span>
                 </p>
-                <p><span class="info-label">🩺 Notes:</span>
+                <p><span class="info-label">Notes:</span>
                     <span th:text="${appointment.notes != null ? appointment.notes : '—'}"></span>
                 </p>
-                <p><span class="info-label">💬 Status:</span>
+                <p><span class="info-label">Status:</span>
                     <span th:text="${appointment.status != null ? appointment.status.name() : 'Unknown'}"></span>
                 </p>
             </div>
 
             <!-- Reason -->
             <div class="mb-4">
-                <label for="cancelReason" class="form-label">✍ Reason for Cancellation</label>
+                <label for="cancelReason" class="form-label"> Reason for Cancellation</label>
                 <textarea id="cancelReason" name="cancelReason" class="form-control" rows="4"
                           placeholder="Enter the reason you wish to cancel this appointment..." required></textarea>
             </div>
