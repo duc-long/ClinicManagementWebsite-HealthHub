@@ -8,6 +8,7 @@ import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.repository.PatientRepository;
 import com.group4.clinicmanagement.repository.UserRepository;
 import com.group4.clinicmanagement.service.AppointmentService;
+import com.group4.clinicmanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
@@ -26,7 +27,7 @@ public class AppointmentController {
     private final PatientRepository patientRepository;
 
     // constructor
-    public AppointmentController(AppointmentService appointmentService, UserRepository userRepository, PatientRepository patientRepository) {
+    public AppointmentController(AppointmentService appointmentService, UserRepository userRepository, PatientRepository patientRepository, UserService userService) {
         this.appointmentService = appointmentService;
         this.userRepository = userRepository;
         this.patientRepository = patientRepository;
@@ -34,8 +35,9 @@ public class AppointmentController {
 
     // method show the main view appointment
     @RequestMapping("/manage")
-    public String appointmentPage(Model model, HttpSession session) {
-        User currentUser = userRepository.findByUserId(11).orElse(null);
+    public String appointmentPage(Model model, Principal principal) {
+        User currentUser = userRepository.findUserByUsername(principal.getName()).orElse(null);
+
         if (currentUser == null) {
             System.out.println("cannot find user");
             return "redirect:/login";
@@ -57,9 +59,9 @@ public class AppointmentController {
 
     // method to filter the view appointment
     @GetMapping("/view")
-    public String filterAppointments(@RequestParam String type, Model model, HttpSession session) {
-        User currentUser = userRepository.findByUserId(11).orElse(null);
-        if (currentUser == null) return "redirect:/login";
+    public String filterAppointments(@RequestParam String type, Model model, Principal principal) {
+        User currentUser = userRepository.findUserByUsername(principal.getName()).orElse(null);
+        if (currentUser == null) return "redirect:/patient/login";
 
         List<Appointment> all = appointmentService.findAllByPatientId(currentUser.getUserId());
         List<Appointment> filterd;
@@ -102,7 +104,7 @@ public class AppointmentController {
     public String viewAppointmentDetail(@PathVariable("id") int id, Model model, Principal principal) {
         User currentUser = userRepository.findUserByUsername(principal.getName()).orElse(null);
         if (currentUser == null) {
-            return "redirect:/login";
+            return "redirect:/patient/login";
         }
 
         Appointment appointment = appointmentService.findAppointmentById(id);
@@ -124,10 +126,10 @@ public class AppointmentController {
     @Transactional
     @PostMapping("/make-appointment")
     public String doMakeAppointment(@ModelAttribute("appointment") Appointment appointment,
-                                    Model model,
+                                    Principal principal,
                                     RedirectAttributes redirectAttributes) {
-        Patient patient = new Patient();
-        patient.setPatientId(11);
+        User user = userRepository.findUserByUsername(principal.getName()).orElse(null);
+        Patient patient = patientRepository.findById(user.getUserId()).orElse(null);
 
         // check span in the same day
         if (!appointmentService.canBookAppointment(patient.getPatientId())) {
