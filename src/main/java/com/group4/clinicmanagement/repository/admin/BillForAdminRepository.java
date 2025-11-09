@@ -1,7 +1,6 @@
 package com.group4.clinicmanagement.repository.admin;
 
 import com.group4.clinicmanagement.entity.Bill;
-import com.group4.clinicmanagement.entity.Feedback;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface BillRepository extends JpaRepository<Bill, Integer> {
+public interface BillForAdminRepository extends JpaRepository<Bill, Integer> {
 
     // Theo NGÀY
     @Query(value = """

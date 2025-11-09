@@ -17,15 +17,17 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     Doctor getDoctorByDoctorId(Integer doctorId);
 
     @Query("""
-            SELECT d FROM Doctor d
-            WHERE d.doctorId NOT IN (
-                SELECT s.doctor.doctorId
-                FROM DoctorDailySlot s
-                WHERE s.slotDate = :date
-                AND s.availableSlots <= 0
-            )
-            """)
-    List<Doctor> findAvailableDoctorsOnDate(LocalDate date);
+           SELECT d FROM Doctor d
+           WHERE d.department.departmentId =:departmentId AND d.doctorId NOT IN (
+               SELECT s.doctor.doctorId
+               FROM DoctorDailySlot s
+               WHERE s.slotDate = :date
+               AND s.availableSlots <= 0
+           )
+           """)
+    List<Doctor> findAvailableDoctors(
+            @Param("departmentId") int departmentId,
+            @Param("date") LocalDate date);
 
     @Query("""
             SELECT d FROM Doctor d

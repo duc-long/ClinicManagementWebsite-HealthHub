@@ -1,45 +1,50 @@
 package com.group4.clinicmanagement.service;
 
-import com.group4.clinicmanagement.repository.admin.BillRepository;
+import com.group4.clinicmanagement.entity.Appointment;
+import com.group4.clinicmanagement.entity.Bill;
+import com.group4.clinicmanagement.repository.BillRepository;
+import com.group4.clinicmanagement.repository.admin.BillForAdminRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BillService {
 
     private final BillRepository billRepository;
+    private final BillForAdminRepository billForAdminRepository;
 
-    public BillService(BillRepository billRepository) {
+    public BillService(BillRepository billRepository, BillForAdminRepository billForAdminRepository) {
         this.billRepository = billRepository;
+        this.billForAdminRepository = billForAdminRepository;
     }
 
     public Double getRevenueToday() {
-        return billRepository.getRevenueByDay(LocalDate.now());
+        return billForAdminRepository.getRevenueByDay(LocalDate.now());
     }
 
     public Double getRevenueThisMonth() {
         LocalDate now = LocalDate.now();
-        return billRepository.getRevenueByMonth(now.getMonthValue(), now.getYear());
+        return billForAdminRepository.getRevenueByMonth(now.getMonthValue(), now.getYear());
     }
 
     public Double getRevenueThisYear() {
-        return billRepository.getRevenueByYear(LocalDate.now().getYear());
+        return billForAdminRepository.getRevenueByYear(LocalDate.now().getYear());
     }
 
     public Double getRevenueByDay(LocalDate date) {
-        return billRepository.getRevenueByDay(date);
+        return billForAdminRepository.getRevenueByDay(date);
     }
 
     public Double getRevenueByMonth(int month, int year) {
-        return billRepository.getRevenueByMonth(month, year);
+        return billForAdminRepository.getRevenueByMonth(month, year);
     }
 
     public Double getRevenueByYear(int year) {
-        return billRepository.getRevenueByYear(year);
+        return billForAdminRepository.getRevenueByYear(year);
     }
 
     public Double getRevenue(String filter, Integer month, Integer year) {
@@ -50,11 +55,11 @@ public class BillService {
             case "month":
                 if (month == null) month = LocalDate.now().getMonthValue();
                 if (year == null) year = LocalDate.now().getYear();
-                return billRepository.getRevenueByMonth(month, year);
+                return billForAdminRepository.getRevenueByMonth(month, year);
 
             case "year":
                 if (year == null) year = LocalDate.now().getYear();
-                return billRepository.getRevenueByYear(year);
+                return billForAdminRepository.getRevenueByYear(year);
 
             default:
                 return 0.0;
@@ -69,21 +74,29 @@ public class BillService {
         switch (filter.toLowerCase()) {
             case "today" -> {
                 start = now.toLocalDate().atStartOfDay();
-                results = billRepository.getRevenueByDay(start, now);
+                results = billForAdminRepository.getRevenueByDay(start, now);
             }
             case "year" -> {
                 start = now.withMonth(1).withDayOfMonth(1).toLocalDate().atStartOfDay();
-                results = billRepository.getRevenueByMonth(start, now);
+                results = billForAdminRepository.getRevenueByMonth(start, now);
             }
             default -> { // month
                 start = now.withDayOfMonth(1).toLocalDate().atStartOfDay();
-                results = billRepository.getRevenueByDay(start, now);
+                results = billForAdminRepository.getRevenueByDay(start, now);
             }
         }
-
         return results.stream()
                 .map(r -> ((Number) r[1]).doubleValue())
                 .toList();
+    }
+
+    public Bill getBillByAppointmentId(Integer appointmentId) {
+        return billRepository.findByAppointment_AppointmentId(appointmentId);
+    }
+
+
+    public boolean existsByAppointmentId(Integer appointmentId) {
+        return billRepository.existsByAppointment_AppointmentId(appointmentId);
     }
 
     public List<Integer> getLabels(String filter) {
@@ -95,21 +108,34 @@ public class BillService {
         switch (filter.toLowerCase()) {
             case "today" -> {
                 start = now.toLocalDate().atStartOfDay();
-                results = billRepository.getRevenueByDay(start, now);
+                results = billForAdminRepository.getRevenueByDay(start, now);
             }
             case "year" -> {
                 start = now.withMonth(1).withDayOfMonth(1).toLocalDate().atStartOfDay();
-                results = billRepository.getRevenueByYear(start, now);
+                results = billForAdminRepository.getRevenueByYear(start, now);
             }
             default -> { // month
                 start = now.withDayOfMonth(1).toLocalDate().atStartOfDay();
-                results = billRepository.getRevenueByMonth(start, now);
+                results = billForAdminRepository.getRevenueByMonth(start, now);
             }
         }
-
         return results.stream()
                 .map(r -> ((Number) r[0]).intValue())
                 .toList();
+    }
+
+    @Transactional
+    public Bill createBillForAppointment(Appointment appointment) {
+        Bill bill = new Bill();
+        bill.setAppointment(appointment);
+        bill.setCreatedAt(LocalDateTime.now());
+        bill.getAmount();
+        return billRepository.save(bill);
+    }
+
+
+    public Bill getBillById(int billId) {
+        return billRepository.findById(billId).orElse(null);
     }
 
 }

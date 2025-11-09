@@ -7,8 +7,41 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <style>
+        .status-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e3e3e3;
+            padding-bottom: 0.5rem;
+        }
+
+        .status-tabs a {
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 4px 4px 0 0;
+            color: #333;
+            border: 1px solid transparent;
+        }
+
+        .status-tabs a.active {
+            color: #0d6efd;
+            border-color: #dee2e6 #dee2e6 transparent;
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .status-tabs a:hover {
+            color: #0a58ca;
+        }
+
+        .pagination {
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 <body>
+<div th:insert="~{fragment/toast/toast :: toast}"></div>
 <div class="app" id="appLayout">
     <!-- SIDEBAR -->
     <aside class="sidebar">
@@ -24,7 +57,7 @@
 
         <nav class="nav" id="sideNav">
             <small class="hide-when-collapsed">OVERVIEW</small>
-            <a th:href="@{/receptionist/appointment-list}">
+            <a th:href="@{/receptionist/appointment-list}" class="active">
                 <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
                 <span class="hide-when-collapsed">Appointments</span>
             </a>
@@ -41,14 +74,26 @@
             </form>
         </nav>
     </aside>
-
-    <!-- MAIN -->
     <main class="main">
         <div class="topbar">
             <h4 class="mb-0">Appointment Management</h4>
         </div>
 
         <div class="content">
+            <div class="status-tabs">
+                <a th:href="@{/receptionist/appointment-list(status='PENDING')}"
+                   th:classappend="${activeStatus == 'PENDING'} ? 'active'">Pending</a>
+                <a th:href="@{/receptionist/appointment-list(status='CONFIRMED')}"
+                   th:classappend="${activeStatus == 'CONFIRMED'} ? 'active'">Confirmed</a>
+                <a th:href="@{/receptionist/appointment-list(status='CHECKED_IN')}"
+                   th:classappend="${activeStatus == 'CHECKED_IN'} ? 'active'">Check-in (Today)</a>
+                <a th:href="@{/receptionist/appointment-list(status='NO_SHOW')}"
+                   th:classappend="${activeStatus == 'NO_SHOW'} ? 'active'">No show</a>
+                <a th:href="@{/receptionist/appointment-list(status='CANCEL')}"
+                   th:classappend="${activeStatus == 'CANCEL'} ? 'active'">Cancel</a>
+            </div>
+
+            <!-- Appointment Table -->
             <table class="table table-bordered table-striped mt-3">
                 <thead class="table-primary">
                 <tr>
@@ -62,25 +107,115 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="app : ${appointments}">
-                    <td th:text="${app.appointmentId}"></td>
-                    <td th:text="${app.patient.user.fullName}"></td>
-                    <td th:text="${app.patient.user.phone}"></td>
-                    <td th:text="${app.appointmentDate}"></td>
-                    <td th:text="${app.status}"></td>
-                    <td th:text="${app.doctor != null ? app.doctor.user.fullName : 'Not Assigned'}"></td>
+                <tr th:each="a : ${appointments.content}">
+                    <td th:text="${a.appointmentId}"></td>
+                    <td th:text="${a.patientName}"></td>
+                    <td th:text="${a.phonePatient}"></td>
+                    <td th:text="${a.appointmentDate != null ? #temporals.format(a.appointmentDate, 'dd/MM/yyyy') : 'N/A'}"></td>
                     <td>
-                        <a th:href="@{'/receptionist/appointment/' + ${app.appointmentId}}" class="btn btn-info btn-sm">Details</a>
-                        <a th:href="@{'/receptionist/appointment/edit/' + ${app.appointmentId}}" class="btn btn-warning btn-sm">Edit</a>
+    <span class="badge"
+          th:text="${a.status}"
+          th:classappend="
+            ${a.status.name() == 'PENDING'} ? ' bg-warning text-dark' :
+            (${a.status.name() == 'CONFIRMED'} ? ' bg-info text-dark' :
+            (${a.status.name() == 'CHECKED_IN'} ? ' bg-primary' :
+            (${a.status.name() == 'CANCELLED'} ? ' bg-danger' :
+            (${a.status.name() == 'PAID'} ? ' bg-success' :
+            ' bg-secondary'))))">
+    </span>
+                    </td>
+
+                    <td th:text="${a.doctorName != null ? a.doctorName : 'Not Assigned'}"></td>
+
+                    <td>
+                        <a th:href="@{'/receptionist/appointment/' + ${a.appointmentId}}"
+                           class="btn btn-info btn-sm">Details</a>
+
+                        <!-- Nếu status là PENDING -->
+                        <span th:if="${a.status.name() == 'PENDING'}">
+                            <a th:href="@{'/receptionist/appointment/schedule/' + ${a.appointmentId}}"
+                               class="btn btn-success btn-sm">Schedule</a>
+                        </span>
+
+                        <!-- Nếu status là CONFIRMED và đúng ngày -->
+                        <span th:if="${a.status.name() == 'CONFIRMED' and a.canCheckin}">
+ <form th:id="'checkinForm__' + ${a.appointmentId}"
+       th:action="@{'/receptionist/appointment/checkin/' + ${a.appointmentId}}"
+       method="post"
+       style="display:inline;">
+    <button type="button"
+            class="btn btn-primary btn-sm btn-checkin"
+            th:attr="data-id=${a.appointmentId}, data-name=${a.patientName}">
+        Check-in
+    </button>
+</form>
+
+
+</span>
                     </td>
                 </tr>
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation example" th:if="${appointments.totalPages > 1}">
+                <ul class="pagination justify-content-center">
+
+                    <!-- Previous -->
+                    <li class="page-item" th:classappend="${appointments.first} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/receptionist/appointment-list(status=${activeStatus}, page=${currentPage - 1})}">Previous</a>
+                    </li>
+
+                    <!-- First Page -->
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/receptionist/appointment-list(status=${activeStatus}, page=1)}">1</a>
+                    </li>
+
+                    <!-- ... -->
+                    <li class="page-item disabled" th:if="${currentPage > 3}">
+                        <a class="page-link">...</a>
+                    </li>
+
+                    <!-- Page Range -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(2, appointments.totalPages - 1)}"
+                        th:if="${i >= currentPage - 2 and i <= currentPage + 2}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/receptionist/appointment-list(status=${activeStatus}, page=${i})}"
+                           th:text="${i}"></a>
+                    </li>
+
+                    <!-- ... -->
+                    <li class="page-item disabled" th:if="${currentPage < appointments.totalPages - 3}">
+                        <a class="page-link">...</a>
+                    </li>
+
+                    <!-- Last Page -->
+                    <li class="page-item"
+                        th:classappend="${currentPage == appointments.totalPages} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/receptionist/appointment-list(status=${activeStatus}, page=${appointments.totalPages})}"
+                           th:text="${appointments.totalPages}"></a>
+                    </li>
+
+                    <!-- Next -->
+                    <li class="page-item" th:classappend="${appointments.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/receptionist/appointment-list(status=${activeStatus}, page=${currentPage + 1})}">Next</a>
+                    </li>
+
+                </ul>
+            </nav>
+
         </div>
     </main>
 </div>
-<div class="overlay" id="overlay"></div>
 
+<div class="overlay" id="overlay"></div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     const app = document.getElementById('appLayout');
     const toggleBtn = document.getElementById('toggleSidebar');
@@ -92,6 +227,32 @@
     overlay.addEventListener('click', () => {
         app.classList.remove('show-sidebar');
     });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".btn-checkin").forEach(btn => {
+            btn.addEventListener("click", function() {
+                const id = btn.dataset.id;
+                const name = btn.dataset.name;
+
+                Swal.fire({
+                    title: 'Confirm Check-in',
+                    text: "Are you sure you want to check in " + name + "?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#0d6efd',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Check-in',
+                    cancelButtonText: 'Cancel'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        document.getElementById('checkinForm__' + id).submit();
+                    }
+                });
+            });
+        });
+    });
 </script>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/toast.js}"></script>
 </body>
 </html>

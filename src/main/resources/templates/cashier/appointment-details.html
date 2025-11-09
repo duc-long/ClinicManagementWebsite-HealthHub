@@ -23,16 +23,20 @@
 
         <nav class="nav" id="sideNav">
             <small class="hide-when-collapsed">OVERVIEW</small>
-            <a th:href="@{/receptionist/appointment-list}">
+            <a th:href="@{/cashier/appointment-list}">
                 <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
                 <span class="hide-when-collapsed">Appointments</span>
             </a>
+            <a th:href="@{/cashier/payment-list}" class="active">
+                <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
+                <span class="hide-when-collapsed">Payments</span>
+            </a>
             <small class="hide-when-collapsed mt-2">ACCOUNT</small>
-            <a th:href="@{/receptionist/profile}">
+            <a th:href="@{/cashier/profile}">
                 <span class="icon"><i class="fa-solid fa-id-card"></i></span>
                 <span class="hide-when-collapsed">Profile</span>
             </a>
-            <form th:action="@{/receptionist/logout}" method="post" style="margin-top:.5rem;">
+            <form th:action="@{/cashier/logout}" method="post" style="margin-top:.5rem;">
                 <button class="toggle-btn" type="submit">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span class="hide-when-collapsed">Logout</span>
@@ -40,6 +44,7 @@
             </form>
         </nav>
     </aside>
+
 
     <!-- MAIN -->
     <main class="main">
@@ -60,7 +65,7 @@
                 <p><strong>Doctor:</strong>
                     <span th:text="${appointment.doctor != null ? appointment.doctor.user.fullName : 'Not Assigned'}"></span>
                 </p>
-                <a th:href="@{/receptionist/appointment-list}" class="btn btn-secondary mt-3">Back to List</a>
+                <a th:href="@{/cashier/appointment-list}" class="btn btn-secondary mt-3">Back to List</a>
             </div>
         </div>
     </main>
