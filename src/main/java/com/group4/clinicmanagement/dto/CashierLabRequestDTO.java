@@ -20,6 +20,6 @@ public class CashierLabRequestDTO {
     private LabRequestStatus status;
     private Integer billId;
 
-    
+
     private boolean canCreateBill;
 }
