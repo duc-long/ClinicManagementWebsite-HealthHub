@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>403 - Access Denied</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body class="text-center mt-5">
+<h1 class="display-4 text-danger">403</h1>
+<p class="lead" th:text="${message}">You don’t have permission to access this page.</p>
+
+<button onclick="goBack()" class="btn btn-primary mt-3">
+    <i class="fa-solid fa-arrow-left"></i> Go Back
+</button>
+
+<script>
+    function goBack() {
+        window.history.back();
+        setTimeout(() => location.reload(), 200);
+    }
+</script>
+</body>
+</html>
