@@ -8,80 +8,69 @@
     <!-- ✅ Bootstrap & Fonts -->
     <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/profile.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/side-bar-patient.css">
+    <div th:replace="~{fragment/fragment.html :: css}"></div>
     <style>
-        body {
-            background-color: #f9fbfd;
-            font-family: 'Inter', sans-serif;
-            color: #2c3e50;
+        .list-group-item {
+            max-width: 400px;
         }
 
-        .container {
-            max-width: 700px;
-        }
-
-        .card {
-            border-radius: 14px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            border: none;
-        }
-
-        h2 {
-            font-weight: 700;
-            color: #007bff;
-        }
-
-        .form-control {
-            border-radius: 8px;
-            padding: 10px;
-        }
-
-        .btn {
-            border-radius: 8px;
-            font-weight: 600;
+        .list-group {
+            margin-left: 30%;
         }
     </style>
 </head>
 
 <body>
 <div th:replace="~{fragment/fragment.html :: navBar}"></div>
-<div class="container py-5">
-    <h2 class="text-center mb-4">✏ Edit Appointment</h2>
-    <p class="text-center text-muted mb-5">You can change the date or reason for your appointment.</p>
+<div class="container-fluid" th:object="${patient}">
+    <div class="row">
+        <div th:replace="~{fragment/patient/side-bar :: sidebar-patient}"></div>
 
-    <div class="card p-4">
-        <form th:action="@{/patient/appointment/update}" th:object="${appointment}" method="post">
-            <!-- Hidden ID -->
-            <input type="hidden" th:field="*{appointmentId}">
+        <div class="col-md-9 col-12 p-4">
+            <div class="profile-card-appointment">
+                <div class="profile-title">Edit Appointment</div>
+                <p class="text-center text-muted mb-5">You can change the date or reason for your appointment.</p>
+                <form th:action="@{/patient/appointment/update}" th:object="${appointment}" method="post">
+                    <!-- Hidden ID -->
+                    <input type="hidden" th:field="*{appointmentId}">
 
-            <!-- Ngày khám -->
-            <div class="mb-4">
-                <label for="appointmentDate" class="form-label">📅 Appointment Date</label>
-                <input type="date" id="appointmentDate" class="form-control" th:field="*{appointmentDate}" required>
-                <div class="form-text text-muted">
-                    Choose a new date for your visit if needed.
-                </div>
+                    <!-- Ngày khám -->
+                    <div class="mb-4">
+                        <label for="appointmentDate" class="form-label">Appointment Date</label>
+                        <input type="date" id="appointmentDate" class="form-control" th:field="*{appointmentDate}"
+                               required>
+                        <div class="form-text text-muted">
+                            Choose a new date for your visit if needed.
+                        </div>
+                    </div>
+
+                    <!-- Lý do khám -->
+                    <div class="mb-4">
+                        <label for="notes" class="form-label">Reason / Notes</label>
+                        <textarea id="notes" class="form-control" rows="4"
+                                  th:field="*{notes}"
+                                  placeholder="Update your symptoms or purpose"></textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="text-center mt-4">
+                        <a th:href="@{/patient/appointment/manage}" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left-circle"></i> Back
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <!-- Lý do khám -->
-            <div class="mb-4">
-                <label for="notes" class="form-label">💬 Reason / Notes</label>
-                <textarea id="notes" class="form-control" rows="4"
-                          th:field="*{notes}"
-                          placeholder="Update your symptoms or purpose"></textarea>
-            </div>
-
-            <!-- Buttons -->
-            <div class="text-center mt-4">
-                <a th:href="@{/patient/appointment/manage}" class="btn btn-outline-secondary me-2">
-                    <i class="bi bi-arrow-left-circle"></i> Back
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-save"></i> Save Changes
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
