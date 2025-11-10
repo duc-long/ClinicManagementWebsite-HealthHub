@@ -66,6 +66,9 @@ public class MedicalRecordService {
 
     public MedicalRecordDTO findDTOById(int recordId) {
         MedicalRecord record = medicalRecordRepository.findByRecordId(recordId).orElse(null);
+
+        if  (record == null) return null;
+
         MedicalRecordDTO recordDTO = new MedicalRecordDTO();
         recordDTO.setRecordId(record.getRecordId());
         recordDTO.setDiagnosis(record.getDiagnosis());

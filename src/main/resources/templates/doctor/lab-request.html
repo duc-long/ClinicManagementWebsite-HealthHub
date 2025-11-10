@@ -84,6 +84,7 @@
 
     <!-- Form -->
     <form th:action="@{/doctor/labs/create}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <input type="hidden" name="recordId" th:value="${recordId}">
         <input type="hidden" name="doctorId" th:value="${doctorId}">
         <div class="info-card mb-4 shadow-sm">
