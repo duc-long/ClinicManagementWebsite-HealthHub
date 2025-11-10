@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,7 +39,7 @@ public class PatientUserDTO {
 
     @NotBlank(message = "Address must not be blank")
     @Size(max = 500, message = "Address must not exceed 500 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9\\s,.'-]+$", message = "Address must contain only letters, numbers, spaces, commas, periods, and hyphens")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9\\s,.'-]+$", message = "Address must contain both letters and numbers, and only letters, numbers, spaces, commas, periods, and hyphens are allowed.")
     private String address;
 
     private String avatarFilename;

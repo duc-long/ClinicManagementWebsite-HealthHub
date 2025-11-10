@@ -3,6 +3,7 @@ package com.group4.clinicmanagement.controller.patient;
 import com.group4.clinicmanagement.dto.*;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.repository.UserRepository;
+import com.group4.clinicmanagement.security.CustomUserDetails;
 import com.group4.clinicmanagement.service.LabService;
 import com.group4.clinicmanagement.service.MedicalRecordService;
 import com.group4.clinicmanagement.service.PatientService;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -93,9 +95,7 @@ public class PatientController {
                                 BindingResult result,
                                 Model model,
                                 @RequestParam("avatar") MultipartFile avatar,
-                                RedirectAttributes redirect,
-                                Principal principal) {
-        System.out.println("DTO BEFORE MERGE: " + dto);
+                                RedirectAttributes redirect) {
         String username = getCurrentUsername();
 
         Optional<User> existing = userRepository.findByEmail(dto.getEmail());
@@ -125,28 +125,51 @@ public class PatientController {
         try {
             patientService.savePatientUserWithAvatar(username, dto, avatar);
             redirect.addFlashAttribute("success", "Profile updated successfully!");
-        } catch (RuntimeException e) {
+        } catch (IllegalArgumentException e) {
             redirect.addFlashAttribute("error", e.getMessage());
+        } catch (RuntimeException e) {
+            redirect.addFlashAttribute("error", "An unexpected error occurred while saving your profile.");
         }
-//        patientService.savePatientUserWithAvatar(username, dto, avatar);
         return "redirect:/patient/profile";
     }
 
     @GetMapping("/medical-records/{recordId}")
-    public String getMedicalRecordsByPatientId(Model model, HttpSession session, @PathVariable("recordId") Integer recordId, HttpServletRequest request) {
-        String username = getCurrentUsername();
-        Integer patientId = (Integer) session.getAttribute("patientId");
-        Optional<MedicalRecordDetailDTO> medicalRecordDetailDTO = medicalRecordService.getMedicalRecordDetailsByPatientId(patientId, recordId);
-        if(!medicalRecordDetailDTO.isPresent()){
+    public String getMedicalRecordsByPatientId(Model model,
+                                               @PathVariable("recordId") String recordIdStr,
+                                               HttpServletRequest request,
+                                               @AuthenticationPrincipal CustomUserDetails userDetails,
+                                               RedirectAttributes redirect) {
+        try {
+            Integer recordId = Integer.parseInt(recordIdStr);
+            Integer userId = userDetails.getUserId();
+
+            Optional<MedicalRecordDetailDTO> medicalRecordDetailDTO =
+                    medicalRecordService.getMedicalRecordDetailsByPatientId(userId, recordId);
+
+            if (!medicalRecordDetailDTO.isPresent()) {
+                redirect.addFlashAttribute("error", "Medical record not found or access denied.");
+                return "redirect:/patient/list-medical-records";
+//                throw new RuntimeException("Medical record not found or access denied.");
+            }
+
+            List<PrescriptionDetailDTO> prescriptions = prescriptionService.getPrescriptionDetailsByRecordId(recordId);
+            List<LabDTO> labs = labService.findLabResultByRecordId(recordId);
+
+            model.addAttribute("prescriptions", prescriptions);
+            model.addAttribute("labs", labs);
+            model.addAttribute("record", medicalRecordDetailDTO.get());
+            model.addAttribute("currentPath", request.getRequestURI());
+
+            return "patient/medical-record-detail";
+
+        } catch (NumberFormatException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+            return "redirect:/patient/list-medical-records?error=invalidId";
+        } catch (Exception e) {
+            // Nếu có lỗi khác, thêm thông báo lỗi vào flash attributes và chuyển hướng
+            redirect.addFlashAttribute("error", "An error occurred: " + e.getMessage());
             return "redirect:/patient/list-medical-records";
         }
-        List<PrescriptionDetailDTO> prescriptions = prescriptionService.getPrescriptionDetailsByRecordId(recordId);
-        List<LabDTO> labs = labService.findLabResultByRecordId(recordId);
-        model.addAttribute("prescriptions", prescriptions);
-        model.addAttribute("labs", labs);
-        model.addAttribute("record", medicalRecordDetailDTO.get());
-        model.addAttribute("currentPath", request.getRequestURI());
-        return "patient/medical-record-detail";
     }
 
     @GetMapping("/change-password")
@@ -159,13 +182,16 @@ public class PatientController {
     public String changePassword(@RequestParam("currentPassword") String currentPassword,
                                  @RequestParam("newPassword") String newPassword,
                                  @RequestParam("confirmPassword") String confirmPassword,
+                                 RedirectAttributes redirectAttributes,
                                  Model model) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
         if (!newPassword.equals(confirmPassword)) {
-            model.addAttribute("error", "Xác nhận mật khẩu không khớp.");
+            redirectAttributes.addFlashAttribute("error", "Password confirmation does not match.");
+            System.out.println("Flash: " + redirectAttributes.getFlashAttributes());
+//            model.addAttribute("error", "Xác nhận mật khẩu không khớp.");
             return "redirect:/patient/change-password";
         }
 
@@ -175,7 +201,6 @@ public class PatientController {
             model.addAttribute("error", "Mật khẩu hiện tại không đúng.");
             return "patient/change-password";
         }
-
         model.addAttribute("success", "Đổi mật khẩu thành công.");
         return "redirect:/patient/profile";
     }
