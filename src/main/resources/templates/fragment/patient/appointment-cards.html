@@ -63,11 +63,17 @@
             <hr>
             <p class="text-muted mb-2">Reason: <span th:text="${a.notes}"></span></p>
             <div class="d-flex gap-2 flex-wrap">
+                <!-- luôn hiển thị View -->
                 <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>
-                <a th:href="@{/patient/appointment/edit/{id}(id=${a.appointmentId})}"
+
+                <!-- Nếu KHÔNG phải trạng thái CONFIRMED thì hiển thị Edit và Cancel -->
+                <a th:if="${a.statusValue != T(com.group4.clinicmanagement.enums.AppointmentStatus).CONFIRMED.value}"
+                   th:href="@{/patient/appointment/edit/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i> Edit</a>
-                <a th:href="@{/patient/appointment/cancel/{id}(id=${a.appointmentId})}"
+
+                <a th:if="${a.statusValue != T(com.group4.clinicmanagement.enums.AppointmentStatus).CONFIRMED.value}"
+                   th:href="@{/patient/appointment/cancel/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i> Cancel</a>
             </div>
         </div>

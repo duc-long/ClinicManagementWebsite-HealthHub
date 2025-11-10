@@ -566,8 +566,7 @@
 
                         <a th:if="${record != null
                             and record.recordId != null
-                            and labRequest != null
-                            and labRequest.status != T(com.group4.clinicmanagement.enums.LabRequestStatus).CANCELLED}"
+                            and labRequest != null}"
                            th:href="@{/doctor/labs/view/{id}(id=${labRequest.labRequestId})}"
                            class="btn btn-outline-primary btn-sm me-xxl-3">
                             <i class="fa-solid fa-eye me-1"></i> View Request Lab Test
