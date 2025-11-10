@@ -535,10 +535,16 @@ public class DoctorController {
 
     // method to show prescription for update
     @GetMapping("/prescription/update/{id}")
-    public String showUpdatePrescriptionForm(@PathVariable("id") int prescriptionId,
+    public String showUpdatePrescriptionForm(@PathVariable("id") Integer prescriptionId,
                                              Model model,
                                              Principal principal,
                                              RedirectAttributes redirectAttributes) {
+
+        if (prescriptionId == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Prescription ID is required!");
+            return "redirect:/doctor/home";
+        }
 
         User user = userService.findUserByUsername(principal.getName());
         if (user == null) return "redirect:/doctor/login";
@@ -694,6 +700,7 @@ public class DoctorController {
             return "redirect:/doctor/home";
         }
 
+        model.addAttribute("recordId", vitalSignsDTO.getRecordId());
         model.addAttribute("vital", vitalSignsDTO);
         return "doctor/vitalSign";
     }
