@@ -167,12 +167,12 @@
                     </li>
 
                     <!-- Logged In -->
-                    <div class="dropdown" sec:authorize="isAuthenticated()">
+                    <div class="dropdown" style="z-index: 9999" sec:authorize="isAuthenticated()">
                         <button class="user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">
                             Hi, <span th:text="${#authentication.principal.fullName}">User</span>
                         </button>
-                        <ul class="dropdown-menu shadow-sm border-0 mt-2">
+                        <ul class="dropdown-menu shadow-sm border-0 mt-2" style="z-index: 9999;">
                             <li><a class="dropdown-item" th:href="@{/patient/profile}"><i
                                     class="bi bi-person-circle me-2"></i>Profile</a></li>
                             <li>
