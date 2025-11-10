@@ -142,10 +142,13 @@
 
                             <div class="lab-image-container">
                                 <div th:each="img : ${labs}" th:if="${img.nameLabTest == lab.nameLabTest}">
-                                    <div class="label">Description result</div>
-                                    <div class="value" th:text="${img.description}"></div>
-                                    <img th:src="@{/images/labs/{filename}(filename=${#strings.substring(img.filePath, img.filePath.lastIndexOf('/') + 1)})}"
-                                         alt="Lab Image" class="lab-image"/>
+                                    <div th:if="${img.filePath != null}" style="margin-bottom: 50px; font-size: 30px;">
+                                        <div class="label">Description result</div>
+                                        <img th:src="@{/images/labs/{filename}(filename=${#strings.substring(img.filePath, img.filePath.lastIndexOf('/') + 1)})}"
+                                             alt="Lab Image" class="lab-image"/>
+                                        <div class="value" th:text="${img.description}"></div>
+                                        <div class="separator-line"></div>
+                                    </div>
                                     <div class="separator-line"></div>
                                 </div>
                             </div>
