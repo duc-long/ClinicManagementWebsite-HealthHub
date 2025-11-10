@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .securityMatcher("/patient/login", "/patient/**", "/home/**", "/register/**", "/assets/**", "/images/**", "/feedback/**", "/auth/**")
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/home/**", "/register/**", "/assets/**", "/images/**", "/auth/**").permitAll()
-                        .requestMatchers("/patient/login").permitAll()
+                        .requestMatchers("/patient/login", "/login").permitAll()
                         .requestMatchers("/patient/**", "/feedback/**").hasAuthority("ROLE_PATIENT")
                         .anyRequest().authenticated()
                 )
@@ -62,6 +62,9 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/patient/logout")
                         .logoutSuccessUrl("/home?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .clearAuthentication(true)
                         .permitAll()
                 )
                 .csrf(Customizer.withDefaults());

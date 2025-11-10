@@ -9,11 +9,13 @@ import com.group4.clinicmanagement.repository.UserRepository;
 import com.group4.clinicmanagement.service.AppointmentService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -95,20 +97,36 @@ public class AppointmentController {
 
     // method to show appointment detail
     @GetMapping("/detail/{id}")
-    public String viewAppointmentDetail(@PathVariable("id") int id, Model model, HttpSession session) {
-//        User currentUser = (User) session.getAttribute("user");
-        User currentUser = userRepository.findByUserId(11).orElse(null);
-        if (currentUser == null) {
-            return "redirect:/login";
-        }
+    public String viewAppointmentDetail(@PathVariable("id") String idStr, Model model, RedirectAttributes redirect, Principal principal) {
+        try {
+            // Kiểm tra người dùng đã đăng nhập chưa
+            User currentUser = userRepository.findUserByUsername(principal.getName()).orElse(null);
+            if (currentUser == null) {
+                return "redirect:/login";
+            }
 
-        Appointment appointment = appointmentService.findAppointmentById(id);
-        if (appointment == null || appointment.getPatient().getPatientId() != currentUser.getUserId()) {
+            // Kiểm tra xem id có phải là số hợp lệ hay không
+            int id = Integer.parseInt(idStr);
+
+            // Tìm lịch hẹn theo id
+            Appointment appointment = appointmentService.findAppointmentById(id);
+            if (appointment == null || appointment.getPatient().getPatientId() != currentUser.getUserId()) {
+                return "redirect:/patient/appointment/manage";
+            }
+
+            // Thêm thông tin lịch hẹn vào model
+            model.addAttribute("appointment", appointment);
+            return "patient/appointment-detail";
+
+        } catch (NumberFormatException e) {
+            // Nếu id không phải là một số hợp lệ, chuyển hướng về trang danh sách lịch hẹn với thông báo lỗi
+            redirect.addFlashAttribute("error", "Invalid appointment ID format.");
+            return "redirect:/patient/appointment/manage";
+        } catch (Exception e) {
+            // Bắt lỗi chung nếu có lỗi khác xảy ra
+            redirect.addFlashAttribute("error", e.getMessage());
             return "redirect:/patient/appointment/manage";
         }
-
-        model.addAttribute("appointment", appointment);
-        return "patient/appointment-detail";
     }
 
     @GetMapping("/make-appointment")
