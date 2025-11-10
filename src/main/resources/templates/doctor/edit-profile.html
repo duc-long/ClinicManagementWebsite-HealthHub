@@ -18,8 +18,8 @@
             <h3 class="text-hm-blue mb-0">
                 <i class="fa-solid fa-user-doctor me-2"></i>Update Doctor Information
             </h3>
-            <a th:href="@{/doctor/overview}" class="btn btn-outline-secondary">
-                <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+            <a th:href="@{/doctor/profile}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-2"></i>Back to Profile
             </a>
         </div>
 
@@ -33,7 +33,7 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Username</label>
-                    <input type="text" class="form-control" th:field="*{username}">
+                    <input type="text" class="form-control" th:field="*{username}" readonly>
                 </div>
             </div>
 

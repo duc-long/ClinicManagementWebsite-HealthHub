@@ -36,17 +36,19 @@ public class MedicalRecordService {
         return medicalRecordRepository.findMedicalRecordDetailByPatientId(patientId, recordId);
     }
 
-    public int saveRecord(MedicalRecord medicalRecord) {
-        return medicalRecordRepository.insertMedicalRecord(
-                medicalRecord.getPatient().getPatientId(),
-                medicalRecord.getAppointment().getAppointmentId(),
-                medicalRecord.getCreatedBy().getUserId(),
-                medicalRecord.getDoctor().getDoctorId(),
-                medicalRecord.getDiagnosis(),
-                medicalRecord.getNotes(),
-                medicalRecord.getStatus().getValue(),
-                LocalDateTime.now()
-        );
+    public MedicalRecord saveRecord(MedicalRecord medicalRecord) {
+//        return medicalRecordRepository.insertMedicalRecord(
+//                medicalRecord.getPatient().getPatientId(),
+//                medicalRecord.getAppointment().getAppointmentId(),
+//                medicalRecord.getCreatedBy().getUserId(),
+//                medicalRecord.getDoctor().getDoctorId(),
+//                medicalRecord.getDiagnosis(),
+//                medicalRecord.getNotes(),
+//                medicalRecord.getStatus().getValue(),
+//                LocalDateTime.now()
+//        );
+
+        return medicalRecordRepository.save(medicalRecord);
     }
 
     public int updateRecord(MedicalRecord medicalRecord) {

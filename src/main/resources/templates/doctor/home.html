@@ -34,35 +34,30 @@
                 <span class="hide-when-collapsed">Home</span>
             </a>
 
-            <a th:href="@{/doctor/re-examination/create}" th:classappend="${active == 'appointments'} ? ' active'">
-                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
-                <span class="hide-when-collapsed">Appointments</span>
-            </a>
-
             <!-- ===== PATIENT CARE FLOW ===== -->
             <small class="hide-when-collapsed text-muted fw-semibold mt-3 mb-1">CARE FLOW</small>
 
-            <a th:href="@{/doctor/vitals}" th:classappend="${active == 'vitals'} ? ' active'">
-                <span class="icon"><i class="fa-solid fa-heart-pulse"></i></span>
-                <span class="hide-when-collapsed">Vital Signs</span>
-            </a>
+<!--            <a th:href="@{/doctor/vitals}" th:classappend="${active == 'vitals'} ? ' active'">-->
+<!--                <span class="icon"><i class="fa-solid fa-heart-pulse"></i></span>-->
+<!--                <span class="hide-when-collapsed">Vital Signs</span>-->
+<!--            </a>-->
 
-            <a th:href="@{/doctor/records/list}" th:classappend="${active == 'records'} ? ' active'">
-                <span class="icon"><i class="fa-solid fa-file-medical"></i></span>
-                <span class="hide-when-collapsed">Medical Records</span>
-            </a>
+<!--            <a th:href="@{/doctor/records/list}" th:classappend="${active == 'records'} ? ' active'">-->
+<!--                <span class="icon"><i class="fa-solid fa-file-medical"></i></span>-->
+<!--                <span class="hide-when-collapsed">Medical Records</span>-->
+<!--            </a>-->
 
-            <a th:href="@{/doctor/labs/create}" th:classappend="${active == 'labs'} ? ' active'">
-                <span class="icon"><i class="fa-solid fa-flask"></i></span>
-                <span class="hide-when-collapsed">Lab Requests</span>
-            </a>
+<!--            <a th:href="@{/doctor/labs/create}" th:classappend="${active == 'labs'} ? ' active'">-->
+<!--                <span class="icon"><i class="fa-solid fa-flask"></i></span>-->
+<!--                <span class="hide-when-collapsed">Lab Requests</span>-->
+<!--            </a>-->
 
-            <a th:href="@{/doctor/prescriptions}" th:classappend="${active == 'prescriptions'} ? ' active'">
-                <span class="icon"><i class="fa-solid fa-pills"></i></span>
-                <span class="hide-when-collapsed">Prescriptions</span>
-            </a>
+<!--            <a th:href="@{/doctor/prescriptions}" th:classappend="${active == 'prescriptions'} ? ' active'">-->
+<!--                <span class="icon"><i class="fa-solid fa-pills"></i></span>-->
+<!--                <span class="hide-when-collapsed">Prescriptions</span>-->
+<!--            </a>-->
 
-            <a th:href="@{/doctor/followup}" th:classappend="${active == 'followup'} ? ' active'">
+            <a th:href="@{/doctor/re-examination/create}" th:classappend="${active == 'followup'} ? ' active'">
                 <span class="icon"><i class="fa-solid fa-repeat"></i></span>
                 <span class="hide-when-collapsed">Follow-up</span>
             </a>
@@ -93,38 +88,6 @@
 </div>
 <!-- Mobile overlay -->
 <div class="overlay"></div>
-
-<!-- 📄 Pagination -->
-<div class="d-flex justify-content-center mt-3" th:if="${totalPages > 1}">
-    <nav>
-        <ul class="pagination">
-            <!-- Previous -->
-            <li class="page-item" th:classappend="${currentPage == 0} ? ' disabled'">
-                <a class="page-link"
-                   th:href="@{/doctor/home(page=${currentPage - 1}, patientName=${patientName}, status=${status})}">
-                    &laquo; Prev
-                </a>
-            </li>
-
-            <!-- Page numbers -->
-            <li class="page-item"
-                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                th:classappend="${i == currentPage} ? ' active'">
-                <a class="page-link"
-                   th:text="${i + 1}"
-                   th:href="@{/doctor/home(page=${i}, patientName=${patientName}, status=${status})}"></a>
-            </li>
-
-            <!-- Next -->
-            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? ' disabled'">
-                <a class="page-link"
-                   th:href="@{/doctor/home(page=${currentPage + 1}, patientName=${patientName}, status=${status})}">
-                    Next &raquo;
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
 
 <!-- Scripts -->
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>

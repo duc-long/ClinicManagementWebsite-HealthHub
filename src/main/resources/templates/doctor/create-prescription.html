@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Create Prescription'"></title>
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --hm-blue: #005691;
+            --hm-light-blue: #eaf4fb;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: "Inter", sans-serif;
+        }
+
+        .btn-hm {
+            background-color: var(--hm-blue);
+            color: #fff;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-hm:hover {
+            background-color: #003f6f;
+        }
+
+        .card {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            background-color: var(--hm-light-blue);
+            color: var(--hm-blue);
+            font-weight: 600;
+        }
+
+        table th, table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="section-title mb-0">
+            <i class="fa-solid fa-prescription-bottle-medical me-2"></i>
+            <span th:text="'Create Prescription'"></span>
+        </h3>
+        <a th:href="@{/doctor/records/detail/{id}(id=${record.recordId})}"
+           class="btn btn-outline-secondary rounded-pill px-3">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Records
+        </a>
+    </div>
+
+    <!-- Form -->
+    <form th:action="@{/doctor/prescription/create-prescription}" method="post" class="bg-white p-4 rounded-4 shadow-sm">
+        <input type="hidden" name="recordId" th:value="${record.recordId}">
+        <input type="hidden" name="doctorId" th:value="${doctorId}">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa-solid fa-pills me-2"></i> Prescription Details
+            </div>
+            <div class="card-body">
+                <table class="table align-middle table-hover" id="drugTable">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Drug</th>
+                        <th>Quantity</th>
+                        <th>Dosage</th>
+                        <th>Frequency</th>
+                        <th>Duration</th>
+                        <th>Instruction</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                    <!-- CREATE MODE -->
+                    <tbody id="drugBody">
+                    <tr class="drug-row">
+                        <td>
+                            <select class="form-select" name="drugIds" required>
+                                <option value="">-- Select drug --</option>
+                                <option th:each="d : ${drugs}" th:value="${d.drugId}" th:text="${d.drugName}"></option>
+                            </select>
+                        </td>
+                        <td><input type="number" name="quantities" class="form-control text-center" min="1" required>
+                        </td>
+                        <td><input type="text" name="dosages" class="form-control" placeholder="e.g., 500mg"></td>
+                        <td><input type="text" name="frequencies" class="form-control text-center"
+                                   placeholder="2 times/day"></td>
+                        <td><input type="number" name="durationDay" class="form-control text-center" placeholder="7">
+                        </td>
+                        <td><input type="text" name="instructions" class="form-control" placeholder="After meal"></td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-row">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-end mt-3">
+                    <button type="button" class="btn btn-outline-primary rounded-pill" id="addDrug">
+                        <i class="fa-solid fa-plus me-1"></i> Add Drug
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-hm rounded-pill px-4">
+                <i class="fa-solid fa-floppy-disk me-2"></i> Save Prescription
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- JS -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tbody = document.getElementById('drugBody');
+        const addBtn = document.getElementById('addDrug');
+
+        addBtn.addEventListener('click', function () {
+            const firstRow = tbody.querySelector('.drug-row');
+            if (!firstRow) return;
+            const newRow = firstRow.cloneNode(true);
+            newRow.querySelectorAll('input').forEach(i => i.value = '');
+            newRow.querySelector('select').selectedIndex = 0;
+            tbody.appendChild(newRow);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.remove-row')) {
+                const rows = tbody.querySelectorAll('.drug-row');
+                if (rows.length > 1) e.target.closest('.drug-row').remove();
+            }
+        });
+    });
+</script>
+</body>
+</html>

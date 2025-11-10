@@ -1,7 +1,6 @@
 package com.group4.clinicmanagement.controller.doctor;
 
 import com.group4.clinicmanagement.dto.*;
-import com.group4.clinicmanagement.dto.admin.PatientDTO;
 import com.group4.clinicmanagement.dto.doctor.*;
 import com.group4.clinicmanagement.dto.doctor.LabRequestDTO;
 import com.group4.clinicmanagement.dto.doctor.LabResultDTO;
@@ -11,10 +10,10 @@ import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
 import com.group4.clinicmanagement.service.*;
-import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -88,31 +87,6 @@ public class DoctorController {
         return "doctor/home";
     }
 
-    // method to load profile doctor
-    @GetMapping("/profile")
-    public String loadProfile(Principal principal, Model model) {
-        User user = userService.findUserByUsername(principal.getName());
-        if (user == null) return "redirect:/doctor/login";
-
-        Doctor doctor = doctorService.findDoctorById(user.getUserId());
-        model.addAttribute("doctor", doctor);
-
-        DoctorDTO doctorDTO = new DoctorDTO();
-        doctorDTO.setGender(user.getGender());
-        doctorDTO.setEmail(user.getEmail());
-        doctorDTO.setPhone(user.getPhone());
-        doctorDTO.setFullName(user.getFullName());
-        doctorDTO.setDoctorId(user.getUserId());
-        doctorDTO.setAvatarFileName(user.getAvatar());
-        doctorDTO.setUsername(user.getUsername());
-        Department department = departmentRepository.findByDepartmentId(doctor.getDepartment().getDepartmentId())
-                .orElse(null);
-        model.addAttribute("doctor", doctorDTO);
-        model.addAttribute("department", department.getName());
-        model.addAttribute("section", "profile");
-        return "doctor/home";
-    }
-
     // method to load appointment list for doctor (delete)
     @GetMapping("/appointments")
     public String loadAppointment(Principal principal, Model model, RedirectAttributes redirectAttributes) {
@@ -154,10 +128,29 @@ public class DoctorController {
 
     // method to show appointment detail for doctor
     @GetMapping("/appointments/detail/{id}")
-    public String loadAppointmentDetail(@PathVariable int id, Model model,
+    public String loadAppointmentDetail(@PathVariable Integer id, Model model,
                                         RedirectAttributes redirectAttributes,
                                         Principal principal) {
-        Appointment a = appointmentService.findById(id);
+        try {
+            if (id == null) {
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                redirectAttributes.addFlashAttribute("message", "Invalid Appointment ID");
+                return "redirect:/doctor/home";
+            }
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            return "redirect:/doctor/home";
+        }
+
+
+        Appointment a = appointmentService.getById(id);
+        if (a == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Invalid Appointment ID");
+            return "redirect:/doctor/home";
+        }
+
         User user = userService.findUserByUsername(principal.getName());
 
         if (user.getUserId() != a.getDoctor().getDoctorId()) {
@@ -190,19 +183,38 @@ public class DoctorController {
         return "doctor/home";
     }
 
+    // method to load profile doctor
+    @GetMapping("/profile")
+    public String loadProfile(Principal principal, Model model) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) return "redirect:/doctor/login";
+
+        Doctor doctor = doctorService.findDoctorById(user.getUserId());
+        model.addAttribute("doctor", doctor);
+
+        DoctorDTO doctorDTO = new DoctorDTO();
+        doctorDTO.setGender(user.getGender());
+        doctorDTO.setEmail(user.getEmail());
+        doctorDTO.setPhone(user.getPhone());
+        doctorDTO.setFullName(user.getFullName());
+        doctorDTO.setDoctorId(user.getUserId());
+        doctorDTO.setAvatarFileName(user.getAvatar());
+        doctorDTO.setUsername(user.getUsername());
+        Department department = departmentRepository.findByDepartmentId(doctor.getDepartment().getDepartmentId())
+                .orElse(null);
+        model.addAttribute("doctor", doctorDTO);
+        model.addAttribute("department", department.getName());
+        model.addAttribute("section", "profile");
+        model.addAttribute("active", "profile");
+        return "doctor/home";
+    }
+
     // method to redirect to update profile page
-    @GetMapping("/profile/edit/{id}")
-    public String loadProfile(Model model,
-                              @PathVariable(name = "id") int id,
-                              Principal principal) {
+    @GetMapping("/profile/edit")
+    public String loadProfile(Model model, Principal principal) {
         User user = userService.findUserByUsername(principal.getName());
 
-        // check valid user info
-        if (user.getUserId() != id) {
-            return "redirect:/doctor/login";
-        }
-
-        Doctor doctor = doctorService.findDoctorById(id);
+        Doctor doctor = doctorService.findDoctorById(user.getUserId());
         DoctorDTO doctorDTO = new DoctorDTO();
         doctorDTO.setGender(user.getGender());
         doctorDTO.setEmail(user.getEmail());
@@ -232,11 +244,16 @@ public class DoctorController {
 
         // --- Update user basic info ---
         user.setFullName(doctorModel.getFullName());
-        user.setUsername(doctorModel.getUsername());
         user.setEmail(doctorModel.getEmail());
         user.setPhone(doctorModel.getPhone());
         user.setGender(doctorModel.getGender());
-        userService.saveUser(user);
+        User saved = userService.saveUser(user);
+
+        if (saved == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Invalid username or password");
+            return "redirect:/doctor/home";
+        }
 
         // --- Update doctor-specific info ---
         doctor.setBio(doctorModel.getBio());
@@ -244,7 +261,65 @@ public class DoctorController {
 
         redirectAttributes.addFlashAttribute("message", "Doctor profile updated successfully!");
         redirectAttributes.addFlashAttribute("messageType", "success");
-        return "redirect:/doctor/home";
+        return "redirect:/doctor/profile";
+    }
+
+    // method to show change password
+    @GetMapping("/change-password")
+    public String changePassword(Model model, Principal principal) {
+        User user = userService.findUserByUsername(principal.getName());
+
+        if (user == null) {
+            return "redirect:/doctor/home";
+        }
+
+        model.addAttribute("active", "profile");
+        model.addAttribute("section", "change-password");
+        return "doctor/home";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(RedirectAttributes redirectAttributes, Principal principal,
+                                 @RequestParam(name = "currentPassword") String currentPassword,
+                                 @RequestParam(name = "newPassword") String newPassword,
+                                 @RequestParam(name = "confirmPassword", required = false) String confirmPassword) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) {
+            return "redirect:/doctor/home";
+        }
+
+        // basic server-side checks
+        if (confirmPassword == null || !newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "New password and confirm password do not match!");
+            return "redirect:/doctor/change-password";
+        }
+
+        boolean changed = userService.changePassword(user, currentPassword, newPassword);
+        if (changed) {
+            // clean login information
+            SecurityContextHolder.clearContext();
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "Password changed successfully. Please log in again.");
+            return "redirect:/doctor/login";
+        } else {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Change password failed. Check your current password or password policy.");
+            return "redirect:/doctor/change-password";
+        }
+    }
+
+    // method to show crate medical record
+    @PostMapping("/records/show-create")
+    public String createMedicalRecord(@RequestParam("appointmentId") Integer appointmentId,
+                                      @RequestParam("patientId") Integer patientId,
+                                      Model model) {
+        model.addAttribute("appointmentId", appointmentId);
+        model.addAttribute("patientId", patientId);
+        model.addAttribute("section", "create-record");
+        model.addAttribute("active", "home");
+        model.addAttribute("record", new MedicalRecordDTO());
+        return "doctor/home";
     }
 
     // method to show create record form
@@ -372,7 +447,7 @@ public class DoctorController {
 
     // method to do create medical record
     @PostMapping("/records/create")
-    public String createRecord(Model model, Principal principal,
+    public String createRecord(Principal principal,
                                @ModelAttribute("record") MedicalRecordDTO record,
                                RedirectAttributes redirectAttributes) {
 
@@ -401,14 +476,16 @@ public class DoctorController {
             medicalRecord.setStatus(record.getRecordStatus());
             medicalRecord.setCreatedBy(user);
 
-            int saved = medicalRecordService.saveRecord(medicalRecord);
+            MedicalRecord saveRecord = medicalRecordService.saveRecord(medicalRecord);
+            if (saveRecord == null) {
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                redirectAttributes.addFlashAttribute("message", "Failed to save medical record!");
+                return "redirect:/doctor/home";
+            }
 
-            redirectAttributes.addFlashAttribute("messageType", saved > 0 ? "success" : "error");
-            redirectAttributes.addFlashAttribute("message", saved > 0 ?
-                    "Created medical record successfully!" : "Failed to create medical record!");
-
-            return "redirect:/doctor/home";
-
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "Record created successfully!");
+            return "redirect:/doctor/records/detail/" + saveRecord.getRecordId();
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("messageType", "error");
@@ -431,10 +508,6 @@ public class DoctorController {
             return "redirect:/doctor/home";
         }
 
-        // prescription DTO
-        PrescriptionDTO dto = new PrescriptionDTO();
-        dto.setRecordId(recordId);
-
         // drug DTO
         List<DrugCatalogDTO> drugCatalogDTOS = drugCatalogService.findAllDrugs()
                 .stream()
@@ -445,12 +518,10 @@ public class DoctorController {
                     return drugDTO;
                 }).toList();
 
-        model.addAttribute("mode", "create");
         model.addAttribute("record", record);
-        model.addAttribute("prescription", dto);
         model.addAttribute("doctorId", user.getDoctor().getDoctorId());
-        model.addAttribute("drugs", drugCatalogService.findAllDrugs());
-        return "doctor/prescription-form";
+        model.addAttribute("drugs", drugCatalogDTOS);
+        return "doctor/create-prescription";
     }
 
     // method to show prescription for update
@@ -543,29 +614,78 @@ public class DoctorController {
         return "redirect:/doctor/records/detail/" + recordId;
     }
 
-    // method to show vital sign form for update
-    @GetMapping("/vitals/update/{id}")
-    public String vitalSignUpdatePage(Model model, @PathVariable(name = "id") int vitalSignId,
-                                      RedirectAttributes redirectAttributes) {
-        VitalSignsDTO vitalSignsDTO = vitalSignsService.findVitalSignsDTOById(vitalSignId);
+    // method to do create and update prescription form
+    @PostMapping("/prescription/create-prescription")
+    public String createPrescriptionDetails(
+            @RequestParam("recordId") int recordId,
+            @RequestParam("doctorId") int doctorId,
+            @RequestParam(value = "drugIds", required = false) List<Integer> drugIds,
+            @RequestParam(value = "quantities", required = false) List<Integer> quantities,
+            @RequestParam(value = "dosages", required = false) List<String> dosages,
+            @RequestParam(value = "frequencies", required = false) List<String> frequencies,
+            @RequestParam(value = "durationDay", required = false) List<Integer> durationDays,
+            @RequestParam(value = "instructions", required = false) List<String> instructions,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            // tạo prescription và lưu
+            Prescription saved = prescriptionService.createPrescription(recordId, doctorId);
 
-        if (vitalSignsDTO == null) {
+            // thêm detail (nếu có)
+            if (drugIds != null && !drugIds.isEmpty()) {
+                prescriptionDetailService.addDetails(saved.getPrescriptionId(),
+                        drugIds, quantities, dosages, frequencies, durationDays, instructions);
+            }
+
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "Prescription details saved successfully!");
+        } catch (Exception e) {
             redirectAttributes.addFlashAttribute("messageType", "error");
-            redirectAttributes.addFlashAttribute("message", "VitalSigns not found!");
+            redirectAttributes.addFlashAttribute("message", "Error: " + e.getMessage());
+        }
+        return "redirect:/doctor/records/detail/" + recordId;
+    }
+
+    // method to show vital create
+    @GetMapping("/vitals/create/{id}")
+    public String showVitalForm(@PathVariable("id") Integer recordId,
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
+
+        if (recordId == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Record not found!");
             return "redirect:/doctor/home";
         }
 
-        model.addAttribute("vital", vitalSignsDTO);
+        VitalSignsDTO dto = new VitalSignsDTO();
+        dto.setRecordId(recordId);
+        model.addAttribute("vital", dto);
+        model.addAttribute("mode", "create");
+
+        model.addAttribute("recordId", recordId);
         return "doctor/vitalSign";
     }
 
     // method do save update vital sign
     @PostMapping("/vitals/update")
     public String saveVital(@ModelAttribute("vital") VitalSignsDTO vital,
+                            BindingResult result, Model model,
                             @RequestParam("recordId") int recordId,
+                            Principal principal,
                             RedirectAttributes redirectAttributes) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) {
+            return "redirect:/doctor/home";
+        }
 
-        vitalSignsService.saveOrUpdate(recordId, vital);
+        if (result.hasErrors()) {
+            model.addAttribute("recordId", vital.getRecordId());
+            model.addAttribute("mode", "update");
+            model.addAttribute("recordId", recordId);
+            return "doctor/vitals-form";
+        }
+        vitalSignsService.saveOrUpdate(recordId, vital, user.getDoctor());
         redirectAttributes.addFlashAttribute("messageType", "success");
         redirectAttributes.addFlashAttribute("message", "Vital signs saved successfully!");
 
@@ -818,7 +938,6 @@ public class DoctorController {
         User user = userService.findUserByUsername(principal.getName());
         List<AppointmentDTO> appointmentDTOS = appointmentService.getTodayAppointmentsByDoctorId(user.getUserId());
 
-
         model.addAttribute("appointments", appointmentDTOS);
         model.addAttribute("appointment", new AppointmentDTO());
         return "doctor/make-re-examination-appointment";
@@ -864,7 +983,7 @@ public class DoctorController {
         }
 
         appointment.setPatient(patient);
-        appointment.setStatus(AppointmentStatus.EXAMINED);
+        appointment.setStatus(AppointmentStatus.CONFIRMED);
 
         if (principal != null) {
             User user = userService.findUserByUsername(principal.getName());
@@ -874,7 +993,7 @@ public class DoctorController {
         }
 
         try {
-            Appointment saved = appointmentService.saveAppointment(appointment);
+            Appointment saved = appointmentService.saveFollowUpAppointment(appointment);
             if (saved != null) {
                 redirectAttributes.addFlashAttribute("message", "Create Appointment Successfully");
                 redirectAttributes.addFlashAttribute("messageType", "success");
@@ -891,8 +1010,6 @@ public class DoctorController {
             return "redirect:/doctor/re-examination/create";
         }
     }
-
-
 
     // method to submit finish appointment for patient
     @PostMapping("/submit")

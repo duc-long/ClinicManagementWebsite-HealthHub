@@ -1,99 +1,91 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title th:text="${mode=='update'} ? 'Update Vital Signs' : 'Record Vital Signs'"></title>
-    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${mode == 'update'} ? 'Update Vital Signs' : 'Record Vital Signs'">Record Vital Signs</title>
+
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+
     <style>
         body { background-color: #f8fafc; font-family: "Inter", sans-serif; }
-
         .card { border-radius: 14px; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.08); }
-
-        .card-header {
-            background: #eaf4fb;
-            color: #005691;
-            font-weight: 600;
-            font-size: 1.1rem;
-            border-top-left-radius: 14px;
-            border-top-right-radius: 14px;
-        }
-
-        .btn-hm {
-            background-color: #005691;
-            color: white;
-            border-radius: 8px;
-        }
-        .btn-hm:hover { background-color: #003f6f; }
+        .card-header { background: #eaf4fb; color: #005691; font-weight: 600; }
+        .text-error { color: #d9534f; font-size: 0.85rem; }
     </style>
 </head>
 
 <body>
 <div class="container mt-5">
 
-    <!-- Title + Back -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="text-primary fw-semibold">
+        <h3 class="text-primary fw-semibold mb-0">
             <i class="fa-solid fa-stethoscope me-2"></i>
-            <span th:text="${mode=='update'} ? 'Update Vital Signs' : 'Record Vital Signs'"></span>
+            <span th:text="${mode == 'update'} ? 'Update Vital Signs' : 'Record Vital Signs'"></span>
         </h3>
-        <a th:href="@{/doctor/records/detail/{id}(id=${vital.recordId})}" class="btn btn-outline-secondary rounded-pill px-3">
+
+        <a th:href="@{/doctor/records/detail/{id}(id=${recordId})}" class="btn btn-outline-secondary rounded-pill px-3">
             <i class="fa-solid fa-arrow-left me-1"></i> Back
         </a>
     </div>
 
-    <!-- Form -->
-    <form th:action="@{/doctor/vitals/update}" method="post" th:object="${vital}">
-        <input type="hidden" th:field="*{vitalId}">
-        <input type="hidden" th:field="*{recordId}">
+    <div class="card p-4">
+        <div class="card-header mb-3">🩺 Vital Measurements</div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                🩺 Vital Measurements
-            </div>
-            <div class="card-body">
+        <form th:action="@{/doctor/vitals/update}" th:object="${vital}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf != null}"/>
 
-                <div class="row g-4">
+            <input type="hidden" th:field="*{vitalId}" />
+            <input type="hidden" th:field="*{recordId}" th:value="${recordId}" />
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Height (cm)</label>
-                        <input type="number" step="0.1" th:field="*{heightCm}" class="form-control" placeholder="Nhập chiều cao...">
-                    </div>
+            <div class="row g-3">
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Weight (kg)</label>
-                        <input type="number" step="0.1" th:field="*{weightKg}" class="form-control" placeholder="Nhập cân nặng...">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Blood Pressure (mmHg)</label>
-                        <div class="input-group">
-                            <input type="number" th:field="*{systolic}" class="form-control text-center" placeholder="120">
-                            <span class="input-group-text">/</span>
-                            <input type="number" th:field="*{diastolic}" class="form-control text-center" placeholder="80">
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Heart Rate (bpm)</label>
-                        <input type="number" th:field="*{heartRate}" class="form-control" placeholder="VD: 80">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Temperature (°C)</label>
-                        <input type="number" step="0.1" th:field="*{temperature}" class="form-control" placeholder="VD: 37.2">
-                    </div>
-
+                <div class="col-md-6">
+                    <label class="form-label">Height (cm)</label>
+                    <input type="number" step="0.1" min="0.1" required th:field="*{heightCm}" class="form-control"/>
+                    <div class="text-error" th:errors="*{heightCm}"></div>
                 </div>
 
+                <div class="col-md-6">
+                    <label class="form-label">Weight (kg)</label>
+                    <input type="number" step="0.1" min="0.1" required th:field="*{weightKg}" class="form-control"/>
+                    <div class="text-error" th:errors="*{weightKg}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Blood Pressure (mmHg)</label>
+                    <div class="input-group">
+                        <input type="number" min="1" required th:field="*{systolic}" class="form-control text-center"/>
+                        <span class="input-group-text">/</span>
+                        <input type="number" min="1" required th:field="*{diastolic}" class="form-control text-center"/>
+                    </div>
+                    <div class="text-error" th:if="${#fields.hasErrors('systolic') or #fields.hasErrors('diastolic')}">
+                        Blood pressure values must be greater than 0
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Heart Rate (bpm)</label>
+                    <input type="number" min="1" required th:field="*{heartRate}" class="form-control"/>
+                    <div class="text-error" th:errors="*{heartRate}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Temperature (°C)</label>
+                    <input type="number" step="0.1" min="0.1" required th:field="*{temperature}" class="form-control"/>
+                    <div class="text-error" th:errors="*{temperature}"></div>
+                </div>
             </div>
-        </div>
 
-        <button class="btn btn-hm w-100 py-2 fw-semibold">
-            <i class="fa-solid fa-floppy-disk me-2"></i> Save Vital Signs
-        </button>
-
-    </form>
-    <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+            <div class="d-grid mt-4">
+                <button class="btn btn-primary py-2 fw-semibold" type="submit">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>
+                    <span th:text="${vital.vitalId == null} ? 'Save' : 'Update'"></span> Vital Signs
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 </html>
