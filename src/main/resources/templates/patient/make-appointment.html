@@ -162,7 +162,6 @@
                         <div class="mb-4">
                             <label for="notes" class="form-label">Reason / Symptoms</label>
                             <textarea id="notes" class="form-control" rows="3"
-                                      required
                                       th:field="*{notes}"
                                       placeholder="Describe your symptoms or special requests..."></textarea>
                         </div>
@@ -173,7 +172,15 @@
                             <input type="date" id="appointmentDate" class="form-control"
                                    th:field="*{appointmentDate}" required>
                         </div>
+
                         <div class="divider"></div>
+
+                        <!-- ✅ Policy -->
+                        <div class="text-center small text-muted mb-3">
+                            By clicking <b>Confirm</b>, you agree to our
+                            <a href="#" class="text-decoration-none text-primary">Privacy Policy</a>.
+                        </div>
+
                         <!-- 🎯 Submit -->
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-primary px-5">
@@ -194,6 +201,6 @@
 
 <footer th:insert="~{fragment/fragment :: footer}"></footer>
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
-<script th:src="@{/assets/js/toast.js}" ></script>
+<script th:src="@{/assets/js/toast.js}"></script>
 </body>
 </html>

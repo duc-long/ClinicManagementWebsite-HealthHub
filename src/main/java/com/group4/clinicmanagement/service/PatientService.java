@@ -5,10 +5,12 @@ import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.repository.PatientRepository;
 import com.group4.clinicmanagement.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -70,6 +72,17 @@ public class PatientService {
         savePatientUser(username, dto);
 
         if (avatar != null && !avatar.isEmpty()) {
+            long maxFileSize = 20 * 1024 * 1024;
+            if (avatar.getSize() > maxFileSize) {
+                throw new IllegalArgumentException("File size exceeds the maximum allowed size of 20MB");
+            }
+            // Kiểm tra đuôi file (extension)
+            String fileExtension = getFileExtension(avatar.getOriginalFilename());
+
+            // Kiểm tra đuôi file, ví dụ: chấp nhận jpg, png, gif
+            if (!isValidFileExtension(fileExtension)) {
+                throw new IllegalArgumentException("Invalid file type. Only JPG, PNG, and GIF are allowed.");
+            }
             try {
                 String uploadDir = System.getProperty("user.dir") + "/uploads/avatars";
                 Files.createDirectories(Paths.get(uploadDir));
@@ -93,6 +106,25 @@ public class PatientService {
                 throw new RuntimeException("Upload avatar failed", e);
             }
         }
+    }
+
+    // Kiểm tra đuôi file có hợp lệ không (chỉ chấp nhận jpg, png, gif)
+    private boolean isValidFileExtension(String extension) {
+        String[] allowedExtensions = {"jpg", "jpeg", "png", "gif"};
+        for (String ext : allowedExtensions) {
+            if (ext.equalsIgnoreCase(extension)) {
+                return true;  // Tệp hợp lệ
+            }
+        }
+        return false;  // Tệp không hợp lệ
+    }
+
+    // Lấy đuôi file từ tên file
+    private String getFileExtension(String filename) {
+        if (filename != null && filename.contains(".")) {
+            return filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+        }
+        return "";
     }
 
     public boolean changePassword(String username, String currentPassword, String newPassword) {
