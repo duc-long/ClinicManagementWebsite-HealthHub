@@ -90,10 +90,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
     SELECT COALESCE(MAX(a.queueNumber), 0)
     FROM Appointment a
     WHERE a.doctor.doctorId = :doctorId
-      AND a.appointmentDate = :date
+      AND a.appointmentDate = CURRENT_DATE
+      AND a.queueNumber IS NOT NULL
 """)
-    Integer findMaxQueueNumber(@Param("doctorId") int doctorId,
-                                              @Param("date") LocalDate date);
+    Integer findTodayMaxQueue(@Param("doctorId") int doctorId);
+
 
 
     @Query("""

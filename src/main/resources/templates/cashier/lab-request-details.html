@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab Request Details – HealHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="app" id="appLayout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">CSH</div>
+            <div class="title hide-when-collapsed">HealHub · Cashier</div>
+        </div>
+        <button id="toggleSidebar" class="toggle-btn" type="button">
+            <i class="fa-solid fa-angles-left"></i>
+            <span class="hide-when-collapsed">Collapse</span>
+        </button>
+        <nav class="nav" id="sideNav">
+            <small class="hide-when-collapsed">OVERVIEW</small>
+            <a th:href="@{/cashier/appointment-list}">
+                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="hide-when-collapsed">Appointments</span>
+            </a>
+            <a th:href="@{/cashier/lab-request-list}" class="active">
+                <span class="icon"><i class="fa-solid fa-vial"></i></span>
+                <span class="hide-when-collapsed">Lab Requests</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <h4 class="mb-0">Lab Request Details</h4>
+        </div>
+
+        <div th:if="${labRequest == null}">
+            <p>Invalid Lab Request ID or you don’t have permission to view this record.</p>
+        </div>
+
+        <div class="content" th:if="${labRequest != null}">
+            <div class="card-soft">
+                <p><strong>ID:</strong> <span th:text="${labRequest.labRequestId}"></span></p>
+                <p><strong>Patient:</strong> <span th:text="${labRequest.medicalRecord.patient.user.fullName}"></span></p>
+                <p><strong>Doctor:</strong> <span th:text="${labRequest.doctor.user.fullName}"></span></p>
+                <p><strong>Test Name:</strong> <span th:text="${labRequest.test.name}"></span></p>
+                <p><strong>Cost:</strong> <span th:text="${#numbers.formatDecimal(labRequest.test.cost, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span></p>
+                <p><strong>Status:</strong> <span th:text="${labRequest.status}"></span></p>
+                <p><strong>Requested At:</strong> <span th:text="${#temporals.format(labRequest.requestedAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+
+                <div class="mt-3">
+                    <form th:if="${billId == null}"
+                          th:action="@{'/cashier/lab-request/' + ${labRequest.labRequestId} + '/create-bill'}"
+                          method="post" style="display:inline;">
+                        <button class="btn btn-success"><i class="fa-solid fa-file-invoice-dollar"></i> Create Bill</button>
+                    </form>
+
+
+                    <a th:href="@{/cashier/lab-request-list}" class="btn btn-secondary">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<script>
+    const app = document.getElementById('appLayout');
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const overlay = document.getElementById('overlay');
+    toggleBtn.addEventListener('click', () => app.classList.toggle('collapsed'));
+    overlay.addEventListener('click', () => app.classList.remove('show-sidebar'));
+</script>
+</body>
+</html>

@@ -1,12 +1,15 @@
 package com.group4.clinicmanagement.controller.cashier;
 
+import com.group4.clinicmanagement.dto.CashierLabRequestDTO;
 import com.group4.clinicmanagement.dto.CashierUserDTO;
 import com.group4.clinicmanagement.dto.RecepCashAppointmentDTO;
 import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Bill;
+import com.group4.clinicmanagement.entity.LabRequest;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
+import com.group4.clinicmanagement.enums.LabRequestStatus;
 import com.group4.clinicmanagement.repository.UserRepository;
 import com.group4.clinicmanagement.service.*;
 import com.group4.clinicmanagement.service.CashierService;
@@ -17,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,9 +86,9 @@ public class CashierController {
         Page<RecepCashAppointmentDTO> appointments;
         switch (status.toUpperCase()) {
             case "PAID" ->
-                    appointments = appointmentService.getStatusAppointmentPage(AppointmentStatus.PAID.getValue(), currentPage, size);
+                    appointments = appointmentService.getStatusAppointmentPageforCash(AppointmentStatus.PAID.getValue(), currentPage, size);
             default ->
-                    appointments = appointmentService.getStatusAppointmentPage(AppointmentStatus.CHECKED_IN.getValue(), currentPage, size);
+                    appointments = appointmentService.getStatusAppointmentPageforCash(AppointmentStatus.CHECKED_IN.getValue(), currentPage, size);
         }
 
         // gắn billId và canCreateBill
@@ -110,7 +114,7 @@ public class CashierController {
     public String viewAppointmentDetails(@PathVariable("id") String id, Model model, RedirectAttributes redirectAttributes) {
         try {
             int appointmentId = Integer.parseInt(id);
-            Appointment appointment = appointmentService.getAppointmentForReceptionist(appointmentId);
+            Appointment appointment = appointmentService.getAppointmentForCashier(appointmentId);
             if (appointment == null) {
                 redirectAttributes.addFlashAttribute("message", "Appointment not found");
                 redirectAttributes.addFlashAttribute("messageType", "error");
@@ -133,36 +137,63 @@ public class CashierController {
         }
     }
 
+    @GetMapping("/lab-request-list")
+    public String listLabRequests(
+            @RequestParam(required = false, defaultValue = "REQUESTED") String status,
+            @RequestParam(defaultValue = "1") String page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
 
-    @PostMapping("/appointment/{id}/create-bill")
-    public String createBill(@PathVariable("id") int appointmentId, RedirectAttributes redirectAttributes) {
+        int currentPage;
         try {
-            Appointment appointment = appointmentService.getById(appointmentId);
-            if (appointment == null) {
-                throw new IllegalArgumentException("Appointment not found");
-            }
+            currentPage = Math.max(Integer.parseInt(page), 1);
+        } catch (NumberFormatException e) {
+            currentPage = 1;
+        }
 
-            if (billService.existsByAppointmentId(appointmentId)) {
-                redirectAttributes.addFlashAttribute("message", "Bill already exists for this appointment.");
-                redirectAttributes.addFlashAttribute("messageType", "warning");
-                return "redirect:/cashier/appointment-list?status=CHECKED_IN";
-            }
+        Page<CashierLabRequestDTO> labRequests;
+        switch (status.toUpperCase()) {
+            case "PAID" -> labRequests =
+                    labRequestService.getStatusLabRequestPage(LabRequestStatus.PAID.getValue(), currentPage, size);
+            default -> labRequests =
+                    labRequestService.getStatusLabRequestPage(LabRequestStatus.REQUESTED.getValue(), currentPage, size);
+        }
 
-            if (!appointment.getAppointmentDate().equals(LocalDate.now())) {
-                redirectAttributes.addFlashAttribute("message", "You can only create bills for today's appointments.");
+        model.addAttribute("labRequests", labRequests);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("activeStatus", status.toUpperCase());
+        return "cashier/lab-request-list";
+    }
+
+    @GetMapping("/lab-request/{id}")
+    public String viewLabRequestDetails(
+            @PathVariable("id") String id,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            int labRequestId = Integer.parseInt(id);
+            LabRequest labRequest = labRequestService.getById(labRequestId);
+
+            if (labRequest == null) {
+                redirectAttributes.addFlashAttribute("message", "Lab Request not found.");
                 redirectAttributes.addFlashAttribute("messageType", "error");
-                return "redirect:/cashier/appointment-list?status=CHECKED_IN";
+                return "redirect:/cashier/lab-request-list";
             }
 
-            Bill newBill = billService.createBillForAppointment(appointment);
-            redirectAttributes.addFlashAttribute("message", "Bill created successfully!");
-            redirectAttributes.addFlashAttribute("messageType", "success");
-            return "redirect:/cashier/bill/" + newBill.getBillId();
+            Bill bill = billService.getBillByLabRequestId(labRequestId);
+            model.addAttribute("labRequest", labRequest);
+            model.addAttribute("billId", bill != null ? bill.getBillId() : null);
 
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", "Error while creating bill.");
+            return "cashier/lab-request-details";
+
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("message", "Invalid Lab Request ID format.");
             redirectAttributes.addFlashAttribute("messageType", "error");
-            return "redirect:/cashier/appointment-list?status=CHECKED_IN";
+            return "redirect:/cashier/lab-request-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Error loading Lab Request details.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/cashier/lab-request-list";
         }
     }
 
@@ -193,4 +224,89 @@ public class CashierController {
         }
     }
 
+    @PostMapping("/appointment/{id}/create-bill")
+    public String createBillAppointment(@PathVariable("id") int appointmentId,
+                             Principal principal,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            Appointment appointment = appointmentService.getById(appointmentId);
+            if (appointment == null) {
+                redirectAttributes.addFlashAttribute("message", "Appointment not found.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/cashier/appointment-list?status=CHECKED_IN";
+            }
+
+            if (billService.existsByAppointmentId(appointmentId)) {
+                redirectAttributes.addFlashAttribute("message", "Bill already exists for this appointment.");
+                redirectAttributes.addFlashAttribute("messageType", "warning");
+                return "redirect:/cashier/appointment-list?status=CHECKED_IN";
+            }
+
+            if (!appointment.getAppointmentDate().equals(LocalDate.now())) {
+                redirectAttributes.addFlashAttribute("message", "You can only create bills for today's appointments.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/cashier/appointment-list?status=CHECKED_IN";
+            }
+            User cashier = userRepository.findByUsernameAndRoleId(principal.getName(), 4); // 4 = CASHIER
+            if (cashier == null) {
+                redirectAttributes.addFlashAttribute("message", "Only cashier accounts can perform this action.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/cashier/appointment-list?status=CHECKED_IN";
+            }
+
+
+            Bill newBill = billService.createBill(appointmentId, null, cashier);
+            redirectAttributes.addFlashAttribute("message", "Bill created successfully!");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            return "redirect:/cashier/bill/" + newBill.getBillId();
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Error while creating bill: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/cashier/appointment-list?status=CHECKED_IN";
+        }
+    }
+
+
+    @PostMapping("/bill/{id}/export")
+    public String exportBill(@PathVariable("id") Integer billId, RedirectAttributes redirectAttributes) {
+        try {
+            Bill bill = billService.exportBill(billId);
+            redirectAttributes.addFlashAttribute("message", "Bill exported successfully!");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            return "redirect:/cashier/bill/" + bill.getBillId();
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/cashier/appointment-list";
+        }
+    }
+
+    @GetMapping("/payment-list")
+    public String listPayments(
+            @RequestParam(required = false, defaultValue = "ALL") String status,
+            @RequestParam(defaultValue = "1") String page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        int currentPage;
+        try {
+            currentPage = Math.max(Integer.parseInt(page), 1);
+        } catch (NumberFormatException e) {
+            currentPage = 1;
+        }
+
+        Page<Bill> bills;
+        switch (status.toUpperCase()) {
+            case "PENDING" -> bills = billService.getBillsByStatus(0, currentPage, size);
+            case "PAID" -> bills = billService.getBillsByStatus(1, currentPage, size);
+            case "VOID" -> bills = billService.getBillsByStatus(2, currentPage, size);
+            default -> bills = billService.getAllBills(currentPage, size);
+        }
+
+        model.addAttribute("bills", bills);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("activeStatus", status.toUpperCase());
+        return "cashier/payment-list";
+    }
 }

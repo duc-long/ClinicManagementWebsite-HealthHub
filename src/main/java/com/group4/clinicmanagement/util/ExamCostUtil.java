@@ -4,5 +4,5 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ExamCostUtil {
-    private static final double EXAMCOST = 200000;
+    public static final double EXAMCOST = 200000;
 }

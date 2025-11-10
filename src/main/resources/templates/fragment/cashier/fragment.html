@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>sidebar</title>
+</head>
+<body>
+<div th:fragment="sidebar-csh">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="brand">
+        <div class="logo">R</div>
+        <div class="title hide-when-collapsed">HealHub · Cashier</div>
+    </div>
+
+    <button id="toggleSidebar" class="toggle-btn" type="button">
+        <i class="fa-solid fa-angles-left"></i>
+        <span class="hide-when-collapsed">Collapse</span>
+    </button>
+
+    <nav class="nav" id="sideNav">
+        <small class="hide-when-collapsed">OVERVIEW</small>
+        <a th:href="@{/cashier/appointment-list}">
+            <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+            <span class="hide-when-collapsed">Appointments</span>
+        </a>
+        <a th:href="@{/cashier/payment-list}" class="active">
+            <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
+            <span class="hide-when-collapsed">Payments</span>
+        </a>
+        <a th:href="@{/cashier/lab-request-list}" class="active">
+            <span class="icon"><i class="fa-solid fa-vial"></i></span>
+            <span class="hide-when-collapsed">Lab Requests</span>
+        </a>
+        <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+        <a th:href="@{/cashier/profile}">
+            <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+            <span class="hide-when-collapsed">Profile</span>
+        </a>
+        <form th:action="@{/cashier/logout}" method="post" style="margin-top:.5rem;">
+            <button class="toggle-btn" type="submit">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span class="hide-when-collapsed">Logout</span>
+            </button>
+        </form>
+    </nav>
+</aside>
+</div>
+</body>
+</html>

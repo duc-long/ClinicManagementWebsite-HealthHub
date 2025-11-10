@@ -56,7 +56,7 @@
     <aside class="sidebar">
         <div class="brand">
             <div class="logo">R</div>
-            <div class="title hide-when-collapsed">HealHub · Receptionist</div>
+            <div class="title hide-when-collapsed">HealHub · Cashier</div>
         </div>
 
         <button id="toggleSidebar" class="toggle-btn" type="button">
@@ -66,13 +66,17 @@
 
         <nav class="nav" id="sideNav">
             <small class="hide-when-collapsed">OVERVIEW</small>
-            <a th:href="@{/cashier/appointment-list}">
+            <a th:href="@{/cashier/appointment-list}" class="active">
                 <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
                 <span class="hide-when-collapsed">Appointments</span>
             </a>
-            <a th:href="@{/cashier/payment-list}" class="active">
+            <a th:href="@{/cashier/payment-list}" >
                 <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
                 <span class="hide-when-collapsed">Payments</span>
+            </a>
+            <a th:href="@{/cashier/lab-request-list}" >
+                <span class="icon"><i class="fa-solid fa-vial"></i></span>
+                <span class="hide-when-collapsed">Lab Requests</span>
             </a>
             <small class="hide-when-collapsed mt-2">ACCOUNT</small>
             <a th:href="@{/cashier/profile}">
@@ -147,7 +151,7 @@
                         <!-- Create Bill -->
                         <form th:if="${a.status.name() == 'CHECKED_IN'
                                       and a.appointmentDate == T(java.time.LocalDate).now()
-                                      and a.canCheckin}"
+                                      and a.canCheck}"
                               th:action="@{'/cashier/appointment/' + ${a.appointmentId} + '/create-bill'}"
                               method="post"
                               style="display:inline;">
