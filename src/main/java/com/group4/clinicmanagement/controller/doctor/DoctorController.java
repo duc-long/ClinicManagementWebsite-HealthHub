@@ -667,6 +667,8 @@ public class DoctorController {
         return "doctor/vitalSign";
     }
 
+
+
     // method do save update vital sign
     @PostMapping("/vitals/update")
     public String saveVital(@ModelAttribute("vital") VitalSignsDTO vital,

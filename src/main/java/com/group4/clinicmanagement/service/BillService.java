@@ -11,6 +11,7 @@ import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.BillRepository;
 import com.group4.clinicmanagement.repository.LabRequestRepository;
 import com.group4.clinicmanagement.repository.admin.BillForAdminRepository;
+import com.group4.clinicmanagement.util.BillPdfExporter;
 import com.group4.clinicmanagement.util.ExamCostUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,13 +32,15 @@ public class BillService {
     private final LabRequestRepository labRequestRepository;
     private final AppointmentRepository appointmentRepository;
     private final ExamCostUtil examCostUtil;
+    private final BillPdfExporter billPdfExporter;
 
-    public BillService(BillRepository billRepository, BillForAdminRepository billForAdminRepository, LabRequestRepository labRequestRepository, AppointmentRepository appointmentRepository, ExamCostUtil examCostUtil) {
+    public BillService(BillRepository billRepository, BillForAdminRepository billForAdminRepository, LabRequestRepository labRequestRepository, AppointmentRepository appointmentRepository, ExamCostUtil examCostUtil, BillPdfExporter billPdfExporter) {
         this.billRepository = billRepository;
         this.billForAdminRepository = billForAdminRepository;
         this.labRequestRepository = labRequestRepository;
         this.appointmentRepository = appointmentRepository;
         this.examCostUtil = examCostUtil;
+        this.billPdfExporter = billPdfExporter;
     }
 
     public Double getRevenueToday() {
@@ -266,6 +270,9 @@ public class BillService {
         return billRepository.findAll(pageable);
     }
 
+    public void exportPdfToResponse(Bill bill, OutputStream outputStream) throws Exception {
+        billPdfExporter.export(bill, outputStream);
+    }
 }
 
 

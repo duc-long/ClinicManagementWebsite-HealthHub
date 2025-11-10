@@ -13,6 +13,7 @@ import com.group4.clinicmanagement.enums.LabRequestStatus;
 import com.group4.clinicmanagement.repository.UserRepository;
 import com.group4.clinicmanagement.service.*;
 import com.group4.clinicmanagement.service.CashierService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -269,18 +270,27 @@ public class CashierController {
 
 
     @PostMapping("/bill/{id}/export")
-    public String exportBill(@PathVariable("id") Integer billId, RedirectAttributes redirectAttributes) {
+    public void exportBill(@PathVariable("id") Integer billId,
+                           RedirectAttributes redirectAttributes,
+                           HttpServletResponse response) {
         try {
             Bill bill = billService.exportBill(billId);
-            redirectAttributes.addFlashAttribute("message", "Bill exported successfully!");
-            redirectAttributes.addFlashAttribute("messageType", "success");
-            return "redirect:/cashier/bill/" + bill.getBillId();
+            response.setContentType("application/pdf");
+            String headerValue = "attachment; filename=bill_" + bill.getBillId() + ".pdf";
+            response.setHeader("Content-Disposition", headerValue);
+
+            billService.exportPdfToResponse(bill, response.getOutputStream());
+
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", e.getMessage());
-            redirectAttributes.addFlashAttribute("messageType", "error");
-            return "redirect:/cashier/appointment-list";
+            try {
+                // Trả lỗi về client
+                response.setContentType("text/plain");
+                response.getWriter().write("Error exporting bill: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            } catch (Exception ignored) {}
         }
     }
+
 
     @GetMapping("/payment-list")
     public String listPayments(
