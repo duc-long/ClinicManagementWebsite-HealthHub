@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>500 - Internal Server Error</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body class="text-center" style="margin-top:100px;">
+<h1 class="display-4 text-danger">500</h1>
+<p class="lead">An unexpected error occurred. Please try again later.</p>
+<button class="btn btn-primary mt-3" onclick="goBack()">Go Back</button>
+<script>
+    function goBack() { window.history.back(); setTimeout(() => location.reload(), 200); }
+</script>
+</body>
+</html>
