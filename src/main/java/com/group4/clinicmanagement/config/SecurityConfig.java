@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -163,10 +164,10 @@ public class SecurityConfig {
     @Bean
     @Order(6)
     public SecurityFilterChain technicianChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/technician/**", "/technician/login")
+        http.securityMatcher("/technician/login","/technician/**")
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/technician/login", "/assets/**").permitAll()
-                        .anyRequest().hasRole("Technician"))
+                        .anyRequest().hasAuthority("ROLE_TECHNICIAN"))
                 .formLogin(form -> form
                         .loginPage("/technician/login")
                         .loginProcessingUrl("/technician/login")
@@ -177,7 +178,7 @@ public class SecurityConfig {
                         .logoutUrl("/technician/logout")
                         .logoutSuccessUrl("/technician/login?logout")
                         .permitAll())
-                .csrf(csrf -> csrf.disable());
+                .csrf(Customizer.withDefaults());
         return http.build();
     }
 }

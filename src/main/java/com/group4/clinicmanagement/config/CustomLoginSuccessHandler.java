@@ -64,8 +64,8 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         }
         // ==================== TECHNICIAN ====================
         else if(requestURI.startsWith("/technician/login")) {
-            if(hasRole(roles, "ROLE_Technician")) {
-                redirectURL = "/technician/dashboard";
+            if(hasRole(roles, "ROLE_TECHNICIAN")) {
+                redirectURL = "/technician/request-list";
             } else {
                 response.sendRedirect("/technician/login?error=invalid_role");
                 return;

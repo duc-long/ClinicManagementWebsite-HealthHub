@@ -6,7 +6,7 @@
     <title>Request List - HealHub</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             background-color: #f6f7fb;
@@ -57,8 +57,11 @@
         </aside>
 
         <section class="col-12 col-lg-9">
-            <h1 class="h4 mb-3">Test Request List</h1>
-            <!-- ========== FILTER FORM ========== -->
+            <div class="d-flex align-items-center mb-4">
+                <h1 class="h3 mb-0 me-3"><i class="fa-solid fa-vials text-primary me-2"></i>Lab Request List</h1>
+                <span class="badge bg-primary bg-opacity-10 text-white fw-normal">DAY: <span th:text="${date}"></span></span>
+            </div>
+                <!-- ========== FILTER FORM ========== -->
             <div class="card shadow-sm border-0 mb-3">
                 <div class="card-body">
                     <form class="row g-2" th:action="@{/technician/request-list}" method="get">
@@ -106,17 +109,10 @@
                                 </option>
                             </select>
                         </div>
-
-                        <!-- Date filters -->
-                        <div class="col-6 col-md-3">
-                            <label class="form-label" for="fromDate">From</label>
-                            <input type="date" class="form-control form-control-sm" id="fromDate" name="fromDate"
-                                   th:value="${fromDate}">
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <label class="form-label" for="toDate">To</label>
-                            <input type="date" class="form-control form-control-sm" id="toDate" name="toDate"
-                                   th:value="${toDate}">
+                        <div class="form-check me-3">
+                            <input class="form-check-input" type="checkbox" name="isAll" value="true"
+                                   th:checked="${isAll}">
+                            <label class="form-check-label">Show All</label>
                         </div>
 
                         <!-- Buttons -->
@@ -147,7 +143,7 @@
                             <tbody>
                             <tr th:each="request : ${labRequests}" th:object="${request}">
                                 <td th:text="*{labRequestId}"></td>
-                                <td th:text="*{medicalRecordId}"></td>
+                                <td th:text="*{patient.user.fullName}"></td>
                                 <td th:text="*{labTestCatalog.name}"></td>
                                 <td th:text="*{doctor.user.fullName}"></td>
                                 <td>
@@ -175,15 +171,28 @@
         </section>
     </div>
 </main>
+<div id="flash-message-error" th:data-msg="${errorMessage}" style="display:none;"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const errorMsg = document.getElementById('flash-message-error').dataset.msg;
+
+
+    if (errorMsg) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: errorMsg,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#dc3545',
+            customClass: {
+                popup: 'swal2-border-red'
+            }
+        });
+    }
+    /*]]>*/
+</script>
 
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
-<script>
-    setTimeout(() => {
-        const alert = document.getElementById("autoClose");
-        if (alert) {
-            alert.classList.remove("show");
-        }
-    }, 3000);
-</script>
+
 </body>
 </html>

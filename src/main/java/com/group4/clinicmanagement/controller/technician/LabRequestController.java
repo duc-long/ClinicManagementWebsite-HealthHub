@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,57 +39,72 @@ public class LabRequestController {
             @RequestParam(required = false) String doctorName,
             @RequestParam(required = false) String testName,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-            Model model) {
+            @RequestParam(defaultValue = "false") boolean isAll,
+            Model model, RedirectAttributes redirectAttributes) {
 
-        patientId = (patientId != null && !patientId.isBlank()) ? patientId.trim() : null;
-        doctorName = (doctorName != null && !doctorName.isBlank()) ? doctorName.trim() : null;
-        testName = (testName != null && !testName.isBlank()) ? testName.trim() : null;
-        status = (status != null && !status.isBlank()) ? status.trim() : null;
+        try {
+            patientId = (patientId != null && !patientId.isBlank()) ? patientId.trim() : null;
+            doctorName = (doctorName != null && !doctorName.isBlank()) ? doctorName.trim() : null;
+            testName = (testName != null && !testName.isBlank()) ? testName.trim() : null;
+            status = (status != null && !status.isBlank()) ? status.trim() : null;
 
-        List<LabRequestDTO> labRequestDTOs;
+            List<LabRequestDTO> labRequestDTOs;
 
-        if (patientId == null && status == null && doctorName == null && testName == null && fromDate == null && toDate == null) {
-            labRequestDTOs = labRequestService.getAllLabRequestDTO();
-        } else {
-            LocalDateTime from = (fromDate != null) ? fromDate.atStartOfDay() : null;
-            LocalDateTime to = (toDate != null) ? toDate.atTime(23, 59, 59) : null;
+            if (patientId == null && status == null && doctorName == null && testName == null && isAll) {
+                labRequestDTOs = labRequestService.getAllLabRequestDTO();
+            } else {
+                labRequestDTOs = labRequestService.filterRequests(patientId, doctorName, testName, status, isAll);
+            }
 
-            labRequestDTOs = labRequestService.filterRequests(patientId, doctorName,testName, status, from, to);
+            List<LabTestCatalog> labTestCatalogs = labTestCatalogService.getAll();
+            List<Doctor> doctors = doctorService.findAllDoctors();
+
+            LocalDate now = LocalDate.now();
+
+
+            model.addAttribute("labTestCatalogs", labTestCatalogs);
+            model.addAttribute("labRequests", labRequestDTOs);
+            model.addAttribute("doctors", doctors);
+
+
+            model.addAttribute("patientId", patientId);
+            model.addAttribute("doctorName", doctorName);
+            model.addAttribute("testName", testName);
+            model.addAttribute("status", status);
+            model.addAttribute("isAll", isAll);
+            model.addAttribute("date", now);
+
+
+            return "technician/request-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Something wrong");
+            return "redirect:/technician/result-list";
         }
-
-        List<LabTestCatalog> labTestCatalogs = labTestCatalogService.getAll();
-        List<Doctor> doctors = doctorService.findAllDoctors();
-
-
-        model.addAttribute("labTestCatalogs", labTestCatalogs);
-        model.addAttribute("labRequests", labRequestDTOs);
-        model.addAttribute("doctors", doctors);
-
-
-        model.addAttribute("patientId", patientId);
-        model.addAttribute("doctorName", doctorName);
-        model.addAttribute("testName", testName);
-        model.addAttribute("status", status);
-        model.addAttribute("fromDate", fromDate);
-        model.addAttribute("toDate", toDate);
-
-        return "technician/request-list";
     }
 
     @GetMapping(value = "/request/{id}")
-    public String requestDetail(@PathVariable(name = "id") int id, Model model){
+    public String requestDetail(@PathVariable(name = "id") String id,
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
 
-        LabRequest labRequest = labRequestService.findLabRequestById(id);
+        try {
+            int labRequestId = Integer.parseInt(id);
+            LabRequest labRequest = labRequestService.findLabRequestById(labRequestId);
 
-        if (labRequest == null){
-            model.addAttribute("mess", "Lab request not found");
+            if (labRequest == null) {
+                model.addAttribute("mess", "Lab request not found");
+                return "technician/request-detail";
+            }
+
+            model.addAttribute("request", labRequest);
             return "technician/request-detail";
+
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid request id");
+            return "redirect:/technician/request-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Something wrong");
+            return "redirect:/technician/request-list";
         }
-
-        model.addAttribute("request", labRequest);
-        return "technician/request-detail";
     }
-
 }

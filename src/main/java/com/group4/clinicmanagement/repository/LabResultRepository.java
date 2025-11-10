@@ -25,13 +25,11 @@ public interface LabResultRepository extends JpaRepository<LabResult,Integer> {
         JOIN LabTestCatalog t ON lr.test_id = t.test_id
         WHERE ((:resultId IS NULL OR :resultId = '') OR CAST(r.result_id AS NVARCHAR) LIKE CONCAT('%', :resultId, '%'))
           AND ((:testName IS NULL OR :testName = '') OR LOWER(t.name) LIKE LOWER(CONCAT('%', :testName, '%')))
-          AND ((:date IS NULL) OR CAST(r.created_at AS DATE) = :date)
         ORDER BY r.created_at DESC
     """, nativeQuery = true)
     List<LabResult> filterResults(
             @Param("resultId") String resultId,
-            @Param("testName") String testName,
-            @Param("date") LocalDate date
+            @Param("testName") String testName
     );
 
     // method to find lab result by lab request ID
