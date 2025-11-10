@@ -100,9 +100,7 @@
     <div class="flex-grow-1 bg-light">
 
         <!-- Topbar -->
-        <div class="topbar">
-            <button class="btn btn-outline-primary"><i class="fas fa-sign-in-alt me-1"></i> Logout</button>
-        </div>
+        <div th:replace="~{fragment/fragment :: navLogin}"></div>
 
         <!-- Page Content -->
         <div class="p-4">
@@ -111,7 +109,7 @@
             <div class="d-flex justify-content-center">
                 <div class="card shadow-sm w-75">
                     <div class="card-body">
-                        <form th:action="@{/admin/cashier/new-result}" th:object="${cashierDTOs}" method="post"
+                        <form th:action="@{/admin/cashier/new-result}" th:object="${cashierDTO}" method="post"
                               enctype="multipart/form-data">
 
                             <!-- Avatar Upload -->

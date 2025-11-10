@@ -181,6 +181,17 @@
     </nav>
 </div>
 
+<div th:fragment="navLogin" class="topbar">'
+    <a class="btn btn-outline-primary" sec:authorize="!isAuthenticated()"
+    th:href="@{/admin/login}">
+        <i class="fas fa-sign-in-alt me-1"></i> Login
+    </a>
+    <a class="btn btn-outline-primary" sec:authorize="isAuthenticated()"
+       th:href="@{/admin/logout}">
+        <i class="fas fa-sign-out-alt me-1"></i> Logout
+    </a>
+</div>
+
 <!-- ✅ FOOTER -->
 <footer th:fragment="footer">
     <div class="container">
