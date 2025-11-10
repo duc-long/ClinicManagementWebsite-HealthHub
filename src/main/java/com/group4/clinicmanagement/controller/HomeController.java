@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -110,14 +111,23 @@ public class HomeController {
     }
 
     @GetMapping(value = "/doctor-profile/{doctorId}")
-    public String viewDetailDoctor(Model model, @PathVariable(name = "doctorId") int doctorId) {
+    public String viewDetailDoctor(Model model, @PathVariable(name = "doctorId") String doctorId, RedirectAttributes redirectAttributes) {
         try {
-            DoctorHomeDTO doctorUserDTO = doctorService.findVisibleActiveDoctorById(doctorId);
+            Integer idC = Integer.parseInt(doctorId);
+            DoctorHomeDTO doctorUserDTO = doctorService.findVisibleActiveDoctorById(idC);
             model.addAttribute("doctor", doctorUserDTO);
             List<DepartmentDTO> departments = departmentService.findAll();
             model.addAttribute("departments", departments);
             return "home/doctor-profile";
-        } catch ( Exception e){
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Doctor not found");
+            return "redirect:/home";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
             return "redirect:/home";
         }
     }
