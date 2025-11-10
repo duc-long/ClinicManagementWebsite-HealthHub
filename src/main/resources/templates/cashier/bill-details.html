@@ -111,11 +111,10 @@
                         <span th:text="${bill.labRequest.test.name}"></span>
                     </p>
                 </div>
-
                 <!-- Amount -->
                 <p><strong>Amount:</strong>
                     <span class="fw-bold text-success"
-                          th:text="${#numbers.formatDecimal(bill.amount, 1, 2)} + ' ₫'"></span>
+                          th:text="${#numbers.formatDecimal(bill.amount,0,'COMMA', 0, 'POINT')} + ' VND'"></span>
                 </p>
 
                 <!-- Paid Info -->

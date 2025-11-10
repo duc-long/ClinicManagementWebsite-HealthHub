@@ -36,7 +36,6 @@ public class BillPdfExporter {
         document.add(new Paragraph(" "));
 
         // Bill Info
-        document.add(new Paragraph("Bill ID: " + bill.getBillId(), normalFont));
         document.add(new Paragraph("Created at: " + dtf.format(bill.getCreatedAt()), normalFont));
         if (bill.getPaidAt() != null) {
             document.add(new Paragraph("Paid at: " + dtf.format(bill.getPaidAt()), normalFont));

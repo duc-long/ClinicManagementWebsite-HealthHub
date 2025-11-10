@@ -138,7 +138,7 @@
                         </span>
 
                         <!-- Nếu status là CONFIRMED và đúng ngày -->
-                        <span th:if="${a.status.name() == 'CONFIRMED' and a.canCheckin}">
+                        <span th:if="${a.status.name() == 'CONFIRMED' and a.canCheck}">
  <form th:id="'checkinForm__' + ${a.appointmentId}"
        th:action="@{'/receptionist/appointment/checkin/' + ${a.appointmentId}}"
        method="post"

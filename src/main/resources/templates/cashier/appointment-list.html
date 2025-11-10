@@ -118,6 +118,7 @@
                     <th>Date</th>
                     <th>Status</th>
                     <th>Doctor</th>
+                    <th>Cost</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -140,7 +141,7 @@
                     </td>
 
                     <td th:text="${a.doctorName != null ? a.doctorName : 'Not Assigned'}"></td>
-
+                    <td>200.000 VND</td>
                     <!-- Actions -->
                     <td>
                         <a th:href="@{'/cashier/appointment/' + ${a.appointmentId}}"
