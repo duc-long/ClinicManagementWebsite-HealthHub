@@ -46,6 +46,15 @@ public class UserService {
         return userDTO;
     }
 
+    public boolean isMailNoDuplicate(String mail, Integer id) {
+        User user = userRepository.getUsersByUserId(id).orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.getEmail().equals(mail)) {
+            return false;
+        } else {
+            return userRepository.findUserByEmail(mail).isPresent();
+        }
+    }
+
     @Transactional
     public void saveUser(User user) {
         userRepository.save(user);

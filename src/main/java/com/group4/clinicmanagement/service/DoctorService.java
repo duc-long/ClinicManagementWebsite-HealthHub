@@ -65,7 +65,7 @@ public class DoctorService {
     }
 
     @Transactional
-    public List<DoctorHomeDTO> findAllVisibleAndActiveDoctorsDoctorUserDTOS() {
+    public List<DoctorHomeDTO> findAllVisibleAndActiveDoctors() {
         List<Doctor> doctors = doctorRepository.findAllVisibleAndActiveDoctors();
         List<DoctorHomeDTO> result = new ArrayList<>();
 
@@ -73,13 +73,12 @@ public class DoctorService {
             DoctorHomeDTO dto = toDTO(doctor);
             result.add(dto);
         }
-
         return result;
     }
 
     @Transactional
-    public List<DoctorHomeDTO> findByNameContainingIgnoreCaseAndDepartmentId(String name, Integer departmentId) {
-        List<Doctor> doctors = doctorRepository.findByNameContainingIgnoreCaseAndDepartmentId(name, departmentId);
+    public List<DoctorHomeDTO> findByNameAndDepartmentId(String name, Integer departmentId) {
+        List<Doctor> doctors = doctorRepository.findByNameAndDepartmentId(name, departmentId);
         List<DoctorHomeDTO> result = new ArrayList<>();
 
         for (Doctor doctor : doctors) {

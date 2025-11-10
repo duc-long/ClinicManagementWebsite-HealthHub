@@ -3,10 +3,8 @@ package com.group4.clinicmanagement.controller;
 import com.group4.clinicmanagement.dto.DepartmentDTO;
 import com.group4.clinicmanagement.dto.DoctorHomeDTO;
 import com.group4.clinicmanagement.entity.Appointment;
-import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.Feedback;
 import com.group4.clinicmanagement.security.CustomUserDetails;
-import com.group4.clinicmanagement.service.AppointmentService;
 import com.group4.clinicmanagement.service.DepartmentService;
 import com.group4.clinicmanagement.service.DoctorService;
 import com.group4.clinicmanagement.service.FeedbackService;
@@ -20,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -84,7 +81,7 @@ public class HomeController {
 
     @GetMapping(value = "/list-doctor")
     public String listDoctor(Model model) {
-        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findAllVisibleAndActiveDoctorsDoctorUserDTOS();
+        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findAllVisibleAndActiveDoctors();
         model.addAttribute("doctors", doctorUserDTOS);
         List<DepartmentDTO> departments = departmentService.findAll();
         model.addAttribute("departments", departments);
@@ -93,7 +90,8 @@ public class HomeController {
 
     @GetMapping(value = "/search-doctor")
     public String searchDoctor(Model model) {
-        model.addAttribute("doctors", null);
+        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findAllVisibleAndActiveDoctors();
+        model.addAttribute("doctors", doctorUserDTOS);
         List<DepartmentDTO> departments = departmentService.findAll();
         model.addAttribute("departments", departments);
         return "home/doctor-search";
@@ -103,7 +101,7 @@ public class HomeController {
     public String searchDoctor(@RequestParam(name = "departmentId") Integer departmentId,
                                @RequestParam(name = "doctorName") String doctorName,
                                Model model) {
-        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findByNameContainingIgnoreCaseAndDepartmentId(doctorName, departmentId);
+        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findByNameAndDepartmentId(doctorName, departmentId);
         model.addAttribute("doctors", doctorUserDTOS);
         List<DepartmentDTO> departments = departmentService.findAll();
         model.addAttribute("departments", departments);
@@ -113,11 +111,15 @@ public class HomeController {
 
     @GetMapping(value = "/doctor-profile/{doctorId}")
     public String viewDetailDoctor(Model model, @PathVariable(name = "doctorId") int doctorId) {
-        DoctorHomeDTO doctorUserDTO = doctorService.findVisibleActiveDoctorById(doctorId);
-        model.addAttribute("doctor", doctorUserDTO);
-        List<DepartmentDTO> departments = departmentService.findAll();
-        model.addAttribute("departments", departments);
-        return "home/doctor-profile";
+        try {
+            DoctorHomeDTO doctorUserDTO = doctorService.findVisibleActiveDoctorById(doctorId);
+            model.addAttribute("doctor", doctorUserDTO);
+            List<DepartmentDTO> departments = departmentService.findAll();
+            model.addAttribute("departments", departments);
+            return "home/doctor-profile";
+        } catch ( Exception e){
+            return "redirect:/home";
+        }
     }
 
     @GetMapping(value = "/department/{departmentName}")

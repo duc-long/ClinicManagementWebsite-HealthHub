@@ -62,19 +62,45 @@ public class AdminController {
     }
 
     @GetMapping(value = "/patient/{id}")
-    public String showPatientById(@PathVariable(value = "id") Integer id, Model model) {
-        PatientDTO patientDTO = patientService.findById(id);
-        model.addAttribute("patientDTO", patientDTO);
-        return "admin/patient-details";
+    public String showPatientById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+            PatientDTO patientDTO = patientService.findById(idC);
+            model.addAttribute("patientDTO", patientDTO);
+            return "admin/patient-details";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Patient not found");
+            return "redirect:/admin/patient";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/patient";
+        }
     }
 
     @GetMapping(value = "/patient/edit/{id}")
-    public String editPatientById(@PathVariable(value = "id") Integer id, Model model) {
-        PatientDTO patientDTO = patientService.findById(id);
-        model.addAttribute("today", java.time.LocalDate.now());
-        model.addAttribute("patientDTO", patientDTO);
-        model.addAttribute("error", "");
-        return "admin/update-patient";
+    public String editPatientById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+            PatientDTO patientDTO = patientService.findById(idC);
+            model.addAttribute("today", java.time.LocalDate.now());
+            model.addAttribute("patientDTO", patientDTO);
+            model.addAttribute("error", "");
+            return "admin/update-patient";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Patient not found");
+            return "redirect:/admin/patient";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/patient";
+        }
     }
 
     @PostMapping(value = "/patient/edit-result")
@@ -83,13 +109,14 @@ public class AdminController {
                                     @RequestParam("avatar") MultipartFile avatar,
                                     RedirectAttributes redirectAttributes,
                                     Model model) {
-
+        if (userService.isMailNoDuplicate(dto.getEmail(), dto.getUserId())) {
+            bindingResult.rejectValue("email", "error.email", "Email already exists");
+        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("patientDTO", dto);
             model.addAttribute("today", LocalDate.now());
             return "admin/update-patient";
         }
-
         try {
             patientService.update(dto, avatar);
             redirectAttributes.addFlashAttribute("successMessage",
@@ -104,10 +131,23 @@ public class AdminController {
 
 
     @GetMapping(value = "/patient/delete/{id}")
-    public String deletePatientById(@PathVariable(value = "id") Integer id, Model model) {
-        PatientDTO patientDTO = patientService.findById(id);
-        model.addAttribute("patientDTO", patientDTO);
-        return "admin/delete-patient";
+    public String deletePatientById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+            PatientDTO patientDTO = patientService.findById(idC);
+            model.addAttribute("patientDTO", patientDTO);
+            return "admin/delete-patient";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Patient not found");
+            return "redirect:/admin/patient";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/patient";
+        }
     }
 
     @PostMapping(value = "/patient/delete-result")
@@ -143,6 +183,9 @@ public class AdminController {
         if (userService.isUsernameDuplicate(dto.getUsername())) {
             bindingResult.rejectValue("username", "error.username", "Username already exists");
         }
+        if (userService.isMailNoDuplicate(dto.getEmail(), dto.getUserId())) {
+            bindingResult.rejectValue("email", "error.email", "Email already exists");
+        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("patientDTO", dto);
             model.addAttribute("today", LocalDate.now());
@@ -175,20 +218,46 @@ public class AdminController {
     }
 
     @GetMapping(value = "/doctor/{id}")
-    public String showDoctorById(@PathVariable(value = "id") Integer id, Model model) {
-        DoctorDTO doctorDTO = doctorService.findById(id);
-        model.addAttribute("doctorDTO", doctorDTO);
-        return "admin/doctor-details";
+    public String showDoctorById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+            DoctorDTO doctorDTO = doctorService.findById(idC);
+            model.addAttribute("doctorDTO", doctorDTO);
+            return "admin/doctor-details";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Doctor not found");
+            return "redirect:/admin/doctor";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/doctor";
+        }
     }
 
     @GetMapping(value = "/doctor/edit/{id}")
-    public String editDoctorById(@PathVariable(value = "id") Integer id, Model model) {
-        DoctorDTO doctorDTO = doctorService.findById(id);
-        List<DepartmentDTO> patientDTOList = departmentService.findAll();
-        model.addAttribute("patientDTOList", patientDTOList);
-        model.addAttribute("doctorDTO", doctorDTO);
-        model.addAttribute("error", "");
-        return "admin/update-doctor";
+    public String editDoctorById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+            DoctorDTO doctorDTO = doctorService.findById(idC);
+            List<DepartmentDTO> patientDTOList = departmentService.findAll();
+            model.addAttribute("patientDTOList", patientDTOList);
+            model.addAttribute("doctorDTO", doctorDTO);
+            model.addAttribute("error", "");
+            return "admin/update-doctor";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Doctor not found");
+            return "redirect:/admin/doctor";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/doctor";
+        }
     }
 
     @PostMapping(value = "/doctor/edit-result")
@@ -200,6 +269,9 @@ public class AdminController {
 
         if (doctorService.isLicenseNoDuplicateForUpdate(dto.getLicenseNo(), dto.getDoctorId())) {
             bindingResult.rejectValue("licenseNo", "error.licenseNo", "LicenseNo already exists");
+        }
+        if (userService.isMailNoDuplicate(dto.getEmail(), dto.getUserId())) {
+            bindingResult.rejectValue("email", "error.email", "Email already exists");
         }
         if (bindingResult.hasErrors()) {
             List<DepartmentDTO> patientDTOList = departmentService.findAll();
@@ -244,6 +316,9 @@ public class AdminController {
         if (userService.isUsernameDuplicate(dto.getUsername())) {
             bindingResult.rejectValue("username", "error.username", "Username already exists");
         }
+        if (userService.isMailNoDuplicate(dto.getEmail(), dto.getUserId())) {
+            bindingResult.rejectValue("email", "error.email", "Email already exists");
+        }
         if (bindingResult.hasErrors()) {
             List<DepartmentDTO> patientDTOList = departmentService.findAll();
             model.addAttribute("patientDTOList", patientDTOList);
@@ -265,10 +340,23 @@ public class AdminController {
     }
 
     @GetMapping(value = "/doctor/delete/{id}")
-    public String deleteDoctorById(@PathVariable(value = "id") Integer id, Model model) {
-        DoctorDTO doctorDTO = doctorService.findById(id);
-        model.addAttribute("doctorDTO", doctorDTO);
-        return "admin/delete-doctor";
+    public String deleteDoctorById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+            DoctorDTO doctorDTO = doctorService.findById(idC);
+            model.addAttribute("doctorDTO", doctorDTO);
+            return "admin/delete-doctor";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Doctor not found");
+            return "redirect:/admin/doctor";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/doctor";
+        }
     }
 
     @PostMapping(value = "/doctor/delete-result")
@@ -298,17 +386,43 @@ public class AdminController {
     }
 
     @GetMapping(value = "/receptionist/{id}")
-    public String showReceptionistById(@PathVariable(value = "id") Integer id, Model model) {
-        ReceptionistDTO ReceptionistDTO = receptionistService.findById(id);
-        model.addAttribute("receptionistDTO", ReceptionistDTO);
-        return "admin/receptionist-details";
+    public String showReceptionistById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+            ReceptionistDTO ReceptionistDTO = receptionistService.findById(idC);
+            model.addAttribute("receptionistDTO", ReceptionistDTO);
+            return "admin/receptionist-details";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Receptionist not found");
+            return "redirect:/admin/receptionist";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/receptionist";
+        }
     }
 
     @GetMapping(value = "/receptionist/edit/{id}")
-    public String editReceptionistById(@PathVariable(value = "id") Integer id, Model model) {
-        ReceptionistDTO receptionistDTO = receptionistService.findById(id);
-        model.addAttribute("receptionistDTO", receptionistDTO);
-        return "admin/update-receptionist";
+    public String editReceptionistById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+            ReceptionistDTO receptionistDTO = receptionistService.findById(idC);
+            model.addAttribute("receptionistDTO", receptionistDTO);
+            return "admin/update-receptionist";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Receptionist not found");
+            return "redirect:/admin/receptionist";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/receptionist";
+        }
     }
 
     @PostMapping(value = "/receptionist/edit-result")
@@ -317,7 +431,9 @@ public class AdminController {
                                          @RequestParam("avatar") MultipartFile avatar,
                                          RedirectAttributes redirectAttributes,
                                          Model model) {
-
+        if (userService.isMailNoDuplicate(dto.getEmail(), dto.getUserId())) {
+            bindingResult.rejectValue("email", "error.email", "Email already exists");
+        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("receptionistDTO", dto);
             return "admin/update-receptionist";
@@ -335,10 +451,23 @@ public class AdminController {
 
 
     @GetMapping(value = "/receptionist/delete/{id}")
-    public String deleteReceptionistById(@PathVariable(value = "id") Integer id, Model model) {
-        ReceptionistDTO receptionistDTO = receptionistService.findById(id);
-        model.addAttribute("receptionistDTO", receptionistDTO);
-        return "admin/delete-receptionist";
+    public String deleteReceptionistById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+            ReceptionistDTO receptionistDTO = receptionistService.findById(idC);
+            model.addAttribute("receptionistDTO", receptionistDTO);
+            return "admin/delete-receptionist";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Receptionist not found");
+            return "redirect:/admin/receptionist";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/receptionist";
+        }
     }
 
     @PostMapping(value = "/receptionist/delete-result")
@@ -371,6 +500,9 @@ public class AdminController {
             RedirectAttributes redirectAttributes,
             Model model
     ) {
+        if (userService.isMailNoDuplicate(dto.getEmail(), dto.getUserId())) {
+            bindingResult.rejectValue("email", "error.email", "Email already exists");
+        }
         if (userService.isUsernameDuplicate(dto.getUsername())) {
             bindingResult.rejectValue("username", "error.username", "Username already exists");
         }

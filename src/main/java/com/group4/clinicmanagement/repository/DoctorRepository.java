@@ -43,7 +43,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
               AND (:departmentId = 0 OR d.department.departmentId = :departmentId)
               AND d.user.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}
               AND d.profileVisibility = true""")
-    List<Doctor> findByNameContainingIgnoreCaseAndDepartmentId(@Param("name") String name, @Param("departmentId") Integer departmentId);
+    List<Doctor> findByNameAndDepartmentId(@Param("name") String name, @Param("departmentId") Integer departmentId);
 
 
     @Query("""
