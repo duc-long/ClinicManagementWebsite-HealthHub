@@ -202,8 +202,14 @@ public class AppointmentController {
 
     // method redirect to edit page
     @GetMapping("/edit/{id}")
-    public String editAppointment(@PathVariable(name = "id") int id, Model model,
+    public String editAppointment(@PathVariable(name = "id") Integer id, Model model,
                                   RedirectAttributes redirectAttributes) {
+        if (id == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Please enter appointment id");
+            return "redirect:/patient/appointment/manage";
+        }
+
         Appointment appointment = appointmentService.findAppointmentById(id);
 
         // check valid appointment
