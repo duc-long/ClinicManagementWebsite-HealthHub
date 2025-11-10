@@ -1,0 +1,422 @@
+9bf684f | duc-long | fix merge
+ 1 file changed, 7 insertions(+), 14 deletions(-)
+
+47a81b3 | duc-long | Merge branch 'feature/doctor-version-2' into dev
+21983fa | vinhnhtce190384 | refactor make appointment
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+d51f54b | duc-long | Merge branch 'feature/receptionist' into dev
+5f8c7ac | duc-long | Merge branch 'feature/patient-error' into dev
+0ec4c99 | duc-long | Merge branch 'feature/technician' into dev
+9eb27bf | duc-long | Merge branch 'feature/doctor-version-2' into dev
+93453c8 | duc-long | small update
+ 3 files changed, 5 insertions(+), 1 deletion(-)
+
+8c2323e | vinhnhtce190384 | check empty for make appointment
+ 1 file changed, 1 insertion(+)
+
+557457b | vinhnhtce190384 | update notifycation for make appointment
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+d8f951a | vinhnhtce190384 | add notifycation when make appointment
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+42957a4 | TanNV | fix technician dashboard
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+3f3ea3d | TanNV | merge feature/receptionist into feature/technician
+a14f179 | vinhnhtce190384 | update notifycation for create appointment
+ 2 files changed, 13 insertions(+), 14 deletions(-)
+
+169fdfa | duc-long | up profile, view appointment
+ 31 files changed, 1317 insertions(+), 509 deletions(-)
+
+3ff2b39 | vinhnhtce190384 | create appointment re-examination for patient
+ 14 files changed, 539 insertions(+), 80 deletions(-)
+
+dc9bdf3 | Khanh Dang | feat:update all
+ 4 files changed, 75 insertions(+), 37 deletions(-)
+
+c73eb11 | TanNV | delete forget pass
+ 1 file changed, 5 deletions(-)
+
+ec1d3ca | TanNV | admin login and logout
+ 4 files changed, 186 insertions(+), 4 deletions(-)
+
+13b5fd7 | TanNV | admin dashboard
+ 8 files changed, 419 insertions(+), 223 deletions(-)
+
+3e13534 | Khanh Dang | feat: update forget
+ 25 files changed, 289 insertions(+), 193 deletions(-)
+
+7d21748 | vinhnhtce190384 | create lab request CRUD
+ 22 files changed, 1086 insertions(+), 277 deletions(-)
+
+88a2bcd | TanNV | Merge feature/manage-admin into feature/technician
+b749240 | Dangphhce190045 | Admin dashboard data fake
+ 16 files changed, 458 insertions(+), 2 deletions(-)
+
+298bfe1 | TanNV | validation in change password
+ 5 files changed, 38 insertions(+), 436 deletions(-)
+
+6d23cc2 | TanNV | Validation
+ 17 files changed, 698 insertions(+), 129 deletions(-)
+
+057904e | duc-long | Merge branch 'dev' into feature/receptionist
+e2b3bdc | duc-long | update validate appointments
+ 4 files changed, 175 insertions(+), 50 deletions(-)
+
+10b0eea | duc-long | upate schedule and checkin
+ 11 files changed, 423 insertions(+), 68 deletions(-)
+
+2d738d9 | vinhnhtce190384 | update + fix for patient appointment request
+ 27 files changed, 1075 insertions(+), 698 deletions(-)
+
+cfd5828 | TanNV | Update View
+ 12 files changed, 882 insertions(+), 672 deletions(-)
+
+7072edf | Khanh Dang | feat: fix UI/UX
+ 21 files changed, 606 insertions(+), 307 deletions(-)
+
+f7376e7 | duc-long | Merge branch 'feature/manage-admin' into dev
+2a2fb12 | duc-long | fix bugs
+ 8 files changed, 27 insertions(+), 9 deletions(-)
+
+597a92c | vinhnhtce190384 | update entity medical record + prescription + labrequest + vitalsigns
+ 13 files changed, 228 insertions(+), 49 deletions(-)
+
+2cc856d | Dangphhce190045 | add manage Cashier + Technician for admin
+ 33 files changed, 3070 insertions(+), 214 deletions(-)
+
+20673dc | TanNV | using fragment in technician
+ 11 files changed, 45 insertions(+), 265 deletions(-)
+
+15cd722 | duc-long | Merge branch 'feature/technician' into dev
+444b8c3 | TanNV | Delete uncomfirmed result
+ 10 files changed, 126 insertions(+), 24 deletions(-)
+
+55ab702 | vinhnhtce190384 | update code for doctor (28/10/2025)
+ 5 files changed, 26 insertions(+), 5 deletions(-)
+
+8c042ba | NgKiet | feat: Home. ver0,1
+ 13 files changed, 385 insertions(+), 235 deletions(-)
+
+70a1826 | duc-long | Merge branch 'feature/admin-manage-receptionists' into dev
+cebe549 | duc-long | Merge branch 'feature/admin-manage-doctors' into dev
+3ce1a14 | duc-long | fix cancel appointment
+ 7 files changed, 243 insertions(+), 44 deletions(-)
+
+26226b4 | duc-long | A Merge branch 'feature/doctor-version-2' into feature/receptionist
+a3d69c4 | vinhnhtce190384 | update code for doctor (28/10/2025)
+ 5 files changed, 7 insertions(+), 6 deletions(-)
+
+60c4cdb | duc-long | merge
+ 3 files changed, 3 insertions(+), 27 deletions(-)
+
+fd0766a | vinhnhtce190384 | update code for doctor
+ 8 files changed, 574 insertions(+), 175 deletions(-)
+
+9e1bcf9 | NgKiet | feat: Admin-manage-receptionist. ver0,1
+ 19 files changed, 1449 insertions(+), 20 deletions(-)
+
+8624dc4 | NgKiet | feat: Admin-manage-doctors. ver0,1
+ 23 files changed, 2057 insertions(+), 119 deletions(-)
+
+7847ba0 | vinhnhtce190384 | update url for appointment
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+ffb8ec4 | vinhnhtce190384 | update doctor 26/10/2025
+ 21 files changed, 1341 insertions(+), 109 deletions(-)
+
+42a29f4 | duc-long | link ui
+ 3 files changed, 17 insertions(+), 9 deletions(-)
+
+68c7fb7 | duc-long | fix missing entity
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+7340360 | duc-long | Merge branch 'feature/doctor' into dev
+9b039de | duc-long | Merge branch 'feature/technician' into dev
+91419a2 | duc-long | Merge branch 'feature/admin-manage-patients' into dev
+d0e4212 | TanNV | Create new test
+ 14 files changed, 93 insertions(+), 25 deletions(-)
+
+b458bda | duc-long | merge patient
+ 1 file changed, 1 insertion(+)
+
+2ad0e29 | duc-long | Merge branch 'feature/patient' into feature/receptionist
+3e62aac | duc-long | ui
+ 7 files changed, 631 insertions(+), 247 deletions(-)
+
+12155b5 | NgKiet | feat: Admin-manage-patients. ver0,5
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+87d2b35 | Khanh Dang | feat: full log
+ 40 files changed, 1728 insertions(+), 328 deletions(-)
+
+9115836 | duc-long | schedule appointment
+ 8 files changed, 215 insertions(+), 17 deletions(-)
+
+dfeb1ad | TanNV | Fix: show profile
+ 4 files changed, 19 insertions(+), 7 deletions(-)
+
+3a3cba3 | duc-long | update ui
+ 3 files changed, 141 insertions(+), 1 deletion(-)
+
+88d3761 | TanNV | change password and edit profile
+ 10 files changed, 441 insertions(+), 198 deletions(-)
+
+92460fa | NgKiet | feat: Admin-manage-patients. ver0,4
+ 6 files changed, 61 insertions(+), 20 deletions(-)
+
+2157969 | NgKiet | feat: Admin-manage-patients, ver 0.4
+ 1 file changed, 1 deletion(-)
+
+82d6bfe | TanNV | Fix: dashboard
+ 5 files changed, 160 insertions(+), 41 deletions(-)
+
+105e53e | TanNV | Update test result
+ 10 files changed, 595 insertions(+), 38 deletions(-)
+
+05ada79 | NgKiet | Fix: remove build output from Git tracking
+ 104 files changed, 46 insertions(+), 15561 deletions(-)
+
+3721bbd | NgKiet | feat: Manage Patients for Admin - , ver0.3
+ 113 files changed, 15748 insertions(+), 63 deletions(-)
+
+a19d823 | vinhnhtce190384 | refector doctor thymeleaf
+ 3 files changed, 110 insertions(+), 91 deletions(-)
+
+bf1ee16 | vinhnhtce190384 | update controller doctor
+ 25 files changed, 961 insertions(+), 425 deletions(-)
+
+a858b7e | Khanh Dang | feat: full and fix full error feedback
+ 15 files changed, 574 insertions(+), 97 deletions(-)
+
+3f33d50 | Khanh Dang | feat: update all
+ 29 files changed, 517 insertions(+), 402 deletions(-)
+
+6a870a9 | TanNV | View test result detail
+ 8 files changed, 152 insertions(+), 1 deletion(-)
+
+9bdd62f | NgKiet | feat: Manage Patients for Admin - chua xong, ver0.2
+ 12 files changed, 823 insertions(+), 37 deletions(-)
+
+d32cb93 | duc-long | update recep profile without img + update gitignore
+ 7 files changed, 130 insertions(+), 142 deletions(-)
+
+bdfb17c | Khanh Dang | Merge remote-tracking branch 'refs/remotes/origin/feature/receptionist' into feature/add-login-change-password
+d75bd3f | duc-long | fix role login
+ 9 files changed, 230 insertions(+), 126 deletions(-)
+
+7f367b3 | TanNV | View líst of result test
+ 8 files changed, 279 insertions(+), 178 deletions(-)
+
+c9f52b8 | vinhnhtce190384 | update thymeleaf doctor
+ 2 files changed, 45 insertions(+), 9 deletions(-)
+
+1bca6d5 | TanNV | Fix: feature/request-list
+ 3 files changed, 178 insertions(+), 5 deletions(-)
+
+a829633 | duc-long | Merge branch 'fix/patient-profile' into feature/receptionist
+1e8b743 | vinhnhtce190384 | update thymeleaf doctor
+ 11 files changed, 381 insertions(+), 177 deletions(-)
+
+490ae6d | TanNV | View request detail
+ 3 files changed, 76 insertions(+), 5 deletions(-)
+
+ea4a9ed | TanNV | View request list
+ 19 files changed, 511 insertions(+), 15 deletions(-)
+
+8999f0f | NgKiet | feat: Manage Patients for Admin , ver0.1
+ 8 files changed, 554 insertions(+), 1 deletion(-)
+
+86417e6 | TanNV | Merge branch 'feature/doctor' of https://github.com/duc-long/ClinicManagementWebsite-HealthHub into feature/view-profile-for-technician
+2f788d4 | TanNV | Fix: view technician profile
+e6e5471 | Khanh Dang | Merge remote-tracking branch 'origin/feature/doctor' into feature/add-login-change-password
+042ab16 | duc-long | update fix login patient
+ 3 files changed, 7 insertions(+), 6 deletions(-)
+
+39c1a1f | vinhnhtce190384 | update code login
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+12bf7dc | vinhnhtce190384 | update code login by role
+ 15 files changed, 330 insertions(+), 87 deletions(-)
+
+424b2d1 | vinhnhtce190384 | Merge branch 'feature/doctor' of https://github.com/duc-long/ClinicManagementWebsite-HealthHub into feature/doctor
+36642a5 | vinhnhtce190384 | code doctor
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+6c2c5e6 | duc-long | switch
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+df0e7cb | Khanh Dang | feat: add login and change password
+ 19 files changed, 247 insertions(+), 63 deletions(-)
+
+0f0fd67 | Khanh Dang | Merge remote-tracking branch 'origin/feature/doctor' into fix/add-header-for-patient-profile
+d6b08b9 | TanNV | View profole and edit profile for technician
+ 9 files changed, 479 insertions(+), 16 deletions(-)
+
+40f05dd | Khanh Dang | feat: add header for patient profile
+ 10 files changed, 108 insertions(+), 4 deletions(-)
+
+23b3900 | Khanh Dang | Merge remote-tracking branch 'origin/feature/doctor' into feature/add-feedback-for-patient
+2e30a4f | Khanh Dang | feat: 50% feedback
+ 12 files changed, 309 insertions(+), 71 deletions(-)
+
+c841ee3 | Nguyễn Hoàng Thái Vinh | Refactor form login configuration in SecurityConfig
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+c2439bc | vinhnhtce190384 | code config doctor
+ 14 files changed, 753 insertions(+), 41 deletions(-)
+
+d60d778 | Khanh Dang | feat: view-list-feedback-in-home
+ 11 files changed, 302 insertions(+), 44 deletions(-)
+
+56a46f4 | Khanh Dang | feat: fix gender and add dateofbirth
+ 9 files changed, 505 insertions(+), 11 deletions(-)
+
+1323a5e | duc-long | fix save profile
+ 8 files changed, 30 insertions(+), 13 deletions(-)
+
+6b8a646 | Khanh Dang | feat: update medical-record-details
+ 29 files changed, 667 insertions(+), 103 deletions(-)
+
+2f80f0f | vinhnhtce190384 | update code for appointment (18/10/2025)
+ 4 files changed, 48 insertions(+), 8 deletions(-)
+
+ecb051c | vinhnhtce190384 | Merge branch 'feature/itergration' into feature/appointment-patient
+83189e1 | vinhnhtce190384 | update appointment for patient
+ 11 files changed, 11342 insertions(+), 53 deletions(-)
+
+6434544 | duc-long | update code entities+enums+receptionist
+ 21 files changed, 428 insertions(+), 167 deletions(-)
+
+c7b6eb3 | vinhnhtce190384 | Update Patient: update appointment + thymeleaf + controller + js
+ 12 files changed, 539 insertions(+), 410 deletions(-)
+
+fd6fe89 | duc-long | commit before checkout
+ 6 files changed, 66 insertions(+), 9 deletions(-)
+
+b473e21 | TanNV | Fix: using enum in Gender
+ 6 files changed, 32 insertions(+), 17 deletions(-)
+
+b0dbd37 | vinhnhtce190384 | update appointment condition + thmeleaf
+ 14 files changed, 133 insertions(+), 34 deletions(-)
+
+ad32946 | duc-long | Merge branch 'feature/view-appointment-detail' into feature/itergration
+a049a94 | duc-long | Merge branch 'feature/guest-view-doctor-by-department' into feature/itergration
+a37fd62 | duc-long | change class name to DoctorRepository
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+
+4bc65a3 | duc-long | change class name to CashierRepository
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+2e117ae | duc-long | fullbasic
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+2fc3b8d | duc-long | Merge branch 'feature/receptionist-appointment' into feature/itergration
+a5dad6c | duc-long | Merge branch 'feature/appointment-patient' into feature/itergration
+52c63f0 | duc-long | Merge branch 'feature/view-list-medicalrecord' into feature/itergration
+ffd415c | duc-long | Merge branch 'feature/guest-view-doctor-by-department' into feature/itergration
+85f1f92 | duc-long | showlistdetail-appointment
+ 8 files changed, 191 insertions(+), 6 deletions(-)
+
+e3cfbc8 | Khanh Dang | feat: add view list medicalrecord by patientId in profile
+ 12 files changed, 99 insertions(+), 19 deletions(-)
+
+6865530 | vinhnhtce190384 | Patient - code for CRUD appointment
+ 11 files changed, 915 insertions(+), 5 deletions(-)
+
+67d93b6 | TanNV | show appointment list oder by doctor
+ 6 files changed, 20 insertions(+), 44 deletions(-)
+
+7028383 | TanNV | View-Edit-Profile and View List-Detail of Appointment
+ 4 files changed, 12 insertions(+), 8 deletions(-)
+
+599eea6 | TanNV | merge feature/view-cashier-profile into feature/view-appointment-detai
+98009a1 | TanNV | Fix: UI and edit profile
+ 5 files changed, 54 insertions(+), 95 deletions(-)
+
+5b8954d | NgKiet | feat: guest-view-doctor-by-department, ver0.1
+ 9 files changed, 250 insertions(+), 184 deletions(-)
+
+cbf13d9 | TanNV | simulator user
+514679b | TanNV | simulator user
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+a06f060 | TanNV | Fix: view cashier profile
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+e7f38e8 | TanNV | Merge branch 'main' into feature/view-cashier-profile merge main into feature/view-cashier-profile
+043c828 | TanNV | view-appointment-detail v2
+ 6 files changed, 41 insertions(+), 38 deletions(-)
+
+46419f9 | duc-long | view-editprofile for receptionist
+ 6 files changed, 355 insertions(+)
+
+06cc3d2 | TanNV | Merge branch 'main' into feature/view-appointment-detail Update main
+a2e1632 | TanNV | view appointment detail v2
+ 7 files changed, 119 insertions(+), 61 deletions(-)
+
+4d24ac1 | TanNV | Change name of package repo
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+53a3752 | TanNV | Change name of package repo
+ 9 files changed, 9 insertions(+), 15 deletions(-)
+
+fcbe18c | Khanh Dang | feat: fix view profile, edit profile, save-profile by session
+ 5 files changed, 36 insertions(+), 21 deletions(-)
+
+91f6049 | NgKiet | feat: guest-view-doctors-profile, ver0.1
+ 6 files changed, 95 insertions(+), 25 deletions(-)
+
+c97cbd0 | NgKiet | feat: guest-view-doctor-list, ver0.5
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+1e82ce7 | NgKiet | feat: guest-search-doctor, ver0.1
+ 2 files changed, 27 insertions(+), 27 deletions(-)
+
+a53548e | NgKiet | feat: guest-view-doctor-list, ver0.4
+ 12 files changed, 446 insertions(+), 401 deletions(-)
+
+0846b97 | Khanh Dang | feat: add edit patient profile and uploads image
+ 12 files changed, 456 insertions(+), 196 deletions(-)
+
+707bc1c | TanNV | View appointment detail
+ 4 files changed, 159 insertions(+), 2 deletions(-)
+
+5b52256 | TanNV | View list of appointment
+ 10 files changed, 222 insertions(+), 1 deletion(-)
+
+8462bc4 | TanNV | view and edit cashier profile
+ 5 files changed, 217 insertions(+), 22 deletions(-)
+
+9bad952 | Khanh Dang | feat: view patient profile
+ 15 files changed, 587 insertions(+), 1 deletion(-)
+
+9e920d8 | TanNV | view-cashier-profile
+ 4 files changed, 171 insertions(+)
+
+df1c5e8 | NgKiet | feat: guest-view-doctor-list, ver0.3
+ 1 file changed, 25 insertions(+)
+
+87504dc | NgKiet | feat: guest-view-doctor-list, ver0.2
+ 4 files changed, 22 insertions(+), 16 deletions(-)
+
+fcc7cb6 | NgKiet | feat: guest-view-doctor-list, ver0.1
+ 7 files changed, 482 insertions(+)
+
+8d1c7db | duc-long | update
+ 1 file changed, 24 insertions(+), 1 deletion(-)
+
+fdcbec4 | duc-long | update map to enums for user + appointment
+ 1 file changed, 23 insertions(+), 1 deletion(-)
+
+5c1ca86 | duc-long | add enum for appointment + gender
+ 2 files changed, 53 insertions(+)
+
+f13faf0 | duc-long | Initial commit - project
+ 27 files changed, 804 insertions(+)
+
+9eecdd8 | Nguyễn Văn Đức Long | Initial commit
+ 1 file changed, 2 insertions(+)

@@ -107,9 +107,8 @@
     <div class="flex-grow-1 bg-light">
 
         <!-- Topbar -->
-        <div class="topbar">
-            <button class="btn btn-outline-primary"><i class="fas fa-sign-in-alt me-1"></i> Logout</button>
-        </div>
+        <div th:replace="~{fragment/fragment :: navLogin}"></div>
+
 
         <!-- Page Content -->
         <div class="p-4">

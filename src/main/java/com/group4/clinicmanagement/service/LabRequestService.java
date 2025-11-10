@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,17 +68,28 @@ public class LabRequestService {
             String doctorName,
             String testName,
             String status,
-            LocalDateTime fromDate,
-            LocalDateTime toDate
+            boolean isAll
     ) {
-        List<LabRequest> labRequests = labRequestRepository.filterRequests(patientId, doctorName, testName, status, fromDate, toDate);
-
         List<LabRequestDTO> dtoList = new ArrayList<>();
-        for(LabRequest labRequest : labRequests){
-            LabRequestDTO dto = toDTO(labRequest);
-            dtoList.add(dto);
+        List<LabRequest> labRequests = labRequestRepository.filterRequests(patientId, doctorName, testName, status);
+        if (isAll){
+            for(LabRequest labRequest : labRequests){
+                LabRequestDTO dto = toDTO(labRequest);
+                dtoList.add(dto);
+            }
+            return dtoList;
+        }else {
+            for(LabRequest labRequest : labRequests){
+                if (LocalDate.now().isEqual(labRequest.getRequestedAt().toLocalDate())) {
+                    LabRequestDTO dto = toDTO(labRequest);
+                    dtoList.add(dto);
+                }
+            }
+            return dtoList;
         }
-        return dtoList;
+
+
+
     }
 
     // method to save lab request
@@ -146,31 +158,37 @@ public class LabRequestService {
         Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);
         Page<LabRequest> labRequests = labRequestRepository.findByStatus(statusValue, pageable);
 
-        return labRequests.map(a -> {
-            Integer billId = billRepository.findByLabRequest_LabRequestId(a.getLabRequestId())
+        return labRequests.map(lr -> {
+            Integer billId = billRepository.findByLabRequest_LabRequestId(lr.getLabRequestId())
                     .map(Bill::getBillId)
                     .orElse(null);
 
-            boolean canCreateBill = (billId == null);
+            boolean canCreateBill = (lr.getStatus() == LabRequestStatus.REQUESTED && billId == null);
+
+            Double testCost = (lr.getTest() != null && lr.getTest().getCost() != null)
+                    ? lr.getTest().getCost()
+                    : 0.0;
 
             return new CashierLabRequestDTO(
-                    a.getLabRequestId(),
-                    a.getMedicalRecord() != null && a.getMedicalRecord().getPatient() != null
-                            && a.getMedicalRecord().getPatient().getUser() != null
-                            ? a.getMedicalRecord().getPatient().getUser().getFullName()
+                    lr.getLabRequestId(),
+                    lr.getMedicalRecord() != null && lr.getMedicalRecord().getPatient() != null
+                            ? lr.getMedicalRecord().getPatient().getUser().getFullName()
                             : "Unknown",
-                    a.getDoctor() != null && a.getDoctor().getUser() != null
-                            ? a.getDoctor().getUser().getFullName()
+                    lr.getDoctor() != null && lr.getDoctor().getUser() != null
+                            ? lr.getDoctor().getUser().getFullName()
                             : "Unknown",
-                    a.getTest() != null ? a.getTest().getName() : "N/A",
-                    a.getTest() != null ? a.getTest().getCost() : 0,
-                    a.getRequestedAt(),
-                    LabRequestStatus.fromInt(a.getStatusValue()),
+                    lr.getTest() != null ? lr.getTest().getName() : "N/A",
+                    testCost,
+                    lr.getRequestedAt(),
+                    LabRequestStatus.fromInt(lr.getStatusValue()),
                     billId,
                     canCreateBill
             );
         });
+    }
 
+    public LabRequest getById(Integer billId) {
+       return labRequestRepository.findById(billId).orElse(null);
     }
 
 }

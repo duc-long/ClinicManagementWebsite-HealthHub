@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Create New Cashier</title>
+    <title>Update Cashier</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
@@ -16,6 +16,10 @@
 
         .text-hm-blue {
             color: var(--hm-blue) !important;
+        }
+
+        .text-hm-green {
+            color: var(--hm-green) !important;
         }
 
         .btn-hm-green {
@@ -66,11 +70,16 @@
             color: var(--hm-blue);
         }
 
+        .text-pink {
+            color: #d63384 !important;
+        }
+
         .avatar-img {
             width: 120px;
             height: 120px;
             object-fit: cover;
         }
+
     </style>
 </head>
 <body>
@@ -100,38 +109,46 @@
     <div class="flex-grow-1 bg-light">
 
         <!-- Topbar -->
-        <div class="topbar">
-            <button class="btn btn-outline-primary"><i class="fas fa-sign-in-alt me-1"></i> Logout</button>
-        </div>
+        <div th:replace="~{fragment/fragment :: navLogin}"></div>
 
         <!-- Page Content -->
         <div class="p-4">
-            <h2 class="section-title">Create New Cashier</h2>
+            <h2 class="section-title">Update cashier</h2>
 
             <div class="d-flex justify-content-center">
                 <div class="card shadow-sm w-75">
                     <div class="card-body">
-                        <form th:action="@{/admin/cashier/new-result}" th:object="${cashierDTOs}" method="post"
+
+                        <!-- Form for update -->
+                        <form th:action="@{/admin/cashier/edit-result}" th:object="${cashierDTO}"
+                              method="post"
                               enctype="multipart/form-data">
 
-                            <!-- Avatar Upload -->
+                            <!-- Avatar center -->
                             <div class="d-flex flex-column align-items-center mb-4">
-                                <img th:src="@{/images/avatars/default-avatar.png}"
+                                <img th:src="${cashierDTO.avatarFilename != null} ?
+             @{/images/avatars/{file}(file=${cashierDTO.avatarFilename})} :
+             @{/images/avatars/default-avatar.png}"
                                      alt="Avatar"
-                                     class="rounded-circle shadow avatar-img mb-3"
-                                     style="width: 150px; height: 150px; object-fit: cover;">
+                                     class="rounded-circle shadow avatar-img"
+                                     style="width: 150px; height: 150px; object-fit: cover;"/>
                                 <input type="file" class="form-control w-50" name="avatar">
                             </div>
 
-                            <h4 class="mb-4 text-hm-blue text-center">cashier Information</h4>
+                            <h4 class="mb-4 text-hm-blue text-center">Edit cashier Information</h4>
 
-                            <!-- Username -->
+                            <!-- USER INFO -->
+                            <div class="mb-3 row">
+                                <label class="col-sm-2 col-form-label fw-bold">User ID</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" th:field="*{userId}" readonly/>
+                                </div>
+                            </div>
+
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Username</label>
                                 <div class="col-sm-10">
-                                    <input type="text" th:field="*{username}" class="form-control"/>
-                                    <div class="text-danger" th:if="${#fields.hasErrors('username')}"
-                                         th:errors="*{username}"></div>
+                                    <input type="text" class="form-control" th:field="*{username}" readonly/>
                                 </div>
                             </div>
 
@@ -139,7 +156,7 @@
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Full Name</label>
                                 <div class="col-sm-10">
-                                    <input type="text" th:field="*{fullName}" class="form-control"/>
+                                    <input type="text" class="form-control" th:field="*{fullName}"/>
                                     <div class="text-danger" th:if="${#fields.hasErrors('fullName')}"
                                          th:errors="*{fullName}"></div>
                                 </div>
@@ -149,7 +166,7 @@
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Email</label>
                                 <div class="col-sm-10">
-                                    <input type="email" th:field="*{email}" class="form-control"/>
+                                    <input type="email" class="form-control" th:field="*{email}"/>
                                     <div class="text-danger" th:if="${#fields.hasErrors('email')}"
                                          th:errors="*{email}"></div>
                                 </div>
@@ -159,7 +176,8 @@
                             <div class="mb-3 row">
                                 <label class="col-sm-2 col-form-label fw-bold">Phone</label>
                                 <div class="col-sm-10">
-                                    <input type="text" th:field="*{phone}" class="form-control"/>
+                                    <input type="text" class="form-control" th:field="*{phone}" pattern="[0-9]{10}"
+                                           title="Enter the correct 10 digits"/>
                                     <div class="text-danger" th:if="${#fields.hasErrors('phone')}"
                                          th:errors="*{phone}"></div>
                                 </div>
@@ -170,6 +188,7 @@
                                 <label class="col-sm-2 col-form-label fw-bold">Gender</label>
                                 <div class="col-sm-10">
                                     <select class="form-select" th:field="*{gender}">
+                                        <option value="" disabled>-- Select Gender --</option>
                                         <option th:value="${T(com.group4.clinicmanagement.enums.Gender).MALE}">Male
                                         </option>
                                         <option th:value="${T(com.group4.clinicmanagement.enums.Gender).FEMALE}">
@@ -181,16 +200,27 @@
                                 </div>
                             </div>
 
-                            <!-- Buttons -->
+                            <div class="mb-3 row">
+                                <label class="col-sm-2 col-form-label fw-bold">Status</label>
+                                <div class="col-sm-10">
+                                    <select class="form-select" th:field="*{userStatus}">
+                                        <option value="ACTIVE">Active</option>
+                                        <option value="INACTIVE">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- ACTIONS -->
                             <div class="text-end">
                                 <a th:href="@{/admin/cashier}" class="btn btn-secondary me-2">
                                     <i class="fas fa-arrow-left me-1"></i> Cancel
                                 </a>
                                 <button type="submit" class="btn btn-hm-green">
-                                    <i class="fas fa-user-plus me-1"></i> Create cashier
+                                    <i class="fas fa-save me-1"></i> Save Changes
                                 </button>
                             </div>
                         </form>
+
                     </div>
                 </div>
             </div>
@@ -198,7 +228,6 @@
         </div>
     </div>
 </div>
-
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

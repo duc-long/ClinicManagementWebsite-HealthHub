@@ -8,12 +8,15 @@ import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.repository.UserRepository;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -79,6 +82,20 @@ public class UserService {
     @Transactional
     public User saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsernameIgnoreCase(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Username not found");
+        }
+        System.out.println(user.getRole().getName());
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
+                .password(user.getPasswordHash())
+                .authorities("ROLE_" + user.getRole().getName().toUpperCase())
+                .build();
     }
 
 }

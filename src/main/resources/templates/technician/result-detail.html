@@ -6,7 +6,7 @@
     <title>Result Detail - HealHub</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             background-color: #f6f7fb;
@@ -115,17 +115,27 @@
         </section>
     </div>
 </main>
+<div id="flash-message-error" th:data-msg="${errorMessage}" style="display:none;"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const errorMsg = document.getElementById('flash-message-error').dataset.msg;
+
+
+    if (errorMsg) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: errorMsg,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#dc3545',
+            customClass: {
+                popup: 'swal2-border-red'
+            }
+        });
+    }
+    /*]]>*/
+</script>
 
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
-<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const toastEl = document.getElementById("successToast");
-        if (toastEl) {
-            const toast = new bootstrap.Toast(toastEl, {delay: 2500});
-            toast.show();
-        }
-    });
-</script>
 </body>
 </html>

@@ -1,7 +1,9 @@
 <div th:fragment="popup">
-<div id="toast-container"></div>
+<div id="toast-container">
+
+</div>
 <style>
-    .toast {
+    .app-toast {
     position: relative;
     margin: 10px 0;
     padding: 15px;
@@ -15,23 +17,23 @@
     }
 
     /* Màu sắc cho thông báo thành công (success) */
-    .toast-success {
+    .app-toast-success {
     background-color: #28a745;  /* Xanh lá cây */
     }
 
     /* Màu sắc cho thông báo lỗi (error) */
-    .toast-error {
+    .app-toast-error {
     background-color: #dc3545;  /* Đỏ */
     }
 
     /* Hiệu ứng khi toast hiện ra */
-    .toast.show {
+    .app-toast.show {
     display: block;
     opacity: 1;
     }
 
     /* Tiến trình của toast (nếu bạn muốn hiển thị một thanh tiến trình) */
-    .toast-progress {
+    .app-toast-progress {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -45,10 +47,10 @@
     // ✅ Hàm hiển thị toast
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
-        toast.classList.add('toast', `toast-${type}`);
+        toast.classList.add('app-toast', `app-toast-${type}`);
         toast.innerHTML = `
             <span>${message}</span>
-            <div class="toast-progress"></div>
+            <div class="app-toast-progress"></div>
         `;
 
         document.getElementById('toast-container').appendChild(toast);
@@ -64,8 +66,8 @@
     }
 
     // ✅ Kiểm tra flash attribute từ backend (Spring)
-    const successMsg = /*[[${success}]]*/ null;
-    const errorMsg   = /*[[${error}]]*/ null;
+    const successMsg = /*[[${success}]]*/ '';
+    const errorMsg   = /*[[${error}]]*/ '';
 
     if (successMsg) {
         showToast(String(successMsg), 'success');

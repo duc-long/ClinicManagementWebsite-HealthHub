@@ -267,8 +267,35 @@ public class AppointmentService {
                 ));
     }
 
+    public Page<RecepCashAppointmentDTO> getStatusAppointmentPageforCash(int statusValue, int page, int size) {
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);
+        Page<Appointment> appointments = appointmentRepository.findStatusValueDesc(statusValue, pageable);
+        return appointments
+                .map(a -> new RecepCashAppointmentDTO(
+                        a.getAppointmentId(),
+                        a.getPatient().getPatientId(),
+                        a.getDoctor() != null && a.getDoctor().getUser() != null ? a.getDoctor().getUser().getFullName() : "Not Assigned",
+                        a.getPatient() != null && a.getPatient().getUser() != null ? a.getPatient().getUser().getFullName() : "Unknown",
+                        a.getReceptionist() != null ? a.getReceptionist().getFullName() : "N/A",
+                        a.getPatient().getUser().getPhone(),
+                        a.getAppointmentDate(),
+                        a.getCreatedAt(),
+                        AppointmentStatus.fromInt(a.getStatusValue()),
+                        a.getQueueNumber() != null ? a.getQueueNumber() : 0,
+                        a.getNotes(),
+                        a.getCancelReason(),
+                        (a.getStatusValue() == AppointmentStatus.CHECKED_IN.getValue() //check CREATE BILL
+                                && a.getAppointmentDate().equals(LocalDate.now())),
+                        null
+                ));
+    }
+
     public Appointment getAppointmentForReceptionist(int id) {
         return appointmentRepository.findIdWithStatusRangeforRecep(id).orElse(null);
+    }
+
+    public Appointment getAppointmentForCashier(int id) {
+        return appointmentRepository.findIdWithStatusRangeforCash(id).orElse(null);
     }
 }
 

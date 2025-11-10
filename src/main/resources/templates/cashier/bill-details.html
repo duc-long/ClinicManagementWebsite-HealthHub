@@ -16,7 +16,7 @@
     <aside class="sidebar">
         <div class="brand">
             <div class="logo">R</div>
-            <div class="title hide-when-collapsed">HealHub · Receptionist</div>
+            <div class="title hide-when-collapsed">HealHub · Cashier</div>
         </div>
 
         <button id="toggleSidebar" class="toggle-btn" type="button">
@@ -34,6 +34,10 @@
                 <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
                 <span class="hide-when-collapsed">Payments</span>
             </a>
+            <a th:href="@{/cashier/lab-request-list}">
+                <span class="icon"><i class="fa-solid fa-vial"></i></span>
+                <span class="hide-when-collapsed">Lab Requests</span>
+            </a>
             <small class="hide-when-collapsed mt-2">ACCOUNT</small>
             <a th:href="@{/cashier/profile}">
                 <span class="icon"><i class="fa-solid fa-id-card"></i></span>
@@ -47,6 +51,7 @@
             </form>
         </nav>
     </aside>
+
 
 
     <main class="main">
@@ -111,11 +116,11 @@
                         <i class="fa-solid fa-arrow-left"></i> Back
                     </a>
 
-                    <form th:if="${bill.status.name() != 'PAID'}"
-                          th:action="@{'/cashier/bill/' + ${bill.billId} + '/mark-paid'}"
-                          method="post" id="markPaidForm" style="display:inline;">
-                        <button type="button" class="btn btn-success" onclick="confirmMarkPaid()">
-                            <i class="fa-solid fa-money-bill-wave"></i> Mark as Paid
+                    <form th:if="${bill.status.name() == 'PENDING'}"
+                          th:action="@{'/cashier/bill/' + ${bill.billId} + '/export'}"
+                          method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-file-pdf"></i> Export Bill
                         </button>
                     </form>
                 </div>

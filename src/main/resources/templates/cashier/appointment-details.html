@@ -13,7 +13,7 @@
     <aside class="sidebar">
         <div class="brand">
             <div class="logo">R</div>
-            <div class="title hide-when-collapsed">HealHub · Receptionist</div>
+            <div class="title hide-when-collapsed">HealHub · Cashier</div>
         </div>
 
         <button id="toggleSidebar" class="toggle-btn" type="button">
@@ -31,6 +31,10 @@
                 <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
                 <span class="hide-when-collapsed">Payments</span>
             </a>
+            <a th:href="@{/cashier/lab-request-list}" >
+                <span class="icon"><i class="fa-solid fa-vial"></i></span>
+                <span class="hide-when-collapsed">Lab Requests</span>
+            </a>
             <small class="hide-when-collapsed mt-2">ACCOUNT</small>
             <a th:href="@{/cashier/profile}">
                 <span class="icon"><i class="fa-solid fa-id-card"></i></span>
@@ -44,6 +48,7 @@
             </form>
         </nav>
     </aside>
+
 
 
     <!-- MAIN -->

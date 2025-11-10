@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payments – HealHub</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
+    <style>
+        .status-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e3e3e3;
+            padding-bottom: 0.5rem;
+        }
+
+        .status-tabs a {
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 4px 4px 0 0;
+            color: #333;
+            border: 1px solid transparent;
+        }
+
+        .status-tabs a.active {
+            color: #0d6efd;
+            border-color: #dee2e6 #dee2e6 transparent;
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .status-tabs a:hover {
+            color: #0a58ca;
+        }
+
+        .badge {
+            font-size: 0.85rem;
+            padding: 6px 10px;
+        }
+
+        .btn {
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="app" id="appLayout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">R</div>
+            <div class="title hide-when-collapsed">HealHub · Cashier</div>
+        </div>
+
+        <button id="toggleSidebar" class="toggle-btn" type="button">
+            <i class="fa-solid fa-angles-left"></i>
+            <span class="hide-when-collapsed">Collapse</span>
+        </button>
+
+        <nav class="nav" id="sideNav">
+            <small class="hide-when-collapsed">OVERVIEW</small>
+            <a th:href="@{/cashier/appointment-list}" >
+                <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="hide-when-collapsed">Appointments</span>
+            </a>
+            <a th:href="@{/cashier/payment-list}" class="active">
+                <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
+                <span class="hide-when-collapsed">Payments</span>
+            </a>
+            <a th:href="@{/cashier/lab-request-list}" >
+                <span class="icon"><i class="fa-solid fa-vial"></i></span>
+                <span class="hide-when-collapsed">Lab Requests</span>
+            </a>
+            <small class="hide-when-collapsed mt-2">ACCOUNT</small>
+            <a th:href="@{/cashier/profile}">
+                <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+                <span class="hide-when-collapsed">Profile</span>
+            </a>
+            <form th:action="@{/cashier/logout}" method="post" style="margin-top:.5rem;">
+                <button class="toggle-btn" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hide-when-collapsed">Logout</span>
+                </button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <h4>Payment List</h4>
+        </div>
+
+        <div class="content">
+            <div class="status-tabs mb-3">
+                <a th:href="@{/cashier/payment-list(status='ALL')}"
+                   th:classappend="${activeStatus == 'ALL'} ? 'active'">All</a>
+                <a th:href="@{/cashier/payment-list(status='PENDING')}"
+                   th:classappend="${activeStatus == 'PENDING'} ? 'active'">Pending</a>
+                <a th:href="@{/cashier/payment-list(status='PAID')}"
+                   th:classappend="${activeStatus == 'PAID'} ? 'active'">Paid</a>
+                <a th:href="@{/cashier/payment-list(status='VOID')}"
+                   th:classappend="${activeStatus == 'VOID'} ? 'active'">Voided</a>
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Bill ID</th>
+                    <th>Patient</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Paid At</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="b : ${bills}">
+                    <td th:text="${b.billId}"></td>
+                    <td th:text="${b.patient.user.fullName}"></td>
+                    <td>
+                        <span th:text="${b.appointment != null ? 'Appointment' : 'Lab Request'}"></span>
+                    </td>
+                    <td th:text="${#numbers.formatCurrency(b.amount)}"></td>
+                    <td>
+                        <span th:switch="${b.status}">
+                            <span th:case="0" class="badge bg-warning text-dark">Pending</span>
+                            <span th:case="1" class="badge bg-success">Paid</span>
+                            <span th:case="2" class="badge bg-danger">Void</span>
+                            <span th:case="*">Unknown</span>
+                        </span>
+                    </td>
+                    <td th:text="${b.paidAt != null ? #temporals.format(b.paidAt, 'dd/MM/yyyy HH:mm') : '—'}"></td>
+                    <td>
+                        <a th:href="@{'/cashier/bill/' + ${b.billId}}" class="btn btn-sm btn-primary">View</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

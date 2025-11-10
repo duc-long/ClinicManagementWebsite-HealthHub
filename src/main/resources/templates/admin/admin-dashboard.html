@@ -58,12 +58,13 @@
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/receptionist}"><i class="fas fa-hospital-user me-2"></i>Receptionists</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/cashier}"><i class="fas fa-cash-register me-2"></i>Cashiers</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/technician}"><i class="fas fa-user-gear me-2"></i>Technicians</a></li>
-            <li class="nav-item"><a class="nav-link bg-danger" th:href="@{/admin/logout}"><i class="fas fa-sign-out me-2"></i>Logout</a></li>
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="flex-grow-1 p-4 bg-light">
+
+        <div class="d-flex justify-content-end" th:insert="~{fragment/fragment :: navLogin}"></div>
 
         <h2 class="text-hm-blue mb-4">Admin Dashboard</h2>
 
