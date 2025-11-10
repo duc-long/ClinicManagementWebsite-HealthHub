@@ -87,32 +87,6 @@ public class DoctorController {
         return "doctor/home";
     }
 
-    // method to load profile doctor
-    @GetMapping("/profile")
-    public String loadProfile(Principal principal, Model model) {
-        User user = userService.findUserByUsername(principal.getName());
-        if (user == null) return "redirect:/doctor/login";
-
-        Doctor doctor = doctorService.findDoctorById(user.getUserId());
-        model.addAttribute("doctor", doctor);
-
-        DoctorDTO doctorDTO = new DoctorDTO();
-        doctorDTO.setGender(user.getGender());
-        doctorDTO.setEmail(user.getEmail());
-        doctorDTO.setPhone(user.getPhone());
-        doctorDTO.setFullName(user.getFullName());
-        doctorDTO.setDoctorId(user.getUserId());
-        doctorDTO.setAvatarFileName(user.getAvatar());
-        doctorDTO.setUsername(user.getUsername());
-        Department department = departmentRepository.findByDepartmentId(doctor.getDepartment().getDepartmentId())
-                .orElse(null);
-        model.addAttribute("doctor", doctorDTO);
-        model.addAttribute("department", department.getName());
-        model.addAttribute("section", "profile");
-        model.addAttribute("active", "profile");
-        return "doctor/home";
-    }
-
     // method to load appointment list for doctor (delete)
     @GetMapping("/appointments")
     public String loadAppointment(Principal principal, Model model, RedirectAttributes redirectAttributes) {
@@ -209,6 +183,32 @@ public class DoctorController {
         return "doctor/home";
     }
 
+    // method to load profile doctor
+    @GetMapping("/profile")
+    public String loadProfile(Principal principal, Model model) {
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) return "redirect:/doctor/login";
+
+        Doctor doctor = doctorService.findDoctorById(user.getUserId());
+        model.addAttribute("doctor", doctor);
+
+        DoctorDTO doctorDTO = new DoctorDTO();
+        doctorDTO.setGender(user.getGender());
+        doctorDTO.setEmail(user.getEmail());
+        doctorDTO.setPhone(user.getPhone());
+        doctorDTO.setFullName(user.getFullName());
+        doctorDTO.setDoctorId(user.getUserId());
+        doctorDTO.setAvatarFileName(user.getAvatar());
+        doctorDTO.setUsername(user.getUsername());
+        Department department = departmentRepository.findByDepartmentId(doctor.getDepartment().getDepartmentId())
+                .orElse(null);
+        model.addAttribute("doctor", doctorDTO);
+        model.addAttribute("department", department.getName());
+        model.addAttribute("section", "profile");
+        model.addAttribute("active", "profile");
+        return "doctor/home";
+    }
+
     // method to redirect to update profile page
     @GetMapping("/profile/edit")
     public String loadProfile(Model model, Principal principal) {
@@ -244,7 +244,6 @@ public class DoctorController {
 
         // --- Update user basic info ---
         user.setFullName(doctorModel.getFullName());
-        user.setUsername(doctorModel.getUsername());
         user.setEmail(doctorModel.getEmail());
         user.setPhone(doctorModel.getPhone());
         user.setGender(doctorModel.getGender());
@@ -262,12 +261,12 @@ public class DoctorController {
 
         redirectAttributes.addFlashAttribute("message", "Doctor profile updated successfully!");
         redirectAttributes.addFlashAttribute("messageType", "success");
-        return "redirect:/doctor/home";
+        return "redirect:/doctor/profile";
     }
 
     // method to show change password
     @GetMapping("/change-password")
-    public String changePassword(Model model, RedirectAttributes redirectAttributes, Principal principal) {
+    public String changePassword(Model model, Principal principal) {
         User user = userService.findUserByUsername(principal.getName());
 
         if (user == null) {
