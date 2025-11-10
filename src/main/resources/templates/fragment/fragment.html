@@ -70,6 +70,7 @@
         footer a:hover {
             text-decoration: underline;
         }
+
         /*.navbar {*/
         /*    height: 80px;*/
         /*    background: #ffffff;*/
@@ -167,12 +168,20 @@
 
                     <!-- Logged In -->
                     <div class="dropdown" sec:authorize="isAuthenticated()">
-                        <button class="user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
                             Hi, <span th:text="${#authentication.principal.fullName}">User</span>
                         </button>
                         <ul class="dropdown-menu shadow-sm border-0 mt-2">
-                            <li><a class="dropdown-item" th:href="@{/patient/profile}"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item text-danger" th:href="@{/patient/logout}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" th:href="@{/patient/profile}"><i
+                                    class="bi bi-person-circle me-2"></i>Profile</a></li>
+                            <li>
+                                <form  th:action="@{/patient/logout}" method="post">
+                                    <button class="dropdown-item text-danger"><i
+                                            class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                </form>
+
+                            </li>
                         </ul>
                     </div>
                 </ul>
@@ -183,13 +192,12 @@
 
 <div th:fragment="navLogin" class="topbar">'
     <a class="btn btn-outline-primary" sec:authorize="!isAuthenticated()"
-    th:href="@{/admin/login}">
+       th:href="@{/admin/login}">
         <i class="fas fa-sign-in-alt me-1"></i> Login
     </a>
-    <a class="btn btn-outline-primary" sec:authorize="isAuthenticated()"
-       th:href="@{/admin/logout}">
-        <i class="fas fa-sign-out-alt me-1"></i> Logout
-    </a>
+    <form th:action="@{/admin/logout}" method="post">
+        <button class="dropdown-item text-danger"><i class="fas fa-sign-out-alt me-1"></i>Logout</button>
+    </form>
 </div>
 
 <!-- ✅ FOOTER -->
