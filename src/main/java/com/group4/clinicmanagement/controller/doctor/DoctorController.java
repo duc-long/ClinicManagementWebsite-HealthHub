@@ -278,6 +278,7 @@ public class DoctorController {
         return "doctor/home";
     }
 
+    // method to change doctor password
     @PostMapping("/change-password")
     public String changePassword(RedirectAttributes redirectAttributes, Principal principal,
                                  @RequestParam(name = "currentPassword") String currentPassword,
@@ -340,7 +341,13 @@ public class DoctorController {
 
     // method to show update record form
     @GetMapping("/records/update/{id}")
-    public String updateRecord(@PathVariable(name = "id") int id, Model model, RedirectAttributes redirectAttributes) {
+    public String updateRecord(@PathVariable(name = "id") Integer id, Model model, RedirectAttributes redirectAttributes) {
+        if (id == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Invalid record id");
+            return "redirect:/doctor/home";
+        }
+
         MedicalRecordDTO record = medicalRecordService.findDTOById(id);
 
         // check record null
@@ -408,6 +415,8 @@ public class DoctorController {
         // switch to  MedicalRecordDTO
         MedicalRecordDTO recordDTO = medicalRecordService.findDTOById(recordId);
         if (recordDTO == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Record ID not found!");
             return "redirect:/doctor/home";
         }
 
@@ -667,6 +676,22 @@ public class DoctorController {
         return "doctor/vitalSign";
     }
 
+    // method to show vital sign form for update
+    @GetMapping("/vitals/update/{id}")
+    public String vitalSignUpdatePage(Model model, @PathVariable(name = "id") int vitalSignId,
+                                      RedirectAttributes redirectAttributes) {
+        VitalSignsDTO vitalSignsDTO = vitalSignsService.findVitalSignsDTOById(vitalSignId);
+
+        if (vitalSignsDTO == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "VitalSigns not found!");
+            return "redirect:/doctor/home";
+        }
+
+        model.addAttribute("vital", vitalSignsDTO);
+        return "doctor/vitalSign";
+    }
+
     // method do save update vital sign
     @PostMapping("/vitals/update")
     public String saveVital(@ModelAttribute("vital") VitalSignsDTO vital,
@@ -683,7 +708,7 @@ public class DoctorController {
             model.addAttribute("recordId", vital.getRecordId());
             model.addAttribute("mode", "update");
             model.addAttribute("recordId", recordId);
-            return "doctor/vitals-form";
+            return "doctor/vitalSign";
         }
         vitalSignsService.saveOrUpdate(recordId, vital, user.getDoctor());
         redirectAttributes.addFlashAttribute("messageType", "success");
@@ -763,6 +788,8 @@ public class DoctorController {
             return "redirect:/doctor/home";
         }
     }
+
+
 
     // method to view lab request
     @GetMapping("/labs/view/{id}")
@@ -939,16 +966,18 @@ public class DoctorController {
         List<AppointmentDTO> appointmentDTOS = appointmentService.getTodayAppointmentsByDoctorId(user.getUserId());
 
         model.addAttribute("appointments", appointmentDTOS);
-        model.addAttribute("appointment", new AppointmentDTO());
+        model.addAttribute("appointment", new Appointment());
+
         return "doctor/make-re-examination-appointment";
     }
 
     // method to do create appointment re-examination for patient
     @PostMapping("/make-appointment")
-    public String doMakeAppointment(@ModelAttribute("appointment") Appointment appointment,
-                                    @RequestParam(value = "patientId", required = false) Integer patientId,
-                                    RedirectAttributes redirectAttributes,
-                                    Principal principal) {
+    public String doMakeAppointment(
+            @ModelAttribute("appointment") Appointment appointment,
+            @RequestParam(value = "patientId", required = false) Integer patientId,
+            RedirectAttributes redirectAttributes,
+            Principal principal) {
 
         if (patientId == null) {
             redirectAttributes.addFlashAttribute("message", "Please select an appointment / patient first.");
@@ -966,12 +995,6 @@ public class DoctorController {
         LocalDate apptDate = appointment.getAppointmentDate();
         if (apptDate == null) {
             redirectAttributes.addFlashAttribute("message", "Please choose an appointment date.");
-            redirectAttributes.addFlashAttribute("messageType", "error");
-            return "redirect:/doctor/re-examination/create";
-        }
-
-        if (!appointmentService.canBookAppointment(patient.getPatientId())) {
-            redirectAttributes.addFlashAttribute("message", "❌ You already limit book an appointment. Please choose another day.");
             redirectAttributes.addFlashAttribute("messageType", "error");
             return "redirect:/doctor/re-examination/create";
         }
@@ -995,20 +1018,17 @@ public class DoctorController {
         try {
             Appointment saved = appointmentService.saveFollowUpAppointment(appointment);
             if (saved != null) {
-                redirectAttributes.addFlashAttribute("message", "Create Appointment Successfully");
                 redirectAttributes.addFlashAttribute("messageType", "success");
-                return "redirect:/doctor/home";
-            } else {
-                redirectAttributes.addFlashAttribute("message", "Failed to create Appointment.");
-                redirectAttributes.addFlashAttribute("messageType", "error");
-                return "redirect:/doctor/re-examination/create";
+                redirectAttributes.addFlashAttribute("message", "Appointment created successfully!");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            redirectAttributes.addFlashAttribute("message", "An error occurred while creating the appointment.");
             redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "An error occurred while saving the appointment.");
             return "redirect:/doctor/re-examination/create";
         }
+
+        return "redirect:/doctor/home";
     }
 
     // method to submit finish appointment for patient

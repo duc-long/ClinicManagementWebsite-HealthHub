@@ -51,24 +51,21 @@ public class AppointmentService {
     }
 
     // method to create appointment for patient to follow up
+    @Transactional
     public Appointment saveFollowUpAppointment(Appointment appointment) {
         Integer id = appointment.getAppointmentId();
 
-        if (id != null) {
-            return appointmentRepository.findById(id)
-                    .map(existing -> {
-                        existing.setAppointmentDate(appointment.getAppointmentDate());
-                        existing.setNotes(appointment.getNotes());
-                        return appointmentRepository.save(existing);
-                    })
-                    // if appointment ID is null
-                    .orElseGet(() -> {
-                        return appointmentRepository.save(appointment);
-                    });
-        } else {
-            // create new
-            return appointmentRepository.save(appointment);
+        if (id != null && appointmentRepository.existsById(id)) {
+            Appointment existAppointment = appointmentRepository.findById(id).orElseThrow();
+            existAppointment.setAppointmentDate(appointment.getAppointmentDate());
+            existAppointment.setNotes(appointment.getNotes());
+            existAppointment.setStatus(appointment.getStatus());
+            existAppointment.setPatient(appointment.getPatient());
+            existAppointment.setDoctor(appointment.getDoctor());
+            return appointmentRepository.save(existAppointment);
         }
+
+        return appointmentRepository.save(appointment);
     }
 
     // method to delete Appointment

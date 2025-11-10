@@ -118,10 +118,10 @@
                     <h2><i class="bi bi-calendar-heart-fill text-primary"></i> Make Appointment</h2>
 
                     <form th:action="@{/doctor/make-appointment}" th:object="${appointment}" method="post">
-
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <div class="mb-4">
                             <label for="appointmentSelect" class="form-label">Select Appointment</label>
-                            <select id="appointmentSelect" class="form-select">
+                            <select id="appointmentSelect" th:field="*{appointmentId}" class="form-select">
                                 <option value="">-- Select appointment --</option>
                                 <option th:each="a : ${appointments}"
                                         th:value="${a.appointmentId}"
@@ -133,7 +133,6 @@
                             <div id="patientInfo" class="patient-info" style="display:none;margin-top:10px;">
                                 <label class="form-label small">Patient Name</label>
                                 <input type="text" id="piName" class="form-control" readonly>
-                                <!-- gửi patientId riêng bằng name (controller sẽ đọc @RequestParam) -->
                                 <input type="hidden" name="patientId" id="patientId" value="">
                             </div>
                         </div>

@@ -5,11 +5,11 @@ import com.group4.clinicmanagement.dto.DoctorHomeDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.Feedback;
+import com.group4.clinicmanagement.entity.User;
 import com.group4.clinicmanagement.security.CustomUserDetails;
-import com.group4.clinicmanagement.service.AppointmentService;
-import com.group4.clinicmanagement.service.DepartmentService;
-import com.group4.clinicmanagement.service.DoctorService;
-import com.group4.clinicmanagement.service.FeedbackService;
+import com.group4.clinicmanagement.service.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,11 +17,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -31,15 +33,39 @@ public class HomeController {
     private final DoctorService doctorService;
     private final FeedbackService feedbackService;
     private final DepartmentService departmentService;
+    private final UserService userService;
 
-    public HomeController(DoctorService doctorService, FeedbackService feedbackService, DepartmentService departmentService) {
+    public HomeController(UserService userService, DoctorService doctorService, FeedbackService feedbackService, DepartmentService departmentService) {
         this.feedbackService = feedbackService;
         this.doctorService = doctorService;
         this.departmentService = departmentService;
+        this.userService = userService;
     }
 
     @GetMapping()
-    public String guestHome(Model model,@RequestParam(defaultValue = "1") int page, HttpSession session) {
+    public String guestHome(Model model, @RequestParam(defaultValue = "1") int page, Principal principal, HttpServletRequest request,
+                            HttpServletResponse response) {
+        if (principal != null) {
+            User user = userService.findUserByUsername(principal.getName());
+            if (user != null && !"Patient".equals(user.getRole().getName())) {
+                // 1) logout Spring Security (nếu dùng Spring Security)
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null) {
+                    new SecurityContextLogoutHandler().logout(request, response, auth);
+                }
+
+                // 2) invalidate session thêm 1 lần nữa để chắc chắn
+                try {
+                    request.getSession(false).invalidate();
+                } catch (Exception e) {
+                    // ignore nếu session đã null
+                }
+
+                // redirect về trang login của patient
+                return "redirect:/patient/login";
+            }
+        }
+
         int pageSize = 3;
         if (page < 1) {
             return "redirect:/home?page=1";

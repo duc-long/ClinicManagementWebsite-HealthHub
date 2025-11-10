@@ -109,7 +109,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
     Optional<Appointment> findIdWithStatusRangeforCash(@Param("id") int id);
 
     // method to get all appointment in date by doctor ID and appointment status
-    @Query("SELECT a FROM Appointment a WHERE a.doctor.doctorId = :doctorId AND a.statusValue = 5 " +
+    @Query("SELECT a FROM Appointment a WHERE a.doctor.doctorId = :doctorId AND a.statusValue = 6 " +
             "AND a.appointmentDate = CURRENT_DATE ORDER BY a.appointmentDate DESC")
     List<Appointment> findTodayAppointmentsByDoctorId(@Param("doctorId") Integer doctorId);
 }
