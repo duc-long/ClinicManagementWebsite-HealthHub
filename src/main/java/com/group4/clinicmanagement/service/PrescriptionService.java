@@ -4,8 +4,7 @@ package com.group4.clinicmanagement.service;
 import com.group4.clinicmanagement.dto.PrescriptionDetailDTO;
 
 import com.group4.clinicmanagement.dto.doctor.PrescriptionDTO;
-import com.group4.clinicmanagement.entity.Prescription;
-import com.group4.clinicmanagement.entity.PrescriptionDetail;
+import com.group4.clinicmanagement.entity.*;
 import com.group4.clinicmanagement.enums.PrescriptionStatus;
 import com.group4.clinicmanagement.repository.*;
 
@@ -17,9 +16,15 @@ import java.util.List;
 @Service
 public class PrescriptionService {
     private final PrescriptionRepository prescriptionRepository;
+    private final MedicalRecordService medicalRecordService;
+    private final DoctorService doctorService;
 
-    public PrescriptionService(PrescriptionRepository prescriptionRepository) {
+    public PrescriptionService(PrescriptionRepository prescriptionRepository,
+                               MedicalRecordService medicalRecordService, DoctorService doctorService) {
         this.prescriptionRepository = prescriptionRepository;
+        this.medicalRecordService = medicalRecordService;
+        this.doctorService = doctorService;
+
     }
 
     @Transactional
@@ -46,8 +51,22 @@ public class PrescriptionService {
         return prescriptionRepository.findById(prescriptionId).orElse(null);
     }
 
-    public void savePrescription(Prescription prescription) {
-        prescriptionRepository.save(prescription);
+    public Prescription savePrescription(Prescription prescription) {
+        Prescription saved = prescriptionRepository.saveAndFlush(prescription);
+        return saved;
+    }
+
+    @Transactional
+    public Prescription createPrescription(int recordId, int doctorId) {
+        MedicalRecord record = medicalRecordService.findById(recordId);
+        Doctor doctor = doctorService.findDoctorById(doctorId);
+
+        Prescription prescription = new Prescription();
+        prescription.setMedicalRecord(record);
+        prescription.setDoctor(doctor);
+
+        // saveAndFlush để chắc chắn id được gán
+        return prescriptionRepository.saveAndFlush(prescription);
     }
 }
 

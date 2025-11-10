@@ -103,9 +103,9 @@
             <div class="row g-3" th:if="${!#lists.isEmpty(images)}">
                 <div class="col-6 col-md-4 col-lg-3" th:each="img : ${images}">
                     <img class="image-thumb shadow-sm"
-                         th:src="@{|/uploads/lab/${img.filePath}|}"
+                         th:src="@{'/images/labs/' + ${img.filePath}}"
                          th:alt="${img.description}"
-                         th:data-src="@{|/uploads/lab/${img.filePath}|}"
+                         th:data-src="@{'/images/labs/' + ${img.filePath}}"
                          onclick="showImage(this)">
                     <p class="text-muted small text-center mt-1" th:text="${img.description}"></p>
                 </div>

@@ -8,7 +8,11 @@ import com.group4.clinicmanagement.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PrescriptionDetailService {
@@ -91,7 +95,7 @@ public class PrescriptionDetailService {
         List<PrescriptionDetail> existingDetails =
                 prescriptionDetailRepository.findByPrescription_PrescriptionId(prescriptionId);
 
-        List<Integer> keepIds = new java.util.ArrayList<>();
+        List<Integer> keepIds = new ArrayList<>();
 
         int size = drugIds.size();
         for (int i = 0; i < size; i++) {
@@ -118,6 +122,49 @@ public class PrescriptionDetailService {
             if (!keepIds.contains(d.getDetailId())) {
                 prescriptionDetailRepository.delete(d);
             }
+        }
+    }
+
+    @Transactional
+    public void addDetails(int prescriptionId,
+                           List<Integer> drugIds,
+                           List<Integer> quantities,
+                           List<String> dosages,
+                           List<String> frequencies,
+                           List<Integer> durationDays,
+                           List<String> instructions) {
+
+        Prescription prescription = prescriptionRepository.findById(prescriptionId)
+                .orElseThrow(() -> new RuntimeException("Prescription not found: " + prescriptionId));
+
+        if (drugIds == null || drugIds.isEmpty()) return;
+
+        for (int i = 0; i < drugIds.size(); i++) {
+            Integer drugId = drugIds.get(i);
+            if (drugId == null) continue;
+
+            // lookup drug, skip nếu không tồn tại
+            DrugCatalog drug = drugCatalogRepository.findById(drugId).orElse(null);
+            if (drug == null) continue;
+
+            Integer qty = (quantities != null && i < quantities.size()) ? quantities.get(i) : 1;
+            String dosage = (dosages != null && i < dosages.size()) ? dosages.get(i) : "";
+            String freq = (frequencies != null && i < frequencies.size()) ? frequencies.get(i) : "";
+            Integer duration = (durationDays != null && i < durationDays.size()) ? durationDays.get(i) : 0;
+            String instr = (instructions != null && i < instructions.size()) ? instructions.get(i) : "";
+
+            PrescriptionDetail detail = new PrescriptionDetail();
+            detail.setPrescription(prescription);
+            detail.setDrug(drug);
+            detail.setQuantity(qty);
+            detail.setDosage(dosage);
+            detail.setFrequency(freq);
+
+            // giữ nguyên setter bạn đang dùng
+            detail.setDuration_days(duration); // nếu entity của bạn là setDurationDays thì đổi lại
+            detail.setInstruction(instr);
+
+            prescriptionDetailRepository.save(detail);
         }
     }
 

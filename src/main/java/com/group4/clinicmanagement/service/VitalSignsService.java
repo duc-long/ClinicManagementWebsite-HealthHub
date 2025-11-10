@@ -2,6 +2,7 @@ package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.VitalSignsDTO;
 import com.group4.clinicmanagement.entity.Appointment;
+import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.MedicalRecord;
 import com.group4.clinicmanagement.entity.VitalSigns;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
@@ -24,9 +25,9 @@ public class VitalSignsService {
 
     // method to save and update Vital Sign
     @Transactional
-    public VitalSigns saveOrUpdate(int recordId, VitalSignsDTO vitalInputDTO) {
+    public VitalSigns saveOrUpdate(int recordId, VitalSignsDTO vitalInputDTO, Doctor doctor) {
         MedicalRecord medicalRecord = medicalRecordRepository.findByRecordId(recordId).orElse(null);
-        if (medicalRecord == null) {
+        if (medicalRecord == null || doctor == null) {
             return null;
         }
 
@@ -34,13 +35,15 @@ public class VitalSignsService {
 
         if (existing == null) {
             VitalSigns vitalSigns = new VitalSigns();
+            vitalSigns.setDoctor(doctor);
             vitalSigns.setMedicalRecord(medicalRecord);
-            vitalSigns.setVitalId(vitalInputDTO.getVitalId());
             vitalSigns.setTemperature(vitalInputDTO.getTemperature());
+            vitalInputDTO.updateBloodPressure();
             vitalSigns.setBloodPressure(vitalInputDTO.getBloodPressure());
+            vitalSigns.setHeartRate(vitalInputDTO.getHeartRate());
             vitalSigns.setHeightCm(vitalInputDTO.getHeightCm());
             vitalSigns.setWeightKg(vitalInputDTO.getWeightKg());
-            vitalSignsRepository.save(vitalSigns);
+            return vitalSignsRepository.save(vitalSigns);
         } else {
             existing.setHeightCm(vitalInputDTO.getHeightCm());
             existing.setWeightKg(vitalInputDTO.getWeightKg());

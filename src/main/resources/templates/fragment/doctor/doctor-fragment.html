@@ -246,19 +246,22 @@
                     <i class="fa-solid fa-arrow-left me-1"></i> Back to Home
                 </a>
 
-                <!-- Nếu chưa có record -->
-                <a th:if="${recordId == null}"
-                   type="button"
-                   class="btn btn-hm-primary"
-                   th:href="@{/doctor/records/new(appointmentId=${appointment.appointmentId}, patientId=${appointment.patientId})}">
-                    <i class="fa-solid fa-stethoscope me-1"></i> Create Medical Record
-                </a>
+                <!-- ✅ Nếu chưa có Medical Record -->
+                <form th:if="${recordId == null}"
+                      th:action="@{/doctor/records/show-create}"
+                      method="post"
+                      class="d-inline">
+                    <input type="hidden" name="appointmentId" th:value="${appointment.appointmentId}">
+                    <input type="hidden" name="patientId" th:value="${appointment.patientId}">
+                    <button type="submit" class="btn btn-hm-primary">
+                        <i class="fa-solid fa-stethoscope me-1"></i> Create Medical Record
+                    </button>
+                </form>
 
-                <!-- Nếu đã có record -->
+                <!-- Nếu đã có Medical Record -->
                 <a th:if="${recordId != null}"
-                   type="button"
-                   class="btn btn-outline-hm-primary"
-                   th:href="@{/doctor/records/detail/{recordId}(recordId=${recordId})}">
+                   th:href="@{/doctor/records/detail/{recordId}(recordId=${recordId})}"
+                   class="btn btn-outline-hm-primary d-inline-block">
                     <i class="fa-solid fa-file-medical me-1"></i> View Medical Record
                 </a>
             </div>
@@ -316,30 +319,6 @@
                 </button>
             </div>
         </form>
-    </div>
-</div>
-
-<!-- Patients -->
-<div th:fragment="patient">
-    <h5 class="fw-bold mb-3"><i class="fa-solid fa-user-group me-2"></i>Patients</h5>
-    <div class="row g-3">
-        th:each="p : ${patients}"
-        <div class="col-md-6 col-xl-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center gap-3">
-                        <div>
-                            <div class="fw-semibold" th:text="${p.fullName}">Nguyen Thi B</div>
-                            <div class="text-muted small" th:text="${p.gender} + ' ' + ${p.birthdate}">Female · 28</div>
-                        </div>
-                    </div>
-                    <div class="mt-3 d-flex gap-2">
-                        <a href="#" class="btn btn-sm btn-outline-primary">Records</a>
-                        <a href="#" class="btn btn-sm btn-outline-secondary">Book</a>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -408,9 +387,9 @@
                 </div>
 
                 <div class="col-12 text-end mt-3 d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-outline-secondary">
+                    <a th:href="@{/doctor/change-password}" class="btn btn-outline-secondary">
                         <i class="fa-solid fa-key me-1"></i> Change Password
-                    </button>
+                    </a>
                     <a th:href="@{/doctor/profile/edit/{id}(id=${doctor.doctorId})}" class="btn btn-primary">
                         <i class="fa-solid fa-pen-to-square me-1"></i> Edit Profile
                     </a>
@@ -437,256 +416,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<!-- Medical Record -->
-<div th:fragment="medicalRecord">
-    <style>
-        :root {
-            --hm-blue: #005691;
-            --hm-green: #008744;
-        }
-
-        .section-title {
-            font-weight: 600;
-            color: var(--hm-blue);
-        }
-
-        .btn-hm {
-            background-color: var(--hm-blue);
-            color: white;
-        }
-
-        .btn-hm:hover {
-            background-color: #003f6f;
-            color: #fff;
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: #f5f8fb;
-        }
-
-        .badge-status {
-            font-size: 0.85rem;
-        }
-    </style>
-
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="section-title mb-0"><i class="fa-solid fa-file-medical me-2"></i>Hồ sơ bệnh án</h4>
-        <a th:href="@{/doctor/records/new}" class="btn btn-hm">
-            <i class="fa-solid fa-plus me-1"></i> Thêm hồ sơ
-        </a>
-    </div>
-
-    <!-- Filter/Search -->
-    <form th:action="@{/doctor/records}" method="get" class="row g-2 mb-3">
-        <div class="col-md-4">
-            <input type="text" name="keyword" th:value="${keyword}" class="form-control"
-                   placeholder="Tìm theo tên bệnh nhân hoặc chẩn đoán...">
-        </div>
-        <div class="col-md-3">
-            <select name="status" class="form-select">
-                <option value="">-- Trạng thái --</option>
-                <option th:each="s : ${T(com.group4.clinicmanagement.enums.RecordStatus).values()}"
-                        th:value="${s.name()}"
-                        th:text="${s.displayName}"
-                        th:selected="${status == s.name()}">
-                </option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-outline-primary w-100">
-                <i class="fa-solid fa-search me-1"></i> Lọc
-            </button>
-        </div>
-    </form>
-
-    <!-- Table -->
-    <div class="table-responsive shadow-sm rounded bg-white p-3">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>Bệnh nhân</th>
-                <th>Chẩn đoán</th>
-                <th>Ghi chú</th>
-                <th>Trạng thái</th>
-                <th>Ngày tạo</th>
-                <th class="text-center">Thao tác</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="record, iStat : ${records}">
-                <td th:text="${iStat.index + 1}"></td>
-                <td th:text="${record.patient.fullName}"></td>
-                <td th:text="${#strings.abbreviate(record.diagnosis, 40)}"></td>
-                <td th:text="${#strings.abbreviate(record.notes, 40)}"></td>
-
-                <td>
-                    <span th:switch="${record.status.name()}">
-                        <span th:case="'OPEN'" class="badge bg-success badge-status">Mở</span>
-                        <span th:case="'IN_PROGRESS'" class="badge bg-warning text-dark badge-status">Đang xử lý</span>
-                        <span th:case="'CLOSED'" class="badge bg-secondary badge-status">Đã đóng</span>
-                        <span th:case="*"
-                              class="badge bg-light text-dark badge-status">Không xác định</span>
-                    </span>
-                </td>
-
-                <td th:text="${#temporals.format(record.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
-
-                <td class="text-center">
-                    <a th:href="@{'/doctor/records/' + ${record.recordId}}" class="btn btn-sm btn-outline-info me-1">
-                        <i class="fa-solid fa-eye"></i>
-                    </a>
-                    <a th:href="@{'/doctor/records/edit/' + ${record.recordId}}" class="btn btn-sm btn-outline-primary">
-                        <i class="fa-solid fa-pen"></i>
-                    </a>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(records)}">
-                <td colspan="7" class="text-center text-muted py-3">
-                    <i class="fa-regular fa-folder-open me-1"></i> Chưa có hồ sơ nào được tạo
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Prescription -->
-<div th:fragment="prescription">
-    <style>
-        :root {
-            --hm-blue: #005691;
-            --hm-green: #008744;
-            --hm-light: #f8f9fa;
-        }
-
-        .section-title {
-            font-weight: 600;
-            color: var(--hm-blue);
-        }
-
-        .btn-hm {
-            background-color: var(--hm-blue);
-            color: white;
-        }
-
-        .btn-hm:hover {
-            background-color: #003f6f;
-            color: #fff;
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: #f5f8fb;
-        }
-
-        .badge-status {
-            font-size: 0.85rem;
-        }
-
-        .drug-detail-list li {
-            font-size: 0.9rem;
-        }
-    </style>
-
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="section-title mb-0"><i class="fa-solid fa-prescription-bottle-medical me-2"></i>Prescription</h4>
-        <a th:href="@{/doctor/prescriptions/new}" class="btn btn-hm">
-            <i class="fa-solid fa-plus me-1"></i> Create new Prescription
-        </a>
-    </div>
-
-    <!-- Filter/Search -->
-    <form th:action="@{/doctor/prescriptions}" method="get" class="row g-2 mb-3">
-        <div class="col-md-4">
-            <input type="text" name="keyword" th:value="${keyword}" class="form-control"
-                   placeholder="Tìm theo tên bệnh nhân hoặc chẩn đoán...">
-        </div>
-        <div class="col-md-3">
-            <select name="status" class="form-select">
-                <option value="">-- Trạng thái --</option>
-                <option th:each="s : ${T(com.group4.clinicmanagement.enums.PrescriptionStatus).values()}"
-                        th:value="${s.name()}"
-                        th:text="${s.displayName}"
-                        th:selected="${status == s.name()}">
-                </option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-outline-primary w-100">
-                <i class="fa-solid fa-search me-1"></i> Lọc
-            </button>
-        </div>
-    </form>
-
-    <!-- Table -->
-    <div class="table-responsive shadow-sm rounded bg-white p-3">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>Bệnh nhân</th>
-                <th>Bác sĩ kê toa</th>
-                <th>Chi tiết thuốc</th>
-                <th>Trạng thái</th>
-                <th>Ngày kê toa</th>
-                <th class="text-center">Thao tác</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="prescription, iStat : ${prescriptions}">
-                <td th:text="${iStat.index + 1}"></td>
-                <td th:text="${prescription.medicalRecord.patient.fullName}"></td>
-                <td th:text="${prescription.doctor.user.fullName}"></td>
-
-                <td>
-                    <ul class="mb-0 drug-detail-list" th:if="${!#lists.isEmpty(prescription.details)}">
-                        <li th:each="detail : ${prescription.details}">
-                            <span th:text="${detail.drug.drugName}"></span> –
-                            <span th:text="${detail.dosage}"></span>
-                            (<span th:text="${detail.quantity}"></span> viên)
-                        </li>
-                    </ul>
-                    <span th:if="${#lists.isEmpty(prescription.details)}" class="text-muted fst-italic">
-                        Chưa có thuốc
-                    </span>
-                </td>
-
-                <td>
-                    <span th:switch="${prescription.status.name()}">
-                        <span th:case="'ACTIVE'" class="badge bg-success badge-status">Đang hiệu lực</span>
-                        <span th:case="'COMPLETED'" class="badge bg-secondary badge-status">Hoàn tất</span>
-                        <span th:case="'CANCELLED'" class="badge bg-danger badge-status">Đã hủy</span>
-                        <span th:case="*" class="badge bg-light text-dark badge-status">Không xác định</span>
-                    </span>
-                </td>
-
-                <td th:text="${#temporals.format(prescription.prescribedAt, 'dd/MM/yyyy HH:mm')}"></td>
-
-                <td class="text-center">
-                    <a th:href="@{'/doctor/prescriptions/' + ${prescription.prescriptionId}}"
-                       class="btn btn-sm btn-outline-info me-1">
-                        <i class="fa-solid fa-eye"></i>
-                    </a>
-                    <a th:href="@{'/doctor/prescriptions/edit/' + ${prescription.prescriptionId}}"
-                       class="btn btn-sm btn-outline-primary">
-                        <i class="fa-solid fa-pen"></i>
-                    </a>
-                </td>
-            </tr>
-
-            <tr th:if="${#lists.isEmpty(prescriptions)}">
-                <td colspan="7" class="text-center text-muted py-3">
-                    <i class="fa-regular fa-folder-open me-1"></i> Chưa có đơn thuốc nào
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
 </div>
 
 <!-- Create Medical Record -->
@@ -738,37 +467,43 @@
     </div>
 
     <div class="form-section">
-        <form th:action="@{/doctor/record/save}" th:object="${record}" method="post">
-            <!-- Hidden fields -->
+        <form th:action="@{/doctor/records/create}" th:object="${record}" method="post"
+              enctype="application/x-www-form-urlencoded">
+            <!-- CSRF token (nếu dùng Spring Security) -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf != null}"/>
+
+            <!-- Hidden fields (có name để controller có thể nhận @RequestParam nếu cần) -->
             <input type="hidden" name="appointmentId" th:value="${appointmentId}">
             <input type="hidden" name="patientId" th:value="${patientId}">
 
-            <!-- Chuẩn đoán -->
+            <!-- Diagnosis -->
             <div class="mb-3">
                 <label for="diagnosis" class="form-label">Diagnose <span class="text-danger">*</span></label>
+                <!-- Khi th:object="${record}", dùng *{diagnosis} (không phải record.diagnosis) -->
                 <textarea id="diagnosis" class="form-control" rows="3"
-                          th:field="*{record.diagnosis}" placeholder="Enter your doctor's diagnosis..."
+                          th:field="*{diagnosis}" placeholder="Enter your doctor's diagnosis..."
                           required></textarea>
                 <div class="text-danger small" th:if="${#fields.hasErrors('diagnosis')}"
-                     th:errors="*{record.diagnosis}"></div>
+                     th:errors="*{diagnosis}"></div>
             </div>
 
-            <!-- Ghi chú -->
+            <!-- Notes -->
             <div class="mb-3">
                 <label for="notes" class="form-label">Note</label>
                 <textarea id="notes" class="form-control" rows="4"
-                          th:field="*{record.notes}"
+                          th:field="*{notes}"
                           placeholder="Additional notes about condition, medication, test results..."></textarea>
-                <div class="text-danger small" th:if="${#fields.hasErrors('notes')}" th:errors="*{record.notes}"></div>
+                <div class="text-danger small" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></div>
             </div>
 
-            <!-- Trạng thái -->
+            <!-- Status (enum binding) -->
             <div class="mb-3">
                 <label for="status" class="form-label">Status</label>
-                <select id="status" class="form-select" th:field="*{record.recordStatus}">
+                <!-- Nếu record.recordStatus là kiểu enum RecordStatus, bind trực tiếp *{recordStatus} -->
+                <select id="status" class="form-select" th:field="*{recordStatus}">
                     <option th:each="s : ${T(com.group4.clinicmanagement.enums.RecordStatus).values()}"
-                            th:value="${s.name()}"
-                            th:text="${s.name() == 'OPEN' ? 'Open' : 'Close'}">>
+                            th:value="${s}"
+                            th:text="${s.name() == 'OPEN' ? 'Open' : 'Close'}">
                     </option>
                 </select>
             </div>
@@ -829,7 +564,8 @@
                             <i class="fa-solid fa-plus me-1"></i> Request Lab Test
                         </a>
 
-                        <a th:if="${record.recordId != null
+                        <a th:if="${record != null
+                            and record.recordId != null
                             and labRequest != null
                             and labRequest.status != T(com.group4.clinicmanagement.enums.LabRequestStatus).CANCELLED}"
                            th:href="@{/doctor/labs/view/{id}(id=${labRequest.labRequestId})}"
@@ -870,7 +606,7 @@
 
                 <!-- 👉 Nếu có vitalSigns thì chỉ hiện Update, nếu chưa có thì hiện Create -->
                 <a th:if="${vitalSigns == null}"
-                   th:href="@{'/doctor/vitals/create?recordId=' + ${record.recordId}}"
+                   th:href="@{/doctor/vitals/create/{id}(id = ${record.recordId})}"
                    class="btn btn-outline-primary btn-sm">
                     <i class="fa-solid fa-plus"></i> Add Vital Signs
                 </a>
@@ -921,7 +657,7 @@
 
                 <!-- 👉 Nếu có prescription thì chỉ hiện Update, nếu chưa có thì hiện Create -->
                 <a th:if="${prescription == null}"
-                   th:href="@{'/doctor/prescription/create?recordId=' + ${record.recordId}}"
+                   th:href="@{/doctor/prescription/create/{id}(id = ${record.recordId})}"
                    class="btn btn-outline-primary btn-sm">
                     <i class="fa-solid fa-plus"></i> Add Prescription
                 </a>
@@ -985,5 +721,270 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Change Password -->
+<div th:fragment="change-password">
+    <style>
+        /* Container */
+        .cp-container { max-width: 480px; margin: 16px auto; padding: 12px; }
+        .cp-card {
+            padding: 20px;
+            border-radius: 12px;
+            background-color: #fff;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            color: #222;
+        }
+        body.dark .cp-card { background-color:#1f2937; color:#fff; border-color:rgba(255,255,255,0.1); }
+        .cp-title { font-size:1.2rem; font-weight:700; text-align:center; margin-bottom:1rem; }
+
+        /* Form controls */
+        .form-control.cp-input {
+            border-radius:8px; height:44px; padding:8px 44px 8px 12px; border:1px solid #ccc; color:inherit;
+        }
+        body.dark .form-control.cp-input { background-color:transparent; border-color:rgba(255,255,255,0.15); }
+
+        .input-row { position:relative; margin-bottom:16px; }
+
+        /* Eye icon container */
+        .input-icon {
+            position:absolute; right:10px; top:50%; transform:translateY(-50%);
+            display:flex; align-items:center; gap:6px;
+        }
+
+        .toggle-btn { background:transparent; border:none; padding:4px; cursor:pointer; color:#6c757d; }
+        .toggle-btn i { font-size:16px; transition:none; /* bỏ hiệu ứng hover */ }
+
+        .small-note { font-size:0.9rem; margin-bottom:8px; color:#6c757d; }
+        body.dark .small-note { color: rgba(255,255,255,0.7); }
+
+        .strength { height:8px; border-radius:6px; background-color:rgba(0,0,0,0.08); overflow:hidden; margin-top:6px; margin-bottom:6px; }
+        .strength > i { display:block; height:100%; width:0%; transition:width .2s linear; background-color:#6c757d; }
+        .strength.weak > i { background-color:#ff6b6b; }
+        .strength.fair > i { background-color:#f59e0b; }
+        .strength.strong > i { background-color:#4ade80; }
+
+        #clientError { min-height:1.1rem; margin-bottom:10px; color:#dc3545; }
+
+        .btn-submit {
+            background-color:#1976d2; color:#fff; border:none; padding:10px 12px; border-radius:8px; width:100%; font-weight:600;
+        }
+        .btn-submit:hover { background-color:#145ca9; }
+        .btn-submit:disabled { opacity:0.6; cursor:not-allowed; }
+
+        /* ===== Hide browser native password reveal/clear buttons =====
+           This covers most Chromium-based browsers and IE/Edge specifics.
+           Keep the !important to ensure hiding. */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear { display: none !important; }
+
+        input[type="password"]::-webkit-credentials-auto-fill-button,
+        input[type="password"]::-webkit-clear-button,
+        input[type="password"]::-webkit-textfield-decoration-container,
+        input[type="password"]::-webkit-textfield-decoration,
+        input[type="password"]::-webkit-inner-spin-button,
+        input[type="password"]::-webkit-calendar-picker-indicator {
+            display: none !important;
+            -webkit-appearance: none !important;
+        }
+
+        /* Some Chrome versions add the reveal as a button inside the decoration container.
+           Hide any button there as a fallback. */
+        input[type="password"]::-webkit-textfield-decoration-container > button,
+        input[type="password"]::-webkit-textfield-decoration-container > input[type="button"] {
+            display: none !important;
+        }
+
+        /* Ensure our icon doesn't get hidden by pointer events or layout */
+        .input-icon { pointer-events: auto; }
+        .form-control.cp-input { padding-right: 44px; } /* make space for icon */
+    </style>
+
+    <div class="cp-container">
+        <div class="cp-card">
+            <div class="cp-title">Change Password</div>
+
+            <form th:action="@{/doctor/change-password}" method="post" id="changePasswordForm" novalidate>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <!-- Current Password -->
+                <div class="input-row">
+                    <input id="currentPassword" name="currentPassword" type="password" class="form-control cp-input" placeholder="Current password" required />
+                    <div class="input-icon">
+                        <button class="toggle-btn" type="button" data-target="currentPassword" aria-label="Toggle current password">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- New Password -->
+                <div class="input-row">
+                    <input id="newPassword" name="newPassword" type="password" class="form-control cp-input" placeholder="New password" required />
+                    <div class="input-icon">
+                        <button class="toggle-btn" type="button" data-target="newPassword" aria-label="Toggle new password">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="small-note">Use at least 6 characters — include letters, numbers & a special character</div>
+
+                <div class="strength mb-2" aria-hidden="true"><i id="pwdStrengthBar"></i></div>
+                <div id="pwdStrengthText" class="small-note mb-2"></div>
+
+                <!-- Confirm Password -->
+                <div class="input-row">
+                    <input id="confirmPassword" name="confirmPassword" type="password" class="form-control cp-input" placeholder="Confirm new password" required />
+                    <div class="input-icon">
+                        <button class="toggle-btn" type="button" data-target="confirmPassword" aria-label="Toggle confirm password">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="clientError" class="mb-3"></div>
+
+                <button id="submitBtn" type="submit" class="btn-submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // Toggle show/hide password — only toggle classes on the <i>, do not create nodes.
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function (evt) {
+                    evt.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    if (!input) return;
+
+                    const icon = this.querySelector('i');
+                    const isHidden = input.type === 'password';
+                    input.type = isHidden ? 'text' : 'password';
+                    // toggle icon class
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
+                });
+
+                // ensure button is always visible (in case browser tries to overlay)
+                btn.style.display = 'inline-flex';
+            });
+
+            // Keep icon displayed on focus/blur — protects against some browser quirks.
+            ['currentPassword', 'newPassword', 'confirmPassword'].forEach(id => {
+                const input = document.getElementById(id);
+                const wrapperBtn = document.querySelector(`button[data-target="${id}"]`);
+                if (!input || !wrapperBtn) return;
+
+                // Always show icon
+                wrapperBtn.style.visibility = 'visible';
+
+                // On focus/blur: keep icon visible and reset icon class if needed
+                input.addEventListener('focus', () => {
+                    wrapperBtn.style.visibility = 'visible';
+                });
+                input.addEventListener('blur', () => {
+                    // do nothing: keep visible (avoids icon disappearing)
+                    wrapperBtn.style.visibility = 'visible';
+                });
+            });
+
+            // --- Password strength & validation (kept as before) ---
+            const newPwd = document.getElementById('newPassword');
+            const confirmPwd = document.getElementById('confirmPassword');
+            const strengthBar = document.getElementById('pwdStrengthBar');
+            const strengthText = document.getElementById('pwdStrengthText');
+            const clientError = document.getElementById('clientError');
+            const form = document.getElementById('changePasswordForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            const validRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
+
+            function evaluateStrength(pwd) {
+                let score = 0;
+                if (!pwd) return score;
+                if (pwd.length >= 6) score++;
+                if (/[A-Za-z]/.test(pwd)) score++;
+                if (/\d/.test(pwd)) score++;
+                if (/[^A-Za-z0-9]/.test(pwd)) score++;
+                return score;
+            }
+
+            function updateStrengthUI() {
+                const s = evaluateStrength(newPwd.value);
+                const percent = (s / 4) * 100;
+                strengthBar.style.width = percent + '%';
+
+                if (!newPwd.value) {
+                    strengthText.textContent = '';
+                    const note = document.getElementById('pwdValidNote');
+                    if (note) note.remove();
+                    return;
+                }
+
+                if (s <= 1) {
+                    strengthText.textContent = 'Weak password';
+                    strengthText.className = 'text-danger small-note';
+                } else if (s === 2) {
+                    strengthText.textContent = 'Fair password';
+                    strengthText.className = 'text-warning small-note';
+                } else if (s === 3) {
+                    strengthText.textContent = 'Good password';
+                    strengthText.className = 'text-info small-note';
+                } else {
+                    strengthText.textContent = 'Strong password';
+                    strengthText.className = 'text-success small-note';
+                }
+
+                const validNote = document.getElementById('pwdValidNote');
+                if (validRegex.test(newPwd.value)) {
+                    if (!validNote) {
+                        const note = document.createElement('div');
+                        note.id = 'pwdValidNote';
+                        note.className = 'text-success small-note';
+                        note.innerHTML = '<i class="fa-solid fa-check"></i> Password meets all conditions';
+                        strengthText.insertAdjacentElement('afterend', note);
+                    }
+                } else {
+                    if (validNote) validNote.remove();
+                }
+            }
+
+            newPwd.addEventListener('input', () => {
+                updateStrengthUI();
+                clientError.textContent = '';
+            });
+
+            confirmPwd.addEventListener('input', () => {
+                clientError.textContent = '';
+            });
+
+            form.addEventListener('submit', e => {
+                clientError.textContent = '';
+                const n = newPwd.value.trim();
+                const c = confirmPwd.value.trim();
+                let errors = [];
+
+                if (!validRegex.test(n))
+                    errors.push("Password must be at least 6 characters and include letters, numbers, and a special character.");
+                if (n !== c)
+                    errors.push("New password and confirm password do not match.");
+
+                if (errors.length) {
+                    e.preventDefault();
+                    clientError.innerHTML = errors.map(err => `<div>${err}</div>`).join('');
+                    newPwd.focus();
+                    return false;
+                }
+
+                submitBtn.disabled = true;
+            });
+
+            // init
+            updateStrengthUI();
+        })();
+    </script>
 </div>
 

@@ -28,4 +28,7 @@ public class VitalSigns {
     private Integer heartRate;
     private Double temperature;
     private LocalDateTime recordedAt;
+    @OneToOne
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor;
 }
