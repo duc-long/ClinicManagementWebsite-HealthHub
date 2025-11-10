@@ -71,5 +71,7 @@ public interface LabRequestRepository extends JpaRepository<LabRequest, Integer>
         ORDER BY l.requestedAt DESC
     """)
     Page<LabRequest> findByStatus(@Param("status") int status, Pageable pageable);
+
+    List<LabRequest> findAllByOrderByRequestedAtDesc();
     
 }

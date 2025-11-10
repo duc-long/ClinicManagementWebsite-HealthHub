@@ -67,7 +67,8 @@ public class LabResultService {
 
 
     public List<LabResultDTO> findLabResultList() {
-        return labResultRepository.findAll().stream()
+        return labResultRepository.findAllByLabRequestStatus(List.of(4,2))
+        .stream()
                 .map(LabResultDTO::fromEntity)
                 .toList();
     }
@@ -128,9 +129,8 @@ public class LabResultService {
         if (relativePath == null || relativePath.isBlank()) return;
 
         try {
-            String cleanPath = relativePath.replaceFirst("^/+", ""); // bỏ dấu / đầu nếu có
-            Path absolutePath = Paths.get(cleanPath);
-            Files.deleteIfExists(absolutePath);
+            Path filePath = Paths.get("uploads", "labs", relativePath);
+            Files.deleteIfExists(filePath);
         } catch (IOException e) {
             System.err.println("⚠️ Failed to delete file: " + relativePath);
         }
@@ -166,7 +166,7 @@ public class LabResultService {
             for (Integer imgId : deleteImageIds) {
                 labImageRepository.findById(imgId).ifPresent(img -> {
                     deleteFileIfExists(img.getFilePath());
-                    labImageRepository.delete(img);
+                    labImageRepository.deleteLabImageByFilePath(img.getFilePath());
                 });
             }
         }

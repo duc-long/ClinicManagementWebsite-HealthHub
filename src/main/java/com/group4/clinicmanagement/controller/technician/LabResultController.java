@@ -58,12 +58,17 @@ public class LabResultController {
     public String testList(
             @RequestParam(required = false) String resultId,
             @RequestParam(required = false) String testName,
-            @RequestParam(defaultValue = "false") boolean isAll,
+            @RequestParam(required = false) String viewAll,
             Model model) {
 
         try {
             resultId = (resultId != null && !resultId.isBlank()) ? resultId.trim() : null;
             testName = (testName != null && !testName.isBlank()) ? testName.trim() : null;
+            boolean isAll = "true".equalsIgnoreCase(viewAll);
+
+            if (viewAll != null && !"true".equalsIgnoreCase(viewAll) && !"false".equalsIgnoreCase(viewAll)) {
+                isAll = true;
+            }
 
             List<LabResultDTO> resultDTOS;
 
@@ -81,7 +86,7 @@ public class LabResultController {
 
             model.addAttribute("resultId", resultId);
             model.addAttribute("testName", testName);
-            model.addAttribute("isAll", isAll);
+            model.addAttribute("viewAll", isAll);
             model.addAttribute("date", now);
 
             return "technician/result-list";
@@ -117,7 +122,7 @@ public class LabResultController {
     }
 
     @GetMapping(value = "/result-edit/{id}")
-    public String updateForm(@PathVariable(name = "id") String id, Model model,  RedirectAttributes redirectAttributes) {
+    public String updateForm(@PathVariable(name = "id") String id, Model model, RedirectAttributes redirectAttributes) {
 
         try {
             int resultId = Integer.parseInt(id);
@@ -143,8 +148,7 @@ public class LabResultController {
     @PostMapping("/result-edit/{id}")
     public String updateResult(
             @PathVariable int id,
-            @Valid @ModelAttribute("result") LabResultDTO dto,
-            BindingResult bindingResult,
+            @ModelAttribute("result") LabResultDTO dto,
             @RequestParam(value = "xrayFiles", required = false) List<MultipartFile> xrayFiles,
             @RequestParam(value = "deleteImageIds", required = false) List<Integer> deleteImageIds,
             @RequestParam(value = "imageIds", required = false) List<Integer> imageIds,
@@ -154,11 +158,6 @@ public class LabResultController {
             Model model) throws IOException {
 
         try {
-            if (bindingResult.hasErrors()) {
-                model.addAttribute("result", dto);
-                return "technician/result-edit";
-            }
-
             dto.setResultId(id);
             labResultService.updateResultWithImages(dto, xrayFiles, deleteImageIds, imageIds, imageDescriptions, newDescriptions);
             redirectAttributes.addFlashAttribute("successMessage", "Result updated successfully!");
@@ -174,7 +173,7 @@ public class LabResultController {
     }
 
     @GetMapping(value = "/result-confirm/{id}")
-    public String confirmForm(@PathVariable(name = "id") String id, Model model,RedirectAttributes redirectAttributes) {
+    public String confirmForm(@PathVariable(name = "id") String id, Model model, RedirectAttributes redirectAttributes) {
         try {
             int resultId = Integer.parseInt(id);
             LabResultDTO result = labResultService.findById(resultId);
@@ -197,18 +196,28 @@ public class LabResultController {
     }
 
     @PostMapping(value = "/result-confirm/{id}")
-    public String confirm(@PathVariable int id,
+    public String confirm(@PathVariable String id,
                           @Valid @ModelAttribute("result") LabResultDTO dto,
                           BindingResult bindingResult,
                           RedirectAttributes redirectAttributes,
                           Model model) {
         try {
-            if (bindingResult.hasErrors()) {
-                model.addAttribute("result", dto);
-                return "technician/result-confirm";
+            int resultId = Integer.parseInt(id);
+            LabResultDTO result = labResultService.findById(resultId);
+
+            if (result.getResultText() == null || result.getResultText().isEmpty()) {
+
+                redirectAttributes.addFlashAttribute("errorMessage", "Description test must not be empty when confirming result");
+                return "redirect:/technician/result-edit/" + id;
+
+            } else if (result.getTestName().equalsIgnoreCase("X-ray") &&
+                    (result.getImages() == null || result.getImages().isEmpty())) {
+
+                redirectAttributes.addFlashAttribute("errorMessage", "Test images must not be empty when confirming result");
+                return "redirect:/technician/result-edit/" + id;
             }
 
-            labResultService.confirmResult(id);
+            labResultService.confirmResult(resultId);
             redirectAttributes.addFlashAttribute("successMessage", "Result confirmed successfully!");
             return "redirect:/technician/result-list";
         } catch (NumberFormatException e) {
@@ -232,9 +241,9 @@ public class LabResultController {
                 model.addAttribute("mess", "Result not found!!!");
                 return "technician/result-delete";
             }
-            if (result.getLabRequestStatus().equals(LabRequestStatus.COMPLETED.name())) {
+            if (result.getLabRequestStatus().equalsIgnoreCase(LabRequestStatus.COMPLETED.name())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Result has been completed!");
-                return "redirect:technician/result-list";
+                return "redirect:/technician/result-list";
             }
 
             model.addAttribute("result", result);

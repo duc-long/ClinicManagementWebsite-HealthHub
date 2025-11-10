@@ -29,6 +29,7 @@
             border-radius: .5rem;
             padding: .5rem .75rem;
         }
+
         .sidebar .nav-link.active,
         .sidebar .nav-link:hover {
             background: #e9f2ff;
@@ -59,9 +60,11 @@
         <section class="col-12 col-lg-9">
             <div class="d-flex align-items-center mb-4">
                 <h1 class="h3 mb-0 me-3"><i class="fa-solid fa-vials text-primary me-2"></i>Lab Request List</h1>
-                <span class="badge bg-primary bg-opacity-10 text-white fw-normal">DAY: <span th:text="${date}"></span></span>
+                <span class="badge bg-primary bg-opacity-10 text-white fw-normal">DAY:
+                    <span th:if="${viewAll != null and !viewAll}" th:text="${date}"></span>
+                </span>
             </div>
-                <!-- ========== FILTER FORM ========== -->
+            <!-- ========== FILTER FORM ========== -->
             <div class="card shadow-sm border-0 mb-3">
                 <div class="card-body">
                     <form class="row g-2" th:action="@{/technician/request-list}" method="get">
@@ -110,9 +113,9 @@
                             </select>
                         </div>
                         <div class="form-check me-3">
-                            <input class="form-check-input" type="checkbox" name="isAll" value="true"
-                                   th:checked="${isAll}">
-                            <label class="form-check-label">Show All</label>
+                            <input class="form-check-input" type="checkbox" name="viewAll" value="true"
+                                   th:checked="${viewAll}">
+                            <label class="form-check-label">View All Requests</label>
                         </div>
 
                         <!-- Buttons -->
@@ -157,7 +160,9 @@
                                 </td>
                                 <td th:text="*{#temporals.format(requestedAt, 'dd-MM-yyyy HH:mm')}"></td>
                                 <td>
-                                    <a class="btn btn-sm btn-outline-primary me-1" th:href="@{/technician/request/{id}(id=*{labRequestId})}"><i class="fa-solid fa-eye"></i></a>
+                                    <a class="btn btn-sm btn-outline-primary me-1"
+                                       th:href="@{/technician/request/{id}(id=*{labRequestId})}"><i
+                                            class="fa-solid fa-eye"></i></a>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(labRequests)}">

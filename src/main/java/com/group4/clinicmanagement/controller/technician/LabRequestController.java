@@ -39,7 +39,7 @@ public class LabRequestController {
             @RequestParam(required = false) String doctorName,
             @RequestParam(required = false) String testName,
             @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "false") boolean isAll,
+            @RequestParam(required = false) String viewAll,
             Model model, RedirectAttributes redirectAttributes) {
 
         try {
@@ -47,6 +47,11 @@ public class LabRequestController {
             doctorName = (doctorName != null && !doctorName.isBlank()) ? doctorName.trim() : null;
             testName = (testName != null && !testName.isBlank()) ? testName.trim() : null;
             status = (status != null && !status.isBlank()) ? status.trim() : null;
+            boolean isAll = "true".equalsIgnoreCase(viewAll);
+
+            if (viewAll != null && !"true".equalsIgnoreCase(viewAll) && !"false".equalsIgnoreCase(viewAll)) {
+                isAll= true;
+            }
 
             List<LabRequestDTO> labRequestDTOs;
 
@@ -71,7 +76,7 @@ public class LabRequestController {
             model.addAttribute("doctorName", doctorName);
             model.addAttribute("testName", testName);
             model.addAttribute("status", status);
-            model.addAttribute("isAll", isAll);
+            model.addAttribute("viewAll", isAll);
             model.addAttribute("date", now);
 
 

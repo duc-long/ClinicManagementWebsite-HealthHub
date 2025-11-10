@@ -30,7 +30,7 @@ public class LabRequestService {
     }
 
     public List<LabRequest> getAllLabRequests() {
-        return this.labRequestRepository.findAll();
+        return this.labRequestRepository.findAllByOrderByRequestedAtDesc();
     }
 
     public LabRequest findLabRequestById(int id) {
@@ -52,7 +52,7 @@ public class LabRequestService {
     }
 
     public List<LabRequestDTO> getAllLabRequestDTO() {
-        List<LabRequest>  labRequests = this.labRequestRepository.findAll();
+        List<LabRequest>  labRequests = this.labRequestRepository.findAllByOrderByRequestedAtDesc();
         List<LabRequestDTO> dtoList = new ArrayList<>();
 
         for (LabRequest entity : labRequests) {
