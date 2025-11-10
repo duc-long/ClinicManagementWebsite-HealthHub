@@ -59,6 +59,7 @@
 
     <div class="form-section">
         <form th:action="@{/doctor/records/update}" th:object="${record}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <!-- Hidden fields -->
             <input type="hidden" name="recordId" th:value="*{recordId}">
 
@@ -73,7 +74,7 @@
             <!-- Ghi chú -->
             <div class="mb-3">
                 <label for="notes" class="form-label">Note</label>
-                <textarea id="notes" class="form-control" rows="4"
+                <textarea id="notes" class="form-control" rows="4" required
                           th:field="*{notes}" placeholder="Additional notes about condition, medication, test results..."></textarea>
                 <div class="text-danger small" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></div>
             </div>

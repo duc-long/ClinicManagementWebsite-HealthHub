@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Doctor List - HealHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/assets/css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/popup-error.css">
     <div th:replace="~{fragment/fragment.html :: css}"></div>
     <style>
         body {
@@ -32,16 +38,9 @@
             font-size: 0.8rem;
         }
     </style>
-
-
-    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
 </head>
 <body>
-
-
-<div >
     <div th:replace="~{fragment/fragment.html :: navBar}"></div>
-</div>
 
 
 
@@ -98,6 +97,6 @@
     }
 </script>
 <footer th:insert="~{fragment/fragment :: footer}"></footer>
-<script th:src="@{assets/js/bootstrap.bundle.min.js}"></script>
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

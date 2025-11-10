@@ -61,7 +61,7 @@
                style="width: 380px; color: #009bab; border-color: #009bab">
                 <i class="fa-solid fa-user-doctor me-2"></i>Find A Doctors
             </a>
-            <a th:href="@{/appointment/make-appointment}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5"
+            <a th:href="@{/patient/appointment/make-appointment}" class="btn btn-outline-primary btn-lg px-5 py-3 fs-5"
                style="width: 380px; color: #009bab; border-color: #009bab">
                 <i class="fa-solid fa-calendar-check me-2"></i>Book Appointment
             </a>
@@ -149,8 +149,6 @@
 
     </div>
 </div>
-
-
 <!-- FOOTER -->
 <footer th:insert="~{fragment/fragment :: footer}"></footer>
 <!-- Bootstrap JS -->
@@ -184,6 +182,25 @@
             }
         });
     }
+</script>
+
+<div id="flash-message-error" th:data-msg="${errorMessage}" style="display:none;"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const errorMsg = document.getElementById('flash-message-error').dataset.msg;
+    if (errorMsg) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: errorMsg,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#dc3545',
+            customClass: {
+                popup: 'swal2-border-red'
+            }
+        });
+    }
+    /*]]>*/
 </script>
 
 <div th:replace="~{fragment/popup :: popup}"></div>

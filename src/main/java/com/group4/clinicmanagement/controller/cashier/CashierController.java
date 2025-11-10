@@ -13,6 +13,7 @@ import com.group4.clinicmanagement.enums.LabRequestStatus;
 import com.group4.clinicmanagement.repository.UserRepository;
 import com.group4.clinicmanagement.service.*;
 import com.group4.clinicmanagement.service.CashierService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -267,20 +268,77 @@ public class CashierController {
         }
     }
 
-
-    @PostMapping("/bill/{id}/export")
-    public String exportBill(@PathVariable("id") Integer billId, RedirectAttributes redirectAttributes) {
+    @PostMapping("/lab-request/{id}/create-bill")
+    public String createBillLabRequest(@PathVariable("id") int labRequestId,
+                                       Principal principal,
+                                       RedirectAttributes redirectAttributes) {
         try {
-            Bill bill = billService.exportBill(billId);
-            redirectAttributes.addFlashAttribute("message", "Bill exported successfully!");
+            LabRequest labRequest = labRequestService.getById(labRequestId);
+            if (labRequest == null) {
+                redirectAttributes.addFlashAttribute("message", "Lab Request not found.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/cashier/lab-request-list?status=REQUESTED";
+            }
+
+            if (billService.existsByLabRequestId(labRequestId)) {
+                redirectAttributes.addFlashAttribute("message", "Bill already exists for this lab request.");
+                redirectAttributes.addFlashAttribute("messageType", "warning");
+                return "redirect:/cashier/lab-request-list?status=REQUESTED";
+            }
+
+            // Kiểm tra trạng thái phải là REQUESTED
+            if (labRequest.getStatus() != LabRequestStatus.REQUESTED) {
+                redirectAttributes.addFlashAttribute("message", "Only REQUESTED lab requests can be billed.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/cashier/lab-request-list?status=REQUESTED";
+            }
+
+            // Chỉ cashier mới được tạo bill
+            User cashier = userRepository.findByUsernameAndRoleId(principal.getName(), 4);
+            if (cashier == null) {
+                redirectAttributes.addFlashAttribute("message", "Only cashier accounts can perform this action.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/cashier/lab-request-list?status=REQUESTED";
+            }
+
+            // Tạo bill mới
+            Bill newBill = billService.createBill(null, labRequestId, cashier);
+
+            redirectAttributes.addFlashAttribute("message", "Lab Request bill created successfully!");
             redirectAttributes.addFlashAttribute("messageType", "success");
-            return "redirect:/cashier/bill/" + bill.getBillId();
+            return "redirect:/cashier/bill/" + newBill.getBillId();
+
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            redirectAttributes.addFlashAttribute("message", "Error while creating bill: " + e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");
-            return "redirect:/cashier/appointment-list";
+            return "redirect:/cashier/lab-request-list?status=REQUESTED";
         }
     }
+
+
+
+    @PostMapping("/bill/{id}/export")
+    public String exportBill(@PathVariable("id") Integer billId,
+                           RedirectAttributes redirectAttributes,
+                           HttpServletResponse response) {
+        try {
+            Bill bill = billService.exportBill(billId);
+            response.setContentType("application/pdf");
+            String headerValue = "attachment; filename=bill_" + bill.getBillId() + ".pdf";
+            response.setHeader("Content-Disposition", headerValue);
+
+            billService.exportPdfToResponse(bill, response.getOutputStream());
+            return "redirect:/cashier/payment-list";
+        } catch (Exception e) {
+            try {
+                response.setContentType("text/plain");
+                response.getWriter().write("Error exporting bill: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            } catch (Exception ignored) {}
+        }
+        return "redirect:/cashier/payment-list";
+    }
+
 
     @GetMapping("/payment-list")
     public String listPayments(

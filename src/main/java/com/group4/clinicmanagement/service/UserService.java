@@ -79,6 +79,15 @@ public class UserService implements UserDetailsService {
         return newPassword.matches(regex);
     }
 
+    public boolean isMailNoDuplicate(String mail, Integer id) {
+        User user = userRepository.getUsersByUserId(id).orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.getEmail().equals(mail)) {
+            return false;
+        } else {
+            return userRepository.findUserByEmail(mail).isPresent();
+        }
+    }
+
     @Transactional
     public User saveUser(User user) {
         return userRepository.save(user);

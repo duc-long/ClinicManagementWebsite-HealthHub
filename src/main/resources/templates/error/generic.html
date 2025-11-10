@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Error - Something Went Wrong</title>
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+</head>
+<body class="text-center mt-5">
+<h1 class="display-4 text-danger">Oops!</h1>
+<p class="lead" th:text="${message}">An unexpected error occurred. Please try again later.</p>
+
+<button onclick="goBack()" class="btn btn-dark mt-3">
+    <i class="fa-solid fa-arrow-left"></i> Go Back
+</button>
+
+<script>
+    function goBack() {
+        window.history.back();
+        setTimeout(() => location.reload(), 200);
+    }
+</script>
+</body>
+</html>

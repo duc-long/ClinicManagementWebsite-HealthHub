@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/profile.css">
     <link rel="stylesheet" href="/assets/css/side-bar-patient.css">
+    <link rel="stylesheet" href="/assets/css/popup-error.css">
     <div th:replace="~{fragment/fragment.html :: css}"></div>
 </head>
 
@@ -48,5 +49,6 @@
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/assets/js/appointment.js}"></script>
 <script th:src="@{/assets/js/toast.js}"></script>
+<div th:replace="~{fragment/popup :: popup}"></div>
 </body>
 </html>

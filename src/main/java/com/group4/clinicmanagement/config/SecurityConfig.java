@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.config;
 
 import com.group4.clinicmanagement.service.CustomUserDetailsService;
+import com.group4.clinicmanagement.util.RoleMismatchLogoutFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -17,13 +19,13 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final CustomLoginSuccessHandler loginSuccessHandler;
     private final CustomLoginFailureHandler customLoginFailureHandler;
+    private final RoleMismatchLogoutFilter roleMismatchLogoutFilter;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService,
-                          CustomLoginSuccessHandler loginSuccessHandler,
-                          CustomLoginFailureHandler customLoginFailureHandler) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, CustomLoginSuccessHandler loginSuccessHandler, CustomLoginFailureHandler customLoginFailureHandler, RoleMismatchLogoutFilter roleMismatchLogoutFilter) {
         this.userDetailsService = userDetailsService;
         this.loginSuccessHandler = loginSuccessHandler;
         this.customLoginFailureHandler = customLoginFailureHandler;
+        this.roleMismatchLogoutFilter = roleMismatchLogoutFilter;
     }
 
     // ====================== COMMON BEANS ======================
@@ -46,9 +48,10 @@ public class SecurityConfig {
     public SecurityFilterChain guestAndPatientChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/patient/login", "/patient/**", "/home/**", "/register/**", "/assets/**", "/images/**", "/feedback/**", "/auth/**")
+                .addFilterBefore(roleMismatchLogoutFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/home/**", "/register/**", "/assets/**", "/images/**", "/auth/**").permitAll()
-                        .requestMatchers("/patient/login").permitAll()
+                        .requestMatchers("/patient/login", "/login").permitAll()
                         .requestMatchers("/patient/**", "/feedback/**").hasAuthority("ROLE_PATIENT")
                         .anyRequest().authenticated()
                 )
@@ -62,6 +65,9 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/patient/logout")
                         .logoutSuccessUrl("/home?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .clearAuthentication(true)
                         .permitAll()
                 )
                 .csrf(Customizer.withDefaults());
@@ -74,6 +80,7 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain doctorChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/doctor/login","/doctor/**")
+                .addFilterBefore(roleMismatchLogoutFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/doctor/login", "/assets/**", "/images/**", "/css/**","/js/**").permitAll()
                         .anyRequest().hasAuthority("ROLE_DOCTOR"))
@@ -99,6 +106,7 @@ public class SecurityConfig {
     @Order(3)
     public SecurityFilterChain adminChain(HttpSecurity http) throws Exception {
         http.securityMatcher( "/admin/login","/admin/**")
+                .addFilterBefore(roleMismatchLogoutFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/login", "/assets/**").permitAll()
                         .anyRequest().hasAuthority("ROLE_ADMIN"))
@@ -121,6 +129,7 @@ public class SecurityConfig {
     @Order(4)
     public SecurityFilterChain receptionistChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/receptionist/login","/receptionist/**")
+                .addFilterBefore(roleMismatchLogoutFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/receptionist/login", "/assets/**").permitAll()
                         .anyRequest().hasAuthority("ROLE_RECEPTIONIST"))
@@ -143,6 +152,7 @@ public class SecurityConfig {
     @Order(5)
     public SecurityFilterChain cashierChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/cashier/login","/cashier/**")
+                .addFilterBefore(roleMismatchLogoutFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/cashier/login", "/assets/**").permitAll()
                         .anyRequest().hasAuthority("ROLE_CASHIER"))
@@ -165,6 +175,7 @@ public class SecurityConfig {
     @Order(6)
     public SecurityFilterChain technicianChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/technician/login","/technician/**")
+                .addFilterBefore(roleMismatchLogoutFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/technician/login", "/assets/**").permitAll()
                         .anyRequest().hasAuthority("ROLE_TECHNICIAN"))

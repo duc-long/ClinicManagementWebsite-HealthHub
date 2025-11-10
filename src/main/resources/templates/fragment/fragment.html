@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <!-- ✅ CSS -->
 <div th:fragment="css">
@@ -167,12 +167,12 @@
                     </li>
 
                     <!-- Logged In -->
-                    <div class="dropdown" sec:authorize="isAuthenticated()">
+                    <div class="dropdown" style="z-index: 9999" sec:authorize="isAuthenticated()">
                         <button class="user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">
                             Hi, <span th:text="${#authentication.principal.fullName}">User</span>
                         </button>
-                        <ul class="dropdown-menu shadow-sm border-0 mt-2">
+                        <ul class="dropdown-menu shadow-sm border-0 mt-2" style="z-index: 9999;">
                             <li><a class="dropdown-item" th:href="@{/patient/profile}"><i
                                     class="bi bi-person-circle me-2"></i>Profile</a></li>
                             <li>
@@ -180,7 +180,6 @@
                                     <button class="dropdown-item text-danger"><i
                                             class="bi bi-box-arrow-right me-2"></i>Logout</button>
                                 </form>
-
                             </li>
                         </ul>
                     </div>
@@ -217,14 +216,6 @@
                     <li><a th:href="@{/patient/appointment/make-appointment}">Appointments</a></li>
                     <li><a th:href="@{/home}">Home</a></li>
                 </ul>
-            </div>
-            <div class="col-md-4 text-md-end text-center">
-                <h6 class="fw-bold">Follow Us</h6>
-                <div>
-                    <a href="#" class="me-3"><i class="fa fa-facebook"></i></a>
-                    <a href="#" class="me-3"><i class="fa fa-twitter"></i></a>
-                    <a href="#"><i class="fa fa-instagram"></i></a>
-                </div>
             </div>
         </div>
         <hr class="mt-4" style="border-color: rgba(255,255,255,0.3);">

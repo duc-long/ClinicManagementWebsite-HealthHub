@@ -62,9 +62,10 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link logout" th:href="@{/patient/logout}">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
+            <form  th:action="@{/patient/logout}" method="post">
+                <button class="dropdown-item text-danger"><i
+                        class="bi bi-box-arrow-right me-2"></i>Logout</button>
+            </form>
         </li>
     </ul>
 </div>

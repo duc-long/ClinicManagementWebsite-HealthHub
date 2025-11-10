@@ -46,6 +46,10 @@ public class DoctorDTO {
 
 
     // Doctor-specific info
+    @Pattern(
+            regexp = "^(\\d{6}/BYT-CCHN|\\d{6}/SYT-[A-Z]{2,3}|GPHN-\\d{4}-\\d{5}/BYT)$",
+            message = "License must match one of the Exs: 000000/BYT-CCHN, 000000/SYT-HCM"
+    )
     @NotBlank(message = "License number is required")
     @Size(max = 50)
     private String licenseNo;
