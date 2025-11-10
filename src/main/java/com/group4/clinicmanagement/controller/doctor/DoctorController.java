@@ -678,8 +678,14 @@ public class DoctorController {
 
     // method to show vital sign form for update
     @GetMapping("/vitals/update/{id}")
-    public String vitalSignUpdatePage(Model model, @PathVariable(name = "id") int vitalSignId,
+    public String vitalSignUpdatePage(Model model, @PathVariable(name = "id") Integer vitalSignId,
                                       RedirectAttributes redirectAttributes) {
+        if (vitalSignId == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Record not found!");
+            return "redirect:/doctor/home";
+        }
+
         VitalSignsDTO vitalSignsDTO = vitalSignsService.findVitalSignsDTOById(vitalSignId);
 
         if (vitalSignsDTO == null) {

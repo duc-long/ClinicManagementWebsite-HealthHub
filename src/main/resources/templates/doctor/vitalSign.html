@@ -43,22 +43,22 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Height (cm)</label>
-                    <input type="number" step="0.2" min="0.1" required th:field="*{heightCm}" class="form-control"/>
+                    <input type="number" step="0.1" min="0.1" required th:field="*{heightCm}" class="form-control"/>
                     <div class="text-error" th:errors="*{heightCm}"></div>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Weight (kg)</label>
-                    <input type="number" step="0.2" min="0.1" required th:field="*{weightKg}" class="form-control"/>
+                    <input type="number" step="0.1" min="0.1" required th:field="*{weightKg}" class="form-control"/>
                     <div class="text-error" th:errors="*{weightKg}"></div>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Blood Pressure (mmHg)</label>
                     <div class="input-group">
-                        <input type="number" step="0.2" min="1" required th:field="*{systolic}" class="form-control text-center"/>
+                        <input type="number" min="1" required th:field="*{systolic}" class="form-control text-center"/>
                         <span class="input-group-text">/</span>
-                        <input type="number" step="0.2" min="1" required th:field="*{diastolic}" class="form-control text-center"/>
+                        <input type="number" min="1" required th:field="*{diastolic}" class="form-control text-center"/>
                     </div>
                     <div class="text-error" th:if="${#fields.hasErrors('systolic') or #fields.hasErrors('diastolic')}">
                         Blood pressure values must be greater than 0
@@ -67,13 +67,13 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Heart Rate (bpm)</label>
-                    <input type="number" step="0.2" min="1" required th:field="*{heartRate}" class="form-control"/>
+                    <input type="number" min="1" required th:field="*{heartRate}" class="form-control"/>
                     <div class="text-error" th:errors="*{heartRate}"></div>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Temperature (°C)</label>
-                    <input type="number" step="0.2" min="0.1" required th:field="*{temperature}" class="form-control"/>
+                    <input type="number" step="0.1" min="0.1" required th:field="*{temperature}" class="form-control"/>
                     <div class="text-error" th:errors="*{temperature}"></div>
                 </div>
             </div>
