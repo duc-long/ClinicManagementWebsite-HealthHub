@@ -21,10 +21,6 @@
             <div class="d-flex gap-2 flex-wrap mt-2">
                 <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View Detail</a>
-                <a th:href="@{/feedback/add/{id}(id=${a.appointmentId})}"
-                   class="btn btn-sm btn-outline-success"><i class="bi bi-chat-heart"></i> Feedback</a>
-                <a th:href="@{/patient/appointment/rebook/{id}(id=${a.appointmentId})}"
-                   class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-repeat"></i> Rebook</a>
             </div>
         </div>
     </div>
@@ -105,8 +101,6 @@
             <div class="d-flex gap-2 flex-wrap">
                 <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
                    class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View Detail</a>
-                <a th:href="@{/patient/appointment/rebook/{id}(id=${a.appointmentId})}"
-                   class="btn btn-sm btn-outline-success"><i class="bi bi-calendar-plus"></i> Rebook</a>
             </div>
         </div>
     </div>

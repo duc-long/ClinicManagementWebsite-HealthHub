@@ -268,9 +268,57 @@ public class CashierController {
         }
     }
 
+    @PostMapping("/lab-request/{id}/create-bill")
+    public String createBillLabRequest(@PathVariable("id") int labRequestId,
+                                       Principal principal,
+                                       RedirectAttributes redirectAttributes) {
+        try {
+            LabRequest labRequest = labRequestService.getById(labRequestId);
+            if (labRequest == null) {
+                redirectAttributes.addFlashAttribute("message", "Lab Request not found.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/cashier/lab-request-list?status=REQUESTED";
+            }
+
+            if (billService.existsByLabRequestId(labRequestId)) {
+                redirectAttributes.addFlashAttribute("message", "Bill already exists for this lab request.");
+                redirectAttributes.addFlashAttribute("messageType", "warning");
+                return "redirect:/cashier/lab-request-list?status=REQUESTED";
+            }
+
+            // Kiểm tra trạng thái phải là REQUESTED
+            if (labRequest.getStatus() != LabRequestStatus.REQUESTED) {
+                redirectAttributes.addFlashAttribute("message", "Only REQUESTED lab requests can be billed.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/cashier/lab-request-list?status=REQUESTED";
+            }
+
+            // Chỉ cashier mới được tạo bill
+            User cashier = userRepository.findByUsernameAndRoleId(principal.getName(), 4);
+            if (cashier == null) {
+                redirectAttributes.addFlashAttribute("message", "Only cashier accounts can perform this action.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/cashier/lab-request-list?status=REQUESTED";
+            }
+
+            // Tạo bill mới
+            Bill newBill = billService.createBill(null, labRequestId, cashier);
+
+            redirectAttributes.addFlashAttribute("message", "Lab Request bill created successfully!");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            return "redirect:/cashier/bill/" + newBill.getBillId();
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Error while creating bill: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/cashier/lab-request-list?status=REQUESTED";
+        }
+    }
+
+
 
     @PostMapping("/bill/{id}/export")
-    public void exportBill(@PathVariable("id") Integer billId,
+    public String exportBill(@PathVariable("id") Integer billId,
                            RedirectAttributes redirectAttributes,
                            HttpServletResponse response) {
         try {
@@ -280,15 +328,15 @@ public class CashierController {
             response.setHeader("Content-Disposition", headerValue);
 
             billService.exportPdfToResponse(bill, response.getOutputStream());
-
+            return "redirect:/cashier/payment-list";
         } catch (Exception e) {
             try {
-                // Trả lỗi về client
                 response.setContentType("text/plain");
                 response.getWriter().write("Error exporting bill: " + e.getMessage());
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } catch (Exception ignored) {}
         }
+        return "redirect:/cashier/payment-list";
     }
 
 
