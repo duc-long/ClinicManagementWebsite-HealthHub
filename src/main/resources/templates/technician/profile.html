@@ -104,15 +104,34 @@
                     <div class="button-row">
                         <a th:href="@{/technician/edit-profile}" class="btn-label change-profile-label">Change Profile</a>
                         <a th:href="@{/technician/change-password}" class="btn-label change-password-label">Change Password</a>
-                        <form id="deleteForm" th:action="@{/technician/delete-account}" method="post" >
                     </div>
                 </div>
             </div>
         </section>
     </div>
 </main>
+<div id="flash-message-error" th:data-msg="${errorMessage}" style="display:none;"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const errorMsg = document.getElementById('flash-message-error').dataset.msg;
 
-    <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+
+    if (errorMsg) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: errorMsg,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#dc3545',
+            customClass: {
+                popup: 'swal2-border-red'
+            }
+        });
+    }
+    /*]]>*/
+</script>
+
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
 

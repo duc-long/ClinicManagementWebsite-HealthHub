@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,15 +72,26 @@ public class LabResultService {
                 .toList();
     }
 
-    public List<LabResultDTO> filterResults(String resultId, String testName, LocalDate date) {
-        return labResultRepository.filterResults(resultId, testName, date)
-                .stream().map(LabResultDTO::fromEntity).toList();
+    public List<LabResultDTO> filterResults(String resultId, String testName, boolean isAll) {
+        List<LabResultDTO> resultDTOSs = new ArrayList<>();
+        List<LabResult> labResults = labResultRepository.filterResults(resultId, testName);
+
+        if (isAll) {
+            return labResults.stream().map(LabResultDTO::fromEntity).toList();
+        } else {
+            for (LabResult labResult : labResults) {
+                if (LocalDate.now().isEqual(labResult.getCreatedAt().toLocalDate())) {
+                    resultDTOSs.add(LabResultDTO.fromEntity(labResult));
+                }
+            }
+            return resultDTOSs;
+        }
     }
 
     public LabResultDTO findById(Integer id) {
         LabResult result = labResultRepository.findById(id)
                 .orElse(null);
-        if (result == null){
+        if (result == null) {
             return null;
         }
         return LabResultDTO.fromEntity(result);

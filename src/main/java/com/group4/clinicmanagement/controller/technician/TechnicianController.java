@@ -9,8 +9,6 @@ import com.group4.clinicmanagement.security.CustomUserDetails;
 import com.group4.clinicmanagement.service.LabRequestService;
 import com.group4.clinicmanagement.service.LabResultService;
 import com.group4.clinicmanagement.service.TechnicianService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -45,63 +43,79 @@ public class TechnicianController {
         return "auth/technician/login";
     }
 
-    @GetMapping("/dashboard")
-    public String technicianHome(Model model) {
-        List<LabResultDTO> labResultDTOS = new ArrayList<>(labResultService.findLabResultList());
-        labResultDTOS.removeIf(r -> !"RUNNING".equals(r.getLabRequestStatus()));
-
-        List<LabRequestDTO> labRequestDTOS = new ArrayList<>(labRequestService.getAllLabRequestDTO());
-        labRequestDTOS.removeIf(r -> !(r.getStatus().equals(LabRequestStatus.REQUESTED)
-        || r.getStatus().equals(LabRequestStatus.RUNNING)));
-
-        model.addAttribute("labRequestDTOS", labRequestDTOS);
-        model.addAttribute("labResultDTOS", labResultDTOS);
-        return "technician/dashboard";
-    }
-
     @GetMapping("/profile")
-    public String viewProfile(Authentication authentication, Model model) {
-        CustomUserDetails customUser = (CustomUserDetails) authentication.getPrincipal();
-        User user = technicianService.findByUserId(customUser.getUserId());
+    public String viewProfile(Authentication authentication, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            CustomUserDetails customUser = (CustomUserDetails) authentication.getPrincipal();
+            User user = technicianService.findByUserId(customUser.getUserId());
 
-        TechnicianDTO technicianDTO = TechnicianDTO.fromEntity(user);
-        model.addAttribute("technicianDTO", technicianDTO);
+            TechnicianDTO technicianDTO = TechnicianDTO.fromEntity(user);
+            model.addAttribute("technicianDTO", technicianDTO);
 
-        return "technician/profile";
+            return "technician/profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/technician/profile";
+        }
+
     }
 
     @GetMapping("/edit-profile")
-    public String editProfile(Authentication authentication, Model model) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Integer userId = userDetails.getUserId();
+    public String editProfile(Authentication authentication, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            Integer userId = userDetails.getUserId();
 
-        User user = technicianService.findByUserId(userId);
-        TechnicianDTO technicianDTO = TechnicianDTO.fromEntity(user);
+            User user = technicianService.findByUserId(userId);
+            TechnicianDTO technicianDTO = TechnicianDTO.fromEntity(user);
 
-        model.addAttribute("technicianDTO", technicianDTO);
-        return "technician/edit-profile";
+            model.addAttribute("technicianDTO", technicianDTO);
+            return "technician/edit-profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/technician/profile";
+        }
+
     }
 
     @PostMapping("/edit-profile")
     public String editProfile(@Valid @ModelAttribute("technicianDTO") TechnicianDTO technicianDTO,
                               BindingResult bindingResult,
                               @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
-                              Authentication authentication) throws IOException {
-        if (bindingResult.hasErrors()) {
-            return "technician/edit-profile";
+                              Authentication authentication,
+                              RedirectAttributes redirectAttributes) throws IOException {
+        try {
+            if (bindingResult.hasErrors()) {
+                return "technician/edit-profile";
+            }
 
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            Integer userId = userDetails.getUserId();
+
+            technicianService.updateProfile(userId, technicianDTO, avatarFile);
+            return "redirect:/technician/profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/technician/profile";
         }
-
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Integer userId = userDetails.getUserId();
-
-        technicianService.updateProfile(userId, technicianDTO, avatarFile);
-        return "redirect:/technician/profile";
     }
 
     @GetMapping("/change-password")
-    public String changePasswordForm() {
-        return "technician/change-password";
+    public String changePasswordForm(RedirectAttributes redirectAttributes) {
+        try {
+            return "technician/change-password";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/technician/profile";
+        }
     }
 
     @PostMapping("/change-password")
@@ -109,20 +123,27 @@ public class TechnicianController {
                                  @RequestParam("newPassword") String newPassword,
                                  @RequestParam("confirmPassword") String confirmPassword,
                                  Authentication authentication,
-                                 Model model) {
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Integer userId = userDetails.getUserId();
+        try {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            Integer userId = userDetails.getUserId();
 
-        boolean success = technicianService.changePassword(userId, currentPassword, newPassword, confirmPassword);
+            boolean success = technicianService.changePassword(userId, currentPassword, newPassword, confirmPassword);
 
-        if (success) {
-            model.addAttribute("success", "Password changed successfully!");
-        } else {
-            model.addAttribute("error", "Failed to change password. Please check your inputs.");
+            if (success) {
+                model.addAttribute("success", "Password changed successfully!");
+            } else {
+                model.addAttribute("error", "Failed to change password. Please check your inputs.");
+            }
+
+            return "auth/technician/login";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/technician/profile";
         }
-
-        return "auth/technician/login";
     }
-
 }

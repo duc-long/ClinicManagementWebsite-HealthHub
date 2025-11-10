@@ -110,10 +110,14 @@
                 <!-- Logged In -->
                 <div class="dropdown" sec:authorize="isAuthenticated()">
                     <button class="user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Hi, <span th:text="${#authentication.principal.fullName}">User</span>
+                        Hi, <span th:text="${#authentication.name}">User</span>
                     </button>
                     <ul class="dropdown-menu shadow-sm border-0 mt-2">
-                        <li><a class="dropdown-item text-danger" th:href="@{/admin/logout}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                        <li>
+                            <form th:action="@{/admin/logout}" method="post">
+                                <button class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             </ul>
@@ -135,6 +139,8 @@
         </div>
 
         <form action="/admin/login" method="post">
+            <input type="hidden" th:name="${_csrf.getParameterName()}" th:value="${_csrf.getToken()}">
+
             <!-- Username -->
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>

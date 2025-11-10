@@ -40,72 +40,104 @@ public class LabResultController {
 
     @GetMapping("/create-test/{id}")
     public String createTest(@PathVariable("id") Integer labRequestId, Authentication authentication, Model model, RedirectAttributes redirectAttributes) {
-        CustomUserDetails userDetails = authentication.getPrincipal() == null ? null : (CustomUserDetails) authentication.getPrincipal();
-        int technicianId = userDetails.getUserId();
+        try {
+            CustomUserDetails userDetails = authentication.getPrincipal() == null ? null : (CustomUserDetails) authentication.getPrincipal();
+            int technicianId = userDetails.getUserId();
 
-        Integer resultId = labResultService.createResultForRequest(labRequestId, technicianId);
+            Integer resultId = labResultService.createResultForRequest(labRequestId, technicianId);
 
-        return "redirect:/technician/result/" + resultId;
+            return "redirect:/technician/result/" + resultId;
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Invalid request id");
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid request ID format.");
+            return "redirect:/technician/create-test";
+        }
     }
 
     @GetMapping("/result-list")
     public String testList(
             @RequestParam(required = false) String resultId,
             @RequestParam(required = false) String testName,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(defaultValue = "false") boolean isAll,
             Model model) {
 
-        resultId = (resultId != null && !resultId.isBlank()) ? resultId.trim() : null;
-        testName = (testName != null && !testName.isBlank()) ? testName.trim() : null;
+        try {
+            resultId = (resultId != null && !resultId.isBlank()) ? resultId.trim() : null;
+            testName = (testName != null && !testName.isBlank()) ? testName.trim() : null;
 
-        List<LabResultDTO> resultDTOS;
+            List<LabResultDTO> resultDTOS;
 
-        if (resultId == null && testName == null && date == null) {
-            resultDTOS = labResultService.findLabResultList();
-        } else {
-            resultDTOS = labResultService.filterResults(resultId, testName, date);
+            if (resultId == null && testName == null && isAll) {
+                resultDTOS = labResultService.findLabResultList();
+            } else {
+                resultDTOS = labResultService.filterResults(resultId, testName, isAll);
+            }
+
+            List<LabTestCatalog> labTestCatalogs = labTestCatalogService.getAll();
+            LocalDate now = LocalDate.now();
+
+            model.addAttribute("labResults", resultDTOS);
+            model.addAttribute("labTestCatalogs", labTestCatalogs);
+
+            model.addAttribute("resultId", resultId);
+            model.addAttribute("testName", testName);
+            model.addAttribute("isAll", isAll);
+            model.addAttribute("date", now);
+
+            return "technician/result-list";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "technician/result-list";
         }
-
-        List<LabTestCatalog> labTestCatalogs = labTestCatalogService.getAll();
-
-        model.addAttribute("labResults", resultDTOS);
-        model.addAttribute("labTestCatalogs", labTestCatalogs);
-
-        model.addAttribute("resultId", resultId);
-        model.addAttribute("testName", testName);
-        model.addAttribute("date", date);
-
-        return "technician/result-list";
     }
 
     @GetMapping(value = "/result/{id}")
-    public String resultDetail(@PathVariable(name = "id") int id, Model model) {
+    public String resultDetail(@PathVariable(name = "id") String id,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
 
-        LabResultDTO result = labResultService.findById(id);
+        try {
+            int resultId = Integer.parseInt(id);
+            LabResultDTO result = labResultService.findById(resultId);
 
-        if (result == null) {
-            model.addAttribute("mess", "Result not found!!!");
+            if (result == null) {
+                model.addAttribute("mess", "Result not found!!!");
+                return "technician/result-detail";
+            }
+            model.addAttribute("result", result);
+
             return "technician/result-detail";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid request id");
+            return "redirect:/technician/result-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Something wrong");
+            return "redirect:/technician/result-list";
         }
-        model.addAttribute("result", result);
-
-        return "technician/result-detail";
     }
 
     @GetMapping(value = "/result-edit/{id}")
-    public String updateForm(@PathVariable(name = "id") int id, Model model) {
+    public String updateForm(@PathVariable(name = "id") String id, Model model,  RedirectAttributes redirectAttributes) {
 
-        LabResultDTO result = labResultService.findById(id);
+        try {
+            int resultId = Integer.parseInt(id);
+            LabResultDTO result = labResultService.findById(resultId);
 
-        if (result == null) {
-            model.addAttribute("mess", "Result not found!!!");
+            if (result == null) {
+                model.addAttribute("mess", "Result not found!!!");
+                return "technician/result-edit";
+            }
+
+            model.addAttribute("result", result);
+
             return "technician/result-edit";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid request id");
+            return "redirect:/technician/result-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Something wrong");
+            return "redirect:/technician/result-list";
         }
-
-        model.addAttribute("result", result);
-
-        return "technician/result-edit";
     }
 
     @PostMapping("/result-edit/{id}")
@@ -121,30 +153,47 @@ public class LabResultController {
             RedirectAttributes redirectAttributes, //message
             Model model) throws IOException {
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("result", dto);
-            return "technician/result-edit";
+        try {
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("result", dto);
+                return "technician/result-edit";
+            }
+
+            dto.setResultId(id);
+            labResultService.updateResultWithImages(dto, xrayFiles, deleteImageIds, imageIds, imageDescriptions, newDescriptions);
+            redirectAttributes.addFlashAttribute("successMessage", "Result updated successfully!");
+
+            return "redirect:/technician/result/" + id;
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid request id");
+            return "redirect:/technician/result-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Something wrong");
+            return "redirect:/technician/result-list";
         }
-
-        dto.setResultId(id);
-        labResultService.updateResultWithImages(dto, xrayFiles, deleteImageIds, imageIds, imageDescriptions, newDescriptions);
-        redirectAttributes.addFlashAttribute("successMessage", "Result updated successfully!");
-
-        return "redirect:/technician/result/" + id;
     }
 
     @GetMapping(value = "/result-confirm/{id}")
-    public String confirmForm(@PathVariable(name = "id") int id, Model model) {
-        LabResultDTO result = labResultService.findById(id);
+    public String confirmForm(@PathVariable(name = "id") String id, Model model,RedirectAttributes redirectAttributes) {
+        try {
+            int resultId = Integer.parseInt(id);
+            LabResultDTO result = labResultService.findById(resultId);
 
-        if (result == null) {
-            model.addAttribute("mess", "Result not found!!!");
-            return "technician/result-edit";
+            if (result == null) {
+                model.addAttribute("mess", "Result not found!!!");
+                return "technician/result-edit";
+            }
+
+            model.addAttribute("result", result);
+
+            return "technician/result-confirm";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid request id");
+            return "redirect:/technician/result-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Something wrong");
+            return "redirect:/technician/result-list";
         }
-
-        model.addAttribute("result", result);
-
-        return "technician/result-confirm";
     }
 
     @PostMapping(value = "/result-confirm/{id}")
@@ -153,42 +202,67 @@ public class LabResultController {
                           BindingResult bindingResult,
                           RedirectAttributes redirectAttributes,
                           Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("result", dto);
-            return "technician/result-confirm";
-        }
+        try {
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("result", dto);
+                return "technician/result-confirm";
+            }
 
-        labResultService.confirmResult(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Result confirmed successfully!");
-        return "redirect:/technician/result-list";
+            labResultService.confirmResult(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Result confirmed successfully!");
+            return "redirect:/technician/result-list";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid request id");
+            return "redirect:/technician/result-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Something wrong");
+            return "redirect:/technician/result-list";
+        }
     }
 
     @GetMapping(value = "/result-delete/{id}")
-    public String deleteResultForm(@PathVariable(name = "id") int id,
+    public String deleteResultForm(@PathVariable(name = "id") String id,
                                    RedirectAttributes redirectAttributes,
                                    Model model) {
-        LabResultDTO result = labResultService.findById(id);
+        try {
+            int resultId = Integer.parseInt(id);
+            LabResultDTO result = labResultService.findById(resultId);
 
-        if (result == null) {
-            model.addAttribute("mess", "Result not found!!!");
-            return "technician/result-delete";
+            if (result == null) {
+                model.addAttribute("mess", "Result not found!!!");
+                return "technician/result-delete";
+            }
+            if (result.getLabRequestStatus().equals(LabRequestStatus.COMPLETED.name())) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Result has been completed!");
+                return "redirect:technician/result-list";
+            }
+
+            model.addAttribute("result", result);
+
+            return "/technician/result-delete";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid request id");
+            return "redirect:/technician/result-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Something wrong");
+            return "redirect:/technician/result-list";
         }
-        if (result.getLabRequestStatus().equals(LabRequestStatus.COMPLETED.name())) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Result has been completed!");
-            return "redirect:technician/result-list";
-        }
-
-        model.addAttribute("result", result);
-
-        return "/technician/result-delete";
     }
 
     @PostMapping(value = "/result-delete/{id}")
     public String deleteResult(@PathVariable(name = "id") int id, RedirectAttributes redirectAttributes) {
 
-        labResultService.deleteResult(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Delete successfully!");
-        return "redirect:/technician/result-list";
+        try {
+            labResultService.deleteResult(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Delete successfully!");
+            return "redirect:/technician/result-list";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid request id");
+            return "redirect:/technician/result-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Something wrong");
+            return "redirect:/technician/result-list";
+        }
     }
 
 }

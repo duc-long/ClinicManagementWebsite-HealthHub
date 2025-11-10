@@ -17,6 +17,8 @@
         'Invalid username or password'}"></span>
     </div>
     <form th:action="@{/receptionist/login}" method="post">
+        <input type="hidden" th:name="${_csrf.getParameterName()}" th:value="${_csrf.getToken()}">
+
         <!-- Username -->
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>

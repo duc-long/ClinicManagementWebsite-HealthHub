@@ -6,7 +6,7 @@
     <title>Result List - HealHub</title>
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             background-color: #f6f7fb;
@@ -88,16 +88,14 @@
                         </div>
 
                         <!-- Date -->
-                        <div class="col-12 col-md-4">
-                            <label class="form-label filter-label">
-                                <i class="fa-solid fa-calendar-days me-1"></i>Date
-                            </label>
-                            <input type="date" class="form-control form-control-sm"
-                                   id="date" name="date">
+                        <div class="form-check me-3">
+                            <input class="form-check-input" type="checkbox" name="isAll" value="true"
+                                   th:checked="${isAll}">
+                            <label class="form-check-label">Show All</label>
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+                        <div class="col-12 d-flex gap-2 justify-content-start mt-2">
                             <button class="btn btn-sm btn-primary px-3" type="submit">
                                 <i class="fa-solid fa-filter me-1"></i>Filter
                             </button>
@@ -162,6 +160,26 @@
         </section>
     </div>
 </main>
+<div id="flash-message-error" th:data-msg="${errorMessage}" style="display:none;"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const errorMsg = document.getElementById('flash-message-error').dataset.msg;
+
+
+    if (errorMsg) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: errorMsg,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#dc3545',
+            customClass: {
+                popup: 'swal2-border-red'
+            }
+        });
+    }
+    /*]]>*/
+</script>
 
 <script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
 </body>

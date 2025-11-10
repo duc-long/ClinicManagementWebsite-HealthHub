@@ -27,7 +27,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         // ==================== RECEPTIONIST ====================
         if(requestURI.startsWith("/receptionist/login")) {
-            if(hasRole(roles, "ROLE_Receptionist")) {
+            if(hasRole(roles, "ROLE_RECEPTIONIST")) {
                 redirectURL = "/receptionist/appointment-list";
             } else {
                 // tài khoản không hợp lệ cho trang này
@@ -37,7 +37,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         }
         // ==================== CASHIER ====================
         else if(requestURI.startsWith("/cashier/login")) {
-            if(hasRole(roles, "ROLE_Cashier")) {
+            if(hasRole(roles, "ROLE_CASHIER")) {
                 redirectURL = "/cashier/appointment-list";
             } else {
                 response.sendRedirect("/cashier/login?error=invalid_role");
@@ -46,7 +46,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         }
         // ==================== DOCTOR ====================
         else if(requestURI.startsWith("/doctor/login")) {
-            if(hasRole(roles, "ROLE_Doctor")) {
+            if(hasRole(roles, "ROLE_DOCTOR")) {
                 redirectURL = "/doctor/home";
             } else {
                 response.sendRedirect("/doctor/login?error=invalid_role");
@@ -55,7 +55,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         }
         // ==================== ADMIN ====================
         else if(requestURI.startsWith("/admin/login")) {
-            if(hasRole(roles, "ROLE_Admin")) {
+            if(hasRole(roles, "ROLE_ADMIN")) {
                 redirectURL = "/admin/dashboard";
             } else {
                 response.sendRedirect("/admin/login?error=invalid_role");
@@ -64,8 +64,8 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         }
         // ==================== TECHNICIAN ====================
         else if(requestURI.startsWith("/technician/login")) {
-            if(hasRole(roles, "ROLE_Technician")) {
-                redirectURL = "/technician/dashboard";
+            if(hasRole(roles, "ROLE_TECHNICIAN")) {
+                redirectURL = "/technician/request-list";
             } else {
                 response.sendRedirect("/technician/login?error=invalid_role");
                 return;
@@ -73,7 +73,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         }
         // ==================== PATIENT ====================
         else if(requestURI.startsWith("/patient/login")) {
-            if(hasRole(roles, "ROLE_Patient")) {
+            if(hasRole(roles, "ROLE_PATIENT")) {
                 redirectURL = "/home";
             } else {
                 response.sendRedirect("/patient/login?error=invalid_role");

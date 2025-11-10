@@ -12,18 +12,16 @@
                     data-bs-target="#sidebarMobile" aria-controls="sidebarMobile">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <a class="navbar-brand fw-bold text-primary" th:href="@{/technician/dashboard}">
+            <a class="navbar-brand fw-bold text-primary" th:href="@{/technician/home}">
                 <i class="fa-solid fa-heart-pulse me-2"></i>HealHub
             </a>
         </div>
     </div>
 </nav>
 <div>
-    <aside th:fragment = "sidebar" class="col-lg-3 d-none d-lg-block">
+    <aside th:fragment="sidebar" class="col-lg-3 d-none d-lg-block">
         <div class="sidebar">
             <nav class="nav flex-column">
-                <a class="nav-link active d-flex align-items-center mb-1" th:href="@{/technician/dashboard}"><i
-                        class="fa-solid fa-house-medical me-2"></i>Dashboard</a>
                 <a class="nav-link d-flex align-items-center mb-1" th:href="@{/technician/request-list}"><i
                         class="fa-solid fa-list-check me-2"></i>Requests</a>
                 <a class="nav-link d-flex align-items-center mb-1" th:href="@{/technician/result-list}"><i
@@ -31,8 +29,10 @@
                 <a class="nav-link d-flex align-items-center mb-1" th:href="@{/technician/profile}"><i
                         class="fa-solid fa-user me-2"></i>Profile</a>
                 <div class="mt-3">
-                    <a class="btn btn-outline-danger btn-sm w-100" th:href="@{/technician/logout}"><i
-                            class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</a>
+                    <form th:action="@{/technician/logout}" method="post">
+                        <button class="btn btn-outline-danger btn-sm w-100"><i
+                                class="fa-solid fa-arrow-right-from-bracket me-1"></i>Logout</button>
+                    </form>
                 </div>
             </nav>
         </div>
