@@ -93,10 +93,10 @@
                             </select>
                         </td>
                         <td><input type="number" name="quantities" th:value="${d.quantity}" class="form-control text-center" required></td>
-                        <td><input type="text" name="dosages" th:value="${d.dosage}" class="form-control"></td>
-                        <td><input type="text" name="frequencies" th:value="${d.frequency}" class="form-control text-center"></td>
-                        <td><input type="number" name="durationDay" th:value="${d.duration}" class="form-control text-center"></td>
-                        <td><input type="text" name="instructions" th:value="${d.instruction}" class="form-control"></td>
+                        <td><input type="text" name="dosages" th:value="${d.dosage}" class="form-control" required></td>
+                        <td><input type="text" name="frequencies" th:value="${d.frequency}" class="form-control text-center" required></td>
+                        <td><input type="number" name="durationDay" th:value="${d.duration}" class="form-control text-center" required></td>
+                        <td><input type="text" name="instructions" th:value="${d.instruction}" class="form-control" required></td>
                         <td>
                             <button type="button" class="btn btn-sm btn-outline-danger remove-row">
                                 <i class="fa-solid fa-trash"></i>
