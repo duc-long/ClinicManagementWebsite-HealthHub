@@ -867,6 +867,12 @@ public class DoctorController {
         Doctor doctor = doctorService.findDoctorById(doctorId);
         // find lab test
         LabTestCatalog testCatalog = labTestCatalogService.findByTestId(testId);
+        if (testCatalog == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Lab Tests not found!");
+            return "redirect:/doctor/home";
+        }
+        
         // find medical record
         MedicalRecord medicalRecord = medicalRecordService.findById(recordId);
         // set object
