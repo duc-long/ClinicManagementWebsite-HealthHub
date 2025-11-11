@@ -70,9 +70,6 @@ public class CustomErrrorController implements ErrorController {
             case 405:
                 model.addAttribute("errorTitle", "Method Not Allowed");
                 return "error/405";
-            case 400:
-                model.addAttribute("errorTitle", "Bad Request");
-                return "error/400";
             default:
                 model.addAttribute("errorTitle", "Page Not Found");
                 return "error/404";

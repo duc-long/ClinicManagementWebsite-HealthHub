@@ -346,25 +346,21 @@ public class CashierController {
 
 
     @PostMapping("/bill/{id}/export")
-    public String exportBill(@PathVariable("id") Integer billId,
-                           RedirectAttributes redirectAttributes,
+    public void exportBill(@PathVariable("id") Integer billId,
                            HttpServletResponse response) {
         try {
             Bill bill = billService.exportBill(billId);
+
             response.setContentType("application/pdf");
-            String headerValue = "attachment; filename=bill_" + bill.getBillId() + ".pdf";
-            response.setHeader("Content-Disposition", headerValue);
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=bill_" + bill.getBillId() + ".pdf");
 
             billService.exportPdfToResponse(bill, response.getOutputStream());
-            return "redirect:/cashier/payment-list";
+            response.flushBuffer();
+
         } catch (Exception e) {
-            try {
-                response.setContentType("text/plain");
-                response.getWriter().write("Error exporting bill: " + e.getMessage());
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            } catch (Exception ignored) {}
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/cashier/payment-list";
     }
 
 

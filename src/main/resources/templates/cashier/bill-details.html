@@ -15,7 +15,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="brand">
-            <div class="logo">R</div>
+            <div class="logo">CSH</div>
             <div class="title hide-when-collapsed">HealHub · Cashier</div>
         </div>
 
@@ -26,7 +26,7 @@
 
         <nav class="nav" id="sideNav">
             <small class="hide-when-collapsed">OVERVIEW</small>
-            <a th:href="@{/cashier/appointment-list}">
+            <a th:href="@{/cashier/appointment-list}" >
                 <span class="icon"><i class="fa-solid fa-calendar-check"></i></span>
                 <span class="hide-when-collapsed">Appointments</span>
             </a>
@@ -34,7 +34,7 @@
                 <span class="icon"><i class="fa-solid fa-money-check-dollar"></i></span>
                 <span class="hide-when-collapsed">Payments</span>
             </a>
-            <a th:href="@{/cashier/lab-request-list}">
+            <a th:href="@{/cashier/lab-request-list}" >
                 <span class="icon"><i class="fa-solid fa-vial"></i></span>
                 <span class="hide-when-collapsed">Lab Requests</span>
             </a>
@@ -43,7 +43,7 @@
                 <span class="icon"><i class="fa-solid fa-id-card"></i></span>
                 <span class="hide-when-collapsed">Profile</span>
             </a>
-            <form th:action="@{/logout}" method="post" style="margin-top:.5rem;">
+            <form th:action="@{/cashier/logout}" method="post" style="margin-top:.5rem;">
                 <button class="toggle-btn" type="submit">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span class="hide-when-collapsed">Logout</span>
@@ -134,14 +134,19 @@
 
                     <form th:if="${bill.status.name() == 'PENDING'}"
                           th:action="@{'/cashier/bill/' + ${bill.billId} + '/export'}"
-                          method="post" style="display:inline;">
+                          target="hiddenDownloadFrame"
+                          method="post"
+                          style="display:inline;"
+                          onsubmit="redirectAfterExport()">
+
                         <button type="submit" class="btn btn-success">
                             <i class="fa-solid fa-file-pdf"></i> Export Bill
                         </button>
                     </form>
-                </div>
+                    <iframe name="hiddenDownloadFrame" style="display:none;"></iframe>
 
-            </div>
+
+                </div>
         </div>
     </main>
 </div>
@@ -152,6 +157,12 @@
     function goBack() {
         window.history.back();
         setTimeout(() => location.reload(), 200);
+    }
+
+    function redirectAfterExport() {
+        setTimeout(() => {
+            window.location.href = "/cashier/payment-list";
+        }, 800);
     }
 </script>
 </body>
