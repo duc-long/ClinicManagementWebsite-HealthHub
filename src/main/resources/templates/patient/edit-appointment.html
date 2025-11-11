@@ -39,6 +39,7 @@
                 <p class="text-center text-muted mb-5">You can change the date or reason for your appointment.</p>
                 <form th:action="@{/patient/appointment/update}" th:object="${appointment}" method="post">
                     <!-- Hidden ID -->
+                    <input type="hidden" th:field="*{patient.patientId}">
                     <input type="hidden" th:field="*{appointmentId}">
 
                     <!-- Ngày khám -->
