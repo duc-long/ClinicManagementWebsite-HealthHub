@@ -68,7 +68,7 @@
                         <td><input type="number" name="quantities" class="form-control text-center" min="1" required></td>
                         <td><input type="text" name="dosages" class="form-control" placeholder="e.g., 500mg" required></td>
                         <td><input type="text" name="frequencies" class="form-control text-center" placeholder="2 times/day" required></td>
-                        <td><input type="number" name="durationDay" class="form-control text-center" placeholder="7" required></td>
+                        <td><input type="number" min="1" name="durationDay" class="form-control text-center" placeholder="7" required></td>
                         <td><input type="text" name="instructions" class="form-control" placeholder="After meal" required></td>
                         <td>
                             <button type="button" class="btn btn-sm btn-outline-danger remove-row">
@@ -93,9 +93,9 @@
                             </select>
                         </td>
                         <td><input type="number" name="quantities" th:value="${d.quantity}" class="form-control text-center" required></td>
-                        <td><input type="text" name="dosages" th:value="${d.dosage}" class="form-control" required></td>
+                        <td><input type="text"  name="dosages" th:value="${d.dosage}" class="form-control" required></td>
                         <td><input type="text" name="frequencies" th:value="${d.frequency}" class="form-control text-center" required></td>
-                        <td><input type="number" name="durationDay" th:value="${d.duration}" class="form-control text-center" required></td>
+                        <td><input type="number" min="1" name="durationDay" th:value="${d.duration}" class="form-control text-center" required></td>
                         <td><input type="text" name="instructions" th:value="${d.instruction}" class="form-control" required></td>
                         <td>
                             <button type="button" class="btn btn-sm btn-outline-danger remove-row">

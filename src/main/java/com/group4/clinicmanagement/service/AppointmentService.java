@@ -193,11 +193,7 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
     }
 
-
-    public int countTodayAppointments(Integer doctorId) {
-        return appointmentRepository.countTodayAppointments(doctorId);
-    }
-
+    // method to get all today appointment
     public List<AppointmentDTO> getTodayAppointments(Integer doctorId, String patientName) {
         List<Appointment> appointments = appointmentRepository.findTodayAppointments(doctorId, patientName);
 
@@ -219,6 +215,7 @@ public class AppointmentService {
                 .toList();
     }
 
+    // find all appointment by doctor ID
     public List<AppointmentDTO> getTodayAppointmentsByDoctorId(Integer doctorId) {
         List<Appointment> appointments = appointmentRepository.findTodayAppointmentsByDoctorId(doctorId);
         return appointments

@@ -4,10 +4,6 @@
         <div class="col-md-4">
             <div class="card-soft">
                 <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="text-muted small">Today Appointments</div>
-                        <div class="h4 fw-bold" th:text="${todayCount}">8</div>
-                    </div>
                     <i class="fa-solid fa-calendar-day fa-xl"></i>
                 </div>
             </div>
@@ -20,7 +16,7 @@
             Patient Appointments
         </div>
 
-        <!-- 🔍 Search bar -->
+        <!-- Search bar -->
         <form class="row g-3 mb-4" th:action="@{/doctor/home}" method="get">
             <div class="col-md-4">
                 <input type="text" name="patientName" class="form-control"
@@ -33,7 +29,7 @@
             </div>
         </form>
 
-        <!-- 📅 Appointment list -->
+        <!-- Appointment list -->
         <div class="table-responsive">
             <table class="table align-middle">
                 <thead class="table-light">
@@ -725,20 +721,19 @@
 <!-- Change Password -->
 <div th:fragment="change-password">
     <style>
-        /* Container: dùng flex để căn giữa ngang trong vùng content */
         .cp-container {
             display: flex;
-            justify-content: center; /* căn giữa ngang */
+            justify-content: center;
             align-items: flex-start;
             padding: 24px 12px;
             width: 100%;
             box-sizing: border-box;
         }
 
-        /* Card: đặt 1 width cố định hợp lý để form "ngang" hơn */
+
         .cp-card {
-            width: 560px;                /* tăng chiều ngang tại desktop */
-            max-width: calc(100% - 32px);/* đảm bảo không lấn ra ngoài trên mobile */
+            width: 560px;
+            max-width: calc(100% - 32px);
             padding: 28px;
             border-radius: 12px;
             background-color: #fff;
@@ -747,7 +742,6 @@
             color: #222;
         }
 
-        /* Nếu site có chế độ dark */
         body.dark .cp-card {
             background-color: #1f2937;
             color: #fff;
@@ -761,12 +755,11 @@
             margin-bottom: 1rem;
         }
 
-        /* Form controls: giữ input full width của card */
         .form-control.cp-input {
             width: 100%;
             border-radius: 8px;
             height: 46px;
-            padding: 8px 48px 8px 14px; /* để có khoảng trống chứa icon */
+            padding: 8px 48px 8px 14px;
             border: 1px solid #d6d6d6;
             color: inherit;
             box-sizing: border-box;
@@ -809,7 +802,6 @@
         input[type="password"]::-webkit-textfield-decoration-container > button,
         input[type="password"]::-webkit-textfield-decoration-container > input[type="button"] { display:none !important; }
 
-        /* Responsive: màn hình nhỏ hơn 600px thì rộng card bằng 95% */
         @media (max-width: 600px) {
             .cp-card { width: 95%; padding: 18px; }
             .form-control.cp-input { padding: 8px 44px 8px 12px; height:44px; }

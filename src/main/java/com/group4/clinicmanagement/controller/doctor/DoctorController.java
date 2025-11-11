@@ -76,8 +76,7 @@ public class DoctorController {
         if (user == null) {
             return "redirect:/doctor/login";
         }
-
-        model.addAttribute("todayCount", appointmentService.countTodayAppointments(user.getUserId()));
+        
         List<AppointmentDTO> appointments = appointmentService.getTodayAppointments(user.getUserId(), patientName);
         model.addAttribute("appointments", appointments);
         model.addAttribute("patientName", patientName);
@@ -242,6 +241,8 @@ public class DoctorController {
 
         Doctor doctor = doctorService.findDoctorById(user.getUserId());
         if (doctor == null) return "redirect:/doctor/home";
+
+
 
         // --- Update user basic info ---
         user.setFullName(doctorModel.getFullName());
@@ -862,6 +863,12 @@ public class DoctorController {
                               @RequestParam(name = "recordId") Integer recordId,
                               @RequestParam(name = "doctorId") Integer doctorId,
                               @RequestParam(name = "testId") Integer testId) {
+        if (recordId == null || doctorId == null || testId == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "ID not found!");
+            return "redirect:/doctor/home";
+        }
+
         LabRequest request = new LabRequest();
         // find doctor
         Doctor doctor = doctorService.findDoctorById(doctorId);
@@ -872,7 +879,7 @@ public class DoctorController {
             redirectAttributes.addFlashAttribute("message", "Lab Tests not found!");
             return "redirect:/doctor/home";
         }
-        
+
         // find medical record
         MedicalRecord medicalRecord = medicalRecordService.findById(recordId);
         // set object
@@ -892,8 +899,6 @@ public class DoctorController {
             return "redirect:/doctor/home";
         }
     }
-
-
 
     // method to view lab request
     @GetMapping("/labs/view/{id}")

@@ -43,7 +43,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
-
+    boolean existsByPhone(String phone);
     boolean existsByUsername(String username);
 
     @Query(value = "SELECT MAX(user_id) FROM Users", nativeQuery = true)
@@ -74,4 +74,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<Object> findUserByEmail(String email);
 
     Optional<User> getUsersByUserId(Integer userId);
+
 }
