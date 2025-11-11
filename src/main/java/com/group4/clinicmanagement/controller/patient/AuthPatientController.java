@@ -150,7 +150,9 @@ public class AuthPatientController {
             BindingResult result,
             Model model,
             RedirectAttributes redirectAttributes) {
-
+        if (!dto.isValidAge()) {
+            result.rejectValue("dateOfBirth", "error.dateOfBirth", "Age must be between 10 and 100 years");
+        }
         if (result.hasErrors()) {
             return "auth/patient/register-patient";
         }

@@ -40,6 +40,7 @@ public class PatientRegisterDTO {
 
     @NotBlank(message = "Address must not be blank")
     @Size(max = 500, message = "Address must not exceed 500 characters")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9\\s,.'-]+$", message = "Address must contain both letters and numbers, and only letters, numbers, spaces, commas, periods, and hyphens are allowed.")
     private String address;
 
     @Past(message = "Date of birth must be in the past")
@@ -47,7 +48,7 @@ public class PatientRegisterDTO {
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
 
-    @AssertTrue(message = "Age must be between 10 and 120 years")
+    @AssertTrue(message = "Age must be between 10 and 100 years")
     public boolean isValidAge() {
         if (dateOfBirth == null) return true;
         int age = Period.between(dateOfBirth, LocalDate.now()).getYears();
