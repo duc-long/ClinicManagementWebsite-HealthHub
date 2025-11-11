@@ -47,50 +47,82 @@
         </div>
 
         <div class="content">
-            <form class="profile-card" th:action="@{/receptionist/edit-profile}" method="post" th:object="${receptionist}" enctype="multipart/form-data">
+            <form class="profile-card"
+                  th:action="@{/receptionist/edit-profile}"
+                  method="post"
+                  th:object="${receptionist}"
+                  enctype="multipart/form-data">
+
                 <div class="profile-title">Change profile</div>
 
-                <div class="avatar" style="margin:auto;">
+                <!-- Avatar -->
+                <div class="avatar mb-5" style="margin:auto;">
                     <img th:src="${receptionist.avatarFilename != null} ?
-                                 '/images/avatars/' + ${receptionist.avatarFilename} :
-                                 '/images/avatars/default-avatar.png'"
+                 '/images/avatars/' + ${receptionist.avatarFilename} :
+                 '/images/avatars/default-avatar.png'"
                          id="avatarPreview" width="150" height="150"
                          style="border-radius:50%; object-fit:cover;" alt="Avatar"/>
-                    <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(this)" style="margin-top:10px;">
+                    <input type="file" name="avatarFile" accept="image/*" onchange="previewAvatar(this)" style="margin-top:10px;">
+                    <p th:if="${fileError}" th:text="${fileError}" class="text-danger small mt-2"></p>
                 </div>
 
-                <div class="info" style="margin-top:20px;">
-                    <div class="group-info">
-                        <div class="label">Username</div>
+                <div class="info mt-4">
+
+                    <!-- Username (readonly) -->
+                    <div class="group-info mb-3">
+                        <label class="form-label fw-bold">Username</label>
                         <input type="text" th:field="*{username}" readonly class="form-control"/>
                     </div>
-                    <div class="group-info">
-                        <div class="label">Full Name</div>
+
+                    <!-- Full Name -->
+                    <div class="group-info mb-3">
+                        <label class="form-label fw-bold">Full Name</label>
                         <input type="text" th:field="*{fullName}" class="form-control"/>
+                        <div th:if="${#fields.hasErrors('fullName')}"
+                             th:errors="*{fullName}"
+                             class="text-danger small mt-1"></div>
                     </div>
-                    <div class="group-info">
-                        <div class="label">Email</div>
+
+                    <!-- Email -->
+                    <div class="group-info mb-3">
+                        <label class="form-label fw-bold">Email</label>
                         <input type="email" th:field="*{email}" class="form-control"/>
+                        <div th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}"
+                             class="text-danger small mt-1"></div>
                     </div>
-                    <div class="group-info">
-                        <div class="label">Phone</div>
+
+                    <!-- Phone -->
+                    <div class="group-info mb-3">
+                        <label class="form-label fw-bold">Phone</label>
                         <input type="text" th:field="*{phone}" class="form-control"/>
+                        <div th:if="${#fields.hasErrors('phone')}"
+                             th:errors="*{phone}"
+                             class="text-danger small mt-1"></div>
                     </div>
-                    <div class="group-info">
+
+                    <!-- Gender -->
+                    <div class="group-info mb-3">
                         <label class="form-label fw-bold">Gender</label>
-                        <select class="form-select" th:field="*{gender}" required>
+                        <select class="form-select" th:field="*{gender}">
+                            <option value="">-- Select Gender --</option>
                             <option value="MALE">Male</option>
                             <option value="FEMALE">Female</option>
                             <option value="OTHER">Other</option>
                         </select>
+                        <div th:if="${#fields.hasErrors('gender')}"
+                             th:errors="*{gender}"
+                             class="text-danger small mt-1"></div>
                     </div>
                 </div>
 
+                <!-- Buttons -->
                 <div class="button-row mt-3">
-                    <a th:href="@{/receptionist/profile}" class="btn-label change-password-label">Cancel</a>
-                    <button type="submit" class="btn-label change-profile-label">Save</button>
+                    <a th:href="@{/receptionist/profile}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
+
         </div>
     </main>
 </div>
@@ -100,9 +132,44 @@
 <script>
     function previewAvatar(input) {
         const file = input.files[0];
+        const maxSizeInBytes = 20 * 1024 * 1024; // 20MB
+
+        // Lấy nguồn ảnh hiện tại (để khôi phục nếu file lỗi)
+        const currentAvatarSrc = document.getElementById('avatarPreview').src;
+
+        // Xóa thông báo lỗi trước đó
+        const errorMessage = document.getElementById('error-message');
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
+        }
+
         if (file) {
+            // 1. Kiểm tra kích thước file
+            if (file.size > maxSizeInBytes) {
+                // Hiển thị thông báo lỗi dưới dạng một phần tử HTML
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.innerHTML = "File is too large! The maximum size is 20MB.";
+                errorDiv.style.display = 'block'; // Hiển thị lỗi
+                input.value = ""; // Xóa file đã chọn
+                document.getElementById('avatarPreview').src = currentAvatarSrc; // Khôi phục ảnh cũ
+                return;
+            }
+
+            // 2. Kiểm tra loại file (đã có accept="image/*" nhưng JS chắc chắn hơn)
+            if (!file.type.startsWith('image/')) {
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.innerHTML = "Only image files (JPG, PNG, GIF...) are accepted.";
+                errorDiv.style.display = 'block'; // Hiển thị lỗi
+                input.value = "";
+                document.getElementById('avatarPreview').src = currentAvatarSrc;
+                return;
+            }
+
+            // 3. Hiển thị preview
             const reader = new FileReader();
-            reader.onload = e => document.getElementById('avatarPreview').src = e.target.result;
+            reader.onload = e => {
+                document.getElementById('avatarPreview').src = e.target.result;
+            };
             reader.readAsDataURL(file);
         }
     }

@@ -61,7 +61,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
 
     @Query(
             value = """
-        SELECT a FROM Appointment a
+        SELECT DISTINCT a FROM Appointment a
         LEFT JOIN a.patient p
         LEFT JOIN p.user pu
         LEFT JOIN a.doctor d
@@ -70,7 +70,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
         WHERE a.statusValue = :status
         ORDER BY a.appointmentDate DESC
     """,
-            countQuery = "SELECT COUNT(a) FROM Appointment a WHERE a.statusValue = :status"
+            countQuery = """
+        SELECT COUNT(DISTINCT a) FROM Appointment a
+        WHERE a.statusValue = :status
+    """
     )
     Page<Appointment> findStatusValueDesc(@Param("status") int status, Pageable pageable);
 

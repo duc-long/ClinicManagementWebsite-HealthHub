@@ -11,11 +11,14 @@ import com.group4.clinicmanagement.repository.UserRepository;
 import com.group4.clinicmanagement.service.DepartmentService;
 import com.group4.clinicmanagement.service.ReceptionistService;
 import com.group4.clinicmanagement.service.AppointmentService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -56,11 +59,35 @@ public class ReceptionistController {
     }
 
     @PostMapping("/edit-profile")
-    public String editProfile(@ModelAttribute("receptionist") ReceptionistUserDTO dto, Authentication authentication) {
-        String receptionistName = authentication.getName();
-        receptionistService.updateReceptionistProfile(receptionistName, dto);
-        return "redirect:/receptionist/profile";
+    public String editProfile(
+            @Valid @ModelAttribute("receptionist") ReceptionistUserDTO dto,
+            BindingResult bindingResult,
+            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("receptionist", dto);
+            return "receptionist/edit-profile";
+        }
+
+        try {
+            String receptionistName = authentication.getName();
+            receptionistService.updateReceptionistProfile(receptionistName, dto, avatarFile);
+            redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
+            return "redirect:/receptionist/profile";
+
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("fileError", e.getMessage());
+            return "receptionist/edit-profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Unexpected error while saving profile.");
+            return "redirect:/receptionist/profile";
+        }
     }
+
+
 
 
     @GetMapping("/appointment-list")

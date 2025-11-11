@@ -6,6 +6,14 @@ import com.group4.clinicmanagement.repository.CashierRepository;
 import com.group4.clinicmanagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Service
 public class CashierService {
@@ -44,10 +52,53 @@ public class CashierService {
     }
 
     @Transactional
-    public void updateCashierProfile(String cashierName, CashierUserDTO dto) {
+    public void updateCashierProfile(String cashierName, CashierUserDTO dto, MultipartFile avatarFile) {
         User user = cashierRepository.findByUsername(cashierName);
-        System.out.println("\n====="+ dto.getUsername());
         applyDTOToEntity(dto, user);
+
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            try {
+                String contentType = avatarFile.getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    throw new IllegalArgumentException("Invalid file type. Only image files are allowed.");
+                }
+
+                String filenameLower = avatarFile.getOriginalFilename().toLowerCase();
+                if (!(filenameLower.endsWith(".jpg") || filenameLower.endsWith(".jpeg")
+                        || filenameLower.endsWith(".png") || filenameLower.endsWith(".gif")
+                        || filenameLower.endsWith(".webp"))) {
+                    throw new IllegalArgumentException("Unsupported image format. Please upload JPG, PNG, GIF, or WEBP files.");
+                }
+
+                if (avatarFile.getSize() > 5 * 1024 * 1024) {
+                    throw new IllegalArgumentException("File is too large. Maximum allowed size is 5MB.");
+                }
+
+                Path uploadDir = Paths.get("uploads/avatars");
+                if (!Files.exists(uploadDir)) {
+                    Files.createDirectories(uploadDir);
+                }
+
+                String newFilename = "cashier_" + UUID.randomUUID() + "_" + avatarFile.getOriginalFilename();
+                Path filePath = uploadDir.resolve(newFilename);
+                Files.copy(avatarFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+                    Path oldFile = uploadDir.resolve(user.getAvatar());
+                    if (Files.exists(oldFile)) {
+                        Files.delete(oldFile);
+                    }
+                }
+
+                user.setAvatar(newFilename);
+
+            } catch (IllegalArgumentException e) {
+                throw e;
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload avatar: " + e.getMessage(), e);
+            }
+        }
         cashierRepository.save(user);
     }
+
 }
