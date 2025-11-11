@@ -53,12 +53,26 @@ public class AdminController {
 
     @GetMapping(value = "/patient")
     public String showPatientList(Model model,
-                                  @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                  @RequestParam(value = "page", defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<PatientDTO> patientDTOs = patientService.findAll(pageable);
-        model.addAttribute("patientDTOs", patientDTOs);
-        return "admin/manage-patients-for-admin";
+                                  @RequestParam(value = "size", defaultValue = "10") String size,
+                                  @RequestParam(value = "page", defaultValue = "0") String page, RedirectAttributes redirectAttributes) {
+        try {
+            Integer pageC = Integer.parseInt(page);
+            Integer sizeC = Integer.parseInt(size);
+            Pageable pageable = PageRequest.of(pageC, sizeC);
+            Page<PatientDTO> patientDTOs = patientService.findAll(pageable);
+            model.addAttribute("patientDTOs", patientDTOs);
+            return "admin/manage-patients-for-admin";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Patient not found");
+            return "redirect:/admin/patient";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/patient";
+        }
     }
 
     @GetMapping(value = "/patient/{id}")
@@ -209,12 +223,26 @@ public class AdminController {
 
     @GetMapping(value = "/doctor")
     public String showDoctorList(Model model,
-                                 @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                 @RequestParam(value = "page", defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<DoctorDTO> doctorDTOS = doctorService.findAllDoctors(pageable);
-        model.addAttribute("doctorDTOS", doctorDTOS);
-        return "admin/manage-doctors-for-admin";
+                                 @RequestParam(value = "size", defaultValue = "10") String size,
+                                 @RequestParam(value = "page", defaultValue = "0") String page, RedirectAttributes redirectAttributes) {
+        try {
+            Integer pageC = Integer.parseInt(page);
+            Integer sizeC = Integer.parseInt(size);
+            Pageable pageable = PageRequest.of(pageC, sizeC);
+            Page<DoctorDTO> doctorDTOS = doctorService.findAllDoctors(pageable);
+            model.addAttribute("doctorDTOS", doctorDTOS);
+            return "admin/manage-doctors-for-admin";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Doctor not found");
+            return "redirect:/admin/doctor";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/doctor";
+        }
     }
 
     @GetMapping(value = "/doctor/{id}")
@@ -377,12 +405,26 @@ public class AdminController {
 
     @GetMapping(value = "/receptionist")
     public String showReceptionistList(Model model,
-                                       @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                       @RequestParam(value = "page", defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ReceptionistDTO> ReceptionistDTOs = receptionistService.findAll(pageable);
-        model.addAttribute("receptionistDTOs", ReceptionistDTOs);
-        return "admin/manage-receptionists-for-admin";
+                                       @RequestParam(value = "size", defaultValue = "10") String size,
+                                       @RequestParam(value = "page", defaultValue = "0") String page, RedirectAttributes redirectAttributes) {
+        try {
+            Integer pageC = Integer.parseInt(page);
+            Integer sizeC = Integer.parseInt(size);
+            Pageable pageable = PageRequest.of(pageC, sizeC);
+            Page<ReceptionistDTO> ReceptionistDTOs = receptionistService.findAll(pageable);
+            model.addAttribute("receptionistDTOs", ReceptionistDTOs);
+            return "admin/manage-receptionists-for-admin";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "receptionist not found");
+            return "redirect:/admin/receptionist";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/receptionist";
+        }
     }
 
     @GetMapping(value = "/receptionist/{id}")
