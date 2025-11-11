@@ -52,7 +52,7 @@
                     <td th:text="${iter.count}"></td>
                     <td th:text="${appt.patientName}"></td>
                     <td th:text="${#temporals.format(appt.appointmentDate, 'dd/MM/yyyy')}"></td>
-                    <td th:text="${appt.queueNumber}"></td>
+                    <td th:text="${appt.queueNumber == null} ? 'None' : ${appt.queueNumber}"></td>
                     <td>
                             <span th:switch="${appt.status.value}">
                                     <span th:case="0" class="badge bg-secondary">Pending</span>

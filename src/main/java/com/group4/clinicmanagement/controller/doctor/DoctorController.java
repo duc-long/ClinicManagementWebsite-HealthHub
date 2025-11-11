@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -607,19 +608,64 @@ public class DoctorController {
             @RequestParam("recordId") int recordId,
             @RequestParam("prescriptionId") int prescriptionId,
             @RequestParam(value = "detailIds", required = false) List<Integer> detailIds,
-            @RequestParam("drugIds") List<Integer> drugIds,
-            @RequestParam("quantities") List<Integer> quantities,
-            @RequestParam("dosages") List<String> dosages,
-            @RequestParam("frequencies") List<String> frequencies,
-            @RequestParam("durationDay") List<Integer> durationDays,
-            @RequestParam("instructions") List<String> instructions,
+            @RequestParam(value = "drugIds", required = false) List<Integer> drugIds,
+            @RequestParam(value = "quantities", required = false) List<Integer> quantities,
+            @RequestParam(value = "dosages", required = false) List<String> dosages,
+            @RequestParam(value = "frequencies", required = false) List<String> frequencies,
+            @RequestParam(value = "durationDay", required = false) List<Integer> durationDays,
+            @RequestParam(value = "instructions", required = false) List<String> instructions,
             RedirectAttributes redirectAttributes
     ) {
         try {
+            detailIds = (detailIds == null) ? new ArrayList<>() : detailIds;
+            drugIds = (drugIds == null) ? new ArrayList<>() : drugIds;
+            quantities = (quantities == null) ? new ArrayList<>() : quantities;
+            dosages = (dosages == null) ? new ArrayList<>() : dosages;
+            frequencies = (frequencies == null) ? new ArrayList<>() : frequencies;
+            durationDays = (durationDays == null) ? new ArrayList<>() : durationDays;
+            instructions = (instructions == null) ? new ArrayList<>() : instructions;
+
+            int rows = drugIds.size();
+            if (rows == 0) {
+                throw new IllegalArgumentException("Please add at least one drug.");
+            }
+
+            if (!(quantities.size() == rows && dosages.size() == rows
+                    && frequencies.size() == rows && durationDays.size() == rows
+                    && instructions.size() == rows)) {
+                throw new IllegalArgumentException("Mismatch in prescription rows. Please check all fields.");
+            }
+
+            for (int i = 0; i < rows; i++) {
+                Integer drugId = drugIds.get(i);
+                Integer qty = quantities.get(i);
+                String dosage = dosages.get(i);
+                String freq = frequencies.get(i);
+                Integer dur = durationDays.get(i);
+
+                if (drugId == null || drugId <= 0) {
+                    throw new IllegalArgumentException("Invalid drug selected at row " + (i + 1));
+                }
+                if (qty == null || qty <= 0) {
+                    throw new IllegalArgumentException("Quantity must be a positive number at row " + (i + 1));
+                }
+                if (dur == null || dur <= 0) {
+                    throw new IllegalArgumentException("Duration must be a positive number at row " + (i + 1));
+                }
+                if (dosage == null || dosage.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Dosage cannot be empty at row " + (i + 1));
+                }
+                if (freq == null || freq.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Frequency cannot be empty at row " + (i + 1));
+                }
+            }
+
+            // Nếu pass hết validation, gọi service
             prescriptionDetailService.saveOrUpdate(
                     prescriptionId, detailIds, drugIds, quantities,
                     dosages, frequencies, durationDays, instructions
             );
+
             redirectAttributes.addFlashAttribute("messageType", "success");
             redirectAttributes.addFlashAttribute("message", "Prescription details saved successfully!");
         } catch (Exception e) {
@@ -643,23 +689,62 @@ public class DoctorController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            // tạo prescription và lưu
-            Prescription saved = prescriptionService.createPrescription(recordId, doctorId);
-
-            // thêm detail (nếu có)
             if (drugIds != null && !drugIds.isEmpty()) {
+                quantities = (quantities == null) ? new ArrayList<>() : quantities;
+                dosages = (dosages == null) ? new ArrayList<>() : dosages;
+                frequencies = (frequencies == null) ? new ArrayList<>() : frequencies;
+                durationDays = (durationDays == null) ? new ArrayList<>() : durationDays;
+                instructions = (instructions == null) ? new ArrayList<>() : instructions;
+
+                int rows = drugIds.size();
+
+                if (!(quantities.size() == rows && dosages.size() == rows
+                        && frequencies.size() == rows && durationDays.size() == rows
+                        && instructions.size() == rows)) {
+                    throw new IllegalArgumentException("Mismatch in prescription fields: please fill all columns for every drug.");
+                }
+
+                for (int i = 0; i < rows; i++) {
+                    Integer drugId = drugIds.get(i);
+                    Integer qty = quantities.get(i);
+                    Integer dur = durationDays.get(i);
+                    String dosage = dosages.get(i);
+                    String freq = frequencies.get(i);
+
+                    if (drugId == null || drugId <= 0) {
+                        throw new IllegalArgumentException("Invalid drug selected at row " + (i + 1));
+                    }
+                    if (qty == null || qty <= 0) {
+                        throw new IllegalArgumentException("Quantity must be a positive number at row " + (i + 1));
+                    }
+                    if (dur == null || dur <= 0) {
+                        throw new IllegalArgumentException("Duration must be a positive number at row " + (i + 1));
+                    }
+                    if (dosage == null || dosage.trim().isEmpty()) {
+                        throw new IllegalArgumentException("Dosage cannot be empty at row " + (i + 1));
+                    }
+                    if (freq == null || freq.trim().isEmpty()) {
+                        throw new IllegalArgumentException("Frequency cannot be empty at row " + (i + 1));
+                    }
+                }
+
+                Prescription saved = prescriptionService.createPrescription(recordId, doctorId);
                 prescriptionDetailService.addDetails(saved.getPrescriptionId(),
                         drugIds, quantities, dosages, frequencies, durationDays, instructions);
+
+            } else {
+                prescriptionService.createPrescription(recordId, doctorId);
             }
 
             redirectAttributes.addFlashAttribute("messageType", "success");
-            redirectAttributes.addFlashAttribute("message", "Prescription details saved successfully!");
+            redirectAttributes.addFlashAttribute("message", "Prescription created successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("messageType", "error");
             redirectAttributes.addFlashAttribute("message", "Error: " + e.getMessage());
         }
         return "redirect:/doctor/records/detail/" + recordId;
     }
+
 
     // method to show vital create
     @GetMapping("/vitals/create/{id}")
