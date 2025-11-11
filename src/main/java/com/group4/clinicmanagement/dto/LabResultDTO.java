@@ -4,6 +4,7 @@ import com.group4.clinicmanagement.entity.LabImage;
 import com.group4.clinicmanagement.entity.LabRequest;
 import com.group4.clinicmanagement.entity.LabResult;
 import com.group4.clinicmanagement.entity.User;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class LabResultDTO {
     private String testName;
     private String patientName;
     private String technicianName;
+    @NotBlank
     private String resultText;
 
     private List<LabImage> images;

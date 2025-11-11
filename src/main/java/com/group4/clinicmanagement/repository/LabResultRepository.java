@@ -17,7 +17,15 @@ public interface LabResultRepository extends JpaRepository<LabResult,Integer> {
     @EntityGraph(attributePaths = {"images", "labRequest"})
     Optional<LabResult> findById(Integer id);
 
-    List<LabResult> findAll();
+    @Query("""
+    SELECT r
+    FROM LabResult r
+    JOIN r.labRequest lr
+    WHERE lr.statusValue IN :statuses
+    ORDER BY r.createdAt DESC
+    """)
+    List<LabResult> findAllByLabRequestStatus(List<Integer> statuses);
+
     @Query(value = """
         SELECT r.*
         FROM LabResult r
@@ -25,6 +33,7 @@ public interface LabResultRepository extends JpaRepository<LabResult,Integer> {
         JOIN LabTestCatalog t ON lr.test_id = t.test_id
         WHERE ((:resultId IS NULL OR :resultId = '') OR CAST(r.result_id AS NVARCHAR) LIKE CONCAT('%', :resultId, '%'))
           AND ((:testName IS NULL OR :testName = '') OR LOWER(t.name) LIKE LOWER(CONCAT('%', :testName, '%')))
+            AND lr.status IN (4, 2)
         ORDER BY r.created_at DESC
     """, nativeQuery = true)
     List<LabResult> filterResults(

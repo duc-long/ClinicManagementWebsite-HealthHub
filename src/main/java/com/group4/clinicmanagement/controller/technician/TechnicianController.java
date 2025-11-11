@@ -11,6 +11,7 @@ import com.group4.clinicmanagement.service.LabResultService;
 import com.group4.clinicmanagement.service.TechnicianService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,13 +30,16 @@ public class TechnicianController {
     private final TechnicianService technicianService;
     private final LabRequestService labRequestService;
     private final LabResultService labResultService;
+    private final PasswordEncoder passwordEncoder;
 
     public TechnicianController(TechnicianService technicianService,
                                 LabRequestService labRequestService,
-                                LabResultService labResultService) {
+                                LabResultService labResultService,
+                                PasswordEncoder passwordEncoder) {
         this.technicianService = technicianService;
         this.labRequestService = labRequestService;
         this.labResultService = labResultService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/login")
@@ -130,12 +134,21 @@ public class TechnicianController {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             Integer userId = userDetails.getUserId();
 
+            if(!passwordEncoder.matches(currentPassword, userDetails.getPassword())){
+                redirectAttributes.addFlashAttribute("errorMessage", "Current Password Doesn't Match");
+                return "redirect:/technician/change-password";
+            }
+            if(!newPassword.equals(confirmPassword)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "New Password Doesn't Match With Confirm Password");
+                return "redirect:/technician/change-password";
+            }
+
             boolean success = technicianService.changePassword(userId, currentPassword, newPassword, confirmPassword);
 
             if (success) {
                 model.addAttribute("success", "Password changed successfully!");
             } else {
-                model.addAttribute("error", "Failed to change password. Please check your inputs.");
+                model.addAttribute("error", "Failed to change password.");
             }
 
             return "auth/technician/login";
