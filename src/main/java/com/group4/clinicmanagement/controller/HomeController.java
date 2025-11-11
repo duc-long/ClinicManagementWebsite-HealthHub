@@ -99,15 +99,28 @@ public class HomeController {
     }
 
     @GetMapping(value = "/search-doctor-result")
-    public String searchDoctor(@RequestParam(name = "departmentId") Integer departmentId,
+    public String searchDoctor(@RequestParam(name = "departmentId") String departmentId,
                                @RequestParam(name = "doctorName") String doctorName,
-                               Model model) {
-        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findByNameAndDepartmentId(doctorName, departmentId);
-        model.addAttribute("doctors", doctorUserDTOS);
-        List<DepartmentDTO> departments = departmentService.findAll();
-        model.addAttribute("departments", departments);
-        model.addAttribute("pageTitle", "Search Results" + "(" + doctorUserDTOS.size() + " doctors found)");
-        return "home/doctor-search";
+                               Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(departmentId);
+            List<DoctorHomeDTO> doctorUserDTOS = doctorService.findByNameAndDepartmentId(doctorName, idC);
+            model.addAttribute("doctors", doctorUserDTOS);
+            List<DepartmentDTO> departments = departmentService.findAll();
+            model.addAttribute("departments", departments);
+            model.addAttribute("pageTitle", "Search Results" + "(" + doctorUserDTOS.size() + " doctors found)");
+            return "home/doctor-search";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Doctor not found");
+            return "redirect:/home";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/home";
+        }
     }
 
     @GetMapping(value = "/doctor-profile/{doctorId}")
