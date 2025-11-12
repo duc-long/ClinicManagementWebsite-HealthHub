@@ -2,6 +2,7 @@ package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.DoctorDTO;
 import com.group4.clinicmanagement.dto.DoctorHomeDTO;
+import com.group4.clinicmanagement.dto.ReceptionistUserDTO;
 import com.group4.clinicmanagement.entity.Department;
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.User;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -215,4 +217,73 @@ public class DoctorService {
         // All checks passed
         return Optional.empty();
     }
+
+    // method to update doctor avatar
+    @Transactional
+    public void updateDoctorProfile(String doctorUsername, MultipartFile avatarFile) {
+        User user = userRepository.findByUsername(doctorUsername).orElse(null);
+        if (user == null) {
+            throw new IllegalArgumentException("Người dùng không tồn tại.");
+        }
+
+        // Áp DTO vào entity (bạn viết method này giống applyDTOToEntity của receptionist)
+
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            try {
+                String contentType = avatarFile.getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    throw new IllegalArgumentException("Invalid file type. Only image files are allowed.");
+                }
+
+                String originalFilename = avatarFile.getOriginalFilename();
+                if (originalFilename == null) {
+                    throw new IllegalArgumentException("Invalid file name.");
+                }
+                String lower = originalFilename.toLowerCase();
+                if (!lower.endsWith(".jpg") &&
+                        !lower.endsWith(".jpeg") &&
+                        !lower.endsWith(".png") &&
+                        !lower.endsWith(".gif") &&
+                        !lower.endsWith(".webp")) {
+                    throw new IllegalArgumentException("Unsupported image format. Please upload JPG, PNG, GIF, or WEBP files.");
+                }
+
+                Path uploadDir = Paths.get("uploads/avatars");
+                if (!Files.exists(uploadDir)) {
+                    Files.createDirectories(uploadDir);
+                }
+
+                String fileName = "doctor_" + UUID.randomUUID() + "_" + originalFilename.replaceAll("\\s+", "_");
+                Path filePath = uploadDir.resolve(fileName).normalize();
+
+                // Lưu file (ghi đè nếu tồn tại)
+                Files.copy(avatarFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Xóa avatar cũ nếu có (tên file lưu trong user.getAvatar())
+                try {
+                    String oldAvatar = user.getAvatar();
+                    if (oldAvatar != null && !oldAvatar.isEmpty()) {
+                        Path oldFile = uploadDir.resolve(oldAvatar).normalize();
+                        if (Files.exists(oldFile)) {
+                            Files.delete(oldFile);
+                        }
+                    }
+                } catch (Exception ignore) {
+                    // nếu xóa fail thì ko block quá trình
+                }
+
+                // Lưu tên file (hoặc đường dẫn tuỳ bạn). Ví dụ lưu filename:
+                user.setAvatar(fileName);
+
+            } catch (IllegalArgumentException e) {
+                throw e; // để controller bắt và hiển thị lỗi validate
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload avatar: " + e.getMessage(), e);
+            }
+        }
+
+        // Lưu user vào repository
+        userRepository.save(user);
+    }
+
 }

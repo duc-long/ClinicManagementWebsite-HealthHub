@@ -87,9 +87,6 @@ public class ReceptionistController {
         }
     }
 
-
-
-
     @GetMapping("/appointment-list")
     public String listAppointments(@RequestParam(required = false, defaultValue = "ALL") String status,
                                    @RequestParam(defaultValue = "1") String page,

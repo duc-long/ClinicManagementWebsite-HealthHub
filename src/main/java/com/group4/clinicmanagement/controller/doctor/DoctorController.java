@@ -9,12 +9,16 @@ import com.group4.clinicmanagement.entity.*;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
+import com.group4.clinicmanagement.repository.DoctorDailySlotRepository;
 import com.group4.clinicmanagement.service.*;
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -41,6 +45,7 @@ public class DoctorController {
     private final LabResultService labResultService;
     private final LabTestCatalogService labTestCatalogService;
     private final PatientService patientService;
+    private final DoctorDailySlotRepository slotRepository;
 
     public DoctorController(DoctorService doctorService, UserService userService, DepartmentRepository departmentRepository,
                             AppointmentRepository appointmentRepository, AppointmentService appointmentService,
@@ -48,7 +53,7 @@ public class DoctorController {
                             PrescriptionService prescriptionService, VitalSignsService vitalSignsService,
                             PrescriptionDetailService prescriptionDetailService, PatientService patientService,
                             LabRequestService labRequestService, LabTestCatalogService labTestCatalogService,
-                            LabResultService labResultService) {
+                            LabResultService labResultService, DoctorDailySlotRepository slotRepository) {
         this.doctorService = doctorService;
         this.userService = userService;
         this.departmentRepository = departmentRepository;
@@ -63,6 +68,7 @@ public class DoctorController {
         this.prescriptionDetailService = prescriptionDetailService;
         this.labTestCatalogService = labTestCatalogService;
         this.labResultService = labResultService;
+        this.slotRepository = slotRepository;
     }
 
     // method to load home view doctor
@@ -201,8 +207,11 @@ public class DoctorController {
         doctorDTO.setDoctorId(user.getUserId());
         doctorDTO.setAvatarFileName(user.getAvatar());
         doctorDTO.setUsername(user.getUsername());
-        Department department = departmentRepository.findByDepartmentId(doctor.getDepartment().getDepartmentId())
+        doctorDTO.setDepartmentId(doctor.getDepartment().getDepartmentId());
+        Department department = departmentRepository.findByDepartmentId(doctorDTO.getDepartmentId())
                 .orElse(null);
+
+
         model.addAttribute("doctor", doctorDTO);
         model.addAttribute("department", department.getName());
         model.addAttribute("section", "profile");
@@ -289,6 +298,30 @@ public class DoctorController {
             redirectAttributes.addFlashAttribute("messageType", "error");
             redirectAttributes.addFlashAttribute("message", "An unexpected error occurred while updating profile. Please try again later.");
             return "redirect:/doctor/profile/edit";
+        }
+    }
+
+    // method to change doctor avatar
+    @PostMapping("/change-avatar")
+    public String editAvatar(
+            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+        try {
+            String doctorName = authentication.getName();
+            doctorService.updateDoctorProfile(doctorName, avatarFile);
+            redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
+            return "redirect:/doctor/profile";
+
+        } catch (IllegalArgumentException e) {
+            // lỗi do file (validate) -> trả về trang edit và show message
+            model.addAttribute("fileError", e.getMessage());
+            return "doctor/edit-profile";
+        } catch (Exception e) {
+            // lỗi bất ngờ -> redirect và show error
+            redirectAttributes.addFlashAttribute("errorMessage", "Unexpected error while saving profile.");
+            return "redirect:/doctor/profile";
         }
     }
 
@@ -1140,18 +1173,38 @@ public class DoctorController {
             return "redirect:/doctor/re-examination/create";
         }
 
-        appointment.setPatient(patient);
-        appointment.setStatus(AppointmentStatus.CONFIRMED);
+        // create new appointment
+        Appointment newAppointment = new Appointment();
+        newAppointment.setPatient(patient);
+        newAppointment.setStatus(AppointmentStatus.CONFIRMED);
+        newAppointment.setAppointmentDate(appointment.getAppointmentDate());
+        newAppointment.setNotes(appointment.getNotes());
 
-        if (principal != null) {
+
             User user = userService.findUserByUsername(principal.getName());
             if (user != null && user.getDoctor() != null) {
-                appointment.setDoctor(user.getDoctor());
-            }
+                newAppointment.setDoctor(user.getDoctor());
+        }
+        DoctorDailySlot slot = slotRepository.findByDoctorAndSlotDate(user.getDoctor(), appointment.getAppointmentDate())
+                .orElseGet(() -> {
+                    DoctorDailySlot newSlot = new DoctorDailySlot();
+                    newSlot.setDoctor(user.getDoctor());
+                    newSlot.setSlotDate(appointment.getAppointmentDate());
+                    newSlot.setTotalSlots(20);
+                    newSlot.setAvailableSlots(20);
+                    return slotRepository.save(newSlot);
+                });
+
+        if (slot.getAvailableSlots() <= 0) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "You don't have any slots available for that day!");
+            return "redirect:/doctor/re-examination/create";
         }
 
+        slot.setAvailableSlots(slot.getAvailableSlots() - 1);
+        slotRepository.save(slot);
         try {
-            Appointment saved = appointmentService.saveFollowUpAppointment(appointment);
+            Appointment saved = appointmentService.saveAppointment(newAppointment);
             if (saved != null) {
                 redirectAttributes.addFlashAttribute("messageType", "success");
                 redirectAttributes.addFlashAttribute("message", "Appointment created successfully!");

@@ -403,7 +403,7 @@
                 <h6 class="fw-bold mb-1" th:text="${doctor.fullName}">Dr. Nguyen Quoc Kiet</h6>
                 <div class="text-muted small mb-3" th:text="${department}">Department</div>
 
-                <form th:action="@{/doctor/avatarFilename}" method="post" enctype="multipart/form-data">
+                <form th:action="@{/doctor/change-avatar}" method="post" enctype="multipart/form-data">
                     <input type="file" name="avatar" class="form-control mb-2" accept="image/*">
                     <button class="btn btn-outline-primary btn-sm w-100">
                         <i class="fa-solid fa-upload me-1"></i> Update Avatar

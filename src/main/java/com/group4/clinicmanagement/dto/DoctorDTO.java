@@ -19,4 +19,5 @@ public class DoctorDTO {
     private String address;
     private String avatarFileName;
     private String bio;
+    private Integer departmentId;
 }
