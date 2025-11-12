@@ -1,15 +1,13 @@
 package com.group4.clinicmanagement.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.util.List;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
-@Table(name = "labimage")
+@Table(name = "LabImage")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,15 +18,16 @@ public class LabImage {
     @Column(name = "image_id")
     private Integer imageId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "result_id", nullable = false)
-    private LabResult labResult; // Liên kết tới kết quả xét nghiệm
+    private LabResult labResult;
 
     @Column(name = "file_path", nullable = false, length = 1000)
-    private String filePath; // Đường dẫn ảnh
+    private String filePath;
 
-    @Column(length = 500)
-    private String description; // Ghi chú
+    @Column(name = "description", length = 500)
+    private String description;
 
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }

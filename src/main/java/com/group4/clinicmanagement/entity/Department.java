@@ -5,25 +5,33 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "Department")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Department {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "department_id")
-    private Integer departmentId; // Mã khoa
+    private Integer departmentId;
 
-    @Column(nullable = false, length = 100)
-    private String name; // Tên khoa (vd: Khoa Nội, Khoa Nhi, ...)
+    @Column(name = "name", nullable = false, length = 100, unique = true)
+    private String name;
 
-    @Column(length = 500)
-    private String description; // Mô tả chi tiết khoa
+    @Column(name = "description", length = 500)
+    private String description;
 
-    // ========== Quan hệ 1-n với Doctor ==========
-    // Một khoa có nhiều bác sĩ
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private java.util.List<Doctor> doctors;
+    @OneToMany(
+            mappedBy = "department",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Doctor> doctors = new ArrayList<>();
+
 }

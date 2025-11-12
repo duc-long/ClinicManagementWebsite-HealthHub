@@ -3,7 +3,7 @@ package com.group4.clinicmanagement.dto;
 import com.group4.clinicmanagement.entity.LabImage;
 import com.group4.clinicmanagement.entity.LabRequest;
 import com.group4.clinicmanagement.entity.LabResult;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -52,13 +52,13 @@ public class LabResultDTO {
 
             if (request.getMedicalRecord() != null &&
                     request.getMedicalRecord().getPatient() != null &&
-                    request.getMedicalRecord().getPatient().getUser() != null) {
+                    request.getMedicalRecord().getPatient() != null) {
 
-                dto.setPatientName(request.getMedicalRecord().getPatient().getUser().getFullName());
+                dto.setPatientName(request.getMedicalRecord().getPatient().getFullName());
             }
         }
 
-        User tech = entity.getTechnician();
+        Staff tech = entity.getTechnician();
         if (tech != null) {
             dto.setTechnicianName(tech.getFullName());
         }
@@ -66,7 +66,7 @@ public class LabResultDTO {
         return dto;
     }
 
-    public LabResult toEntity(LabRequest labRequest, User technician) {
+    public LabResult toEntity(LabRequest labRequest, Staff technician) {
         LabResult entity = new LabResult();
         entity.setResultId(this.resultId);
         entity.setLabRequest(labRequest);

@@ -2,11 +2,10 @@ package com.group4.clinicmanagement.entity;
 
 import com.group4.clinicmanagement.enums.PrescriptionStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,41 +17,52 @@ public class Prescription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "prescription_id")
     private Integer prescriptionId;
 
-    @OneToOne
-    @JoinColumn(name = "record_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "record_id", nullable = false, unique = true)
     private MedicalRecord medicalRecord;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private Integer statusValue;
 
     @Transient
     private PrescriptionStatus status;
 
-    @Column(name = "prescribed_at")
+    @Column(name = "prescribed_at", insertable = false, updatable = false)
     private LocalDateTime prescribedAt;
 
-    @OneToMany(mappedBy = "prescription", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<PrescriptionDetail> details;
+    @OneToMany(
+            mappedBy = "prescription",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<PrescriptionDetail> details = new ArrayList<>();
 
     @PostLoad
-    public void loadEnum() {
-        this.status = PrescriptionStatus.fromInt(this.statusValue != null ? this.statusValue : 0);
+    private void loadEnum() {
+        if (this.statusValue != null) {
+            this.status = PrescriptionStatus.fromInt(this.statusValue);
+        }
     }
 
     @PrePersist
     @PreUpdate
-    public void persistEnumValue() {
-        this.statusValue = (status != null) ? status.getValue() : 0;
+    private void persistEnumValue() {
+        if (this.status != null) {
+            this.statusValue = this.status.getValue();
+        }
     }
 
     public void setStatus(PrescriptionStatus status) {
         this.status = status;
         this.statusValue = (status != null) ? status.getValue() : 0;
     }
+
 }

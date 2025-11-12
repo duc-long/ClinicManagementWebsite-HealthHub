@@ -2,72 +2,92 @@ package com.group4.clinicmanagement.entity;
 
 import com.group4.clinicmanagement.enums.RecordStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "medicalrecord")
+@Table(name = "MedicalRecord")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class MedicalRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "record_id")
     private Integer recordId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @OneToOne
-    @JoinColumn(name = "appointment_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "appointment_id", nullable = true)
     private Appointment appointment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
+    private Staff createdBy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
-    @Column(length = 2000)
+    @Column(name = "diagnosis", length = 2000)
     private String diagnosis;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "notes", columnDefinition = "NVARCHAR(MAX)")
     private String notes;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private Integer statusValue;
 
     @Transient
     private RecordStatus status;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "medicalRecord")
+    @OneToOne(
+            mappedBy = "medicalRecord",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
     private VitalSigns vitalSigns;
 
-    @OneToOne(mappedBy = "medicalRecord")
-    private LabRequest labRequests;
+    @OneToMany(
+            mappedBy = "medicalRecord",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<LabRequest> labRequests = new ArrayList<>();
 
-    @OneToOne(mappedBy = "medicalRecord")
-    private Prescription prescriptions;
+    @OneToOne(
+            mappedBy = "medicalRecord",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private Prescription prescription;
 
     @PostLoad
-    public void loadEnum() {
-        this.status = RecordStatus.fromInt(this.statusValue != null ? this.statusValue : 0);
+    private void loadEnum() {
+        if (this.statusValue != null) {
+            this.status = RecordStatus.fromInt(this.statusValue);
+        }
     }
 
     @PrePersist
     @PreUpdate
-    public void persistEnumValue() {
-        this.statusValue = (status != null) ? status.getValue() : 0;
+    private void persistEnumValue() {
+        if (this.status != null) {
+            this.statusValue = this.status.getValue();
+        }
     }
 
     public void setStatus(RecordStatus status) {

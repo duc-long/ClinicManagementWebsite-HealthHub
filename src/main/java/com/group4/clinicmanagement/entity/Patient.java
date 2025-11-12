@@ -1,38 +1,138 @@
 package com.group4.clinicmanagement.entity;
 
+import com.group4.clinicmanagement.enums.Gender;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "Patient")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Patient {
+
     @Id
-    private Integer patientId; // = User.user_id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "patient_id")
+    private Integer patientId;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @MapsId
-    @JoinColumn(name = "patient_id")
-    private User user;
+    @Column(name = "username", nullable = false, unique = true, length = 100, updatable = false)
+    @NotBlank
+    @Size(max = 100)
+    private String username;
 
-    @OneToMany(mappedBy = "patient")
-    private List<MedicalRecord> medicalRecords;
+    @Column(name = "password_hash", nullable = false, length = 255)
+    @NotBlank
+    private String passwordHash;
 
-    @OneToMany(mappedBy = "patient")
-    private List<Feedback> feedbacks;
+    @Column(name = "full_name", nullable = false, length = 200)
+    @NotBlank
+    @Size(max = 200)
+    private String fullName;
 
+    @Column(name = "email", nullable = false, unique = true, length = 100)
+    @NotBlank
+    @Email
+    @Size(max = 100)
+    private String email;
+
+    @Column(name = "phone", nullable = false, unique = true, length = 20)
+    @NotBlank
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$")
+    @Size(max = 20)
+    private String phone;
+
+    @Column(name = "gender", nullable = false)
+    private Integer genderValue = 0;
+
+    @Transient
+    private Gender gender;
+
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(length = 255)
+    @Column(name = "address", length = 500)
     private String address;
+
+    @Column(name = "avatar", length = 500)
+    private String avatar;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = false;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(
+            mappedBy = "patient",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<MedicalRecord> medicalRecords = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "patient",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Feedback> feedbacks = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "patient",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Appointment> appointments = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "patient",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Bill> bills = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "patient",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<PasswordResetToken> resetTokens = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "patient",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<ConfirmAccount> confirmAccounts = new ArrayList<>();
+
+    @PostLoad
+    private void loadEnum() {
+        this.gender = Gender.fromInt(this.genderValue);
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void persistEnum() {
+        this.genderValue = (gender != null) ? gender.getValue() : 0;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+        this.genderValue = (gender != null) ? gender.getValue() : 0;
+    }
 }

@@ -170,8 +170,8 @@ public class FeedbackService {
         if (feedbacks.isEmpty()) {
             return 0;
         }
-        int avg = 0;
-        int total = 0;
+        double avg = 0;
+        double total = 0;
         for (Feedback feedback : feedbacks) {
             total += feedback.getRating();
         }

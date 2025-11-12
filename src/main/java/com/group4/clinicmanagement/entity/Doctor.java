@@ -1,29 +1,27 @@
 package com.group4.clinicmanagement.entity;
 
-import com.group4.clinicmanagement.dto.admin.DoctorDTO;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "Doctor")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Doctor {
+
     @Id
     @Column(name = "doctor_id")
-    private Integer doctorId; // = Users.user_id
+    private Integer doctorId;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "doctor_id")
-    private User user;
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Staff staff;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id", nullable = false)
@@ -32,106 +30,39 @@ public class Doctor {
     @Column(name = "license_no", nullable = false, unique = true, length = 50)
     private String licenseNo;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "specialty", nullable = false, length = 100)
     private String specialty;
 
-    @Column(length = 100)
+    @Column(name = "degree", length = 100)
     private String degree;
+
+    @Column(name = "years_experience")
     private Integer yearsExperience;
 
-    @Column(length = 1000)
+    @Column(name = "bio", length = 1000)
     private String bio;
+
+    @Column(name = "profile_visibility")
     private Boolean profileVisibility = true;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DoctorDailySlot> dailySlots;
+    @OneToMany(
+            mappedBy = "doctor",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<DoctorDailySlot> dailySlots = new ArrayList<>();
 
-    public Integer getDoctorId() {
-        return doctorId;
-    }
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
+    private List<DoctorCertificate> certificates = new ArrayList<>();
 
-    public void setDoctorId(Integer doctorId) {
-        this.doctorId = doctorId;
-    }
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
+    private List<MedicalRecord> medicalRecords = new ArrayList<>();
 
-    public User getUser() {
-        return user;
-    }
+    @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
+    private List<Appointment> appointments = new ArrayList<>();
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
-    public String getLicenseNo() {
-        return licenseNo;
-    }
-
-    public void setLicenseNo(String licenseNo) {
-        this.licenseNo = licenseNo;
-    }
-
-    public String getSpecialty() {
-        return specialty;
-    }
-
-    public void setSpecialty(String specialty) {
-        this.specialty = specialty;
-    }
-
-    public String getDegree() {
-        return degree;
-    }
-
-    public void setDegree(String degree) {
-        this.degree = degree;
-    }
-
-    public Integer getYearsExperience() {
-        return yearsExperience;
-    }
-
-    public void setYearsExperience(Integer yearsExperience) {
-        this.yearsExperience = yearsExperience;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public Boolean getProfileVisibility() {
-        return profileVisibility;
-    }
-
-    public void setProfileVisibility(Boolean profileVisibility) {
-        this.profileVisibility = profileVisibility;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public List<DoctorDailySlot> getDailySlots() {
-        return dailySlots;
-    }
-
-    public void setDailySlots(List<DoctorDailySlot> dailySlots) {
-        this.dailySlots = dailySlots;
-    }
 }

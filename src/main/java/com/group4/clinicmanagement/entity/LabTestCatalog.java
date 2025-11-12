@@ -1,18 +1,23 @@
 package com.group4.clinicmanagement.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
-@Table(name = "labtestcatalog")
-@Data
+@Table(
+        name = "LabTestCatalog",
+        uniqueConstraints = @UniqueConstraint(columnNames = "name")
+)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "labRequests") // Tránh LazyInitializationException khi log
 public class LabTestCatalog {
 
     @Id
@@ -20,17 +25,38 @@ public class LabTestCatalog {
     @Column(name = "test_id")
     private Integer testId;
 
-    @Column(nullable = false, length = 200)
-    private String name; // Tên xét nghiệm
+    // ========================================
+    // 1. Tên xét nghiệm – BẮT BUỘC, DUY NHẤT
+    // ========================================
+    @Column(name = "name", nullable = false, length = 200, unique = true)
+    private String name;
 
-    @Column(length = 1000)
-    private String description; // Mô tả chi tiết
+    // ========================================
+    // 2. Mô tả
+    // ========================================
+    @Column(name = "description", length = 1000)
+    private String description;
 
-    private Double cost; // Chi phí xét nghiệm
-    private Integer status; // 0=inactive, 1=active
+    // ========================================
+    // 3. Chi phí – BẮT BUỘC
+    // ========================================
+    @Column(name = "cost", nullable = false)
+    private Double cost;
+
+    // ========================================
+    // 4. Trạng thái (1 = active, 0 = inactive)
+    // ========================================
+    @Column(name = "status", nullable = false)
+    private Integer status = 1;
+
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // Một loại xét nghiệm có thể được dùng trong nhiều yêu cầu
-    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<LabRequest> labRequests;
+    @OneToMany(
+            mappedBy = "test",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            orphanRemoval = false, // Không xóa test khi xóa request
+            fetch = FetchType.LAZY
+    )
+    private List<LabRequest> labRequests = new ArrayList<>();
 }

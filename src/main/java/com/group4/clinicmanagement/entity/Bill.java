@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,49 +17,58 @@ public class Bill {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "bill_id")
     private Integer billId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @ManyToOne
-    @JoinColumn(name = "appointment_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "appointment_id", nullable = true)
     private Appointment appointment;
 
-    @ManyToOne
-    @JoinColumn(name = "lab_request_id")
-    private LabRequest labRequest;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cashier_id", nullable = false)
-    private User cashier;
+    private Staff cashier;
 
-    @Column(name = "amount", nullable = false)
-    private Double amount;
+    @Column(name = "total_amount", nullable = false)
+    private Double totalAmount;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private Integer statusValue;
 
     @Transient
     private BillStatus status;
 
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "paid_at")
     private LocalDateTime paidAt;
 
+    @Column(name = "notes", length = 1000)
+    private String notes;
+
     @PostLoad
-    public void loadEnum() {
-        this.status = BillStatus.fromInt(this.statusValue != null ? this.statusValue : 0);
+    private void loadEnum() {
+        if (this.statusValue != null) {
+            this.status = BillStatus.fromInt(this.statusValue);
+        }
     }
 
     @PrePersist
     @PreUpdate
-    public void persistEnumValue() {
-        this.statusValue = (status != null) ? status.getValue() : 0;
+    private void persistEnumValue() {
+        if (this.status != null) {
+            this.statusValue = this.status.getValue();
+        }
     }
 
+    // Custom setter to keep sync
     public void setStatus(BillStatus status) {
         this.status = status;
         this.statusValue = (status != null) ? status.getValue() : 0;
     }
+
 }
