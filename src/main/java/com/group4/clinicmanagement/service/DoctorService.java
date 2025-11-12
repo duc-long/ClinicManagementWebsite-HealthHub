@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.service;
 
+import com.group4.clinicmanagement.dto.DoctorDTO;
 import com.group4.clinicmanagement.dto.DoctorHomeDTO;
 import com.group4.clinicmanagement.entity.Department;
 import com.group4.clinicmanagement.entity.Doctor;
@@ -165,5 +166,53 @@ public class DoctorService {
                 throw new RuntimeException("Upload avatar failed", e);
             }
         }
+    }
+
+    // method to check valid doctor information
+    @Transactional(readOnly = true)
+    public Optional<String> validateUpdateDoctorInfo(DoctorDTO doctorDTO, int currentUserId) {
+        if (doctorDTO == null) {
+            return Optional.of("Invalid request.");
+        }
+
+        // Basic null/blank checks
+        if (doctorDTO.getFullName() == null || doctorDTO.getFullName().trim().isEmpty()) {
+            return Optional.of("Full name is required.");
+        }
+        if (doctorDTO.getGender() == null) {
+            return Optional.of("Gender is required.");
+        }
+        if (doctorDTO.getPhone() == null || doctorDTO.getPhone().trim().isEmpty()) {
+            return Optional.of("Phone number is required.");
+        }
+        if (doctorDTO.getEmail() == null || doctorDTO.getEmail().trim().isEmpty()) {
+            return Optional.of("Email is required.");
+        }
+
+        String email = doctorDTO.getEmail().trim();
+        String phone = doctorDTO.getPhone().trim();
+
+        // Format checks
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        String phoneRegex = "^(?:\\+84|0084|0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$";
+        if (!email.matches(emailRegex)) {
+            return Optional.of("Invalid email format.");
+        }
+
+        // phone: allow digits only, length 8-15
+        if (!phone.matches(phoneRegex)) {
+            return Optional.of("Phone number must contain 8 to 15 digits (digits only).");
+        }
+
+        if (userRepository.existsByEmailAndUserIdNot(email, doctorDTO.getDoctorId())) {
+            return Optional.of("Email is already in use by another account.");
+        }
+
+        if (userRepository.existsByPhoneAndUserIdNot(phone, doctorDTO.getDoctorId())) {
+            return Optional.of("Phone number is already in use by another account.");
+        }
+
+        // All checks passed
+        return Optional.empty();
     }
 }

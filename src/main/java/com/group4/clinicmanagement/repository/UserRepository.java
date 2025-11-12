@@ -43,7 +43,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
-    boolean existsByPhone(String phone);
+
+    // method to check if exist email in the database
+    boolean existsByEmailAndUserIdNot(String email, Integer doctorId);
+
+    // method to check if exist phone in the database
+    boolean existsByPhoneAndUserIdNot(String phone, Integer doctorId);
+
     boolean existsByUsername(String username);
 
     @Query(value = "SELECT MAX(user_id) FROM Users", nativeQuery = true)

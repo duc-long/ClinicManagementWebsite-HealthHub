@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.service;
 
+import com.group4.clinicmanagement.dto.DoctorDTO;
 import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,15 +106,5 @@ public class UserService implements UserDetailsService {
                 .password(user.getPasswordHash())
                 .authorities("ROLE_" + user.getRole().getName().toUpperCase())
                 .build();
-    }
-
-    public boolean isValidUpdateUserInfo(UserDTO userDTO) {
-        if (userDTO.getEmail() == null || userDTO.getFullName() == null
-        || userDTO.getGender() == null || userDTO.getPhone() == null) {
-            return false;
-        }
-
-        // check exist email and phone
-        return true;
     }
 }

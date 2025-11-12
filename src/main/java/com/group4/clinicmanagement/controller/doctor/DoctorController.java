@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/doctor")
@@ -76,7 +77,7 @@ public class DoctorController {
         if (user == null) {
             return "redirect:/doctor/login";
         }
-        
+
         List<AppointmentDTO> appointments = appointmentService.getTodayAppointments(user.getUserId(), patientName);
         model.addAttribute("appointments", appointments);
         model.addAttribute("patientName", patientName);
@@ -171,7 +172,7 @@ public class DoctorController {
                 a.getAppointmentDate(),
                 a.getCreatedAt(),
                 a.getStatus(),
-                a.getQueueNumber(),
+                a.getQueueNumber() != null ? a.getQueueNumber() : 0,
                 a.getNotes(),
                 a.getCancelReason()
         );
@@ -236,34 +237,59 @@ public class DoctorController {
                                   @ModelAttribute("doctor") DoctorDTO doctorModel,
                                   RedirectAttributes redirectAttributes) {
 
-        User user = userService.findUserByUsername(principal.getName());
-        if (user == null) return "redirect:/login";
-
-        Doctor doctor = doctorService.findDoctorById(user.getUserId());
-        if (doctor == null) return "redirect:/doctor/home";
-
-
-
-        // --- Update user basic info ---
-        user.setFullName(doctorModel.getFullName());
-        user.setEmail(doctorModel.getEmail());
-        user.setPhone(doctorModel.getPhone());
-        user.setGender(doctorModel.getGender());
-        User saved = userService.saveUser(user);
-
-        if (saved == null) {
+        if (principal == null) {
             redirectAttributes.addFlashAttribute("messageType", "error");
-            redirectAttributes.addFlashAttribute("message", "Invalid username or password");
-            return "redirect:/doctor/home";
+            redirectAttributes.addFlashAttribute("message", "You must be logged in to perform this action.");
+            return "redirect:/doctor/login";
         }
 
-        // --- Update doctor-specific info ---
-        doctor.setBio(doctorModel.getBio());
-        doctorService.saveDoctor(doctor);
+        User user = userService.findUserByUsername(principal.getName());
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "User not found.");
+            return "redirect:/doctor/login";
+        }
 
-        redirectAttributes.addFlashAttribute("message", "Doctor profile updated successfully!");
-        redirectAttributes.addFlashAttribute("messageType", "success");
-        return "redirect:/doctor/profile";
+        try {
+            Optional<String> validationError = doctorService.validateUpdateDoctorInfo(doctorModel, user.getUserId());
+            if (validationError.isPresent()) {
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                redirectAttributes.addFlashAttribute("message", validationError.get());
+                return "redirect:/doctor/profile/edit";
+            }
+
+            // Update User
+            user.setFullName(doctorModel.getFullName().trim());
+            user.setEmail(doctorModel.getEmail().trim());
+            user.setPhone(doctorModel.getPhone().trim());
+            user.setGender(doctorModel.getGender());
+            User saved = userService.saveUser(user);
+
+            if (saved == null) {
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                redirectAttributes.addFlashAttribute("message", "Failed to update user account.");
+                return "redirect:/doctor/profile/edit";
+            }
+
+            // Update Doctor-specific
+            Doctor doctor = doctorService.findDoctorById(user.getUserId());
+            if (doctor == null) {
+                // create new doctor record if not exist (optional)
+                doctor = new Doctor();
+                doctor.setDoctorId(user.getUserId());
+            }
+            doctor.setBio(doctorModel.getBio() == null ? null : doctorModel.getBio().trim());
+            doctorService.saveDoctor(doctor);
+
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "Doctor profile updated successfully!");
+            return "redirect:/doctor/profile";
+        } catch (Exception ex) {
+            // logger.error("Error updating doctor profile", ex);
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "An unexpected error occurred while updating profile. Please try again later.");
+            return "redirect:/doctor/profile/edit";
+        }
     }
 
     // method to show change password

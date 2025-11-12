@@ -208,7 +208,7 @@ public class AppointmentService {
                         a.getAppointmentDate(),
                         a.getCreatedAt(),
                         a.getStatus(),
-                        a.getQueueNumber(),
+                        a.getQueueNumber() != null ? a.getQueueNumber() : 0,
                         a.getNotes(),
                         a.getCancelReason()
                 ))
