@@ -6,10 +6,9 @@ import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
-@Table(name = "Feedback" )
+@Table(name = "Feedback")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,14 +23,13 @@ public class Feedback {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appointment_id", nullable = true, unique = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "feedback")
     private Appointment appointment;
 
     @Column(name = "rating", nullable = false)
     @Min(value = 1, message = "Rating must be at least 1")
     @Max(value = 5, message = "Rating must not exceed 5")
-    private Float rating;
+    private Integer rating;
 
     @Column(name = "comment", length = 2000)
     private String comment;

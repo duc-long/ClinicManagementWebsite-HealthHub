@@ -20,8 +20,8 @@ public class Prescription {
     @Column(name = "prescription_id")
     private Integer prescriptionId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "record_id", nullable = false, unique = true)
+    // SỬA: Dùng mappedBy, KHÔNG dùng @JoinColumn
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "prescription")
     private MedicalRecord medicalRecord;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,5 +64,4 @@ public class Prescription {
         this.status = status;
         this.statusValue = (status != null) ? status.getValue() : 0;
     }
-
 }

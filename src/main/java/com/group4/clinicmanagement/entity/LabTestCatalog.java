@@ -9,15 +9,11 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(
-        name = "LabTestCatalog",
-        uniqueConstraints = @UniqueConstraint(columnNames = "name")
-)
-@Getter
-@Setter
+@Table(name = "LabTestCatalog")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "labRequests") // Tránh LazyInitializationException khi log
+@ToString(exclude = "labRequests")
 public class LabTestCatalog {
 
     @Id
@@ -25,27 +21,15 @@ public class LabTestCatalog {
     @Column(name = "test_id")
     private Integer testId;
 
-    // ========================================
-    // 1. Tên xét nghiệm – BẮT BUỘC, DUY NHẤT
-    // ========================================
     @Column(name = "name", nullable = false, length = 200, unique = true)
     private String name;
 
-    // ========================================
-    // 2. Mô tả
-    // ========================================
     @Column(name = "description", length = 1000)
     private String description;
 
-    // ========================================
-    // 3. Chi phí – BẮT BUỘC
-    // ========================================
     @Column(name = "cost", nullable = false)
     private Double cost;
 
-    // ========================================
-    // 4. Trạng thái (1 = active, 0 = inactive)
-    // ========================================
     @Column(name = "status", nullable = false)
     private Integer status = 1;
 
@@ -55,7 +39,7 @@ public class LabTestCatalog {
     @OneToMany(
             mappedBy = "test",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
-            orphanRemoval = false, // Không xóa test khi xóa request
+            orphanRemoval = false,
             fetch = FetchType.LAZY
     )
     private List<LabRequest> labRequests = new ArrayList<>();

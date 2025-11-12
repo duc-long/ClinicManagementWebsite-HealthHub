@@ -26,9 +26,6 @@ public class Role {
     @Size(max = 50, message = "Role name must not exceed 50 characters")
     private String name;
 
-    @Column(name = "description", length = 200)
-    private String description;
-
     @OneToMany(
             mappedBy = "role",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},

@@ -24,8 +24,7 @@ public class MedicalRecord {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appointment_id", nullable = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "medicalRecord")
     private Appointment appointment;
 
     @ManyToOne(fetch = FetchType.LAZY)

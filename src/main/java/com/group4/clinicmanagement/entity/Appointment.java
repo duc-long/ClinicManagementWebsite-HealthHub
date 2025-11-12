@@ -25,7 +25,7 @@ public class Appointment {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY) // SỬA: từ EAGER → LAZY
     @JoinColumn(name = "doctor_id", nullable = true)
     private Doctor doctor;
 
@@ -58,14 +58,11 @@ public class Appointment {
     @OneToOne(mappedBy = "appointment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private MedicalRecord medicalRecord;
 
-    // One Appointment → One Feedbacks
+    // One Appointment → One Feedback
     @OneToOne(mappedBy = "appointment", fetch = FetchType.LAZY)
-    private Feedback feedbacks;
+    private Feedback feedback; // SỬA: đổi tên thành số ít
 
-    // One Appointment → One Bill (via Bill.appointment_id)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appointment_id")
-    private Bill bill;
+    // XÓA HOÀN TOÀN quan hệ Bill (Bill đã có appointment)
 
     @PostLoad
     private void fillStatusEnum() {
@@ -82,7 +79,6 @@ public class Appointment {
         }
     }
 
-    // Custom setter to keep both fields in sync
     public void setStatus(AppointmentStatus status) {
         this.status = status;
         this.statusValue = (status != null) ? status.getValue() : null;
