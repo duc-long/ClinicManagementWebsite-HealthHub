@@ -126,13 +126,13 @@
                         </thead>
                         <tbody>
                         <tr th:each="p : ${patientDTOs}">
-                            <td th:text="${p.userId}"></td>
+                            <td th:text="${p.patientId}"></td>
                             <td th:text="${p.fullName}"></td>
                             <td th:text="${p.birthDate}"></td>
                             <td th:text="${p.gender}"></td>
                             <td th:text="${p.phone}"></td>
-                            <td class="text-center" th:text="${p.userStatus}"
-                                th:classappend="${p.userStatus.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></td>
+                            <td class="text-center" th:text="${p.status}"
+                                th:classappend="${p.status.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></td>
                             <td class="text-center">
                                 <a th:href="@{/admin/patient/edit/{id}(id=${p.patientId})}"
                                    class="btn btn-sm btn-outline-primary me-2">Edit</a>

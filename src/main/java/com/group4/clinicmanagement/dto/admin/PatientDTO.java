@@ -46,18 +46,4 @@ public class PatientDTO {
 
     private UserStatus status;
 
-    public PatientDTO toDTO(Patient patient) {
-        PatientDTO dto = new PatientDTO();
-        dto.setPatientId(patient.getPatientId());
-        dto.setUsername(patient.getUsername());
-        dto.setFullName(patient.getFullName());
-        dto.setEmail(patient.getEmail());
-        dto.setPhone(patient.getPhone());
-        dto.setGender(patient.getGender());
-        dto.setAddress(patient.getAddress());
-        dto.setAvatarFilename(patient.getAvatar());
-        dto.setBirthDate(patient.getDateOfBirth());
-        dto.setStatus(patient.getStatus());
-        return dto;
-    }
 }

@@ -1242,6 +1242,8 @@ public class DoctorController {
         }
         return "redirect:/doctor/home";
     }
+
+
 }
 
 

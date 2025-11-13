@@ -118,7 +118,7 @@
                         <tr>
                             <th>ID</th>
                             <th>FullName</th>
-                            <th>Profile Visibility</th>
+
                             <th>Gender</th>
                             <th>Phone</th>
                             <th>Status</th>
@@ -129,9 +129,6 @@
                         <tr th:each="p : ${doctorDTOS}">
                             <td th:text="${p.userId}"></td>
                             <td th:text="${p.fullName}"></td>
-                            <td class="text-center" th:text="${p.profileVisibility} ? 'Visible' : 'Hidden'"
-                                th:classappend="${p.profileVisibility} ? 'text-success fw-bold' : 'text-danger fw-bold'"
-                            ></td>
                             <td th:text="${p.gender}"></td>
                             <td th:text="${p.phone}"></td>
                             <td class="text-center" th:text="${p.userStatus}"

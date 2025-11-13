@@ -220,17 +220,6 @@
                         </div>
 
                         <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label fw-bold">Profile Visibility</label>
-                            <div class="col-sm-10">
-                                <input type="text"
-                                       class="form-control"
-                                       th:value="${doctorDTO.profileVisibility} ? 'Visible' : 'Hidden'"
-                                       th:classappend="${doctorDTO.profileVisibility} ? 'text-success fw-bold' : 'text-danger fw-bold'"
-                                       readonly/>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Status</label>
                             <div class="col-sm-10 pt-2">
         <span class="form-control" th:text="${doctorDTO.userStatus}"

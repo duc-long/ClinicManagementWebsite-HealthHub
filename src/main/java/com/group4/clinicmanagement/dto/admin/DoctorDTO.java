@@ -67,8 +67,6 @@ public class DoctorDTO {
     @Size(max = 1000)
     private String bio;
 
-    private Boolean profileVisibility;
-
     private UserStatus userStatus;
 
     private Department department;

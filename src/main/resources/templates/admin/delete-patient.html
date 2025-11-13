@@ -137,7 +137,7 @@
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">User ID</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" th:value="${patientDTO.userId}" readonly/>
+                                <input type="text" class="form-control" th:value="${patientDTO.patientId}" readonly/>
                             </div>
                         </div>
 
@@ -194,8 +194,8 @@
                         <div class="mb-3 row">
                             <label class="col-sm-2 col-form-label fw-bold">Status</label>
                             <div class="col-sm-10 pt-2">
-        <span class="form-control" th:text="${patientDTO.userStatus}"
-              th:classappend="${patientDTO.userStatus.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></span>
+        <span class="form-control" th:text="${patientDTO.status}"
+              th:classappend="${patientDTO.status.name() == 'ACTIVE'} ? 'text-success fw-bold' : 'text-danger fw-bold'"></span>
                             </div>
                         </div>
 

@@ -1,6 +1,9 @@
 package com.group4.clinicmanagement.repository;
 
+import com.group4.clinicmanagement.entity.Role;
 import com.group4.clinicmanagement.entity.Staff;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -52,4 +55,11 @@ public interface StaffRepository extends JpaRepository<Staff, Integer> {
 
     // method to check if exist phone in the database
     boolean existsByPhoneAndStaffIdNot(String phone, Integer doctorId);
+
+    @Query("SELECT u FROM Staff u WHERE u.role.roleId = :roleId")
+    Page<Staff> findAllByRole(Pageable pageable, @Param("roleId") Integer roleId);
+
+    Optional<Staff> getStaffByStaffIdAndRole_RoleId(Integer staffId, Integer roleRoleId);
+
+    Optional<Object> findStaffByPhone(String phone);
 }

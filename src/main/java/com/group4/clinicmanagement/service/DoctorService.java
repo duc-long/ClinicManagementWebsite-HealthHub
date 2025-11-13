@@ -61,7 +61,6 @@ public class DoctorService {
                 .degree(doctor.getDegree())
                 .yearsExperience(doctor.getYearsExperience())
                 .bio(doctor.getBio())
-                .profileVisibility(Boolean.TRUE.equals(doctor.getProfileVisibility()))
                 .departmentName(dept != null ? dept.getName() : null)
                 .avatarFilename(user.getAvatar())
                 .build();

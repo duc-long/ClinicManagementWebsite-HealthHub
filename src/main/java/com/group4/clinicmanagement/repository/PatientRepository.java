@@ -3,6 +3,8 @@ package com.group4.clinicmanagement.repository;
 import com.group4.clinicmanagement.dto.PatientUserDTO;
 import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.entity.Staff;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -64,5 +66,14 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
     Optional<Patient> findByUsername(String username);
 
+    Page<Patient> findAll(Pageable pageable);
+
+    Optional<Patient> getPatientsByPatientId(Integer patientId);
+
+    Optional<Patient> findPatientByPatientId(Integer patientId);
+
+    Optional<Patient> findPatientByemail(String email);
+
+    Optional<Patient> findPatientByPhone(String phone);
 }
 

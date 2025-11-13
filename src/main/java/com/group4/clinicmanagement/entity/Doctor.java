@@ -42,9 +42,6 @@ public class Doctor {
     @Column(name = "bio", length = 1000)
     private String bio;
 
-    @Column(name = "profile_visibility")
-    private Boolean profileVisibility = true;
-
     @OneToMany(
             mappedBy = "doctor",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},

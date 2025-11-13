@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.repository;
 
 import com.group4.clinicmanagement.entity.Doctor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,9 +32,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
 
     @Query("""
             SELECT d FROM Doctor d
-            WHERE d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}
-              AND d.profileVisibility = true
-            """)
+            WHERE d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}""")
     List<Doctor> findAllVisibleAndActiveDoctors();
 
 
@@ -41,28 +40,32 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
             SELECT d FROM Doctor d
             WHERE LOWER(d.staff.fullName) LIKE LOWER(CONCAT('%', :name, '%'))
               AND (:departmentId = 0 OR d.department.departmentId = :departmentId)
-              AND d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}
-              AND d.profileVisibility = true""")
+              AND d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}""")
     List<Doctor> findByNameAndDepartmentId(@Param("name") String name, @Param("departmentId") Integer departmentId);
 
 
     @Query("""
             SELECT d FROM Doctor d
             WHERE d.doctorId = :id
-              AND d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}
-              AND d.profileVisibility = true""")
+              AND d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}""")
     Optional<Doctor> findVisibleActiveDoctorById(@Param("id") Integer id);
 
     @Query("""
             SELECT d FROM Doctor d
             WHERE d.department.name = :departmentName
-              AND d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}
-              AND d.profileVisibility = true""")
+              AND d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}""")
     List<Doctor> findVisibleActiveDoctorsByDepartment(@Param("departmentName") String departmentName);
 
     @Query("""
             SELECT d FROM Doctor d
-            WHERE d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value} AND d.profileVisibility = true
+            WHERE d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value}
             ORDER BY d.doctorId DESC""")
     List<Doctor> findTopDoctors(Pageable pageable);
+
+    Page<Doctor> findAll(Pageable pageable);
+
+    Optional<Doctor> getDoctorsByDoctorId(Integer doctorId);
+
+    Optional<Doctor> findDoctorsByLicenseNo(String licenseNo);
+
 }

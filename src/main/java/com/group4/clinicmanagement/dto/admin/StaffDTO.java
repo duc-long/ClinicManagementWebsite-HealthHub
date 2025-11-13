@@ -1,10 +1,9 @@
 package com.group4.clinicmanagement.dto.admin;
 
-import com.group4.clinicmanagement.entity.Doctor;
-import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.enums.Gender;
 import com.group4.clinicmanagement.enums.UserStatus;
 import jakarta.validation.constraints.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReceptionistDTO {
+public class StaffDTO {
     private Integer userId;
 
     @NotBlank(message = "Username is required")
