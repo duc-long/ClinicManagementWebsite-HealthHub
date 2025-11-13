@@ -48,66 +48,68 @@ public class PatientService {
     }
 
     @Transactional
-    public PatientUserDTO savePatientUser(String username, PatientUserDTO patientUserDTO) {
-        int updatedUser = patientRepository.updateProfileByUsername(
-                username,
-                patientUserDTO.getFullName(),
-                patientUserDTO.getEmail(),
-                patientUserDTO.getPhone(),
-                patientUserDTO.getGender().getValue()
-        );
+    public PatientUserDTO savePatientUser(String username, PatientUserDTO dto) {
+        // 1. Tìm patient theo username
+        Patient patient = patientRepository.findPatientByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-        if (updatedUser == 0) {
-            throw new RuntimeException("User not found");
-        }
+        // 2. Update tất cả thông tin vào entity Patient
+        patient.setFullName(dto.getFullName());
+        patient.setEmail(dto.getEmail());
+        patient.setPhone(dto.getPhone());
+        patient.setGender(dto.getGender());
+        patient.setAddress(dto.getAddress());
+        patient.setDateOfBirth(dto.getDateOfBirth());
+        patient.setUpdatedAt(java.time.LocalDateTime.now());
 
-        Patient user = patientRepository.findPatientByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        // 3. Lưu
+        patientRepository.save(patient);
 
-        int updatedPatient = patientRepository.updateAddress(user.getPatientId(), patientUserDTO.getAddress(), patientUserDTO.getDateOfBirth());
-
-        if (updatedPatient == 0) {
-            throw new RuntimeException("Patient not found");
-        }
-
+        // 4. Trả về DTO đã cập nhật
         return patientRepository.fetchPatientWithUserInfoByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Updated profile not found"));
     }
 
     @Transactional
     public void savePatientUserWithAvatar(String username, PatientUserDTO dto, MultipartFile avatar) {
+        // Bước 1: Lưu thông tin cơ bản (không liên quan ảnh)
         savePatientUser(username, dto);
 
+        // Bước 2: Xử lý avatar nếu có upload
         if (avatar != null && !avatar.isEmpty()) {
             long maxFileSize = 20 * 1024 * 1024;
             if (avatar.getSize() > maxFileSize) {
                 throw new IllegalArgumentException("File size exceeds the maximum allowed size of 20MB");
             }
-            // Kiểm tra đuôi file (extension)
-            String fileExtension = getFileExtension(avatar.getOriginalFilename());
 
-            // Kiểm tra đuôi file, ví dụ: chấp nhận jpg, png, gif
+            String fileExtension = getFileExtension(avatar.getOriginalFilename());
             if (!isValidFileExtension(fileExtension)) {
                 throw new IllegalArgumentException("Invalid file type. Only JPG, PNG, and GIF are allowed.");
             }
+
             try {
                 String uploadDir = System.getProperty("user.dir") + "/uploads/avatars";
                 Files.createDirectories(Paths.get(uploadDir));
 
-                Optional<Patient> userOpt = patientRepository.findPatientByUsername(username);
-                String oldFilename = userOpt.map(Patient::getAvatar).orElse(null);
+                // Lấy thông tin người dùng hiện tại
+                Patient patient = patientRepository.findPatientByUsername(username)
+                        .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-                String filename = UUID.randomUUID() + "_" + avatar.getOriginalFilename();
-                Path filePath = Paths.get(uploadDir, filename);
+                String oldFilename = patient.getAvatar();
+                String newFilename = UUID.randomUUID() + "_" + avatar.getOriginalFilename();
+                Path newFilePath = Paths.get(uploadDir, newFilename);
 
-                avatar.transferTo(filePath.toFile());
+                // Lưu file mới
+                avatar.transferTo(newFilePath.toFile());
 
+                // Xóa ảnh cũ nếu có
                 if (oldFilename != null && !oldFilename.isBlank()) {
                     Path oldFilePath = Paths.get(uploadDir, oldFilename);
                     Files.deleteIfExists(oldFilePath);
                 }
 
-                patientRepository.updateAvatarFilename(username, filename);
+                // Cập nhật avatar mới vào DB
+                patientRepository.updateAvatarFilename(username, newFilename);
 
             } catch (IOException e) {
                 throw new RuntimeException("Upload avatar failed", e);

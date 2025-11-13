@@ -1,7 +1,9 @@
 package com.group4.clinicmanagement.controller.patient;
 
 import com.group4.clinicmanagement.dto.*;
+import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.entity.Staff;
+import com.group4.clinicmanagement.repository.PatientRepository;
 import com.group4.clinicmanagement.repository.StaffRepository;
 import com.group4.clinicmanagement.security.CustomUserDetails;
 import com.group4.clinicmanagement.service.LabService;
@@ -42,6 +44,9 @@ public class PatientController {
 
     @Autowired
     private StaffRepository staffRepository;
+
+    @Autowired
+    private PatientRepository patientRepository;
 
     private String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -96,18 +101,16 @@ public class PatientController {
                                 RedirectAttributes redirect) {
         String username = getCurrentUsername();
 
-        Optional<Staff> existing = staffRepository.findByEmail(dto.getEmail());
+        Optional<Patient> existing = patientRepository.findByEmail(dto.getEmail());
         if (existing.isPresent() && !existing.get().getUsername().equals(username)) {
             // Email đã tồn tại và không phải của người dùng hiện tại
             result.rejectValue("email", "error.email", "Email is already in use by someone else.");
         }
 
         if (result.hasErrors()) {
-            // ✅ Lấy dữ liệu cũ từ DB
             PatientUserDTO oldData = patientService.getPatientsByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-            // Merge dữ liệu hợp lệ + giữ dữ liệu cũ cho phần bị trống
             dto.setFullName(safeValue(dto.getFullName(), oldData.getFullName()));
             dto.setEmail(safeValue(dto.getEmail(), oldData.getEmail()));
             dto.setPhone(safeValue(dto.getPhone(), oldData.getPhone()));
@@ -185,21 +188,54 @@ public class PatientController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
+        boolean hasError = false;
 
-        if (!newPassword.equals(confirmPassword)) {
-            redirectAttributes.addFlashAttribute("error", "Password confirmation does not match.");
-            System.out.println("Flash: " + redirectAttributes.getFlashAttributes());
-//            model.addAttribute("error", "Xác nhận mật khẩu không khớp.");
-            return "redirect:/patient/change-password";
+        // Check rỗng
+        if (currentPassword == null || currentPassword.isBlank()) {
+            redirectAttributes.addFlashAttribute("error", "Change password failed.");
+            model.addAttribute("currentPasswordError", "Current password must not be blank.");
+            hasError = true;
         }
 
-        boolean isChanged = patientService.changePassword(username, currentPassword, newPassword);
+        if (newPassword == null || newPassword.isBlank()) {
+            redirectAttributes.addFlashAttribute("error", "Change password failed.");
+            model.addAttribute("newPasswordError", "New password must not be blank.");
+            hasError = true;
+        } else {
+            // Kiểm tra pattern phức tạp
+            String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,50}$";
+            if (!newPassword.matches(pattern)) {
+                redirectAttributes.addFlashAttribute("error", "Change password failed.");
+                model.addAttribute("newPasswordError", "Password must contain upper, lower, number, and special character (8-50 chars).");
+                hasError = true;
+            }
+        }
 
-        if (!isChanged) {
-            model.addAttribute("error", "Mật khẩu hiện tại không đúng.");
+        if (confirmPassword == null || confirmPassword.isBlank()) {
+            redirectAttributes.addFlashAttribute("error", "Change password failed.");
+            model.addAttribute("confirmError", "Confirm password must not be blank.");
+            hasError = true;
+        } else if (!newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "Password confirmation does not match.");
+            model.addAttribute("confirmError", "Password confirmation does not match.");
+            hasError = true;
+        }
+
+        // Nếu lỗi ở form → hiển thị lại form với lỗi
+        if (hasError) {
             return "patient/change-password";
         }
-        model.addAttribute("success", "Đổi mật khẩu thành công.");
+
+        // Gọi service để đổi
+        boolean changed = patientService.changePassword(username, currentPassword, newPassword);
+        if (!changed) {
+            redirectAttributes.addFlashAttribute("error", "Current password is incorrect.");
+            model.addAttribute("currentPasswordError", "Current password is incorrect.");
+            return "patient/change-password";
+        }
+
+        // Thành công → redirect
+        redirectAttributes.addFlashAttribute("success", "Password changed successfully.");
         return "redirect:/patient/profile";
     }
 

@@ -105,7 +105,6 @@
                             <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Dosage</th>
                                 <th>Frequency</th>
                                 <th>Duration (days)</th>
                                 <th>Quantity</th>
@@ -115,7 +114,6 @@
                             <tbody>
                             <tr th:each="med : ${prescriptions}">
                                 <td th:text="${med.name}"></td>
-                                <td th:text="${med.dosage}">500mg</td>
                                 <td th:text="${med.frequency}">Twice daily</td>
                                 <td th:text="${med.duration_days}">5</td>
                                 <td th:text="${med.quantity}">10</td>

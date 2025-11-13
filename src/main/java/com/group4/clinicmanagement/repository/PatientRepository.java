@@ -27,6 +27,32 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
     @Modifying
     @Transactional
+    @Query("UPDATE Patient p SET " +
+            "p.fullName = :fullName, " +
+            "p.email = :email, " +
+            "p.phone = :phone, " +
+            "p.genderValue = :genderValue, " +
+            "p.address = :address, " +
+            "p.dateOfBirth = :dateOfBirth, " +
+            "p.updatedAt = CURRENT_TIMESTAMP " +
+            "WHERE p.username = :username")
+    int updatePatientProfile(
+            @Param("username") String username,
+            @Param("fullName") String fullName,
+            @Param("email") String email,
+            @Param("phone") String phone,
+            @Param("genderValue") Integer genderValue,
+            @Param("address") String address,
+            @Param("dateOfBirth") java.time.LocalDate dateOfBirth
+    );
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Patient p SET p.avatar = :avatarFilename, p.updatedAt = CURRENT_TIMESTAMP WHERE p.username = :username")
+    int updateAvatarFilename(@Param("username") String username, @Param("avatarFilename") String avatarFilename);
+
+    @Modifying
+    @Transactional
     @Query("UPDATE Patient p SET p.address = :address, p.updatedAt = CURRENT_TIMESTAMP, p.dateOfBirth = :dateOfBirth " +
             "WHERE p.patientId = :patientId")
     int updateAddress(@Param("patientId") Integer patientId,
@@ -34,7 +60,8 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
                       @Param("dateOfBirth") java.time.LocalDate dateOfBirth);
 
     @Modifying
-    @Query("UPDATE Staff u SET u.passwordHash = :newHash WHERE u.username = :username")
+    @Transactional
+    @Query("UPDATE Patient u SET u.passwordHash = :newHash WHERE u.username = :username")
     void updatePasswordHashByUsername(@Param("username") String username, @Param("newHash") String newHash);
 
     @Query("SELECT COUNT(p) FROM Patient p WHERE CAST(p.createdAt AS date) = CAST(:today AS date)")
@@ -48,22 +75,6 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
     Optional<Patient> findPatientByUsername(@Param("username") String username);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE Patient u SET u.fullName = :fullName, u.email = :email, " +
-            "u.phone = :phone, u.genderValue = :gender, u.updatedAt = CURRENT_TIMESTAMP " +
-            "WHERE u.username = :username")
-    int updateProfileByUsername(@Param("username") String username,
-                                @Param("fullName") String fullName,
-                                @Param("email") String email,
-                                @Param("phone") String phone,
-                                @Param("gender") Integer gender);
-
-    @Modifying
-    @Query("UPDATE Patient u SET u.avatar = :filename WHERE u.username = :username")
-    void updateAvatarFilename(@Param("username") String username,
-                              @Param("filename") String filename);
-
     Optional<Patient> findByUsername(String username);
 
     Page<Patient> findAll(Pageable pageable);
@@ -75,5 +86,10 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
     Optional<Patient> findPatientByemail(String email);
 
     Optional<Patient> findPatientByPhone(String phone);
+
+    Optional<Patient> findByEmail(String email);
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
+    boolean existsByPhone(String phone);
 }
 

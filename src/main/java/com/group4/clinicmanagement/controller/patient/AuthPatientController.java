@@ -3,6 +3,7 @@ package com.group4.clinicmanagement.controller.patient;
 import com.group4.clinicmanagement.dto.registerpatient.PatientRegisterDTO;
 import com.group4.clinicmanagement.dto.registerpatient.SetPasswordDTO;
 import com.group4.clinicmanagement.service.RegistrationService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,7 +41,8 @@ public class AuthPatientController {
     @PostMapping("/verify-otp")
     public String verifyOtp(@RequestParam("email") String email,
                             @RequestParam(value = "otp", required = false) String otp,
-                            Model model) {
+                            Model model,
+                            HttpSession session) {
         if (otp == null || otp.trim().isEmpty() ) {
             model.addAttribute("error", "Please enter your OTP code.");
             model.addAttribute("email", email);
@@ -60,9 +62,8 @@ public class AuthPatientController {
             // 2. Phiên dịch kết quả
             if (verificationResult == 1) {
                 var user = registrationService.getUserByEmail(email);
-                model.addAttribute("email", email);
+                session.setAttribute("VERIFIED_RESET_EMAIL", email);
                 model.addAttribute("username", user.getUsername());
-                model.addAttribute("email", email);
                 model.addAttribute("setPassword", new SetPasswordDTO());
                 return "auth/patient/create-password";
 
@@ -97,9 +98,13 @@ public class AuthPatientController {
     public String createPassword(
             @ModelAttribute("setPassword") @Valid SetPasswordDTO dto,
             BindingResult result,
-            @RequestParam("email") String email,
-            Model model) {
-
+            Model model,
+            HttpSession session) {
+        String email = (String) session.getAttribute("VERIFIED_RESET_EMAIL");
+        if (email == null) {
+            model.addAttribute("error", "Your session has expired or been tampered with. Please try again.");
+            return "auth/patient/forgot-password";
+        }
         if (result.hasErrors()) {
             model.addAttribute("email", email);
             return "auth/patient/create-password";
@@ -113,6 +118,7 @@ public class AuthPatientController {
 
         try {
             registrationService.createAccountAfterOtp(email, dto.getPassword());
+            session.removeAttribute("VERIFIED_RESET_EMAIL");
             model.addAttribute("success", "Account created successfully! You can now log in.");
             return "redirect:/patient/login";
         } catch (RuntimeException e) {
@@ -131,6 +137,7 @@ public class AuthPatientController {
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
         }
+        model.addAttribute("email", email);
         return "auth/patient/verify-otp";
     }
 

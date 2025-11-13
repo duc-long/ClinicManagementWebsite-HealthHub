@@ -2,6 +2,7 @@ package com.group4.clinicmanagement.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import org.hibernate.annotations.CreationTimestamp;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -37,7 +38,8 @@ public class PasswordResetToken {
     @Column(name = "attempts", nullable = false)
     private int attempts = 0;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Transient
