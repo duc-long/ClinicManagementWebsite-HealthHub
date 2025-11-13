@@ -44,6 +44,12 @@ public class PatientDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
+    @AssertTrue(message = "Patient must be at least 10 years old")
+    public boolean isAtLeastTenYearsOld() {
+        if (birthDate == null) return true;
+        return birthDate.isBefore(LocalDate.now().minusYears(10));
+    }
+
     private UserStatus status;
 
 }

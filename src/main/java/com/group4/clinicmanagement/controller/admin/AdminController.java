@@ -126,6 +126,10 @@ public class AdminController {
         if (patientService.isPhoneNoDuplicateForUpd(dto.getPhone(), dto.getPatientId())) {
             bindingResult.rejectValue("phone", "error.phone", "Phone already exists");
         }
+        if (dto.getBirthDate() != null &&
+                dto.getBirthDate().isAfter(LocalDate.now().minusYears(10))) {
+            bindingResult.rejectValue("birthDate", "error.birthDate", "Patient must be at least 10 years old");
+        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("patientDTO", dto);
             model.addAttribute("today", LocalDate.now());
@@ -200,6 +204,10 @@ public class AdminController {
         }
         if (patientService.isMailNoDuplicateForNewPatient(dto.getEmail())) {
             bindingResult.rejectValue("email", "error.email", "Email already exists");
+        }
+        if (dto.getBirthDate() != null &&
+                dto.getBirthDate().isAfter(LocalDate.now().minusYears(10))) {
+            bindingResult.rejectValue("birthDate", "error.birthDate", "Patient must be at least 10 years old");
         }
         if (bindingResult.hasErrors()) {
             model.addAttribute("patientDTO", dto);
