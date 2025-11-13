@@ -67,6 +67,13 @@ public class Staff {
     @Transient
     private UserStatus status;
 
+    public UserStatus getStatus() {
+        if (this.status == null && this.statusValue != null) {
+            this.status = UserStatus.fromValue(this.statusValue);
+        }
+        return this.status != null ? this.status : UserStatus.INACTIVE;
+    }
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -78,6 +85,11 @@ public class Staff {
     @OneToOne(mappedBy = "staff", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Doctor doctor;
 
+    @PostLoad
+    private void initEnums() {
+        this.status = UserStatus.fromValue(this.statusValue);
+        this.gender = Gender.fromValue(this.genderValue);
+    }
     @PrePersist
     @PreUpdate
     private void persistEnumValues() {
