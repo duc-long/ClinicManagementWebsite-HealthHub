@@ -32,7 +32,7 @@ public class FeedbackController {
             return "redirect:/patient/login";
         }
 
-        Integer userId = userDetails.getUser().getUserId();
+        Integer userId = userDetails.getPatient().getPatientId();
 
         // Kiểm tra validation cơ bản
         if (result.hasErrors()) {
@@ -96,7 +96,7 @@ public class FeedbackController {
             return "redirect:/patient/login";
         }
 
-        Integer userId = userDetails.getUser().getUserId();
+        Integer userId = userDetails.getPatient().getPatientId();
 
         boolean deleted = feedbackService.deleteFeedback(userId, feedbackId);
 

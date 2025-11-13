@@ -1,9 +1,7 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.ReceptionistUserDTO;
-import com.group4.clinicmanagement.dto.UserDTO;
-import com.group4.clinicmanagement.entity.User;
-import com.group4.clinicmanagement.enums.Gender;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.repository.ReceptionistRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +14,10 @@ public class ReceptionistService {
         this.receptionistRepository = receptionistRepository;
     }
 
-    private ReceptionistUserDTO convertToDTO(User user) {
+    private ReceptionistUserDTO convertToDTO(Staff user) {
         if (user == null) return null;
         return new ReceptionistUserDTO(
-               user.getUserId(),
+               user.getStaffId(),
                 user.getUsername(),
                 user.getFullName(),
                 user.getEmail(),
@@ -30,7 +28,7 @@ public class ReceptionistService {
         );
     }
 
-    private void applyDTOToEntity(ReceptionistUserDTO dto, User user) {
+    private void applyDTOToEntity(ReceptionistUserDTO dto, Staff user) {
         user.setFullName(dto.getFullName());
         user.setEmail(dto.getEmail());
         user.setPhone(dto.getPhone());
@@ -39,15 +37,13 @@ public class ReceptionistService {
 
     @Transactional(readOnly = true)
     public ReceptionistUserDTO getReceptionistProfile(String receptionistName) {
-        User user = receptionistRepository.findByUsername(receptionistName);
-        System.out.println("\n====="+ user.getUsername());
+        Staff user = receptionistRepository.findByUsername(receptionistName);
         return convertToDTO(user);
     }
 
     @Transactional
     public void updateReceptionistProfile(String receptionistName, ReceptionistUserDTO dto) {
-        User user = receptionistRepository.findByUsername(receptionistName);
-        System.out.println("\n====="+ dto.getUsername());
+        Staff user = receptionistRepository.findByUsername(receptionistName);
         applyDTOToEntity(dto, user);
         receptionistRepository.save(user);
     }

@@ -69,15 +69,15 @@ public class DoctorController {
                        Principal principal,
                        @RequestParam(value = "patientName", required = false) String patientName,
                        @RequestParam(value = "status", required = false) AppointmentStatus status) {
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
 
         // check user null
         if (user == null) {
             return "redirect:/doctor/login";
         }
 
-        model.addAttribute("todayCount", appointmentService.countTodayAppointments(user.getUserId()));
-        List<AppointmentDTO> appointments = appointmentService.getTodayAppointments(user.getUserId(), patientName);
+        model.addAttribute("todayCount", appointmentService.countTodayAppointments(user.getStaffId()));
+        List<AppointmentDTO> appointments = appointmentService.getTodayAppointments(user.getStaffId(), patientName);
         model.addAttribute("appointments", appointments);
         model.addAttribute("patientName", patientName);
         model.addAttribute("status", status);
@@ -90,21 +90,21 @@ public class DoctorController {
     // method to load appointment list for doctor (delete)
     @GetMapping("/appointments")
     public String loadAppointment(Principal principal, Model model, RedirectAttributes redirectAttributes) {
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) return "redirect:/doctor/login";
 
-        Doctor doctor = doctorService.findDoctorById(user.getUserId());
+        Doctor doctor = doctorService.findDoctorById(user.getStaffId());
         model.addAttribute("doctor", doctor);
 
         try {
             List<AppointmentDTO> appointmentList = appointmentRepository
-                    .findByDoctor_DoctorIdAndStatusValue(user.getUserId(), AppointmentStatus.CHECKED_IN.getValue())
+                    .findByDoctor_DoctorIdAndStatusValue(user.getStaffId(), AppointmentStatus.CHECKED_IN.getValue())
                     .stream()
                     .map(a -> new AppointmentDTO(
                             a.getAppointmentId(),
                             a.getPatient().getPatientId(),
-                            a.getDoctor() != null && a.getDoctor().getUser() != null ? a.getDoctor().getUser().getFullName() : "Unknown",
-                            a.getPatient() != null && a.getPatient().getUser() != null ? a.getPatient().getUser().getFullName() : "Unknown",
+                            a.getDoctor() != null && a.getDoctor().getStaff() != null ? a.getDoctor().getStaff().getFullName() : "Unknown",
+                            a.getPatient() != null && a.getPatient() != null ? a.getPatient().getFullName() : "Unknown",
                             a.getReceptionist() != null ? a.getReceptionist().getFullName() : "Unknown",
                             a.getAppointmentDate(),
                             a.getCreatedAt(),
@@ -151,9 +151,9 @@ public class DoctorController {
             return "redirect:/doctor/home";
         }
 
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
 
-        if (user.getUserId() != a.getDoctor().getDoctorId()) {
+        if (user.getStaffId() != a.getDoctor().getDoctorId()) {
             redirectAttributes.addFlashAttribute("message", "You can't access this appointment");
             redirectAttributes.addFlashAttribute("messageType", "error");
             return "redirect:/doctor/home";
@@ -165,8 +165,8 @@ public class DoctorController {
         AppointmentDTO dto = new AppointmentDTO(
                 a.getAppointmentId(),
                 a.getPatient().getPatientId(),
-                a.getDoctor().getUser().getFullName(),
-                a.getPatient().getUser().getFullName(),
+                a.getDoctor().getStaff().getFullName(),
+                a.getPatient().getFullName(),
                 a.getReceptionist() != null ? a.getReceptionist().getFullName() : "N/A",
                 a.getAppointmentDate(),
                 a.getCreatedAt(),
@@ -186,10 +186,10 @@ public class DoctorController {
     // method to load profile doctor
     @GetMapping("/profile")
     public String loadProfile(Principal principal, Model model) {
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) return "redirect:/doctor/login";
 
-        Doctor doctor = doctorService.findDoctorById(user.getUserId());
+        Doctor doctor = doctorService.findDoctorById(user.getStaffId());
         model.addAttribute("doctor", doctor);
 
         DoctorDTO doctorDTO = new DoctorDTO();
@@ -197,7 +197,7 @@ public class DoctorController {
         doctorDTO.setEmail(user.getEmail());
         doctorDTO.setPhone(user.getPhone());
         doctorDTO.setFullName(user.getFullName());
-        doctorDTO.setDoctorId(user.getUserId());
+        doctorDTO.setDoctorId(user.getStaffId());
         doctorDTO.setAvatarFileName(user.getAvatar());
         doctorDTO.setUsername(user.getUsername());
         Department department = departmentRepository.findByDepartmentId(doctor.getDepartment().getDepartmentId())
@@ -212,15 +212,15 @@ public class DoctorController {
     // method to redirect to update profile page
     @GetMapping("/profile/edit")
     public String loadProfile(Model model, Principal principal) {
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
 
-        Doctor doctor = doctorService.findDoctorById(user.getUserId());
+        Doctor doctor = doctorService.findDoctorById(user.getStaffId());
         DoctorDTO doctorDTO = new DoctorDTO();
         doctorDTO.setGender(user.getGender());
         doctorDTO.setEmail(user.getEmail());
         doctorDTO.setPhone(user.getPhone());
         doctorDTO.setFullName(user.getFullName());
-        doctorDTO.setDoctorId(user.getUserId());
+        doctorDTO.setDoctorId(user.getStaffId());
         doctorDTO.setAvatarFileName(user.getAvatar());
         doctorDTO.setUsername(user.getUsername());
         doctorDTO.setBio(doctor.getBio());
@@ -236,10 +236,10 @@ public class DoctorController {
                                   @ModelAttribute("doctor") DoctorDTO doctorModel,
                                   RedirectAttributes redirectAttributes) {
 
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) return "redirect:/login";
 
-        Doctor doctor = doctorService.findDoctorById(user.getUserId());
+        Doctor doctor = doctorService.findDoctorById(user.getStaffId());
         if (doctor == null) return "redirect:/doctor/home";
 
         // --- Update user basic info ---
@@ -247,7 +247,7 @@ public class DoctorController {
         user.setEmail(doctorModel.getEmail());
         user.setPhone(doctorModel.getPhone());
         user.setGender(doctorModel.getGender());
-        User saved = userService.saveUser(user);
+        Staff saved = userService.saveUser(user);
 
         if (saved == null) {
             redirectAttributes.addFlashAttribute("messageType", "error");
@@ -267,7 +267,7 @@ public class DoctorController {
     // method to show change password
     @GetMapping("/change-password")
     public String changePassword(Model model, Principal principal) {
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
 
         if (user == null) {
             return "redirect:/doctor/home";
@@ -284,7 +284,7 @@ public class DoctorController {
                                  @RequestParam(name = "currentPassword") String currentPassword,
                                  @RequestParam(name = "newPassword") String newPassword,
                                  @RequestParam(name = "confirmPassword", required = false) String confirmPassword) {
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) {
             return "redirect:/doctor/home";
         }
@@ -328,7 +328,7 @@ public class DoctorController {
     public String loadRecordForm(Model model, Principal principal,
                                  @RequestParam(name = "patientId") int patientId,
                                  @RequestParam(name = "appointmentId") int appointmentId) {
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) return "redirect:/doctor/login";
 
         model.addAttribute("record", new MedicalRecordDTO());
@@ -368,7 +368,7 @@ public class DoctorController {
                                @ModelAttribute("record") MedicalRecordDTO record,
                                RedirectAttributes redirectAttributes) {
 
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) {
             return "redirect:/doctor/login";
         }
@@ -460,13 +460,13 @@ public class DoctorController {
                                @ModelAttribute("record") MedicalRecordDTO record,
                                RedirectAttributes redirectAttributes) {
 
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) {
             return "redirect:/doctor/login";
         }
 
         try {
-            Doctor doctor = doctorService.findDoctorById(user.getUserId());
+            Doctor doctor = doctorService.findDoctorById(user.getStaffId());
             Patient patient = patientService.findPatientById(record.getPatientId());
             Appointment appointment = appointmentService.findById(record.getAppointmentId());
 
@@ -507,7 +507,7 @@ public class DoctorController {
     @GetMapping("/prescription/create/{id}")
     public String showCreateForm(@PathVariable("id") int recordId,
                                  Model model, Principal principal, RedirectAttributes redirectAttributes) {
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) return "redirect:/doctor/login";
 
         MedicalRecord record = medicalRecordService.findById(recordId);
@@ -546,7 +546,7 @@ public class DoctorController {
             return "redirect:/doctor/home";
         }
 
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) return "redirect:/doctor/login";
 
         Prescription prescription = prescriptionService.findPrescriptionById(prescriptionId);
@@ -563,8 +563,8 @@ public class DoctorController {
         recordDTO.setRecordStatus(medicalRecord.getStatus());
         recordDTO.setDiagnosis(medicalRecord.getDiagnosis());
         recordDTO.setNotes(medicalRecord.getNotes());
-        recordDTO.setDoctorName(medicalRecord.getDoctor().getUser().getFullName());
-        recordDTO.setPatientName(medicalRecord.getPatient().getUser().getFullName());
+        recordDTO.setDoctorName(medicalRecord.getDoctor().getStaff().getFullName());
+        recordDTO.setPatientName(medicalRecord.getPatient().getFullName());
 
         List<PrescriptionDetailDTO> detailDTOs = prescription.getDetails().stream()
                 .map(detail -> {
@@ -575,7 +575,7 @@ public class DoctorController {
                     dto.setDrugName(detail.getDrug().getName());
                     dto.setDosage(detail.getDosage());
                     dto.setFrequency(detail.getFrequency());
-                    dto.setDuration(detail.getDuration_days());
+                    dto.setDuration(detail.getDurationDays());
                     dto.setQuantity(detail.getQuantity());
                     dto.setInstruction(detail.getInstruction());
                     return dto;
@@ -712,7 +712,7 @@ public class DoctorController {
                             @RequestParam("recordId") int recordId,
                             Principal principal,
                             RedirectAttributes redirectAttributes) {
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) {
             return "redirect:/doctor/home";
         }
@@ -734,7 +734,7 @@ public class DoctorController {
     @GetMapping("/labs/create/{id}")
     public String labCreatePage(Model model, @PathVariable(name = "id") Integer id, RedirectAttributes redirectAttributes,
                                 Principal principal) {
-        User user = userService.findUserByUsername(principal.getName());
+        Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) {
             return "redirect:/doctor/login";
         }
@@ -764,7 +764,7 @@ public class DoctorController {
         // add to model
         model.addAttribute("record", recordDTO);
         model.addAttribute("labCatalogs", labCatalogs);
-        model.addAttribute("doctorId", user.getUserId());
+        model.addAttribute("doctorId", user.getStaffId());
         model.addAttribute("recordId", id);
         model.addAttribute("lab", new LabRequestDTO());
         model.addAttribute("active", "home");
@@ -975,8 +975,8 @@ public class DoctorController {
     // method to show create re-examination for patient
     @GetMapping("/re-examination/create")
     public String createExamination(Model model, Principal principal) {
-        User user = userService.findUserByUsername(principal.getName());
-        List<AppointmentDTO> appointmentDTOS = appointmentService.getTodayAppointmentsByDoctorId(user.getUserId());
+        Staff user = userService.findUserByUsername(principal.getName());
+        List<AppointmentDTO> appointmentDTOS = appointmentService.getTodayAppointmentsByDoctorId(user.getStaffId());
 
         model.addAttribute("appointments", appointmentDTOS);
         model.addAttribute("appointment", new Appointment());
@@ -1022,7 +1022,7 @@ public class DoctorController {
         appointment.setStatus(AppointmentStatus.CONFIRMED);
 
         if (principal != null) {
-            User user = userService.findUserByUsername(principal.getName());
+            Staff user = userService.findUserByUsername(principal.getName());
             if (user != null && user.getDoctor() != null) {
                 appointment.setDoctor(user.getDoctor());
             }

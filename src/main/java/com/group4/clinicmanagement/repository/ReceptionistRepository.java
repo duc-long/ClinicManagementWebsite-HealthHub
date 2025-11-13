@@ -1,10 +1,10 @@
 package com.group4.clinicmanagement.repository;
 
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ReceptionistRepository extends JpaRepository<User, Integer> {
-    User findByUsername(String receptionistName);
+public interface ReceptionistRepository extends JpaRepository<Staff, Integer> {
+    Staff findByUsername(String receptionistName);
 }

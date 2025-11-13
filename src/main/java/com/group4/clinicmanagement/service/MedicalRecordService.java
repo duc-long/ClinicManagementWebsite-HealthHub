@@ -73,13 +73,13 @@ public class MedicalRecordService {
         recordDTO.setRecordId(record.getRecordId());
         recordDTO.setDiagnosis(record.getDiagnosis());
         recordDTO.setCreatedAt(record.getCreatedAt());
-        recordDTO.setDoctorName(record.getDoctor() != null ? record.getDoctor().getUser().getFullName() : null);
+        recordDTO.setDoctorName(record.getDoctor() != null ? record.getDoctor().getStaff().getFullName() : null);
         recordDTO.setNotes(record.getNotes());
         recordDTO.setRecordStatus(record.getStatus());
         recordDTO.setDoctorId(record.getDoctor() != null ? record.getDoctor().getDoctorId() : 0);
         recordDTO.setPatientId(record.getPatient() != null ? record.getPatient().getPatientId() : 0);
         recordDTO.setAppointmentId(record.getAppointment() != null ? record.getAppointment().getAppointmentId() : 0);
-        recordDTO.setPatientName(record.getPatient() != null ? record.getPatient().getUser().getFullName() : null);
+        recordDTO.setPatientName(record.getPatient() != null ? record.getPatient().getFullName() : null);
 
         return recordDTO;
     }

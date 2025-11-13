@@ -1,10 +1,7 @@
 package com.group4.clinicmanagement.controller.technician;
 
-import com.group4.clinicmanagement.dto.LabRequestDTO;
-import com.group4.clinicmanagement.dto.LabResultDTO;
 import com.group4.clinicmanagement.dto.TechnicianDTO;
-import com.group4.clinicmanagement.entity.User;
-import com.group4.clinicmanagement.enums.LabRequestStatus;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.security.CustomUserDetails;
 import com.group4.clinicmanagement.service.LabRequestService;
 import com.group4.clinicmanagement.service.LabResultService;
@@ -51,7 +48,7 @@ public class TechnicianController {
     public String viewProfile(Authentication authentication, Model model, RedirectAttributes redirectAttributes) {
         try {
             CustomUserDetails customUser = (CustomUserDetails) authentication.getPrincipal();
-            User user = technicianService.findByUserId(customUser.getUserId());
+            Staff user = technicianService.findByUserId(customUser.getUserId());
 
             TechnicianDTO technicianDTO = TechnicianDTO.fromEntity(user);
             model.addAttribute("technicianDTO", technicianDTO);
@@ -72,7 +69,7 @@ public class TechnicianController {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             Integer userId = userDetails.getUserId();
 
-            User user = technicianService.findByUserId(userId);
+            Staff user = technicianService.findByUserId(userId);
             TechnicianDTO technicianDTO = TechnicianDTO.fromEntity(user);
 
             model.addAttribute("technicianDTO", technicianDTO);

@@ -2,7 +2,7 @@ package com.group4.clinicmanagement.repository;
 
 import com.group4.clinicmanagement.dto.PatientUserDTO;
 import com.group4.clinicmanagement.entity.Patient;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,9 +17,9 @@ import java.util.Optional;
 public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
     @Query("SELECT new com.group4.clinicmanagement.dto.PatientUserDTO(" +
-            "u.userId, p.patientId, u.username, u.fullName, u.email, u.phone, u.genderValue, p.address, u.avatar, p.dateOfBirth) " +
-            "FROM Patient p JOIN p.user u" +
-            " WHERE u.username = :username")
+            "p.patientId, p.patientId, p.username, p.fullName, p.email, p.phone, p.genderValue, p.address, p.avatar, p.dateOfBirth) " +
+            "FROM Patient p" +
+            " WHERE p.username = :username")
     Optional<PatientUserDTO> fetchPatientWithUserInfoByUsername(@Param("username") String username);
 
 
@@ -31,10 +31,8 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
                       @Param("address") String address,
                       @Param("dateOfBirth") java.time.LocalDate dateOfBirth);
 
-    Optional<Object> findByUser(User user);
-
     @Modifying
-    @Query("UPDATE User u SET u.passwordHash = :newHash WHERE u.username = :username")
+    @Query("UPDATE Staff u SET u.passwordHash = :newHash WHERE u.username = :username")
     void updatePasswordHashByUsername(@Param("username") String username, @Param("newHash") String newHash);
 
     @Query("SELECT COUNT(p) FROM Patient p WHERE CAST(p.createdAt AS date) = CAST(:today AS date)")
@@ -46,5 +44,6 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
     @Query("SELECT COUNT(p) FROM Patient p WHERE YEAR(p.createdAt) = :year")
     long countPatientsThisYear(@Param("year") int year);
 
+    Optional<Patient> findPatientByUsername(@Param("username") String username);
 }
 

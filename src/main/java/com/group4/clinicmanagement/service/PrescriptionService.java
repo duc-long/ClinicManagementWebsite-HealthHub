@@ -41,7 +41,7 @@ public class PrescriptionService {
         PrescriptionDTO prescriptionDTO = new PrescriptionDTO();
         prescriptionDTO.setPrescriptionId(prescription.getPrescriptionId());
         prescriptionDTO.setDoctorId(prescription.getDoctor() != null ? prescription.getDoctor().getDoctorId() : 0);
-        prescriptionDTO.setDoctorName(prescription.getDoctor() != null ? prescription.getDoctor().getUser().getFullName() : null);
+        prescriptionDTO.setDoctorName(prescription.getDoctor() != null ? prescription.getDoctor().getStaff().getFullName() : null);
         prescriptionDTO.setStatus(prescription.getStatus());
 
         return prescriptionDTO;

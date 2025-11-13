@@ -3,10 +3,10 @@ package com.group4.clinicmanagement.service;
 import com.group4.clinicmanagement.dto.DoctorHomeDTO;
 import com.group4.clinicmanagement.entity.Department;
 import com.group4.clinicmanagement.entity.Doctor;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
 import com.group4.clinicmanagement.repository.DoctorRepository;
-import com.group4.clinicmanagement.repository.UserRepository;
+import com.group4.clinicmanagement.repository.StaffRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,14 +28,14 @@ public class DoctorService {
 
     private DoctorRepository doctorRepository;
     private DepartmentRepository departmentRepository;
-    private UserRepository userRepository;
+    private StaffRepository staffRepository;
 
 
     public DoctorService(DoctorRepository doctorRepository, DepartmentRepository departmentRepository,
-                         UserRepository userRepository) {
+                         StaffRepository staffRepository) {
         this.doctorRepository = doctorRepository;
         this.departmentRepository = departmentRepository;
-        this.userRepository = userRepository;
+        this.staffRepository = staffRepository;
     }
 
     public List<Doctor> findAllDoctors() {
@@ -44,7 +44,7 @@ public class DoctorService {
 
     @Transactional
     public DoctorHomeDTO toDTO(Doctor doctor) {
-        User user = doctor.getUser();
+        Staff user = doctor.getStaff();
         Department dept = doctor.getDepartment();
 
         return DoctorHomeDTO.builder()
@@ -146,8 +146,8 @@ public class DoctorService {
                 String uploadDir = System.getProperty("user.dir") + "/uploads/avatars/doctor";
                 Files.createDirectories(Paths.get(uploadDir));
 
-                Optional<User> userOpt = userRepository.findUserByUsername(username);
-                String oldFilename = userOpt.map(User::getAvatar).orElse(null);
+                Optional<Staff> userOpt = staffRepository.findStaffByUsername(username);
+                String oldFilename = userOpt.map(Staff::getAvatar).orElse(null);
 
                 String filename = UUID.randomUUID() + "_" + avatar.getOriginalFilename();
                 Path filePath = Paths.get(uploadDir, filename);
@@ -159,7 +159,7 @@ public class DoctorService {
                     Files.deleteIfExists(oldFilePath);
                 }
 
-                userRepository.updateAvatarFilename(username, filename);
+                staffRepository.updateAvatarFilename(username, filename);
 
             } catch (IOException e) {
                 throw new RuntimeException("Upload avatar failed", e);

@@ -5,7 +5,7 @@ import com.group4.clinicmanagement.dto.RecepCashAppointmentDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Doctor;
 import com.group4.clinicmanagement.entity.DoctorDailySlot;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.repository.*;
 import org.springframework.data.domain.Page;
@@ -24,15 +24,15 @@ public class AppointmentService {
     private final DoctorDailySlotRepository slotRepository;
     private final DoctorRepository doctorRepository;
     private final FeedbackRepository feedbackRepository;
-    private final UserRepository userRepository;
+    private final StaffRepository staffRepository;
 
     // constructor
-    public AppointmentService(AppointmentRepository appointmentRepository, DoctorDailySlotRepository slotRepository, DoctorRepository doctorRepository, FeedbackRepository feedbackRepository, UserRepository userRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository, DoctorDailySlotRepository slotRepository, DoctorRepository doctorRepository, FeedbackRepository feedbackRepository, StaffRepository staffRepository) {
         this.appointmentRepository = appointmentRepository;
         this.slotRepository = slotRepository;
         this.doctorRepository = doctorRepository;
         this.feedbackRepository = feedbackRepository;
-        this.userRepository = userRepository;
+        this.staffRepository = staffRepository;
     }
 
     // method to find all Appointment by patient ID
@@ -123,7 +123,7 @@ public class AppointmentService {
     }
 
     @Transactional
-    public void scheduleAppointment(Appointment updated, User receptionist) {
+    public void scheduleAppointment(Appointment updated, Staff receptionist) {
         Appointment existing = appointmentRepository.findById(updated.getAppointmentId())
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
         if (existing.getStatus() != AppointmentStatus.PENDING) {
@@ -206,8 +206,8 @@ public class AppointmentService {
                 .map(a -> new AppointmentDTO(
                         a.getAppointmentId(),
                         a.getPatient().getPatientId(),
-                        a.getDoctor().getUser().getFullName(),
-                        a.getPatient().getUser().getFullName(),
+                        a.getDoctor().getStaff().getFullName(),
+                        a.getPatient().getFullName(),
                         a.getReceptionist() != null ? a.getReceptionist().getFullName() : "N/A",
                         a.getAppointmentDate(),
                         a.getCreatedAt(),
@@ -226,8 +226,8 @@ public class AppointmentService {
                 .map(a -> new AppointmentDTO(
                         a.getAppointmentId(),
                         a.getPatient().getPatientId(),
-                        a.getDoctor().getUser().getFullName(),
-                        a.getPatient().getUser().getFullName(),
+                        a.getDoctor().getStaff().getFullName(),
+                        a.getPatient().getFullName(),
                         a.getReceptionist() != null ? a.getReceptionist().getFullName() : "N/A",
                         a.getAppointmentDate(),
                         a.getCreatedAt(),
@@ -251,10 +251,10 @@ public class AppointmentService {
                 .map(a -> new RecepCashAppointmentDTO(
                         a.getAppointmentId(),
                         a.getPatient().getPatientId(),
-                        a.getDoctor() != null && a.getDoctor().getUser() != null ? a.getDoctor().getUser().getFullName() : "Not Assigned",
-                        a.getPatient() != null && a.getPatient().getUser() != null ? a.getPatient().getUser().getFullName() : "Unknown",
+                        a.getDoctor() != null && a.getDoctor().getStaff() != null ? a.getDoctor().getStaff().getFullName() : "Not Assigned",
+                        a.getPatient() != null && a.getPatient() != null ? a.getPatient().getFullName() : "Unknown",
                         a.getReceptionist() != null ? a.getReceptionist().getFullName() : "N/A",
-                        a.getPatient().getUser().getPhone(),
+                        a.getPatient().getPhone(),
                         a.getAppointmentDate(),
                         a.getCreatedAt(),
                         AppointmentStatus.fromInt(a.getStatusValue()),
@@ -274,10 +274,10 @@ public class AppointmentService {
                 .map(a -> new RecepCashAppointmentDTO(
                         a.getAppointmentId(),
                         a.getPatient().getPatientId(),
-                        a.getDoctor() != null && a.getDoctor().getUser() != null ? a.getDoctor().getUser().getFullName() : "Not Assigned",
-                        a.getPatient() != null && a.getPatient().getUser() != null ? a.getPatient().getUser().getFullName() : "Unknown",
+                        a.getDoctor() != null && a.getDoctor().getStaff() != null ? a.getDoctor().getStaff().getFullName() : "Not Assigned",
+                        a.getPatient() != null && a.getPatient() != null ? a.getPatient().getFullName() : "Unknown",
                         a.getReceptionist() != null ? a.getReceptionist().getFullName() : "N/A",
-                        a.getPatient().getUser().getPhone(),
+                        a.getPatient().getPhone(),
                         a.getAppointmentDate(),
                         a.getCreatedAt(),
                         AppointmentStatus.fromInt(a.getStatusValue()),

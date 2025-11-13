@@ -1,8 +1,8 @@
 package com.group4.clinicmanagement.controller.patient;
 
 import com.group4.clinicmanagement.dto.*;
-import com.group4.clinicmanagement.entity.User;
-import com.group4.clinicmanagement.repository.UserRepository;
+import com.group4.clinicmanagement.entity.Staff;
+import com.group4.clinicmanagement.repository.StaffRepository;
 import com.group4.clinicmanagement.security.CustomUserDetails;
 import com.group4.clinicmanagement.service.LabService;
 import com.group4.clinicmanagement.service.MedicalRecordService;
@@ -11,7 +11,6 @@ import com.group4.clinicmanagement.service.PrescriptionService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +41,7 @@ public class PatientController {
     private LabService labService;
 
     @Autowired
-    private UserRepository userRepository;
+    private StaffRepository staffRepository;
 
     private String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -98,7 +96,7 @@ public class PatientController {
                                 RedirectAttributes redirect) {
         String username = getCurrentUsername();
 
-        Optional<User> existing = userRepository.findByEmail(dto.getEmail());
+        Optional<Staff> existing = staffRepository.findByEmail(dto.getEmail());
         if (existing.isPresent() && !existing.get().getUsername().equals(username)) {
             // Email đã tồn tại và không phải của người dùng hiện tại
             result.rejectValue("email", "error.email", "Email is already in use by someone else.");

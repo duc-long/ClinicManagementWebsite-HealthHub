@@ -1,14 +1,13 @@
 package com.group4.clinicmanagement.controller.doctor;
 
 import com.group4.clinicmanagement.dto.UserDTO;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.security.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
@@ -19,14 +18,14 @@ public class ProfileController {
     public String viewProfile(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User userEntity = userDetails.getUser();
+        Patient userEntity = userDetails.getPatient();
 
         if (userEntity == null) {
             return "redirect:/login?error=true";
         }
 
         UserDTO dto = new UserDTO();
-        dto.setId(userEntity.getUserId());
+        dto.setId(userEntity.getPatientId());
         dto.setUsername(userEntity.getUsername());
         dto.setEmail(userEntity.getEmail());
         dto.setPhone(userEntity.getPhone());

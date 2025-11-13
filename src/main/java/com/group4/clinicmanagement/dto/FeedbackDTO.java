@@ -18,7 +18,7 @@ public class FeedbackDTO {
     @NotNull(message = "Rating is required")
     @Min(value = 1, message = "Minimum rating is 1 star")
     @Max(value = 5, message = "Maximum rating is 5 stars")
-    private Float rating;
+    private Integer rating;
 
     @NotBlank(message = "Comment cannot be empty")
     private String comment;

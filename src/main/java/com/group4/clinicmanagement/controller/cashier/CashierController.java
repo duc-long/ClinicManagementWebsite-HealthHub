@@ -3,14 +3,13 @@ package com.group4.clinicmanagement.controller.cashier;
 import com.group4.clinicmanagement.dto.CashierLabRequestDTO;
 import com.group4.clinicmanagement.dto.CashierUserDTO;
 import com.group4.clinicmanagement.dto.RecepCashAppointmentDTO;
-import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Bill;
 import com.group4.clinicmanagement.entity.LabRequest;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.enums.LabRequestStatus;
-import com.group4.clinicmanagement.repository.UserRepository;
+import com.group4.clinicmanagement.repository.StaffRepository;
 import com.group4.clinicmanagement.service.*;
 import com.group4.clinicmanagement.service.CashierService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,8 +22,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @RequestMapping(value = "/cashier")
@@ -32,15 +29,15 @@ public class CashierController {
     private final CashierService cashierService;
     private final AppointmentService appointmentService;
     private final DepartmentService departmentService;
-    private final UserRepository userRepository;
+    private final StaffRepository staffRepository;
     private final BillService billService;
     private final LabRequestService labRequestService;
 
-    public CashierController(CashierService cashierService, AppointmentService appointmentService, DepartmentService departmentService, UserRepository userRepository, BillService billService, LabRequestService labRequestService) {
+    public CashierController(CashierService cashierService, AppointmentService appointmentService, DepartmentService departmentService, StaffRepository staffRepository, BillService billService, LabRequestService labRequestService) {
         this.cashierService = cashierService;
         this.appointmentService = appointmentService;
         this.departmentService = departmentService;
-        this.userRepository = userRepository;
+        this.staffRepository = staffRepository;
         this.billService = billService;
         this.labRequestService = labRequestService;
     }
@@ -210,7 +207,7 @@ public class CashierController {
 
             // Xác định loại bill
             boolean isAppointmentBill = bill.getAppointment() != null;
-            boolean isLabBill = bill.getLabRequest() != null;
+            boolean isLabBill = bill.getAppointment().getMedicalRecord().getLabRequest() != null;
 
             model.addAttribute("bill", bill);
             model.addAttribute("isAppointmentBill", isAppointmentBill);
@@ -248,7 +245,7 @@ public class CashierController {
                 redirectAttributes.addFlashAttribute("messageType", "error");
                 return "redirect:/cashier/appointment-list?status=CHECKED_IN";
             }
-            User cashier = userRepository.findByUsernameAndRoleId(principal.getName(), 4); // 4 = CASHIER
+            Staff cashier = staffRepository.findByUsernameAndRoleId(principal.getName(), 4); // 4 = CASHIER
             if (cashier == null) {
                 redirectAttributes.addFlashAttribute("message", "Only cashier accounts can perform this action.");
                 redirectAttributes.addFlashAttribute("messageType", "error");
@@ -294,7 +291,7 @@ public class CashierController {
             }
 
             // Chỉ cashier mới được tạo bill
-            User cashier = userRepository.findByUsernameAndRoleId(principal.getName(), 4);
+            Staff cashier = staffRepository.findByUsernameAndRoleId(principal.getName(), 4);
             if (cashier == null) {
                 redirectAttributes.addFlashAttribute("message", "Only cashier accounts can perform this action.");
                 redirectAttributes.addFlashAttribute("messageType", "error");

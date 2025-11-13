@@ -172,10 +172,10 @@ public class LabRequestService {
             return new CashierLabRequestDTO(
                     lr.getLabRequestId(),
                     lr.getMedicalRecord() != null && lr.getMedicalRecord().getPatient() != null
-                            ? lr.getMedicalRecord().getPatient().getUser().getFullName()
+                            ? lr.getMedicalRecord().getPatient().getFullName()
                             : "Unknown",
-                    lr.getDoctor() != null && lr.getDoctor().getUser() != null
-                            ? lr.getDoctor().getUser().getFullName()
+                    lr.getDoctor() != null && lr.getDoctor() != null
+                            ? lr.getDoctor().getStaff().getFullName()
                             : "Unknown",
                     lr.getTest() != null ? lr.getTest().getName() : "N/A",
                     testCost,

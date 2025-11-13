@@ -2,9 +2,7 @@ package com.group4.clinicmanagement.entity;
 
 import com.group4.clinicmanagement.enums.AppointmentStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,8 +10,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Appointment")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Appointment {
 
     @Id
@@ -25,12 +24,12 @@ public class Appointment {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @ManyToOne(fetch = FetchType.LAZY) // SỬA: từ EAGER → LAZY
-    @JoinColumn(name = "doctor_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receptionist_id", nullable = true)
+    @JoinColumn(name = "receptionist_id")
     private Staff receptionist;
 
     @Column(name = "appointment_date", nullable = false)
@@ -54,26 +53,21 @@ public class Appointment {
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // One Appointment → One MedicalRecord
-    @OneToOne(mappedBy = "appointment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    // === 1-1 ===
+    @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private MedicalRecord medicalRecord;
 
-    // One Appointment → One Feedback
-    @OneToOne(mappedBy = "appointment", fetch = FetchType.LAZY)
-    private Feedback feedback; // SỬA: đổi tên thành số ít
-
-    // XÓA HOÀN TOÀN quan hệ Bill (Bill đã có appointment)
+    @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Feedback feedback;
 
     @PostLoad
-    private void fillStatusEnum() {
-        if (this.statusValue != null) {
-            this.status = AppointmentStatus.fromInt(this.statusValue);
-        }
+    public void fillStatusEnum() {
+        this.status = AppointmentStatus.fromInt(this.statusValue);
     }
 
     @PrePersist
     @PreUpdate
-    private void fillStatusValue() {
+    public void fillStatusValue() {
         if (this.status != null) {
             this.statusValue = this.status.getValue();
         }

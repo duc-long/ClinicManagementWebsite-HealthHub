@@ -1,6 +1,7 @@
 package com.group4.clinicmanagement.entity;
 
 import com.group4.clinicmanagement.enums.Gender;
+import com.group4.clinicmanagement.enums.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -64,7 +65,10 @@ public class Patient {
     private String avatar;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = false;
+    private Integer statusValue = 1;
+
+    @Transient
+    private UserStatus status;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;

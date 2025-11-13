@@ -24,7 +24,8 @@ public class MedicalRecord {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "medicalRecord")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "appointment_id", nullable = false)
     private Appointment appointment;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -58,13 +59,13 @@ public class MedicalRecord {
     )
     private VitalSigns vitalSigns;
 
-    @OneToMany(
+    @OneToOne(
             mappedBy = "medicalRecord",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private List<LabRequest> labRequests = new ArrayList<>();
+    private LabRequest labRequest;
 
     @OneToOne(
             mappedBy = "medicalRecord",

@@ -18,8 +18,8 @@ public class LabRequest {
     @Column(name = "lab_request_id")
     private Integer labRequestId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "record_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "record_id", nullable = false, unique = true)
     private MedicalRecord medicalRecord;
 
     @ManyToOne(fetch = FetchType.LAZY)

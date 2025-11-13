@@ -49,9 +49,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
     @Query(value = """
         SELECT a FROM Appointment a
         JOIN a.patient p
-        JOIN p.user u
         WHERE a.doctor.doctorId = :doctorId
-          AND (:patientName IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :patientName, '%')))
+          AND (:patientName IS NULL OR LOWER(p.fullName) LIKE LOWER(CONCAT('%', :patientName, '%')))
           AND a.appointmentDate = CURRENT_DATE
           AND a.statusValue = 5
         ORDER BY a.appointmentDate DESC
@@ -63,9 +62,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
             value = """
         SELECT a FROM Appointment a
         LEFT JOIN a.patient p
-        LEFT JOIN p.user pu
         LEFT JOIN a.doctor d
-        LEFT JOIN d.user du
         LEFT JOIN a.receptionist r
         WHERE a.statusValue = :status
         ORDER BY a.appointmentDate DESC
@@ -77,9 +74,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
     @Query("""
     SELECT a FROM Appointment a
     LEFT JOIN FETCH a.patient p
-    LEFT JOIN FETCH p.user pu
     LEFT JOIN FETCH a.doctor d
-    LEFT JOIN FETCH d.user du
     LEFT JOIN FETCH a.receptionist r
     WHERE a.appointmentId = :id
       AND a.statusValue IN(0,1,2,4,5)
@@ -100,9 +95,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
     @Query("""
     SELECT a FROM Appointment a
     LEFT JOIN FETCH a.patient p
-    LEFT JOIN FETCH p.user pu
     LEFT JOIN FETCH a.doctor d
-    LEFT JOIN FETCH d.user du
     LEFT JOIN FETCH a.receptionist r
     WHERE a.appointmentId = :id
       AND a.statusValue IN(3,5)

@@ -1,8 +1,8 @@
 package com.group4.clinicmanagement.service;
 
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.enums.UserStatus;
-import com.group4.clinicmanagement.repository.UserRepository;
+import com.group4.clinicmanagement.repository.StaffRepository;
 import com.group4.clinicmanagement.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final StaffRepository staffRepository;
     private HttpServletRequest request;
 
-    public CustomUserDetailsService(UserRepository userRepository, HttpServletRequest request) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(StaffRepository staffRepository, HttpServletRequest request) {
+        this.staffRepository = staffRepository;
         this.request = request;
     }
 
@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String uri = request.getRequestURI();
 
-        User user = userRepository.findByUsername(username)
+        Staff user = staffRepository.findStaffByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Account does not exist."));
 
         if (user.getStatus() != UserStatus.ACTIVE) {

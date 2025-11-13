@@ -1,6 +1,6 @@
 package com.group4.clinicmanagement.dto;
 
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.enums.Gender;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -41,10 +41,10 @@ public class TechnicianDTO {
     }
 
     // Mapping từ Entity -> DTO
-    public static TechnicianDTO fromEntity(User user) {
+    public static TechnicianDTO fromEntity(Staff user) {
         if (user == null) return null;
         TechnicianDTO dto = new TechnicianDTO();
-        dto.setId(user.getUserId());
+        dto.setId(user.getStaffId());
         dto.setFullName(user.getFullName());
         dto.setEmail(user.getEmail());
         dto.setPhone(user.getPhone());

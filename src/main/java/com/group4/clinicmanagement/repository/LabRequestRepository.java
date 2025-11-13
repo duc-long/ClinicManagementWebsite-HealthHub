@@ -22,7 +22,7 @@ public interface LabRequestRepository extends JpaRepository<LabRequest, Integer>
     JOIN MedicalRecord mr ON lr.record_id = mr.record_id
     JOIN Patient p ON mr.patient_id = p.patient_id
     JOIN Doctor d ON lr.doctor_id = d.doctor_id
-    JOIN Users u ON d.doctor_id = u.user_id
+    JOIN Staff u ON d.doctor_id = u.staff_id
     JOIN LabTestCatalog t ON lr.test_id = t.test_id
     WHERE ((:patientId IS NULL OR :patientId = '') OR CAST(p.patient_id AS NVARCHAR) LIKE CONCAT('%', :patientId, '%'))
       AND ((:doctorName IS NULL OR :doctorName = '') OR LOWER(u.full_name) LIKE LOWER(CONCAT('%', :doctorName, '%')))
@@ -50,22 +50,7 @@ public interface LabRequestRepository extends JpaRepository<LabRequest, Integer>
         SELECT l FROM LabRequest l
         JOIN FETCH l.medicalRecord mr
         JOIN FETCH mr.patient p
-        JOIN FETCH p.user pu
         JOIN FETCH l.doctor d
-        JOIN FETCH d.user du
-        JOIN FETCH l.test t
-        WHERE l.statusValue IN (0, 1)
-        ORDER BY l.requestedAt DESC
-    """)
-    Page<LabRequest> findRequestedAndPaid(Pageable pageable);
-
-    @Query("""
-        SELECT l FROM LabRequest l
-        JOIN FETCH l.medicalRecord mr
-        JOIN FETCH mr.patient p
-        JOIN FETCH p.user pu
-        JOIN FETCH l.doctor d
-        JOIN FETCH d.user du
         JOIN FETCH l.test t
         WHERE l.statusValue = :status
         ORDER BY l.requestedAt DESC

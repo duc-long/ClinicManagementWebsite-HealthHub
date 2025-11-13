@@ -1,17 +1,16 @@
 package com.group4.clinicmanagement.service;
 
-import com.group4.clinicmanagement.dto.LabRequestDTO;
 import com.group4.clinicmanagement.dto.LabResultDTO;
 import com.group4.clinicmanagement.dto.doctor.LabImageDTO;
 import com.group4.clinicmanagement.entity.LabImage;
 import com.group4.clinicmanagement.entity.LabRequest;
 import com.group4.clinicmanagement.entity.LabResult;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.enums.LabRequestStatus;
 import com.group4.clinicmanagement.repository.LabImageRepository;
 import com.group4.clinicmanagement.repository.LabRequestRepository;
 import com.group4.clinicmanagement.repository.LabResultRepository;
-import com.group4.clinicmanagement.repository.UserRepository;
+import com.group4.clinicmanagement.repository.StaffRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,16 +28,16 @@ public class LabResultService {
 
     private final LabResultRepository labResultRepository;
     private final LabRequestRepository labRequestRepository;
-    private final UserRepository userRepository;
+    private final StaffRepository staffRepository;
     private final LabImageRepository labImageRepository;
 
     public LabResultService(LabResultRepository labResultRepository,
                             LabRequestRepository labRequestRepository,
-                            UserRepository userRepository,
+                            StaffRepository staffRepository,
                             LabImageRepository labImageRepository) {
         this.labResultRepository = labResultRepository;
         this.labRequestRepository = labRequestRepository;
-        this.userRepository = userRepository;
+        this.staffRepository = staffRepository;
         this.labImageRepository = labImageRepository;
     }
 
@@ -47,7 +46,7 @@ public class LabResultService {
         LabRequest request = labRequestRepository.findById(labRequestId)
                 .orElseThrow(() -> new RuntimeException("LabRequest not found"));
 
-        User technician = userRepository.getReferenceByUserId(technicianUserId);
+        Staff technician = staffRepository.getReferenceByStaffId(technicianUserId);
         if (technician == null) {
             throw new RuntimeException("Technician not found for userId " + technicianUserId);
         }

@@ -45,7 +45,7 @@ public class PrescriptionDetailService {
         detail.setQuantity(quantity);
         detail.setDosage(dosage);
         detail.setFrequency(frequency);
-        detail.setDuration_days(duration);
+        detail.setDurationDays(duration);
         detail.setInstruction(instruction);
 
         return prescriptionDetailRepository.save(detail);
@@ -67,7 +67,7 @@ public class PrescriptionDetailService {
         detail.setQuantity(quantity);
         detail.setDosage(dosage);
         detail.setFrequency(frequency);
-        detail.setDuration_days(duration);
+        detail.setDurationDays(duration);
         detail.setInstruction(instruction);
 
         return prescriptionDetailRepository.save(detail);
@@ -161,7 +161,7 @@ public class PrescriptionDetailService {
             detail.setFrequency(freq);
 
             // giữ nguyên setter bạn đang dùng
-            detail.setDuration_days(duration); // nếu entity của bạn là setDurationDays thì đổi lại
+            detail.setDurationDays(duration); // nếu entity của bạn là setDurationDays thì đổi lại
             detail.setInstruction(instr);
 
             prescriptionDetailRepository.save(detail);
@@ -187,7 +187,7 @@ public class PrescriptionDetailService {
                     dto.setDrugName(detail.getDrug() != null ? detail.getDrug().getName() : null);
                     dto.setDosage(detail.getDosage());
                     dto.setQuantity(detail.getQuantity() != null ? detail.getQuantity() : 0);
-                    dto.setDuration(detail.getDuration_days() != null ? detail.getDuration_days() : 0);
+                    dto.setDuration(detail.getDurationDays() != null ? detail.getDurationDays() : 0);
                     dto.setInstruction(detail.getInstruction());
                     dto.setFrequency(detail.getFrequency());
                     return dto;

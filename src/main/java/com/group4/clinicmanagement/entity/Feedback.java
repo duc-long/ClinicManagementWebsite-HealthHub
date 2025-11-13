@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Feedback {
 
     @Id
@@ -23,7 +24,8 @@ public class Feedback {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "feedback")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "appointment_id", unique = true, nullable = false)
     private Appointment appointment;
 
     @Column(name = "rating", nullable = false)

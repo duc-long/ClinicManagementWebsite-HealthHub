@@ -9,7 +9,6 @@ import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.FeedbackRepository;
 import com.group4.clinicmanagement.repository.PatientRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

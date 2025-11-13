@@ -33,7 +33,7 @@ public class Bill {
     private Staff cashier;
 
     @Column(name = "total_amount", nullable = false)
-    private Double totalAmount;
+    private Double amount;
 
     @Column(name = "status", nullable = false)
     private Integer statusValue;
@@ -49,6 +49,10 @@ public class Bill {
 
     @Column(name = "notes", length = 1000)
     private String notes;
+
+    @ManyToOne
+    @JoinColumn(name = "lab_request_id")
+    private LabRequest labRequest;
 
     @PostLoad
     private void loadEnum() {

@@ -1,21 +1,24 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.PatientUserDTO;
+import com.group4.clinicmanagement.dto.admin.PatientDTO;
 import com.group4.clinicmanagement.entity.Patient;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.repository.PatientRepository;
-import com.group4.clinicmanagement.repository.UserRepository;
-import org.springframework.http.HttpStatus;
+import com.group4.clinicmanagement.repository.StaffRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,13 +26,13 @@ import java.util.UUID;
 @Service
 public class PatientService {
     private final PatientRepository patientRepository;
-    private final UserRepository userRepository;
+    private final StaffRepository staffRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public PatientService(PatientRepository patientRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public PatientService(PatientRepository patientRepository, StaffRepository staffRepository, PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
         this.patientRepository = patientRepository;
-        this.userRepository = userRepository;
+        this.staffRepository = staffRepository;
     }
 
     public Optional<PatientUserDTO> getPatientsByUsername(String username) {
@@ -39,10 +42,14 @@ public class PatientService {
     public Patient findPatientById(int id) {
         return patientRepository.findById(id).orElse(null);
     }
+    public PatientDTO findPatientDTOById(int id) {
+        Patient patient = patientRepository.findById(id).orElse(null);
+        return this.toDTO(patient);
+    }
 
     @Transactional
     public PatientUserDTO savePatientUser(String username, PatientUserDTO patientUserDTO) {
-        int updatedUser = userRepository.updateProfileByUsername(
+        int updatedUser = staffRepository.updateProfileByUsername(
                 username,
                 patientUserDTO.getFullName(),
                 patientUserDTO.getEmail(),
@@ -54,10 +61,10 @@ public class PatientService {
             throw new RuntimeException("User not found");
         }
 
-        User user = userRepository.findUserByUsername(username)
+        Staff user = staffRepository.findStaffByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        int updatedPatient = patientRepository.updateAddress(user.getUserId(), patientUserDTO.getAddress(), patientUserDTO.getDateOfBirth());
+        int updatedPatient = patientRepository.updateAddress(user.getStaffId(), patientUserDTO.getAddress(), patientUserDTO.getDateOfBirth());
 
         if (updatedPatient == 0) {
             throw new RuntimeException("Patient not found");
@@ -87,8 +94,8 @@ public class PatientService {
                 String uploadDir = System.getProperty("user.dir") + "/uploads/avatars";
                 Files.createDirectories(Paths.get(uploadDir));
 
-                Optional<User> userOpt = userRepository.findUserByUsername(username);
-                String oldFilename = userOpt.map(User::getAvatar).orElse(null);
+                Optional<Staff> userOpt = staffRepository.findStaffByUsername(username);
+                String oldFilename = userOpt.map(Staff::getAvatar).orElse(null);
 
                 String filename = UUID.randomUUID() + "_" + avatar.getOriginalFilename();
                 Path filePath = Paths.get(uploadDir, filename);
@@ -100,7 +107,7 @@ public class PatientService {
                     Files.deleteIfExists(oldFilePath);
                 }
 
-                userRepository.updateAvatarFilename(username, filename);
+                staffRepository.updateAvatarFilename(username, filename);
 
             } catch (IOException e) {
                 throw new RuntimeException("Upload avatar failed", e);
@@ -128,11 +135,11 @@ public class PatientService {
     }
 
     public boolean changePassword(String username, String currentPassword, String newPassword) {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
+        Optional<Staff> optionalUser = staffRepository.findByUsername(username);
 
         if (optionalUser.isEmpty()) return false;
 
-        User user = optionalUser.get();
+        Staff user = optionalUser.get();
 
         // So sánh mật khẩu hiện tại
         if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
@@ -141,7 +148,42 @@ public class PatientService {
 
         // Cập nhật mật khẩu mới đã băm
         user.setPasswordHash(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        staffRepository.save(user);
         return true;
+    }
+
+
+    public PatientDTO toDTO(Patient patient) {
+        PatientDTO dto = new PatientDTO();
+        dto.setPatientId(patient.getPatientId());
+        dto.setUsername(patient.getUsername());
+        dto.setFullName(patient.getFullName());
+        dto.setEmail(patient.getEmail());
+        dto.setPhone(patient.getPhone());
+        dto.setGender(patient.getGender());
+        dto.setAddress(patient.getAddress());
+        dto.setAvatarFilename(patient.getAvatar());
+        dto.setBirthDate(patient.getDateOfBirth());
+        dto.setStatus(patient.getStatus());
+        return dto;
+    }
+
+    @Transactional
+    public Page<PatientDTO> findAll(Pageable pageable) {
+        try {
+            Page<Patient> patientPage = patientRepository.findAll(pageable);
+
+            List<PatientDTO> dtoList = new ArrayList<>();
+            for (Patient patient : patientPage.getContent()) {
+                dtoList.add(toDTO(patient));
+            }
+
+            return new PageImpl<>(dtoList, pageable, patientPage.getTotalElements());
+
+        } catch (Exception e) {
+            System.err.println("Error while fetching patients: " + e.getMessage());
+
+            return Page.empty(pageable);
+        }
     }
 }

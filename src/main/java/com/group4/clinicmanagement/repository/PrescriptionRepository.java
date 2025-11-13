@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface PrescriptionRepository extends JpaRepository<Prescription, Integer> {
 
     @Query("SELECT new com.group4.clinicmanagement.dto.PrescriptionDetailDTO(" +
-            "dc.name, pd.quantity, pd.dosage, pd.frequency, pd.duration_days, pd.instruction) " +
+            "dc.name, pd.quantity, pd.dosage, pd.frequency, pd.durationDays, pd.instruction) " +
             "FROM Prescription p " +
             "JOIN p.details pd " +
             "JOIN pd.drug dc " +

@@ -1,12 +1,9 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.UserDTO;
-import com.group4.clinicmanagement.repository.UserRepository;
+import com.group4.clinicmanagement.entity.Staff;
+import com.group4.clinicmanagement.repository.StaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.group4.clinicmanagement.entity.Doctor;
-import com.group4.clinicmanagement.entity.User;
-import com.group4.clinicmanagement.repository.UserRepository;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,27 +14,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final StaffRepository staffRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(StaffRepository staffRepository) {
+        this.staffRepository = staffRepository;
     }
 
     public boolean isUsernameDuplicate(String username) {
-        return userRepository.findByUsername(username).isPresent();
+        return staffRepository.findByUsername(username).isPresent();
     }
 
-    public User findUserByUsername(String username) {
-        User user = userRepository.findUserByUsername(username)
+    public Staff findUserByUsername(String username) {
+        Staff user = staffRepository.findStaffByUsername(username)
                 .orElse(null);
         return user;
     }
 
     // method to get user DTO by username
     public UserDTO findUserDTOByUsername(String username) {
-        User user = userRepository.findUserByUsername(username)
+        Staff user = staffRepository.findStaffByUsername(username)
                 .orElse(null);
 
         if (user == null) {
@@ -52,7 +49,7 @@ public class UserService implements UserDetailsService {
     }
 
     // method to change password
-    public boolean changePassword(User user, String currentPassword, String newPassword) {
+    public boolean changePassword(Staff user, String currentPassword, String newPassword) {
         if (user == null || currentPassword == null || newPassword == null) {
             return false;
         }
@@ -68,7 +65,7 @@ public class UserService implements UserDetailsService {
 
         String encoded = passwordEncoder.encode(newPassword);
         user.setPasswordHash(encoded);
-        User saved = userRepository.save(user);
+        Staff saved = staffRepository.save(user);
         return saved != null;
     }
 
@@ -80,22 +77,22 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean isMailNoDuplicate(String mail, Integer id) {
-        User user = userRepository.getUsersByUserId(id).orElseThrow(() -> new RuntimeException("User not found"));
+        Staff user = staffRepository.findByStaffId(id).orElseThrow(() -> new RuntimeException("User not found"));
         if (user.getEmail().equals(mail)) {
             return false;
         } else {
-            return userRepository.findUserByEmail(mail).isPresent();
+            return staffRepository.findUserByEmail(mail).isPresent();
         }
     }
 
     @Transactional
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public Staff saveUser(Staff user) {
+        return staffRepository.save(user);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsernameIgnoreCase(username);
+        Staff user = staffRepository.findByUsernameIgnoreCase(username);
         if (user == null) {
             throw new UsernameNotFoundException("Username not found");
         }

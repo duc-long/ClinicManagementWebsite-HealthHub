@@ -20,8 +20,8 @@ public class Prescription {
     @Column(name = "prescription_id")
     private Integer prescriptionId;
 
-    // SỬA: Dùng mappedBy, KHÔNG dùng @JoinColumn
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "prescription")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "record_id", nullable = false, unique = true)
     private MedicalRecord medicalRecord;
 
     @ManyToOne(fetch = FetchType.LAZY)

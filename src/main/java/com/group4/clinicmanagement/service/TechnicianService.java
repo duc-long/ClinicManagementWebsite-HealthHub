@@ -1,7 +1,7 @@
 package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.TechnicianDTO;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.enums.UserStatus;
 import com.group4.clinicmanagement.repository.TechnicianRepository;
 import jakarta.transaction.Transactional;
@@ -11,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,19 +25,19 @@ public class TechnicianService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User findByUserId(Integer userId) {
+    public Staff findByUserId(Integer userId) {
         return technicianRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Technician not found with ID: " + userId));
     }
 
     @Transactional
-    public void save(User user) {
+    public void save(Staff user) {
         technicianRepository.save(user);
     }
 
     @Transactional
     public void updateProfile(Integer userId, TechnicianDTO dto, MultipartFile avatarFile) {
-        User user = findByUserId(userId);
+        Staff user = findByUserId(userId);
 
         user.setFullName(dto.getFullName());
         user.setEmail(dto.getEmail());
@@ -76,7 +75,7 @@ public class TechnicianService {
 
     @Transactional
     public boolean changePassword(Integer userId, String currentPassword, String newPassword, String confirmPassword) {
-        User user = findByUserId(userId);
+        Staff user = findByUserId(userId);
 
         if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
             return false;
@@ -89,13 +88,6 @@ public class TechnicianService {
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         technicianRepository.save(user);
         return true;
-    }
-
-    @Transactional
-    public void deactivateAccount(Integer userId) {
-        User user = findByUserId(userId);
-        user.setStatus(UserStatus.INACTIVE);
-        technicianRepository.save(user);
     }
 
 }

@@ -5,9 +5,9 @@ import com.group4.clinicmanagement.dto.ReceptionistUserDTO;
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Department;
 import com.group4.clinicmanagement.entity.Doctor;
-import com.group4.clinicmanagement.entity.User;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
-import com.group4.clinicmanagement.repository.UserRepository;
+import com.group4.clinicmanagement.repository.StaffRepository;
 import com.group4.clinicmanagement.service.DepartmentService;
 import com.group4.clinicmanagement.service.ReceptionistService;
 import com.group4.clinicmanagement.service.AppointmentService;
@@ -29,13 +29,13 @@ public class ReceptionistController {
     private final ReceptionistService receptionistService;
     private final AppointmentService appointmentService;
     private final DepartmentService departmentService;
-    private final UserRepository userRepository;
+    private final StaffRepository staffRepository;
 
-    public ReceptionistController(ReceptionistService receptionistService, AppointmentService appointmentService, DepartmentService departmentService, UserRepository userRepository) {
+    public ReceptionistController(ReceptionistService receptionistService, AppointmentService appointmentService, DepartmentService departmentService, StaffRepository staffRepository) {
         this.receptionistService = receptionistService;
         this.appointmentService = appointmentService;
         this.departmentService = departmentService;
-        this.userRepository = userRepository;
+        this.staffRepository = staffRepository;
     }
 
 
@@ -199,7 +199,7 @@ public class ReceptionistController {
                 updatedAppointment.setStatus(AppointmentStatus.fromInt(updatedAppointment.getStatusValue()));
             }
             String username = principal.getName();
-            User receptionist = userRepository.findByUsername(username)
+            Staff receptionist = staffRepository.findByUsername(username)
                     .orElseThrow(() -> new IllegalArgumentException("Receptionist not found: " + username));
             appointmentService.scheduleAppointment(updatedAppointment, receptionist);
 

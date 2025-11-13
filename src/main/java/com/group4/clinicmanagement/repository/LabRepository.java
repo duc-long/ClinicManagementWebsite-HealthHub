@@ -17,7 +17,7 @@ public interface LabRepository extends JpaRepository<LabRequest, Integer> {
     @Query("SELECT new com.group4.clinicmanagement.dto.LabDTO(" +
             "ltc.name, ltc.description, lr.resultText, li.filePath, li.description) " +
             "FROM LabRequest lrq " +
-            "JOIN lrq.labResults lr " +
+            "JOIN lrq.labResult lr " +
             "JOIN lrq.test ltc " +
             "LEFT JOIN lr.images li " +
             "WHERE lrq.medicalRecord.recordId = :recordId")

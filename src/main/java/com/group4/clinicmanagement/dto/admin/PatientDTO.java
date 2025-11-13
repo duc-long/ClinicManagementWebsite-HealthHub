@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.dto.admin;
 
+import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.enums.Gender;
 import com.group4.clinicmanagement.enums.UserStatus;
 import jakarta.validation.constraints.*;
@@ -14,8 +15,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PatientDTO {
-
-    private Integer userId;
 
     private Integer patientId;
 
@@ -45,7 +44,20 @@ public class PatientDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
-    private UserStatus userStatus;
+    private UserStatus status;
 
-    private Integer roleId;
+    public PatientDTO toDTO(Patient patient) {
+        PatientDTO dto = new PatientDTO();
+        dto.setPatientId(patient.getPatientId());
+        dto.setUsername(patient.getUsername());
+        dto.setFullName(patient.getFullName());
+        dto.setEmail(patient.getEmail());
+        dto.setPhone(patient.getPhone());
+        dto.setGender(patient.getGender());
+        dto.setAddress(patient.getAddress());
+        dto.setAvatarFilename(patient.getAvatar());
+        dto.setBirthDate(patient.getDateOfBirth());
+        dto.setStatus(patient.getStatus());
+        return dto;
+    }
 }
