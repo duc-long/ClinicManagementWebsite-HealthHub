@@ -41,10 +41,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (staffUser == null && patientUser == null) {
             throw new UsernameNotFoundException("Account does not exist.");
         }
-        if(patientUser.getStatus() == null){
-            System.out.println("ádasd");
-        }
-        System.out.println(patientUser.getUsername());
 
         // Kiểm tra trạng thái của tài khoản
         if (staffUser != null && staffUser.getStatus() != UserStatus.ACTIVE) {
