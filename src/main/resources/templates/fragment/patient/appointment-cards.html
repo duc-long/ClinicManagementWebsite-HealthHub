@@ -40,7 +40,7 @@
                     <h6 class="fw-bold text-warning mb-1"
                         th:text="${#temporals.format(a.appointmentDate, 'dd/MM/yyyy')}"></h6>
                     <p class="small text-secondary mb-0">
-                        <strong th:text="${a.doctor != null ? a.doctor.user.fullName : 'No doctor assigned'}"></strong>
+                        <strong th:text="${a.doctor != null ? a.doctor.staff.fullName : 'No doctor assigned'}"></strong>
                     </p>
                 </div>
 

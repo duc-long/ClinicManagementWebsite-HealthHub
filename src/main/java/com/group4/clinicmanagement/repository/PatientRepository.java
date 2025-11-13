@@ -45,5 +45,24 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
     long countPatientsThisYear(@Param("year") int year);
 
     Optional<Patient> findPatientByUsername(@Param("username") String username);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Patient u SET u.fullName = :fullName, u.email = :email, " +
+            "u.phone = :phone, u.genderValue = :gender, u.updatedAt = CURRENT_TIMESTAMP " +
+            "WHERE u.username = :username")
+    int updateProfileByUsername(@Param("username") String username,
+                                @Param("fullName") String fullName,
+                                @Param("email") String email,
+                                @Param("phone") String phone,
+                                @Param("gender") Integer gender);
+
+    @Modifying
+    @Query("UPDATE Patient u SET u.avatar = :filename WHERE u.username = :username")
+    void updateAvatarFilename(@Param("username") String username,
+                              @Param("filename") String filename);
+
+    Optional<Patient> findByUsername(String username);
+
 }
 

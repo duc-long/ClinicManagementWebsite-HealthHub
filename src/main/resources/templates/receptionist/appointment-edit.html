@@ -76,7 +76,7 @@
                         <option value="">-- Select Doctor --</option>
                         <option th:each="doc : ${availableDoctors}"
                                 th:value="${doc.doctorId}"
-                                th:text="${doc.user.fullName}"></option>
+                                th:text="${doc.staff.fullName}"></option>
                     </select>
                 </div>
 

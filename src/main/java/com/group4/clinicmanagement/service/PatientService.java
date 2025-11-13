@@ -3,9 +3,9 @@ package com.group4.clinicmanagement.service;
 import com.group4.clinicmanagement.dto.PatientUserDTO;
 import com.group4.clinicmanagement.dto.admin.PatientDTO;
 import com.group4.clinicmanagement.entity.Patient;
-import com.group4.clinicmanagement.entity.Staff;
+import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.repository.PatientRepository;
-import com.group4.clinicmanagement.repository.StaffRepository;
+import com.group4.clinicmanagement.repository.PatientRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -26,13 +26,11 @@ import java.util.UUID;
 @Service
 public class PatientService {
     private final PatientRepository patientRepository;
-    private final StaffRepository staffRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public PatientService(PatientRepository patientRepository, StaffRepository staffRepository, PasswordEncoder passwordEncoder) {
+    public PatientService(PatientRepository patientRepository, PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
         this.patientRepository = patientRepository;
-        this.staffRepository = staffRepository;
     }
 
     public Optional<PatientUserDTO> getPatientsByUsername(String username) {
@@ -49,7 +47,7 @@ public class PatientService {
 
     @Transactional
     public PatientUserDTO savePatientUser(String username, PatientUserDTO patientUserDTO) {
-        int updatedUser = staffRepository.updateProfileByUsername(
+        int updatedUser = patientRepository.updateProfileByUsername(
                 username,
                 patientUserDTO.getFullName(),
                 patientUserDTO.getEmail(),
@@ -61,10 +59,10 @@ public class PatientService {
             throw new RuntimeException("User not found");
         }
 
-        Staff user = staffRepository.findStaffByUsername(username)
+        Patient user = patientRepository.findPatientByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        int updatedPatient = patientRepository.updateAddress(user.getStaffId(), patientUserDTO.getAddress(), patientUserDTO.getDateOfBirth());
+        int updatedPatient = patientRepository.updateAddress(user.getPatientId(), patientUserDTO.getAddress(), patientUserDTO.getDateOfBirth());
 
         if (updatedPatient == 0) {
             throw new RuntimeException("Patient not found");
@@ -94,8 +92,8 @@ public class PatientService {
                 String uploadDir = System.getProperty("user.dir") + "/uploads/avatars";
                 Files.createDirectories(Paths.get(uploadDir));
 
-                Optional<Staff> userOpt = staffRepository.findStaffByUsername(username);
-                String oldFilename = userOpt.map(Staff::getAvatar).orElse(null);
+                Optional<Patient> userOpt = patientRepository.findPatientByUsername(username);
+                String oldFilename = userOpt.map(Patient::getAvatar).orElse(null);
 
                 String filename = UUID.randomUUID() + "_" + avatar.getOriginalFilename();
                 Path filePath = Paths.get(uploadDir, filename);
@@ -107,7 +105,7 @@ public class PatientService {
                     Files.deleteIfExists(oldFilePath);
                 }
 
-                staffRepository.updateAvatarFilename(username, filename);
+                patientRepository.updateAvatarFilename(username, filename);
 
             } catch (IOException e) {
                 throw new RuntimeException("Upload avatar failed", e);
@@ -135,11 +133,11 @@ public class PatientService {
     }
 
     public boolean changePassword(String username, String currentPassword, String newPassword) {
-        Optional<Staff> optionalUser = staffRepository.findByUsername(username);
+        Optional<Patient> optionalUser = patientRepository.findByUsername(username);
 
         if (optionalUser.isEmpty()) return false;
 
-        Staff user = optionalUser.get();
+        Patient user = optionalUser.get();
 
         // So sánh mật khẩu hiện tại
         if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
@@ -148,7 +146,7 @@ public class PatientService {
 
         // Cập nhật mật khẩu mới đã băm
         user.setPasswordHash(passwordEncoder.encode(newPassword));
-        staffRepository.save(user);
+        patientRepository.save(user);
         return true;
     }
 
