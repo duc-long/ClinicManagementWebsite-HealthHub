@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/doctor")
 public class DoctorController {
     private final DoctorService doctorService;
     private final UserService userService;
@@ -46,6 +45,7 @@ public class DoctorController {
     private final LabTestCatalogService labTestCatalogService;
     private final PatientService patientService;
     private final DoctorDailySlotRepository slotRepository;
+    private final DepartmentService departmentService;
 
     public DoctorController(DoctorService doctorService, UserService userService, DepartmentRepository departmentRepository,
                             AppointmentRepository appointmentRepository, AppointmentService appointmentService,
@@ -53,7 +53,7 @@ public class DoctorController {
                             PrescriptionService prescriptionService, VitalSignsService vitalSignsService,
                             PrescriptionDetailService prescriptionDetailService, PatientService patientService,
                             LabRequestService labRequestService, LabTestCatalogService labTestCatalogService,
-                            LabResultService labResultService, DoctorDailySlotRepository slotRepository) {
+                            LabResultService labResultService, DoctorDailySlotRepository slotRepository, DepartmentService departmentService) {
         this.doctorService = doctorService;
         this.userService = userService;
         this.departmentRepository = departmentRepository;
@@ -69,10 +69,11 @@ public class DoctorController {
         this.labTestCatalogService = labTestCatalogService;
         this.labResultService = labResultService;
         this.slotRepository = slotRepository;
+        this.departmentService = departmentService;
     }
 
     // method to load home view doctor
-    @GetMapping("/home")
+    @GetMapping("/doctor/home")
     public String home(Model model,
                        Principal principal,
                        @RequestParam(value = "patientName", required = false) String patientName,
@@ -95,7 +96,7 @@ public class DoctorController {
     }
 
     // method to load appointment list for doctor (delete)
-    @GetMapping("/appointments")
+    @GetMapping("/doctor/appointments")
     public String loadAppointment(Principal principal, Model model, RedirectAttributes redirectAttributes) {
         Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) return "redirect:/doctor/login";
@@ -134,7 +135,7 @@ public class DoctorController {
     }
 
     // method to show appointment detail for doctor
-    @GetMapping("/appointments/detail/{id}")
+    @GetMapping("/doctor/appointments/detail/{id}")
     public String loadAppointmentDetail(@PathVariable Integer id, Model model,
                                         RedirectAttributes redirectAttributes,
                                         Principal principal) {
@@ -191,7 +192,7 @@ public class DoctorController {
     }
 
     // method to load profile doctor
-    @GetMapping("/profile")
+    @GetMapping("/doctor/profile")
     public String loadProfile(Principal principal, Model model) {
         Staff user = userService.findUserByUsername(principal.getName());
         if (user == null) return "redirect:/doctor/login";
@@ -220,7 +221,7 @@ public class DoctorController {
     }
 
     // method to redirect to update profile page
-    @GetMapping("/profile/edit")
+    @GetMapping("/doctor/profile/edit")
     public String loadProfile(Model model, Principal principal) {
         Staff user = userService.findUserByUsername(principal.getName());
 
@@ -240,7 +241,7 @@ public class DoctorController {
     }
 
     // method to update doctor profile
-    @PostMapping("/profile/update")
+    @PostMapping("/doctor/profile/update")
     public String doUpdateProfile(Model model,
                                   Principal principal,
                                   @ModelAttribute("doctor") DoctorDTO doctorModel,
@@ -302,7 +303,7 @@ public class DoctorController {
     }
 
     // method to change doctor avatar
-    @PostMapping("/change-avatar")
+    @PostMapping("/doctor/change-avatar")
     public String editAvatar(
             @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
             Authentication authentication,
@@ -326,7 +327,7 @@ public class DoctorController {
     }
 
     // method to show change password
-    @GetMapping("/change-password")
+    @GetMapping("/doctor/change-password")
     public String changePassword(Model model, Principal principal) {
         Staff user = userService.findUserByUsername(principal.getName());
 
@@ -340,7 +341,7 @@ public class DoctorController {
     }
 
     // method to change doctor password
-    @PostMapping("/change-password")
+    @PostMapping("/doctor/change-password")
     public String changePassword(RedirectAttributes redirectAttributes, Principal principal,
                                  @RequestParam(name = "currentPassword") String currentPassword,
                                  @RequestParam(name = "newPassword") String newPassword,
@@ -372,7 +373,7 @@ public class DoctorController {
     }
 
     // method to show crate medical record
-    @PostMapping("/records/show-create")
+    @PostMapping("/doctor/records/show-create")
     public String createMedicalRecord(@RequestParam("appointmentId") Integer appointmentId,
                                       @RequestParam("patientId") Integer patientId,
                                       Model model) {
@@ -385,7 +386,7 @@ public class DoctorController {
     }
 
     // method to show create record form
-    @GetMapping("/records/{id}")
+    @GetMapping("/doctor/records/{id}")
     public String loadRecordForm(Model model, Principal principal,
                                  @RequestParam(name = "patientId") int patientId,
                                  @RequestParam(name = "appointmentId") int appointmentId) {
@@ -401,7 +402,7 @@ public class DoctorController {
     }
 
     // method to show update record form
-    @GetMapping("/records/update/{id}")
+    @GetMapping("/doctor/records/update/{id}")
     public String updateRecord(@PathVariable(name = "id") Integer id, Model model, RedirectAttributes redirectAttributes) {
         if (id == null) {
             redirectAttributes.addFlashAttribute("messageType", "error");
@@ -424,7 +425,7 @@ public class DoctorController {
     }
 
     // method to do update record
-    @PostMapping("/records/update")
+    @PostMapping("/doctor/records/update")
     public String updateRecord(Model model, Principal principal,
                                @ModelAttribute("record") MedicalRecordDTO record,
                                RedirectAttributes redirectAttributes) {
@@ -464,7 +465,7 @@ public class DoctorController {
     }
 
     // method to show medical record detail
-    @GetMapping("/records/detail/{recordId}")
+    @GetMapping("/doctor/records/detail/{recordId}")
     public String viewRecordDetail(@PathVariable Integer recordId, Model model, RedirectAttributes redirectAttributes) {
         // check valid record ID
         if (recordId == null) {
@@ -516,7 +517,7 @@ public class DoctorController {
     }
 
     // method to do create medical record
-    @PostMapping("/records/create")
+    @PostMapping("/doctor/records/create")
     public String createRecord(Principal principal,
                                @ModelAttribute("record") MedicalRecordDTO record,
                                RedirectAttributes redirectAttributes) {
@@ -565,7 +566,7 @@ public class DoctorController {
     }
 
     // method to show create prescription form
-    @GetMapping("/prescription/create/{id}")
+    @GetMapping("/doctor/prescription/create/{id}")
     public String showCreateForm(@PathVariable("id") int recordId,
                                  Model model, Principal principal, RedirectAttributes redirectAttributes) {
         Staff user = userService.findUserByUsername(principal.getName());
@@ -595,7 +596,7 @@ public class DoctorController {
     }
 
     // method to show prescription for update
-    @GetMapping("/prescription/update/{id}")
+    @GetMapping("/doctor/prescription/update/{id}")
     public String showUpdatePrescriptionForm(@PathVariable("id") Integer prescriptionId,
                                              Model model,
                                              Principal principal,
@@ -663,7 +664,7 @@ public class DoctorController {
     }
 
     // method to do create and update prescription form
-    @PostMapping("/prescription/save-details")
+    @PostMapping("/doctor/prescription/save-details")
     public String savePrescriptionDetails(
             @RequestParam("recordId") int recordId,
             @RequestParam("prescriptionId") int prescriptionId,
@@ -736,7 +737,7 @@ public class DoctorController {
     }
 
     // method to do create and update prescription form
-    @PostMapping("/prescription/create-prescription")
+    @PostMapping("/doctor/prescription/create-prescription")
     public String createPrescriptionDetails(
             @RequestParam("recordId") int recordId,
             @RequestParam("doctorId") int doctorId,
@@ -807,7 +808,7 @@ public class DoctorController {
 
 
     // method to show vital create
-    @GetMapping("/vitals/create/{id}")
+    @GetMapping("/doctor/vitals/create/{id}")
     public String showVitalForm(@PathVariable("id") Integer recordId,
                                 Model model,
                                 RedirectAttributes redirectAttributes) {
@@ -828,7 +829,7 @@ public class DoctorController {
     }
 
     // method to show vital sign form for update
-    @GetMapping("/vitals/update/{id}")
+    @GetMapping("/doctor/vitals/update/{id}")
     public String vitalSignUpdatePage(Model model, @PathVariable(name = "id") Integer vitalSignId,
                                       RedirectAttributes redirectAttributes) {
         if (vitalSignId == null) {
@@ -851,7 +852,7 @@ public class DoctorController {
     }
 
     // method do save update vital sign
-    @PostMapping("/vitals/update")
+    @PostMapping("/doctor/vitals/update")
     public String saveVital(@ModelAttribute("vital") VitalSignsDTO vital,
                             BindingResult result, Model model,
                             @RequestParam("recordId") int recordId,
@@ -876,7 +877,7 @@ public class DoctorController {
     }
 
     // method to show lab request fragment
-    @GetMapping("/labs/create/{id}")
+    @GetMapping("/doctor/labs/create/{id}")
     public String labCreatePage(Model model, @PathVariable(name = "id") Integer id, RedirectAttributes redirectAttributes,
                                 Principal principal) {
         Staff user = userService.findUserByUsername(principal.getName());
@@ -917,7 +918,7 @@ public class DoctorController {
     }
 
     // method to do create lab request
-    @PostMapping("/labs/create")
+    @PostMapping("/doctor/labs/create")
     public String doCreateLab(Model model, RedirectAttributes redirectAttributes,
                               @RequestParam(name = "recordId") Integer recordId,
                               @RequestParam(name = "doctorId") Integer doctorId,
@@ -960,7 +961,7 @@ public class DoctorController {
     }
 
     // method to view lab request
-    @GetMapping("/labs/view/{id}")
+    @GetMapping("/doctor/labs/view/{id}")
     public String viewLabRequest(Model model, @PathVariable(name = "id") Integer labId,
                                  RedirectAttributes redirectAttributes) {
         if (labId == null) {
@@ -992,7 +993,7 @@ public class DoctorController {
         return "doctor/lab-request-detail";
     }
 
-    @PostMapping("/labs/cancel/{id}")
+    @PostMapping("/doctor/labs/cancel/{id}")
     public String deleteLabRequest(@PathVariable("id") Integer labId,
                                    RedirectAttributes redirectAttributes) {
         if (labId == null) {
@@ -1028,7 +1029,7 @@ public class DoctorController {
     }
 
     // method to edit lab request information
-    @GetMapping("/labs/edit/{id}")
+    @GetMapping("/doctor/labs/edit/{id}")
     public String editLabRequest(@PathVariable("id") Integer labId, Model model, RedirectAttributes redirectAttributes) {
 
         LabRequestDTO lab = labRequestService.findLabRequestDTOById(labId);
@@ -1052,7 +1053,7 @@ public class DoctorController {
     }
 
     // method to do edit lab request
-    @PostMapping("/labs/edit")
+    @PostMapping("/doctor/labs/edit")
     public String updateLabRequest(@ModelAttribute(name = "lab") LabRequestDTO dto, @RequestParam("testId") Integer testId,
                                    RedirectAttributes redirectAttributes) {
         LabRequest labRequest = labRequestService.findLabRequestById(dto.getLabRequestId());
@@ -1085,7 +1086,7 @@ public class DoctorController {
     }
 
     // method to get lab result view
-    @GetMapping("/labs/view/result/{id}")
+    @GetMapping("/doctor/labs/view/result/{id}")
     public String viewLabResult(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
         // check null for lab ID
         if (id == null) {
@@ -1128,7 +1129,7 @@ public class DoctorController {
     }
 
     // method to show create re-examination for patient
-    @GetMapping("/re-examination/create")
+    @GetMapping("/doctor/re-examination/create")
     public String createExamination(Model model, Principal principal) {
         Staff user = userService.findUserByUsername(principal.getName());
         List<AppointmentDTO> appointmentDTOS = appointmentService.getTodayAppointmentsByDoctorId(user.getStaffId());
@@ -1140,7 +1141,7 @@ public class DoctorController {
     }
 
     // method to do create appointment re-examination for patient
-    @PostMapping("/make-appointment")
+    @PostMapping("/doctor/make-appointment")
     public String doMakeAppointment(
             @ModelAttribute("appointment") Appointment appointment,
             @RequestParam(value = "patientId", required = false) Integer patientId,
@@ -1220,7 +1221,7 @@ public class DoctorController {
     }
 
     // method to submit finish appointment for patient
-    @PostMapping("/submit")
+    @PostMapping("/doctor/submit")
     public String doSubmit(@RequestParam(name = "appointmentId") Integer appointmentId,
                            RedirectAttributes redirectAttributes) {
         Appointment appointment = appointmentService.findAppointmentById(appointmentId);
@@ -1244,6 +1245,80 @@ public class DoctorController {
     }
 
 
+    @GetMapping(value = "/home/list-doctor")
+    public String listDoctor(Model model) {
+        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findAllVisibleAndActiveDoctors();
+        model.addAttribute("doctors", doctorUserDTOS);
+        List<DepartmentDTO> departments = departmentService.findAll();
+        model.addAttribute("departments", departments);
+        return "home/doctor-list";
+    }
+
+    @GetMapping(value = "/home/search-doctor")
+    public String searchDoctor(Model model) {
+        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findAllVisibleAndActiveDoctors();
+        model.addAttribute("doctors", doctorUserDTOS);
+        List<DepartmentDTO> departments = departmentService.findAll();
+        model.addAttribute("departments", departments);
+        return "home/doctor-search";
+    }
+
+    @GetMapping(value = "/home/search-doctor-result")
+    public String searchDoctor(@RequestParam(name = "departmentId") String departmentId,
+                               @RequestParam(name = "doctorName") String doctorName,
+                               Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(departmentId);
+            List<DoctorHomeDTO> doctorUserDTOS = doctorService.findByNameAndDepartmentId(doctorName, idC);
+            model.addAttribute("doctors", doctorUserDTOS);
+            List<DepartmentDTO> departments = departmentService.findAll();
+            model.addAttribute("departments", departments);
+            model.addAttribute("pageTitle", "Search Results" + "(" + doctorUserDTOS.size() + " doctors found)");
+            return "home/doctor-search";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Doctor not found");
+            return "redirect:/home";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/home";
+        }
+    }
+
+    @GetMapping(value = "/home/doctor-profile/{doctorId}")
+    public String viewDetailDoctor(Model model, @PathVariable(name = "doctorId") String doctorId, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(doctorId);
+            DoctorHomeDTO doctorUserDTO = doctorService.findVisibleActiveDoctorById(idC);
+            model.addAttribute("doctor", doctorUserDTO);
+            List<DepartmentDTO> departments = departmentService.findAll();
+            model.addAttribute("departments", departments);
+            return "home/doctor-profile";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Doctor not found");
+            return "redirect:/home";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/home";
+        }
+    }
+
+    @GetMapping(value = "/home/department/{departmentName}")
+    public String viewDoctorSpecialty(Model model, @PathVariable(name = "departmentName") String departmentName) {
+        List<DoctorHomeDTO> doctors = doctorService.findVisibleActiveDoctorsByDepartment(departmentName);
+        model.addAttribute("doctors", doctors);
+        List<DepartmentDTO> departments = departmentService.findAll();
+        model.addAttribute("departments", departments);
+        model.addAttribute("departmentName", departmentName);
+        return "home/department-doctor-list";
+    }
 }
 
 

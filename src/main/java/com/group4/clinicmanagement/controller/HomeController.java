@@ -51,12 +51,10 @@ public class HomeController {
         double averageRating = feedbackService.getAverageRating();
         model.addAttribute("averageRating", averageRating);
 
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Integer userId = null;
         if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
             userId = userDetails.getUserId();
-
             List<Appointment> eligibleAppointments = feedbackService.getEligibleAppointmentsForFeedback(userId);
             model.addAttribute("eligibleAppointments", eligibleAppointments);
         }
@@ -76,82 +74,6 @@ public class HomeController {
             return "redirect:/home?page=" + feedbackPage.getTotalPages();
         }
         model.addAttribute("feedbacks", feedbackPage);
-
         return "home/HomeGuest";
-    }
-
-    @GetMapping(value = "/list-doctor")
-    public String listDoctor(Model model) {
-        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findAllVisibleAndActiveDoctors();
-        model.addAttribute("doctors", doctorUserDTOS);
-        List<DepartmentDTO> departments = departmentService.findAll();
-        model.addAttribute("departments", departments);
-        return "home/doctor-list";
-    }
-
-    @GetMapping(value = "/search-doctor")
-    public String searchDoctor(Model model) {
-        List<DoctorHomeDTO> doctorUserDTOS = doctorService.findAllVisibleAndActiveDoctors();
-        model.addAttribute("doctors", doctorUserDTOS);
-        List<DepartmentDTO> departments = departmentService.findAll();
-        model.addAttribute("departments", departments);
-        return "home/doctor-search";
-    }
-
-    @GetMapping(value = "/search-doctor-result")
-    public String searchDoctor(@RequestParam(name = "departmentId") String departmentId,
-                               @RequestParam(name = "doctorName") String doctorName,
-                               Model model, RedirectAttributes redirectAttributes) {
-        try {
-            Integer idC = Integer.parseInt(departmentId);
-            List<DoctorHomeDTO> doctorUserDTOS = doctorService.findByNameAndDepartmentId(doctorName, idC);
-            model.addAttribute("doctors", doctorUserDTOS);
-            List<DepartmentDTO> departments = departmentService.findAll();
-            model.addAttribute("departments", departments);
-            model.addAttribute("pageTitle", "Search Results" + "(" + doctorUserDTOS.size() + " doctors found)");
-            return "home/doctor-search";
-        } catch (NumberFormatException e) {
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    "Doctor not found");
-            return "redirect:/home";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    "Unexpected Error");
-            return "redirect:/home";
-        }
-    }
-
-    @GetMapping(value = "/doctor-profile/{doctorId}")
-    public String viewDetailDoctor(Model model, @PathVariable(name = "doctorId") String doctorId, RedirectAttributes redirectAttributes) {
-        try {
-            Integer idC = Integer.parseInt(doctorId);
-            DoctorHomeDTO doctorUserDTO = doctorService.findVisibleActiveDoctorById(idC);
-            model.addAttribute("doctor", doctorUserDTO);
-            List<DepartmentDTO> departments = departmentService.findAll();
-            model.addAttribute("departments", departments);
-            return "home/doctor-profile";
-        } catch (NumberFormatException e) {
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    "Doctor not found");
-            return "redirect:/home";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    "Unexpected Error");
-            return "redirect:/home";
-        }
-    }
-
-    @GetMapping(value = "/department/{departmentName}")
-    public String viewDoctorSpecialty(Model model, @PathVariable(name = "departmentName") String departmentName) {
-        List<DoctorHomeDTO> doctors = doctorService.findVisibleActiveDoctorsByDepartment(departmentName);
-        model.addAttribute("doctors", doctors);
-        List<DepartmentDTO> departments = departmentService.findAll();
-        model.addAttribute("departments", departments);
-        model.addAttribute("departmentName", departmentName);
-        return "home/department-doctor-list";
     }
 }
