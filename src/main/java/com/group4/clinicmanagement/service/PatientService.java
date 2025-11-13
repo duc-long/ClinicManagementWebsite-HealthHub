@@ -6,6 +6,7 @@ import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.entity.Patient;
 import com.group4.clinicmanagement.repository.PatientRepository;
 import com.group4.clinicmanagement.repository.PatientRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +41,7 @@ public class PatientService {
     public Patient findPatientById(int id) {
         return patientRepository.findById(id).orElse(null);
     }
+
     public PatientDTO findPatientDTOById(int id) {
         Patient patient = patientRepository.findById(id).orElse(null);
         return this.toDTO(patient);
@@ -184,4 +186,11 @@ public class PatientService {
             return Page.empty(pageable);
         }
     }
+
+    public PatientDTO findById(Integer id) {
+        Optional<Patient> patientOpt = patientRepository.findById(id);
+        return patientOpt.map(this::toDTO).orElse(null);
+    }
+
+
 }

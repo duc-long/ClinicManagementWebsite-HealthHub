@@ -52,7 +52,7 @@
     <div class="sidebar p-3 shadow">
         <h4 class="text-white mb-4">CLINIC HUB</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link active" href="/admin/dashboard"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link active" th:href="@{/admin/dashboard}"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/patient}"><i class="fas fa-users me-2"></i>Patients</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/doctor}"><i class="fas fa-user-md me-2"></i>Doctors</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/admin/receptionist}"><i class="fas fa-hospital-user me-2"></i>Receptionists</a></li>
@@ -130,7 +130,7 @@
                 <tbody>
                 <tr th:each="fb : ${feedbacks}">
                     <td th:text="${fb.feedbackId}"></td>
-                    <td th:text="${fb.patient.user.fullName}"></td>
+                    <td th:text="${fb.patient.fullName}"></td>
                     <td><span class="badge bg-success" th:text="${fb.rating}"></span></td>
                     <td th:text="${fb.comment}"></td>
                     <td th:text="${#temporals.format(fb.createdAt,'dd-MM-yyyy')}"></td>

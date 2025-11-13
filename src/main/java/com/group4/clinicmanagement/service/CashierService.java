@@ -98,4 +98,5 @@ public class CashierService {
         }
         cashierRepository.save(user);
     }
+
 }

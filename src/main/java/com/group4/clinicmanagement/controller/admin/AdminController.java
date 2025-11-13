@@ -4,6 +4,7 @@ import com.group4.clinicmanagement.dto.DepartmentDTO;
 import com.group4.clinicmanagement.dto.admin.DoctorDTO;
 import com.group4.clinicmanagement.dto.admin.PatientDTO;
 import com.group4.clinicmanagement.dto.admin.StaffDTO;
+import com.group4.clinicmanagement.entity.Feedback;
 import com.group4.clinicmanagement.service.BillService;
 import com.group4.clinicmanagement.service.DepartmentService;
 import com.group4.clinicmanagement.service.FeedbackService;
@@ -126,10 +127,6 @@ public class AdminController {
         if (patientService.isPhoneNoDuplicateForUpd(dto.getPhone(), dto.getPatientId())) {
             bindingResult.rejectValue("phone", "error.phone", "Phone already exists");
         }
-        if (dto.getBirthDate() != null &&
-                dto.getBirthDate().isAfter(LocalDate.now().minusYears(10))) {
-            bindingResult.rejectValue("birthDate", "error.birthDate", "Patient must be at least 10 years old");
-        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("patientDTO", dto);
             model.addAttribute("today", LocalDate.now());
@@ -182,6 +179,7 @@ public class AdminController {
             return "redirect:/admin/patient";
         }
     }
+
     @GetMapping(value = "/patient/new")
     public String addNewPatient(Model model) {
         model.addAttribute("patientDTO", new PatientDTO());
@@ -204,10 +202,6 @@ public class AdminController {
         }
         if (patientService.isMailNoDuplicateForNewPatient(dto.getEmail())) {
             bindingResult.rejectValue("email", "error.email", "Email already exists");
-        }
-        if (dto.getBirthDate() != null &&
-                dto.getBirthDate().isAfter(LocalDate.now().minusYears(10))) {
-            bindingResult.rejectValue("birthDate", "error.birthDate", "Patient must be at least 10 years old");
         }
         if (bindingResult.hasErrors()) {
             model.addAttribute("patientDTO", dto);
@@ -588,246 +582,394 @@ public class AdminController {
 
     }
 
-//    // Cashier
-//
-//    @GetMapping(value = "/cashier")
-//    public String showCashierList(Model model,
-//                                  @RequestParam(value = "size", defaultValue = "10") Integer size,
-//                                  @RequestParam(value = "page", defaultValue = "0") Integer page) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<CashierDTO> cashierDTOs = CashierService.findAll(pageable);
-//        model.addAttribute("cashierDTOs", cashierDTOs);
-//        return "admin/manage-cashiers-for-admin";
-//    }
-//
-//    @GetMapping(value = "/cashier/{id}")
-//    public String showCashierById(@PathVariable(value = "id") Integer id, Model model) {
-//        CashierDTO cashierDTO = CashierService.findById(id);
-//        model.addAttribute("cashierDTO", cashierDTO);
-//        return "admin/cashier-details";
-//    }
-//
-//    @GetMapping(value = "/cashier/edit/{id}")
-//    public String editCashierById(@PathVariable(value = "id") Integer id, Model model) {
-//        CashierDTO cashierDTO = CashierService.findById(id);
-//        model.addAttribute("cashierDTO", cashierDTO);
-//        return "admin/update-cashier";
-//    }
-//
-//    @PostMapping(value = "/cashier/edit-result")
-//    public String editCashierResult(@Valid @ModelAttribute(name = "cashierDTO") CashierDTO dto,
-//                                    BindingResult bindingResult,
-//                                    @RequestParam("avatar") MultipartFile avatar,
-//                                    RedirectAttributes redirectAttributes,
-//                                    Model model) {
-//
-//        if (bindingResult.hasErrors()) {
-//            model.addAttribute("cashierDTO", dto);
-//            return "admin/update-cashier";
-//        }
-//        try {
-//            CashierService.update(dto, avatar);
-//            redirectAttributes.addFlashAttribute("successMessage",
-//                    "Cashier with ID: " + dto.getUserId() + " was updated successfully!");
-//            return "redirect:/admin/cashier";
-//        } catch (Exception e) {
-//            model.addAttribute("cashierDTO", dto);
-//            return "admin/update-cashier";
-//        }
-//    }
-//
-//
-//    @GetMapping(value = "/cashier/delete/{id}")
-//    public String deleteCashierById(@PathVariable(value = "id") Integer id, Model model) {
-//        CashierDTO cashierDTO = CashierService.findById(id);
-//        model.addAttribute("cashierDTO", cashierDTO);
-//        return "admin/delete-cashier";
-//    }
-//
-//    @PostMapping(value = "/cashier/delete-result")
-//    public String deleteCashierById(@ModelAttribute(name = "cashierDTO") CashierDTO dto, RedirectAttributes redirectAttributes) {
-//        try {
-//            CashierService.delete(dto);
-//            redirectAttributes.addFlashAttribute("successMessage",
-//                    "Cashier with ID: " + dto.getUserId() + " was deleted successfully!");
-//            return "redirect:/admin/cashier";
-//        } catch (Exception e) {
-//            System.out.println("\n" + "Error: " + e.getMessage() + "\n");
-//            redirectAttributes.addFlashAttribute(
-//                    "errorMessage",
-//                    "Cannot delete the Cashier with ID: " + dto.getUserId());
-//            return "redirect:/admin/cashier";
-//        }
-//    }
-//
-//    @GetMapping(value = "/cashier/new")
-//    public String addNewCashier(Model model) {
-//        model.addAttribute("cashierDTO", new CashierDTO());
-//        return "admin/add-new-cashier";
-//    }
-//
-//    @PostMapping(value = "/cashier/new-result")
-//    public String addNewCashierResult(
-//            @Valid @ModelAttribute("cashierDTO") CashierDTO dto,
-//            BindingResult bindingResult,
-//            @RequestParam("avatar") MultipartFile avatar,
-//            RedirectAttributes redirectAttributes,
-//            Model model
-//    ) {
-//        if (userService.isUsernameDuplicate(dto.getUsername())) {
-//            bindingResult.rejectValue("username", "error.username", "Username already exists");
-//        }
-//        if (bindingResult.hasErrors()) {
-//            model.addAttribute("patientDTO", dto);
-//            System.out.printf("%s\n", bindingResult.getAllErrors());
-//            return "admin/add-new-cashier";
-//        } else {
-//            try {
-//                Integer CashierId = CashierService.newCashier(dto, avatar);
-//                redirectAttributes.addFlashAttribute("successMessage",
-//                        "Cashier with ID: " + CashierId + " was created successfully!");
-//                return "redirect:/admin/cashier";
-//            } catch (Exception e) {
-//                System.out.println(e.getMessage() + "Error ------------------------------\n");
-//                return "admin/add-new-cashier";
-//            }
-//
-//        }
-//
-//    }
-//
-//    // Technician
-//
-//    @GetMapping(value = "/technician")
-//    public String showTechnicianList(Model model,
-//                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
-//                                     @RequestParam(value = "page", defaultValue = "0") Integer page) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<TechnicianDTO> technicianDTOs = TechnicianService.findAll(pageable);
-//        model.addAttribute("technicianDTOs", technicianDTOs);
-//        return "admin/manage-technicians-for-admin";
-//    }
-//
-//    @GetMapping(value = "/technician/{id}")
-//    public String showTechnicianById(@PathVariable(value = "id") Integer id, Model model) {
-//        TechnicianDTO technicianDTO = TechnicianService.findById(id);
-//        model.addAttribute("technicianDTO", technicianDTO);
-//        return "admin/technician-details";
-//    }
-//
-//    @GetMapping(value = "/technician/edit/{id}")
-//    public String editTechnicianById(@PathVariable(value = "id") Integer id, Model model) {
-//        TechnicianDTO technicianDTO = TechnicianService.findById(id);
-//        model.addAttribute("technicianDTO", technicianDTO);
-//        return "admin/update-technician";
-//    }
-//
-//    @PostMapping(value = "/technician/edit-result")
-//    public String editTechnicianResult(@Valid @ModelAttribute(name = "technicianDTO") TechnicianDTO dto,
-//                                       BindingResult bindingResult,
-//                                       @RequestParam("avatar") MultipartFile avatar,
-//                                       RedirectAttributes redirectAttributes,
-//                                       Model model) {
-//
-//        if (bindingResult.hasErrors()) {
-//            model.addAttribute("technicianDTO", dto);
-//            return "admin/update-technician";
-//        }
-//        try {
-//            TechnicianService.update(dto, avatar);
-//            redirectAttributes.addFlashAttribute("successMessage",
-//                    "Technician with ID: " + dto.getUserId() + " was updated successfully!");
-//            return "redirect:/admin/technician";
-//        } catch (Exception e) {
-//            model.addAttribute("technicianDTO", dto);
-//            return "admin/update-technician";
-//        }
-//    }
-//
-//
-//    @GetMapping(value = "/technician/delete/{id}")
-//    public String deleteTechnicianById(@PathVariable(value = "id") Integer id, Model model) {
-//        TechnicianDTO technicianDTO = TechnicianService.findById(id);
-//        model.addAttribute("technicianDTO", technicianDTO);
-//        return "admin/delete-technician";
-//    }
-//
-//    @PostMapping(value = "/technician/delete-result")
-//    public String deleteTechnicianById(@ModelAttribute(name = "technicianDTO") TechnicianDTO dto, RedirectAttributes redirectAttributes) {
-//        try {
-//            TechnicianService.delete(dto);
-//            redirectAttributes.addFlashAttribute("successMessage",
-//                    "Technician with ID: " + dto.getUserId() + " was deleted successfully!");
-//            return "redirect:/admin/technician";
-//        } catch (Exception e) {
-//            System.out.println("\n" + "Error: " + e.getMessage() + "\n");
-//            redirectAttributes.addFlashAttribute(
-//                    "errorMessage",
-//                    "Cannot delete the Technician with ID: " + dto.getUserId());
-//            return "redirect:/admin/technician";
-//        }
-//    }
-//
-//    @GetMapping(value = "/technician/new")
-//    public String addNewTechnician(Model model) {
-//        model.addAttribute("technicianDTO", new TechnicianDTO());
-//        return "admin/add-new-technician";
-//    }
-//
-//    @PostMapping(value = "/technician/new-result")
-//    public String addNewTechnicianResult(
-//            @Valid @ModelAttribute("technicianDTO") TechnicianDTO dto,
-//            BindingResult bindingResult,
-//            @RequestParam("avatar") MultipartFile avatar,
-//            RedirectAttributes redirectAttributes,
-//            Model model
-//    ) {
-//        if (userService.isUsernameDuplicate(dto.getUsername())) {
-//            bindingResult.rejectValue("username", "error.username", "Username already exists");
-//        }
-//        if (bindingResult.hasErrors()) {
-//            model.addAttribute("patientDTO", dto);
-//            System.out.printf("%s\n", bindingResult.getAllErrors());
-//            return "admin/add-new-technician";
-//        } else {
-//            try {
-//                Integer TechnicianId = TechnicianService.newTechnician(dto, avatar);
-//                redirectAttributes.addFlashAttribute("successMessage",
-//                        "Technician with ID: " + TechnicianId + " was created successfully!");
-//                return "redirect:/admin/technician";
-//            } catch (Exception e) {
-//                System.out.println(e.getMessage() + "Error ------------------------------\n");
-//                return "admin/add-new-technician";
-//            }
-//
-//        }
-//    }
-//
-//    // Dashboard
-//    @GetMapping(value = "/dashboard")
-//    public String showAdminDashboard(Model model,
-//                                     @RequestParam(defaultValue = "month") String filter,
-//                                     @RequestParam(required = false) Integer month,
-//                                     @RequestParam(required = false) Integer year) {
-//
-//        List<Feedback> feedbacks = feedbackService.getFeedbackByFilter(filter);
-//        long totalPatients = patientService.getTotalPatientByFilter(filter);
-//        Double revenue = billService.getRevenue(filter,month,year);
-//        Double avgRating = feedbackService.getAvgRatingByFilter(filter);
-//
-//        model.addAttribute("filter", filter);
-//        model.addAttribute("feedbacks", feedbacks);
-//        model.addAttribute("chartLabels", billService.getLabels(filter));
-//        model.addAttribute("chartRevenue", billService.getRevenueData(filter));
-//        model.addAttribute("totalPatients", totalPatients);
-//        model.addAttribute("revenue", revenue);
-//        model.addAttribute("avgRating", avgRating);
-//
-//        System.out.println( billService.getLabels(filter));
-//        System.out.println( billService.getRevenueData(filter));
-//
-//        return "admin/admin-dashboard";
-//    }
+    // Cashier
+
+    @GetMapping(value = "/cashier")
+    public String showCashierList(Model model,
+                                  @RequestParam(value = "size", defaultValue = "10") String size,
+                                  @RequestParam(value = "page", defaultValue = "0") String page, RedirectAttributes redirectAttributes) {
+        try {
+            Integer pageC = Integer.parseInt(page);
+            Integer sizeC = Integer.parseInt(size);
+            Pageable pageable = PageRequest.of(pageC, sizeC);
+
+
+            Page<StaffDTO> cashierDTOs = staffForAdminService.findAll(pageable, 2);
+            model.addAttribute("cashierDTOs", cashierDTOs);
+
+            return "admin/manage-cashiers-for-admin";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Cashier list not found");
+            return "redirect:/admin/cashier";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/cashier";
+        }
+    }
+
+    @GetMapping(value = "/cashier/{id}")
+    public String showCashierById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+
+
+            StaffDTO cashierDTO = staffForAdminService.findById(idC, 2);
+            model.addAttribute("cashierDTO", cashierDTO);
+
+            return "admin/cashier-details";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Cashier not found");
+            return "redirect:/admin/cashier";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/cashier";
+        }
+    }
+
+    @GetMapping(value = "/cashier/edit/{id}")
+    public String editCashierById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+
+            StaffDTO cashierDTO = staffForAdminService.findById(idC, 2);
+            model.addAttribute("cashierDTO", cashierDTO);
+
+            return "admin/update-cashier";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Cashier not found");
+            return "redirect:/admin/cashier";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/cashier";
+        }
+    }
+
+    @PostMapping(value = "/cashier/edit-result")
+    public String editCashierResult(@Valid @ModelAttribute(name = "cashierDTO") StaffDTO dto,
+                                    BindingResult bindingResult,
+                                    @RequestParam("avatar") MultipartFile avatar,
+                                    RedirectAttributes redirectAttributes,
+                                    Model model) {
+        if (staffForAdminService.isPhoneNoDuplicateForUpd(dto.getEmail(), dto.getUserId())) {
+            bindingResult.rejectValue("email", "error.email", "Email already exists");
+        }
+        if (staffForAdminService.isPhoneNoDuplicateForUpd(dto.getPhone(), dto.getUserId())) {
+            bindingResult.rejectValue("phone", "error.phone", "Phone already exists");
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("cashierDTO", dto);
+            return "admin/update-cashier";
+        }
+        try {
+            staffForAdminService.update(dto, avatar, 2);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Cashier with ID: " + dto.getUserId() + " was updated successfully!");
+            return "redirect:/admin/cashier";
+        } catch (Exception e) {
+            model.addAttribute("cashierDTO", dto);
+            return "admin/update-cashier";
+        }
+    }
+
+
+    @GetMapping(value = "/cashier/delete/{id}")
+    public String deleteCashierById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+
+            StaffDTO cashierDTO = staffForAdminService.findById(idC, 2);
+            model.addAttribute("cashierDTO", cashierDTO);
+
+            return "admin/delete-cashier";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Cashier not found");
+            return "redirect:/admin/cashier";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/cashier";
+        }
+    }
+
+    @PostMapping(value = "/cashier/delete-result")
+    public String deleteCashierById(@ModelAttribute(name = "cashierDTO") StaffDTO dto, RedirectAttributes redirectAttributes) {
+        try {
+            staffForAdminService.delete(dto, 2);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Cashier with ID: " + dto.getUserId() + " was deleted successfully!");
+            return "redirect:/admin/cashier";
+        } catch (Exception e) {
+            System.out.println("\n" + "Error: " + e.getMessage() + "\n");
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Cannot delete the cashier with ID: " + dto.getUserId());
+            return "redirect:/admin/cashier";
+        }
+    }
+
+    @GetMapping(value = "/cashier/new")
+    public String addNewCashier(Model model) {
+        model.addAttribute("cashierDTO", new StaffDTO());
+        return "admin/add-new-cashier";
+    }
+
+    @PostMapping(value = "/cashier/new-result")
+    public String addNewCashierResult(
+            @Valid @ModelAttribute("cashierDTO") StaffDTO dto,
+            BindingResult bindingResult,
+            @RequestParam("avatar") MultipartFile avatar,
+            RedirectAttributes redirectAttributes,
+            Model model
+    ) {
+        if (staffForAdminService.isMailNoDuplicateForNew(dto.getEmail())) {
+            bindingResult.rejectValue("email", "error.email", "Email already exists");
+        }
+        if (staffForAdminService.isPhoneNoDuplicateForNew(dto.getPhone())) {
+            bindingResult.rejectValue("phone", "error.phone", "Phone already exists");
+        }
+        if (userService.isUsernameDuplicate(dto.getUsername())) {
+            bindingResult.rejectValue("username", "error.username", "Username already exists");
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("cashierDTO", dto);
+            System.out.printf("%s\n", bindingResult.getAllErrors());
+            return "admin/add-new-cashier";
+        } else {
+            try {
+                Integer cashierId = staffForAdminService.newStaff(dto, avatar, 2);
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Cashier with ID: " + cashierId + " was created successfully!");
+                return "redirect:/admin/cashier";
+            } catch (Exception e) {
+                System.out.println(e.getMessage() + "Error ------------------------------\n");
+                return "admin/add-new-cashier";
+            }
+
+        }
+    }
+
+    // Technical Staff
+
+    @GetMapping(value = "/technician")
+    public String showTechnicianList(Model model,
+                                     @RequestParam(value = "size", defaultValue = "10") String size,
+                                     @RequestParam(value = "page", defaultValue = "0") String page, RedirectAttributes redirectAttributes) {
+        try {
+            Integer pageC = Integer.parseInt(page);
+            Integer sizeC = Integer.parseInt(size);
+            Pageable pageable = PageRequest.of(pageC, sizeC);
+
+            Page<StaffDTO> technicianDTOs = staffForAdminService.findAll(pageable, 4);
+            model.addAttribute("technicianDTOs", technicianDTOs);
+
+            return "admin/manage-technicians-for-admin";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Technician list not found");
+            return "redirect:/admin/technician";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/technician";
+        }
+    }
+
+    @GetMapping(value = "/technician/{id}")
+    public String showTechnicianById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+
+            StaffDTO technicianDTO = staffForAdminService.findById(idC, 4);
+            model.addAttribute("technicianDTO", technicianDTO);
+
+            return "admin/technician-details";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Technician not found");
+            return "redirect:/admin/technician";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/technician";
+        }
+    }
+
+    @GetMapping(value = "/technician/edit/{id}")
+    public String editTechnicianById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+
+            StaffDTO technicianDTO = staffForAdminService.findById(idC, 4);
+            model.addAttribute("technicianDTO", technicianDTO);
+
+            return "admin/update-technician";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Technician not found");
+            return "redirect:/admin/technician";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/technician";
+        }
+    }
+
+    @PostMapping(value = "/technician/edit-result")
+    public String editTechnicianResult(@Valid @ModelAttribute(name = "technicianDTO") StaffDTO dto,
+                                       BindingResult bindingResult,
+                                       @RequestParam("avatar") MultipartFile avatar,
+                                       RedirectAttributes redirectAttributes,
+                                       Model model) {
+        if (staffForAdminService.isPhoneNoDuplicateForUpd(dto.getEmail(), dto.getUserId())) {
+            bindingResult.rejectValue("email", "error.email", "Email already exists");
+        }
+        if (staffForAdminService.isPhoneNoDuplicateForUpd(dto.getPhone(), dto.getUserId())) {
+            bindingResult.rejectValue("phone", "error.phone", "Phone already exists");
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("technicianDTO", dto);
+            return "admin/update-technician";
+        }
+        try {
+            // Sử dụng ID vai trò 4
+            staffForAdminService.update(dto, avatar, 4);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Technician with ID: " + dto.getUserId() + " was updated successfully!");
+            return "redirect:/admin/technician";
+        } catch (Exception e) {
+            model.addAttribute("technicianDTO", dto);
+            return "admin/update-technician";
+        }
+    }
+
+
+    @GetMapping(value = "/technician/delete/{id}")
+    public String deleteTechnicianById(@PathVariable(value = "id") String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Integer idC = Integer.parseInt(id);
+
+            StaffDTO technicianDTO = staffForAdminService.findById(idC, 4);
+            model.addAttribute("technicianDTO", technicianDTO);
+
+            return "admin/delete-technician";
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Technician not found");
+            return "redirect:/admin/technician";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unexpected Error");
+            return "redirect:/admin/technician";
+        }
+    }
+
+    @PostMapping(value = "/technician/delete-result")
+    public String deleteTechnicianById(@ModelAttribute(name = "technicianDTO") StaffDTO dto, RedirectAttributes redirectAttributes) {
+        try {
+            staffForAdminService.delete(dto, 4);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Technician with ID: " + dto.getUserId() + " was deleted successfully!");
+            return "redirect:/admin/technician";
+        } catch (Exception e) {
+            System.out.println("\n" + "Error: " + e.getMessage() + "\n");
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Cannot delete the technician with ID: " + dto.getUserId());
+            return "redirect:/admin/technician";
+        }
+    }
+
+    @GetMapping(value = "/technician/new")
+    public String addNewTechnician(Model model) {
+        model.addAttribute("technicianDTO", new StaffDTO());
+        // View tương ứng: add-new-technician.html
+        return "admin/add-new-technician";
+    }
+
+    @PostMapping(value = "/technician/new-result")
+    public String addNewTechnicianResult(
+            @Valid @ModelAttribute("technicianDTO") StaffDTO dto,
+            BindingResult bindingResult,
+            @RequestParam("avatar") MultipartFile avatar,
+            RedirectAttributes redirectAttributes,
+            Model model
+    ) {
+        if (staffForAdminService.isMailNoDuplicateForNew(dto.getEmail())) {
+            bindingResult.rejectValue("email", "error.email", "Email already exists");
+        }
+        if (staffForAdminService.isPhoneNoDuplicateForNew(dto.getPhone())) {
+            bindingResult.rejectValue("phone", "error.phone", "Phone already exists");
+        }
+        if (userService.isUsernameDuplicate(dto.getUsername())) {
+            bindingResult.rejectValue("username", "error.username", "Username already exists");
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("technicianDTO", dto);
+            System.out.printf("%s\n", bindingResult.getAllErrors());
+            return "admin/add-new-technician";
+        } else {
+            try {
+                Integer technicianId = staffForAdminService.newStaff(dto, avatar, 4);
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Technician with ID: " + technicianId + " was created successfully!");
+                return "redirect:/admin/technician";
+            } catch (Exception e) {
+                System.out.println(e.getMessage() + "Error ------------------------------\n");
+                return "admin/add-new-technician";
+            }
+
+        }
+    }
+
+    //
+    // Dashboard
+    @GetMapping(value = "/dashboard")
+    public String showAdminDashboard(Model model,
+                                     @RequestParam(defaultValue = "month") String filter,
+                                     @RequestParam(required = false) Integer month,
+                                     @RequestParam(required = false) Integer year) {
+
+        List<Feedback> feedbacks = feedbackService.getFeedbackByFilter(filter);
+        long totalPatients = patientService.getTotalPatientByFilter(filter);
+        Double revenue = billService.getRevenue(filter, month, year);
+        Double avgRating = feedbackService.getAvgRatingByFilter(filter);
+
+        model.addAttribute("filter", filter);
+        model.addAttribute("feedbacks", feedbacks);
+        model.addAttribute("chartLabels", billService.getLabels(filter));
+        model.addAttribute("chartRevenue", billService.getRevenueData(filter));
+        model.addAttribute("totalPatients", totalPatients);
+        model.addAttribute("revenue", revenue);
+        model.addAttribute("avgRating", avgRating);
+
+        System.out.println(billService.getLabels(filter));
+        System.out.println(billService.getRevenueData(filter));
+
+        return "admin/admin-dashboard";
+    }
 
 
 }
