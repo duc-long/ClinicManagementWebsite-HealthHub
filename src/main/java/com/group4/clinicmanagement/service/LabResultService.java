@@ -206,9 +206,24 @@ public class LabResultService {
         }
     }
 
+    // Đặt phương thức này trong LabRequestService (hoặc một Service mới, ví dụ: DeletionService)
     @Transactional
-    public void deleteResult(int resultId) {
-        labResultRepository.deleteById(resultId);
+    public void completeResultDeletion(int resultId) {
+        // 1. Lấy LabResult (Đọc trong cùng Transaction)
+        LabResult result = labResultRepository.findById(resultId)
+                .orElseThrow(() -> new RuntimeException("Result not found"));
+
+        // 2. Dùng logic xử lý phức tạp đã sửa (Chỉ gọi logic bên trong, không gọi Service)
+
+        // 2a. Update LabRequest Status
+        LabRequest labRequest = result.getLabRequest();
+        labRequest.setStatus(LabRequestStatus.PAID);
+        labRequestRepository.save(labRequest); // Hoặc saveAndFlush()
+
+        // 2b. Delete LabResult (Nếu cần flush, gọi EntityManager.flush() ở đây)
+        labResultRepository.delete(result);
+
+        // (Lưu ý: Bạn không cần gọi labRequestService.updateStatusAfterDelete nữa vì đã làm xong ở 2a)
     }
 
     // method to get lab result DTO
@@ -237,5 +252,16 @@ public class LabResultService {
                 .toList();
         dto.setImages(imageDTOs);
         return dto;
+    }
+
+    @Transactional
+    public void createLabResult(LabResultDTO labResultDTO) {
+        LabResult labResult = labResultDTO.toEntity(labRequestRepository.findById(labResultDTO.getLabRequestId()).get(),
+                staffRepository.findByUsernameIgnoreCase(labResultDTO.getTechnicianName()));
+        labResultRepository.save(labResult);
+    }
+
+    public boolean findByLabRequestId(Integer labRequestId) {
+        return labResultRepository.findByLabRequestId(labRequestId).isPresent();
     }
 }

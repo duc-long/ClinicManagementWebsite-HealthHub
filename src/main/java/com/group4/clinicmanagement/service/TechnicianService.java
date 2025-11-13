@@ -2,8 +2,7 @@ package com.group4.clinicmanagement.service;
 
 import com.group4.clinicmanagement.dto.TechnicianDTO;
 import com.group4.clinicmanagement.entity.Staff;
-import com.group4.clinicmanagement.enums.UserStatus;
-import com.group4.clinicmanagement.repository.TechnicianRepository;
+import com.group4.clinicmanagement.repository.StaffRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,23 +15,23 @@ import java.util.UUID;
 @Service
 public class TechnicianService {
 
-    private final TechnicianRepository technicianRepository;
+    private final StaffRepository staffRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public TechnicianService(TechnicianRepository technicianRepository,
+    public TechnicianService(StaffRepository staffRepository,
                              PasswordEncoder passwordEncoder) {
-        this.technicianRepository = technicianRepository;
+        this.staffRepository = staffRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     public Staff findByUserId(Integer userId) {
-        return technicianRepository.findById(userId)
+        return staffRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Technician not found with ID: " + userId));
     }
 
     @Transactional
     public void save(Staff user) {
-        technicianRepository.save(user);
+        staffRepository.save(user);
     }
 
     @Transactional
@@ -70,7 +69,7 @@ public class TechnicianService {
             }
         }
 
-        technicianRepository.save(user);
+        staffRepository.save(user);
     }
 
     @Transactional
@@ -86,7 +85,7 @@ public class TechnicianService {
         }
 
         user.setPasswordHash(passwordEncoder.encode(newPassword));
-        technicianRepository.save(user);
+        staffRepository.save(user);
         return true;
     }
 

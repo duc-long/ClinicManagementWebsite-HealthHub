@@ -56,7 +56,7 @@ public class BillService {
     }
 
     public Bill getBillByLabRequestId(Integer labRequestId) {
-        return billRepository.findByLabRequest_LabRequestId(labRequestId).orElse(null);
+        return billRepository.findByAppointment_MedicalRecord_LabRequest_LabRequestId(labRequestId).orElse(null);
     }
 
     public Bill getBillById(Integer id) {
@@ -72,7 +72,7 @@ public class BillService {
     }
 
     public boolean existsByLabRequestId(Integer labRequestId) {
-        return billRepository.existsByLabRequest_LabRequestId(labRequestId);
+        return billRepository.existsByAppointment_MedicalRecord_LabRequest_LabRequestId(labRequestId);
     }
     @Transactional
     public Bill createBill(Integer appointmentId, Integer labRequestId, Staff cashier) {

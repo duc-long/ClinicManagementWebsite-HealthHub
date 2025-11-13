@@ -159,7 +159,7 @@ public class LabRequestService {
         Page<LabRequest> labRequests = labRequestRepository.findByStatus(statusValue, pageable);
 
         return labRequests.map(lr -> {
-            Integer billId = billRepository.findByLabRequest_LabRequestId(lr.getLabRequestId())
+            Integer billId = billRepository.findByAppointment_MedicalRecord_LabRequest_LabRequestId(lr.getLabRequestId())
                     .map(Bill::getBillId)
                     .orElse(null);
 
@@ -189,6 +189,14 @@ public class LabRequestService {
 
     public LabRequest getById(Integer billId) {
        return labRequestRepository.findById(billId).orElse(null);
+    }
+    @Transactional
+    public void updateStatusAfterDelete(Integer requestId){
+        LabRequest labRequest = labRequestRepository.findById(requestId).orElse(null);
+        if (labRequest == null) {
+            return;
+        }
+        labRequest.setStatus(LabRequestStatus.PAID);
     }
 
 }
