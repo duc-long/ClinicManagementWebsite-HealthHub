@@ -3,6 +3,7 @@ package com.group4.clinicmanagement.controller.appointment;
 
 import com.group4.clinicmanagement.entity.Appointment;
 import com.group4.clinicmanagement.entity.Patient;
+import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.repository.PatientRepository;
 import com.group4.clinicmanagement.service.AppointmentService;
@@ -113,7 +114,7 @@ public class AppointmentController {
                 return "redirect:/patient/appointment/manage";
             }
 
-            if (currentUser.getUserId() != appointment.getPatient().getPatientId()) {
+            if (currentUser.getPatientId() != appointment.getPatient().getPatientId()) {
                 redirect.addFlashAttribute("message", "You cannot view this appointment");
                 redirect.addFlashAttribute("messageType", "error");
                 return "redirect:/patient/appointment/manage";
@@ -194,13 +195,13 @@ public class AppointmentController {
         }
 
         // current User
-        User user = userRepository.findUserByUsername(principal.getName()).orElse(null);
+        Patient user = patientRepository.findByUsername(principal.getName()).orElse(null);
         if (user == null) {
             return "redirect:/patient/login";
         }
 
         Appointment appointment = appointmentService.findAppointmentById(id);
-        if (appointment.getPatient().getPatientId() != user.getUserId()) {
+        if (appointment.getPatient().getPatientId() != user.getPatientId()) {
             redirect.addFlashAttribute("message", "You cannot access this appointment.");
             redirect.addFlashAttribute("messageType", "error");
             return "redirect:/patient/appointment/manage";
@@ -245,13 +246,13 @@ public class AppointmentController {
         }
 
         // current User
-        User user = userRepository.findUserByUsername(principal.getName()).orElse(null);
+        Patient user = patientRepository.findByUsername(principal.getName()).orElse(null);
         if (user == null) {
             return "redirect:/patient/login";
         }
 
         Appointment appointment = appointmentService.findAppointmentById(id);
-        if (appointment.getPatient().getPatientId() != user.getUserId()) {
+        if (appointment.getPatient().getPatientId() != user.getPatientId()) {
             redirectAttributes.addFlashAttribute("message", "You cannot access this appointment.");
             redirectAttributes.addFlashAttribute("messageType", "error");
             return "redirect:/patient/appointment/manage";

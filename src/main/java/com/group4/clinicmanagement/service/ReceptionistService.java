@@ -51,7 +51,7 @@ public class ReceptionistService {
 
     @Transactional
     public void updateReceptionistProfile(String receptionistName, ReceptionistUserDTO dto, MultipartFile avatarFile) {
-        User user = receptionistRepository.findByUsername(receptionistName);
+        Staff user = receptionistRepository.findByUsername(receptionistName);
 
         applyDTOToEntity(dto, user);
         if (avatarFile != null && !avatarFile.isEmpty()) {

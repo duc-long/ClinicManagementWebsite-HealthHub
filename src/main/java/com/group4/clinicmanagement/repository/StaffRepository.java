@@ -33,9 +33,6 @@ public interface StaffRepository extends JpaRepository<Staff, Integer> {
                               @Param("filename") String filename);
 
 
-    @Query("SELECT u FROM Staff u WHERE u.email = :email AND u.staffId <> :userId")
-    Optional<Staff> findOtherByEmail(@Param("email") String email, @Param("userId") Integer userId);
-
     Optional<Staff> findByEmail(String email);
 
     boolean existsByUsername(String username);
@@ -49,4 +46,10 @@ public interface StaffRepository extends JpaRepository<Staff, Integer> {
     @Query("SELECT u FROM Staff u WHERE u.username = :username AND u.role.roleId = :roleId")
     Staff findByUsernameAndRoleId(@Param("username") String username, @Param("roleId") Integer roleId);
     Optional<Object> findUserByEmail(String email);
+
+    // method to check if exist email in the database
+    boolean existsByEmailAndStaffIdNot(String email, Integer doctorId);
+
+    // method to check if exist phone in the database
+    boolean existsByPhoneAndStaffIdNot(String phone, Integer doctorId);
 }

@@ -206,11 +206,11 @@ public class DoctorService {
             return Optional.of("Phone number must contain 8 to 15 digits (digits only).");
         }
 
-        if (userRepository.existsByEmailAndUserIdNot(email, doctorDTO.getDoctorId())) {
+        if (staffRepository.existsByEmailAndStaffIdNot(email, doctorDTO.getDoctorId())) {
             return Optional.of("Email is already in use by another account.");
         }
 
-        if (userRepository.existsByPhoneAndUserIdNot(phone, doctorDTO.getDoctorId())) {
+        if (staffRepository.existsByPhoneAndStaffIdNot(phone, doctorDTO.getDoctorId())) {
             return Optional.of("Phone number is already in use by another account.");
         }
 
@@ -221,7 +221,7 @@ public class DoctorService {
     // method to update doctor avatar
     @Transactional
     public void updateDoctorProfile(String doctorUsername, MultipartFile avatarFile) {
-        User user = userRepository.findByUsername(doctorUsername).orElse(null);
+        Staff user = staffRepository.findByUsername(doctorUsername).orElse(null);
         if (user == null) {
             throw new IllegalArgumentException("Người dùng không tồn tại.");
         }
@@ -283,7 +283,7 @@ public class DoctorService {
         }
 
         // Lưu user vào repository
-        userRepository.save(user);
+        staffRepository.save(user);
     }
 
 }
