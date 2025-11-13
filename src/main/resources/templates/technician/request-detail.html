@@ -74,9 +74,9 @@
                                 <dt class="col-4">ID</dt>
                                 <dd class="col-8" th:text="${request.medicalRecord.patient.patientId}"></dd>
                                 <dt class="col-4">Name</dt>
-                                <dd class="col-8" th:text="${request.medicalRecord.patient.user.fullName}"></dd>
+                                <dd class="col-8" th:text="${request.medicalRecord.patient.fullName}"></dd>
                                 <dt class="col-4">Phone</dt>
-                                <dd class="col-8" th:text="${request.medicalRecord.patient.user.phone}"></dd>
+                                <dd class="col-8" th:text="${request.medicalRecord.patient.phone}"></dd>
                             </dl>
                         </div>
                     </div>
@@ -89,7 +89,7 @@
                                 <dt class="col-4">Test</dt>
                                 <dd class="col-8" th:text="${request.test.name}"></dd>
                                 <dt class="col-4">Doctor Request</dt>
-                                <dd class="col-8" th:text="${request.medicalRecord.doctor.user.fullName}"></dd>
+                                <dd class="col-8" th:text="${request.medicalRecord.doctor.staff.fullName}"></dd>
                                 <dt class="col-4">Requested</dt>
                                 <dd class="col-8" th:text="${#temporals.format(request.requestedAt,'dd-MM-yyyy HH:mm')}"></dd>
                                 <dt class="col-4">Status</dt>

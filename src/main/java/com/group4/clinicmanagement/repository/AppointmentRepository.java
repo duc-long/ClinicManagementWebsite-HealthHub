@@ -23,27 +23,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
     int countAppointmentsInDay(@Param("patientId") int patientId,
                                @Param("targetDate") LocalDate targetDate);
 
-    // method to count total appointment in day
-    @Query("""
-        SELECT COUNT(a) FROM Appointment a
-        WHERE a.doctor.doctorId = :doctorId
-          AND a.appointmentDate = CURRENT_DATE
-    """)
-    int countTodayAppointments(@Param("doctorId") int doctorId);
-
     List<Appointment> findByStatusValueOrderByDoctor_DoctorIdAsc(Integer status);
 
     // method to find all appointments for doctor with "CHECKED-IN" status
     List<Appointment> findByDoctor_DoctorIdAndStatusValue(Integer doctorId, Integer statusValue);
-
-    // method to count waiting appointment
-    @Query("""
-        SELECT COUNT(a) FROM Appointment a
-        WHERE a.doctor.doctorId = :doctorId
-          AND a.appointmentDate = CURRENT_DATE
-          AND a.statusValue = 6
-    """)
-    int countExaminedTodayAppointments(@Param("doctorId") Integer doctorId);
 
     // method to get all appointment today with pagination
     @Query(value = """
@@ -52,7 +35,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
         WHERE a.doctor.doctorId = :doctorId
           AND (:patientName IS NULL OR LOWER(p.fullName) LIKE LOWER(CONCAT('%', :patientName, '%')))
           AND a.appointmentDate = CURRENT_DATE
-          AND a.statusValue = 5
+          AND a.statusValue = 3
         ORDER BY a.appointmentDate DESC
     """)
     List<Appointment> findTodayAppointments(@Param("doctorId") Integer doctorId,
@@ -60,14 +43,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
 
     @Query(
             value = """
-        SELECT a FROM Appointment a
+        SELECT DISTINCT a FROM Appointment a
         LEFT JOIN a.patient p
         LEFT JOIN a.doctor d
         LEFT JOIN a.receptionist r
         WHERE a.statusValue = :status
         ORDER BY a.appointmentDate DESC
     """,
-            countQuery = "SELECT COUNT(a) FROM Appointment a WHERE a.statusValue = :status"
+            countQuery = """
+        SELECT COUNT(DISTINCT a) FROM Appointment a
+        WHERE a.statusValue = :status
+    """
     )
     Page<Appointment> findStatusValueDesc(@Param("status") int status, Pageable pageable);
 
@@ -89,8 +75,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
       AND a.queueNumber IS NOT NULL
 """)
     Integer findTodayMaxQueue(@Param("doctorId") int doctorId);
-
-
 
     @Query("""
     SELECT a FROM Appointment a

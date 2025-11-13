@@ -1,5 +1,6 @@
 package com.group4.clinicmanagement.service;
 
+import com.group4.clinicmanagement.dto.DoctorDTO;
 import com.group4.clinicmanagement.dto.UserDTO;
 import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.repository.StaffRepository;
@@ -103,5 +104,4 @@ public class UserService implements UserDetailsService {
                 .authorities("ROLE_" + user.getRole().getName().toUpperCase())
                 .build();
     }
-
 }

@@ -13,11 +13,14 @@ import com.group4.clinicmanagement.repository.StaffRepository;
 import com.group4.clinicmanagement.service.*;
 import com.group4.clinicmanagement.service.CashierService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -60,10 +63,35 @@ public class CashierController {
     }
 
     @PostMapping("/edit-profile")
-    public String editProfile(@ModelAttribute("cashier") CashierUserDTO dto, Authentication authentication) {
-        String cashierName = authentication.getName();
-        cashierService.updateCashierProfile(cashierName, dto);
-        return "redirect:/cashier/profile";
+    public String editProfile(
+            @Valid @ModelAttribute("cashier") CashierUserDTO dto,
+            BindingResult bindingResult,
+            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("cashier", dto);
+            return "cashier/edit-profile";
+        }
+
+        try {
+            String cashierName = authentication.getName();
+            cashierService.updateCashierProfile(cashierName, dto, avatarFile);
+            redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
+            return "redirect:/cashier/profile";
+
+        } catch (IllegalArgumentException e) {
+            // Lỗi file ảnh (loại file / kích thước)
+            model.addAttribute("cashier", dto);
+            model.addAttribute("fileError", e.getMessage());
+            return "cashier/edit-profile";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Unexpected error while saving profile.");
+            return "redirect:/cashier/profile";
+        }
     }
 
     @GetMapping("/appointment-list")
@@ -315,25 +343,21 @@ public class CashierController {
 
 
     @PostMapping("/bill/{id}/export")
-    public String exportBill(@PathVariable("id") Integer billId,
-                           RedirectAttributes redirectAttributes,
+    public void exportBill(@PathVariable("id") Integer billId,
                            HttpServletResponse response) {
         try {
             Bill bill = billService.exportBill(billId);
+
             response.setContentType("application/pdf");
-            String headerValue = "attachment; filename=bill_" + bill.getBillId() + ".pdf";
-            response.setHeader("Content-Disposition", headerValue);
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=bill_" + bill.getBillId() + ".pdf");
 
             billService.exportPdfToResponse(bill, response.getOutputStream());
-            return "redirect:/cashier/payment-list";
+            response.flushBuffer();
+
         } catch (Exception e) {
-            try {
-                response.setContentType("text/plain");
-                response.getWriter().write("Error exporting bill: " + e.getMessage());
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            } catch (Exception ignored) {}
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        return "redirect:/cashier/payment-list";
     }
 
 
@@ -355,7 +379,6 @@ public class CashierController {
         switch (status.toUpperCase()) {
             case "PENDING" -> bills = billService.getBillsByStatus(0, currentPage, size);
             case "PAID" -> bills = billService.getBillsByStatus(1, currentPage, size);
-            case "VOID" -> bills = billService.getBillsByStatus(2, currentPage, size);
             default -> bills = billService.getAllBills(currentPage, size);
         }
 

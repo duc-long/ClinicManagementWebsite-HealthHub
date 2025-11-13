@@ -167,18 +167,19 @@
                     </li>
 
                     <!-- Logged In -->
-                    <div class="dropdown" style="z-index: 9999" sec:authorize="isAuthenticated()">
+                    <div class="dropdown" style="z-index: 9999"
+                         sec:authorize="hasAuthority('ROLE_PATIENT')">
                         <button class="user-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">
                             Hi, <span th:text="${#authentication.principal.fullName}">User</span>
                         </button>
                         <ul class="dropdown-menu shadow-sm border-0 mt-2" style="z-index: 9999;">
-                            <li><a class="dropdown-item" th:href="@{/patient/profile}"><i
-                                    class="bi bi-person-circle me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" th:href="@{/patient/profile}">
+                                <i class="bi bi-person-circle me-2"></i>Profile</a></li>
                             <li>
-                                <form  th:action="@{/patient/logout}" method="post">
-                                    <button class="dropdown-item text-danger"><i
-                                            class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                <form th:action="@{/patient/logout}" method="post">
+                                    <button class="dropdown-item text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout</button>
                                 </form>
                             </li>
                         </ul>

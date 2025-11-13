@@ -54,25 +54,19 @@ public class MedicalRecord {
     @OneToOne(
             mappedBy = "medicalRecord",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
-            orphanRemoval = true,
-            fetch = FetchType.LAZY
-    )
+            orphanRemoval = true)
     private VitalSigns vitalSigns;
 
     @OneToOne(
             mappedBy = "medicalRecord",
             cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY
-    )
+            orphanRemoval = true)
     private LabRequest labRequest;
 
     @OneToOne(
             mappedBy = "medicalRecord",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
-            orphanRemoval = true,
-            fetch = FetchType.LAZY
-    )
+            orphanRemoval = true)
     private Prescription prescription;
 
     @PostLoad

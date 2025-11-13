@@ -50,24 +50,6 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    // method to create appointment for patient to follow up
-    @Transactional
-    public Appointment saveFollowUpAppointment(Appointment appointment) {
-        Integer id = appointment.getAppointmentId();
-
-        if (id != null && appointmentRepository.existsById(id)) {
-            Appointment existAppointment = appointmentRepository.findById(id).orElseThrow();
-            existAppointment.setAppointmentDate(appointment.getAppointmentDate());
-            existAppointment.setNotes(appointment.getNotes());
-            existAppointment.setStatus(appointment.getStatus());
-            existAppointment.setPatient(appointment.getPatient());
-            existAppointment.setDoctor(appointment.getDoctor());
-            return appointmentRepository.save(existAppointment);
-        }
-
-        return appointmentRepository.save(appointment);
-    }
-
     // method to delete Appointment
     public void deleteAppointmentById(int appointmentId) {
         appointmentRepository.deleteById(appointmentId);
@@ -193,11 +175,7 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
     }
 
-
-    public int countTodayAppointments(Integer doctorId) {
-        return appointmentRepository.countTodayAppointments(doctorId);
-    }
-
+    // method to get all today appointment
     public List<AppointmentDTO> getTodayAppointments(Integer doctorId, String patientName) {
         List<Appointment> appointments = appointmentRepository.findTodayAppointments(doctorId, patientName);
 
@@ -212,13 +190,14 @@ public class AppointmentService {
                         a.getAppointmentDate(),
                         a.getCreatedAt(),
                         a.getStatus(),
-                        a.getQueueNumber(),
+                        a.getQueueNumber() != null ? a.getQueueNumber() : 0,
                         a.getNotes(),
                         a.getCancelReason()
                 ))
                 .toList();
     }
 
+    // find all appointment by doctor ID
     public List<AppointmentDTO> getTodayAppointmentsByDoctorId(Integer doctorId) {
         List<Appointment> appointments = appointmentRepository.findTodayAppointmentsByDoctorId(doctorId);
         return appointments

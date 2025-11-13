@@ -111,6 +111,20 @@ public class LabResultService {
 
 
     private String saveFile(MultipartFile file, String folder) throws IOException {
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Invalid file type. Only image files are allowed.");
+        }
+
+        String originalFilename = file.getOriginalFilename().toLowerCase();
+        if (!originalFilename.endsWith(".jpg") &&
+                !originalFilename.endsWith(".jpeg") &&
+                !originalFilename.endsWith(".png") &&
+                !originalFilename.endsWith(".gif") &&
+                !originalFilename.endsWith(".webp")) {
+            throw new IllegalArgumentException("Unsupported image format. Please upload JPG, JPEG, PNG, GIF, or WEBP files.");
+        }
+
         Path uploadDir = Paths.get("uploads", folder);
         if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
 
@@ -123,6 +137,7 @@ public class LabResultService {
         // Trả về đường dẫn tương đối để lưu DB
         return fileName;
     }
+
 
     private void deleteFileIfExists(String relativePath) {
         if (relativePath == null || relativePath.isBlank()) return;

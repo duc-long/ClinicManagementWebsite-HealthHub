@@ -40,9 +40,7 @@ public class Prescription {
     @OneToMany(
             mappedBy = "prescription",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
-            orphanRemoval = true,
-            fetch = FetchType.LAZY
-    )
+            orphanRemoval = true)
     private List<PrescriptionDetail> details = new ArrayList<>();
 
     @PostLoad

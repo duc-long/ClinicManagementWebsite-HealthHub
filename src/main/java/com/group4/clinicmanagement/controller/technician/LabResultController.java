@@ -77,6 +77,9 @@ public class LabResultController {
             } else {
                 resultDTOS = labResultService.filterResults(resultId, testName, isAll);
             }
+            for (LabResultDTO labResultDTO : resultDTOS) {
+                System.out.println(labResultDTO.getResultText());
+            }
 
             List<LabTestCatalog> labTestCatalogs = labTestCatalogService.getAll();
             LocalDate now = LocalDate.now();

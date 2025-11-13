@@ -81,9 +81,9 @@
                             <select class="form-select form-select-sm" id="doctorName" name="doctorName">
                                 <option value="">All doctors</option>
                                 <option th:each="doctor : ${doctors}"
-                                        th:value="${doctor.user.fullName}"
-                                        th:text="${doctor.user.fullName}"
-                                        th:selected="${doctor.user.fullName == doctorName}">
+                                        th:value="${doctor.staff.fullName}"
+                                        th:text="${doctor.staff.fullName}"
+                                        th:selected="${doctor.staff.fullName == doctorName}">
                                 </option>
                             </select>
                         </div>
@@ -146,9 +146,9 @@
                             <tbody>
                             <tr th:each="request : ${labRequests}" th:object="${request}">
                                 <td th:text="*{labRequestId}"></td>
-                                <td th:text="*{patient.user.fullName}"></td>
+                                <td th:text="*{patient.fullName}"></td>
                                 <td th:text="*{labTestCatalog.name}"></td>
-                                <td th:text="*{doctor.user.fullName}"></td>
+                                <td th:text="*{doctor.staff.fullName}"></td>
                                 <td>
                             <span th:switch="*{status.name()}">
                                 <span th:case="'REQUESTED'" class="badge bg-secondary">Requested</span>

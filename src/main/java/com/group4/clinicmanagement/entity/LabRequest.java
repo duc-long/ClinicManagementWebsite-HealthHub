@@ -45,9 +45,7 @@ public class LabRequest {
     @OneToOne(
             mappedBy = "labRequest",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
-            orphanRemoval = true,
-            fetch = FetchType.LAZY
-    )
+            orphanRemoval = true)
     private LabResult labResult;
 
     @PostLoad

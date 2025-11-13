@@ -12,7 +12,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="brand">
-            <div class="logo">R</div>
+            <div class="logo">CSH</div>
             <div class="title hide-when-collapsed">HealHub · Cashier</div>
         </div>
 
@@ -57,50 +57,67 @@
         </div>
 
         <div class="content">
-            <form class="profile-card" th:action="@{/cashier/edit-profile}" method="post" th:object="${cashier}" enctype="multipart/form-data">
+            <form class="profile-card"
+                  th:action="@{/cashier/edit-profile}"
+                  method="post"
+                  th:object="${cashier}"
+                  enctype="multipart/form-data">
                 <div class="profile-title">Change profile</div>
 
                 <div class="avatar" style="margin:auto;">
                     <img th:src="${cashier.avatarFilename != null} ?
-                                 '/images/avatars/' + ${cashier.avatarFilename} :
-                                 '/images/avatars/default-avatar.png'"
+                     '/images/avatars/' + ${cashier.avatarFilename} :
+                     '/images/avatars/default-avatar.png'"
                          id="avatarPreview" width="150" height="150"
                          style="border-radius:50%; object-fit:cover;" alt="Avatar"/>
-                    <input type="file" name="avatar" accept="image/*" onchange="previewAvatar(this)" style="margin-top:10px;">
+                    <input type="file" name="avatarFile" accept="image/*" onchange="previewAvatar(this)" style="margin-top:10px;">
+                    <p th:if="${fileError}" th:text="${fileError}" class="text-danger small mt-2"></p>
                 </div>
 
-                <div class="info" style="margin-top:20px;">
-                    <div class="group-info">
+                <div class="info mt-3">
+
+                    <div class="group-info mb-3">
                         <div class="label">Username</div>
                         <input type="text" th:field="*{username}" readonly class="form-control"/>
                     </div>
-                    <div class="group-info">
+
+                    <div class="group-info mb-3">
                         <div class="label">Full Name</div>
                         <input type="text" th:field="*{fullName}" class="form-control"/>
+                        <p th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="text-danger small mt-1"></p>
                     </div>
-                    <div class="group-info">
+
+                    <div class="group-info mb-3">
                         <div class="label">Email</div>
                         <input type="email" th:field="*{email}" class="form-control"/>
+                        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger small mt-1"></p>
                     </div>
-                    <div class="group-info">
+
+                    <div class="group-info mb-3">
                         <div class="label">Phone</div>
                         <input type="text" th:field="*{phone}" class="form-control"/>
+                        <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger small mt-1"></p>
                     </div>
-                    <div class="group-info">
+
+                    <div class="group-info mb-3">
                         <label class="form-label fw-bold">Gender</label>
                         <select class="form-select" th:field="*{gender}" required>
+                            <option value="">-- Select Gender --</option>
                             <option value="MALE">Male</option>
                             <option value="FEMALE">Female</option>
                             <option value="OTHER">Other</option>
                         </select>
+                        <p th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="text-danger small mt-1"></p>
                     </div>
+
                 </div>
 
-                <div class="button-row mt-3">
+                <div class="button-row mt-4">
                     <a th:href="@{/cashier/profile}" class="btn-label change-password-label">Cancel</a>
                     <button type="submit" class="btn-label change-profile-label">Save</button>
                 </div>
             </form>
+
         </div>
     </main>
 </div>

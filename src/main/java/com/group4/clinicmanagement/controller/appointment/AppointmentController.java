@@ -113,6 +113,12 @@ public class AppointmentController {
                 return "redirect:/patient/appointment/manage";
             }
 
+            if (currentUser.getUserId() != appointment.getPatient().getPatientId()) {
+                redirect.addFlashAttribute("message", "You cannot view this appointment");
+                redirect.addFlashAttribute("messageType", "error");
+                return "redirect:/patient/appointment/manage";
+            }
+
             // Thêm thông tin lịch hẹn vào model
             model.addAttribute("appointment", appointment);
             return "patient/appointment-detail";
@@ -180,9 +186,25 @@ public class AppointmentController {
 
     // method cancel redirect to cancel appointment page
     @GetMapping("/cancel/{id}")
-    public String cancelAppointment(@PathVariable(name = "id") int id, Model model) {
-        Appointment appointment = appointmentService.findAppointmentById(id);
+    public String cancelAppointment(@PathVariable(name = "id") Integer id, Model model, RedirectAttributes redirect, Principal principal) {
+        if (id == null) {
+            redirect.addFlashAttribute("message", "Invalid appointment ID format.");
+            redirect.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/manage";
+        }
 
+        // current User
+        User user = userRepository.findUserByUsername(principal.getName()).orElse(null);
+        if (user == null) {
+            return "redirect:/patient/login";
+        }
+
+        Appointment appointment = appointmentService.findAppointmentById(id);
+        if (appointment.getPatient().getPatientId() != user.getUserId()) {
+            redirect.addFlashAttribute("message", "You cannot access this appointment.");
+            redirect.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/manage";
+        }
         model.addAttribute("appointment", appointment);
         return "patient/cancel-appointment";
     }
@@ -214,10 +236,26 @@ public class AppointmentController {
 
     // method redirect to edit page
     @GetMapping("/edit/{id}")
-    public String editAppointment(@PathVariable(name = "id") int id, Model model,
-                                  RedirectAttributes redirectAttributes) {
-        Appointment appointment = appointmentService.findAppointmentById(id);
+    public String editAppointment(@PathVariable(name = "id") Integer id, Model model,
+                                  RedirectAttributes redirectAttributes, Principal principal) {
+        if (id == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Please enter appointment id");
+            return "redirect:/patient/appointment/manage";
+        }
 
+        // current User
+        User user = userRepository.findUserByUsername(principal.getName()).orElse(null);
+        if (user == null) {
+            return "redirect:/patient/login";
+        }
+
+        Appointment appointment = appointmentService.findAppointmentById(id);
+        if (appointment.getPatient().getPatientId() != user.getUserId()) {
+            redirectAttributes.addFlashAttribute("message", "You cannot access this appointment.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/manage";
+        }
         // check valid appointment
         if (appointment == null || appointment.getAppointmentId() != id) {
             System.out.println("edit appointment failed");
@@ -238,6 +276,26 @@ public class AppointmentController {
         Appointment existing = appointmentService.findAppointmentById(appointment.getAppointmentId());
         if (existing == null) {
             redirectAttributes.addFlashAttribute("message", "Appointment does not exist");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/patient/appointment/manage";
+        }
+
+        Patient patient = patientRepository.findById(appointment.getPatient().getPatientId()).orElse(null);
+        if (patient == null) {
+            return"redirect:/patient/login";
+        }
+
+        // check span in the same day
+        if (!appointmentService.canBookAppointment(appointment.getPatient().getPatientId())) {
+            redirectAttributes.addFlashAttribute("message", "❌ You already limit book an appointment. \nPlease choose another day.");
+            redirectAttributes.addFlashAttribute("messageType","error");
+            System.out.println("You already limit book an appointment ");
+            return "redirect:/patient/appointment/manage";
+        }
+
+        // check valid booking appointment date
+        if (!appointmentService.isBookAppointmentValidDate(appointment.getAppointmentDate())) {
+            redirectAttributes.addFlashAttribute("message", "Invalid booking date, You can only book an appointment after 2 days.");
             redirectAttributes.addFlashAttribute("messageType", "error");
             return "redirect:/patient/appointment/manage";
         }

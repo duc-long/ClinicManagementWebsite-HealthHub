@@ -9,18 +9,24 @@ import com.group4.clinicmanagement.entity.*;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
+import com.group4.clinicmanagement.repository.DoctorDailySlotRepository;
 import com.group4.clinicmanagement.service.*;
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/doctor")
@@ -39,6 +45,7 @@ public class DoctorController {
     private final LabResultService labResultService;
     private final LabTestCatalogService labTestCatalogService;
     private final PatientService patientService;
+    private final DoctorDailySlotRepository slotRepository;
 
     public DoctorController(DoctorService doctorService, UserService userService, DepartmentRepository departmentRepository,
                             AppointmentRepository appointmentRepository, AppointmentService appointmentService,
@@ -46,7 +53,7 @@ public class DoctorController {
                             PrescriptionService prescriptionService, VitalSignsService vitalSignsService,
                             PrescriptionDetailService prescriptionDetailService, PatientService patientService,
                             LabRequestService labRequestService, LabTestCatalogService labTestCatalogService,
-                            LabResultService labResultService) {
+                            LabResultService labResultService, DoctorDailySlotRepository slotRepository) {
         this.doctorService = doctorService;
         this.userService = userService;
         this.departmentRepository = departmentRepository;
@@ -61,6 +68,7 @@ public class DoctorController {
         this.prescriptionDetailService = prescriptionDetailService;
         this.labTestCatalogService = labTestCatalogService;
         this.labResultService = labResultService;
+        this.slotRepository = slotRepository;
     }
 
     // method to load home view doctor
@@ -76,7 +84,6 @@ public class DoctorController {
             return "redirect:/doctor/login";
         }
 
-        model.addAttribute("todayCount", appointmentService.countTodayAppointments(user.getStaffId()));
         List<AppointmentDTO> appointments = appointmentService.getTodayAppointments(user.getStaffId(), patientName);
         model.addAttribute("appointments", appointments);
         model.addAttribute("patientName", patientName);
@@ -171,7 +178,7 @@ public class DoctorController {
                 a.getAppointmentDate(),
                 a.getCreatedAt(),
                 a.getStatus(),
-                a.getQueueNumber(),
+                a.getQueueNumber() != null ? a.getQueueNumber() : 0,
                 a.getNotes(),
                 a.getCancelReason()
         );
@@ -200,8 +207,11 @@ public class DoctorController {
         doctorDTO.setDoctorId(user.getStaffId());
         doctorDTO.setAvatarFileName(user.getAvatar());
         doctorDTO.setUsername(user.getUsername());
-        Department department = departmentRepository.findByDepartmentId(doctor.getDepartment().getDepartmentId())
+        doctorDTO.setDepartmentId(doctor.getDepartment().getDepartmentId());
+        Department department = departmentRepository.findByDepartmentId(doctorDTO.getDepartmentId())
                 .orElse(null);
+
+
         model.addAttribute("doctor", doctorDTO);
         model.addAttribute("department", department.getName());
         model.addAttribute("section", "profile");
@@ -236,32 +246,83 @@ public class DoctorController {
                                   @ModelAttribute("doctor") DoctorDTO doctorModel,
                                   RedirectAttributes redirectAttributes) {
 
-        Staff user = userService.findUserByUsername(principal.getName());
-        if (user == null) return "redirect:/login";
-
-        Doctor doctor = doctorService.findDoctorById(user.getStaffId());
-        if (doctor == null) return "redirect:/doctor/home";
-
-        // --- Update user basic info ---
-        user.setFullName(doctorModel.getFullName());
-        user.setEmail(doctorModel.getEmail());
-        user.setPhone(doctorModel.getPhone());
-        user.setGender(doctorModel.getGender());
-        Staff saved = userService.saveUser(user);
-
-        if (saved == null) {
+        if (principal == null) {
             redirectAttributes.addFlashAttribute("messageType", "error");
-            redirectAttributes.addFlashAttribute("message", "Invalid username or password");
-            return "redirect:/doctor/home";
+            redirectAttributes.addFlashAttribute("message", "You must be logged in to perform this action.");
+            return "redirect:/doctor/login";
         }
 
-        // --- Update doctor-specific info ---
-        doctor.setBio(doctorModel.getBio());
-        doctorService.saveDoctor(doctor);
+        Staff user = userService.findUserByUsername(principal.getName());
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "User not found.");
+            return "redirect:/doctor/login";
+        }
 
-        redirectAttributes.addFlashAttribute("message", "Doctor profile updated successfully!");
-        redirectAttributes.addFlashAttribute("messageType", "success");
-        return "redirect:/doctor/profile";
+        try {
+            Optional<String> validationError = doctorService.validateUpdateDoctorInfo(doctorModel, user.getStaffId());
+            if (validationError.isPresent()) {
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                redirectAttributes.addFlashAttribute("message", validationError.get());
+                return "redirect:/doctor/profile/edit";
+            }
+
+            // Update User
+            user.setFullName(doctorModel.getFullName().trim());
+            user.setEmail(doctorModel.getEmail().trim());
+            user.setPhone(doctorModel.getPhone().trim());
+            user.setGender(doctorModel.getGender());
+            Staff saved = userService.saveUser(user);
+
+            if (saved == null) {
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                redirectAttributes.addFlashAttribute("message", "Failed to update user account.");
+                return "redirect:/doctor/profile/edit";
+            }
+
+            // Update Doctor-specific
+            Doctor doctor = doctorService.findDoctorById(user.getStaffId());
+            if (doctor == null) {
+                // create new doctor record if not exist (optional)
+                doctor = new Doctor();
+                doctor.setDoctorId(user.getStaffId());
+            }
+            doctor.setBio(doctorModel.getBio() == null ? null : doctorModel.getBio().trim());
+            doctorService.saveDoctor(doctor);
+
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "Doctor profile updated successfully!");
+            return "redirect:/doctor/profile";
+        } catch (Exception ex) {
+            // logger.error("Error updating doctor profile", ex);
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "An unexpected error occurred while updating profile. Please try again later.");
+            return "redirect:/doctor/profile/edit";
+        }
+    }
+
+    // method to change doctor avatar
+    @PostMapping("/change-avatar")
+    public String editAvatar(
+            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+        try {
+            String doctorName = authentication.getName();
+            doctorService.updateDoctorProfile(doctorName, avatarFile);
+            redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");
+            return "redirect:/doctor/profile";
+
+        } catch (IllegalArgumentException e) {
+            // lỗi do file (validate) -> trả về trang edit và show message
+            model.addAttribute("fileError", e.getMessage());
+            return "doctor/edit-profile";
+        } catch (Exception e) {
+            // lỗi bất ngờ -> redirect và show error
+            redirectAttributes.addFlashAttribute("errorMessage", "Unexpected error while saving profile.");
+            return "redirect:/doctor/profile";
+        }
     }
 
     // method to show change password
@@ -607,19 +668,64 @@ public class DoctorController {
             @RequestParam("recordId") int recordId,
             @RequestParam("prescriptionId") int prescriptionId,
             @RequestParam(value = "detailIds", required = false) List<Integer> detailIds,
-            @RequestParam("drugIds") List<Integer> drugIds,
-            @RequestParam("quantities") List<Integer> quantities,
-            @RequestParam("dosages") List<String> dosages,
-            @RequestParam("frequencies") List<String> frequencies,
-            @RequestParam("durationDay") List<Integer> durationDays,
-            @RequestParam("instructions") List<String> instructions,
+            @RequestParam(value = "drugIds", required = false) List<Integer> drugIds,
+            @RequestParam(value = "quantities", required = false) List<Integer> quantities,
+            @RequestParam(value = "dosages", required = false) List<String> dosages,
+            @RequestParam(value = "frequencies", required = false) List<String> frequencies,
+            @RequestParam(value = "durationDay", required = false) List<Integer> durationDays,
+            @RequestParam(value = "instructions", required = false) List<String> instructions,
             RedirectAttributes redirectAttributes
     ) {
         try {
+            detailIds = (detailIds == null) ? new ArrayList<>() : detailIds;
+            drugIds = (drugIds == null) ? new ArrayList<>() : drugIds;
+            quantities = (quantities == null) ? new ArrayList<>() : quantities;
+            dosages = (dosages == null) ? new ArrayList<>() : dosages;
+            frequencies = (frequencies == null) ? new ArrayList<>() : frequencies;
+            durationDays = (durationDays == null) ? new ArrayList<>() : durationDays;
+            instructions = (instructions == null) ? new ArrayList<>() : instructions;
+
+            int rows = drugIds.size();
+            if (rows == 0) {
+                throw new IllegalArgumentException("Please add at least one drug.");
+            }
+
+            if (!(quantities.size() == rows && dosages.size() == rows
+                    && frequencies.size() == rows && durationDays.size() == rows
+                    && instructions.size() == rows)) {
+                throw new IllegalArgumentException("Mismatch in prescription rows. Please check all fields.");
+            }
+
+            for (int i = 0; i < rows; i++) {
+                Integer drugId = drugIds.get(i);
+                Integer qty = quantities.get(i);
+                String dosage = dosages.get(i);
+                String freq = frequencies.get(i);
+                Integer dur = durationDays.get(i);
+
+                if (drugId == null || drugId <= 0) {
+                    throw new IllegalArgumentException("Invalid drug selected at row " + (i + 1));
+                }
+                if (qty == null || qty <= 0) {
+                    throw new IllegalArgumentException("Quantity must be a positive number at row " + (i + 1));
+                }
+                if (dur == null || dur <= 0) {
+                    throw new IllegalArgumentException("Duration must be a positive number at row " + (i + 1));
+                }
+                if (dosage == null || dosage.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Dosage cannot be empty at row " + (i + 1));
+                }
+                if (freq == null || freq.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Frequency cannot be empty at row " + (i + 1));
+                }
+            }
+
+            // Nếu pass hết validation, gọi service
             prescriptionDetailService.saveOrUpdate(
                     prescriptionId, detailIds, drugIds, quantities,
                     dosages, frequencies, durationDays, instructions
             );
+
             redirectAttributes.addFlashAttribute("messageType", "success");
             redirectAttributes.addFlashAttribute("message", "Prescription details saved successfully!");
         } catch (Exception e) {
@@ -643,23 +749,62 @@ public class DoctorController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            // tạo prescription và lưu
-            Prescription saved = prescriptionService.createPrescription(recordId, doctorId);
-
-            // thêm detail (nếu có)
             if (drugIds != null && !drugIds.isEmpty()) {
+                quantities = (quantities == null) ? new ArrayList<>() : quantities;
+                dosages = (dosages == null) ? new ArrayList<>() : dosages;
+                frequencies = (frequencies == null) ? new ArrayList<>() : frequencies;
+                durationDays = (durationDays == null) ? new ArrayList<>() : durationDays;
+                instructions = (instructions == null) ? new ArrayList<>() : instructions;
+
+                int rows = drugIds.size();
+
+                if (!(quantities.size() == rows && dosages.size() == rows
+                        && frequencies.size() == rows && durationDays.size() == rows
+                        && instructions.size() == rows)) {
+                    throw new IllegalArgumentException("Mismatch in prescription fields: please fill all columns for every drug.");
+                }
+
+                for (int i = 0; i < rows; i++) {
+                    Integer drugId = drugIds.get(i);
+                    Integer qty = quantities.get(i);
+                    Integer dur = durationDays.get(i);
+                    String dosage = dosages.get(i);
+                    String freq = frequencies.get(i);
+
+                    if (drugId == null || drugId <= 0) {
+                        throw new IllegalArgumentException("Invalid drug selected at row " + (i + 1));
+                    }
+                    if (qty == null || qty <= 0) {
+                        throw new IllegalArgumentException("Quantity must be a positive number at row " + (i + 1));
+                    }
+                    if (dur == null || dur <= 0) {
+                        throw new IllegalArgumentException("Duration must be a positive number at row " + (i + 1));
+                    }
+                    if (dosage == null || dosage.trim().isEmpty()) {
+                        throw new IllegalArgumentException("Dosage cannot be empty at row " + (i + 1));
+                    }
+                    if (freq == null || freq.trim().isEmpty()) {
+                        throw new IllegalArgumentException("Frequency cannot be empty at row " + (i + 1));
+                    }
+                }
+
+                Prescription saved = prescriptionService.createPrescription(recordId, doctorId);
                 prescriptionDetailService.addDetails(saved.getPrescriptionId(),
                         drugIds, quantities, dosages, frequencies, durationDays, instructions);
+
+            } else {
+                prescriptionService.createPrescription(recordId, doctorId);
             }
 
             redirectAttributes.addFlashAttribute("messageType", "success");
-            redirectAttributes.addFlashAttribute("message", "Prescription details saved successfully!");
+            redirectAttributes.addFlashAttribute("message", "Prescription created successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("messageType", "error");
             redirectAttributes.addFlashAttribute("message", "Error: " + e.getMessage());
         }
         return "redirect:/doctor/records/detail/" + recordId;
     }
+
 
     // method to show vital create
     @GetMapping("/vitals/create/{id}")
@@ -777,11 +922,23 @@ public class DoctorController {
                               @RequestParam(name = "recordId") Integer recordId,
                               @RequestParam(name = "doctorId") Integer doctorId,
                               @RequestParam(name = "testId") Integer testId) {
+        if (recordId == null || doctorId == null || testId == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "ID not found!");
+            return "redirect:/doctor/home";
+        }
+
         LabRequest request = new LabRequest();
         // find doctor
         Doctor doctor = doctorService.findDoctorById(doctorId);
         // find lab test
         LabTestCatalog testCatalog = labTestCatalogService.findByTestId(testId);
+        if (testCatalog == null) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Lab Tests not found!");
+            return "redirect:/doctor/home";
+        }
+
         // find medical record
         MedicalRecord medicalRecord = medicalRecordService.findById(recordId);
         // set object
@@ -801,8 +958,6 @@ public class DoctorController {
             return "redirect:/doctor/home";
         }
     }
-
-
 
     // method to view lab request
     @GetMapping("/labs/view/{id}")
@@ -1018,18 +1173,38 @@ public class DoctorController {
             return "redirect:/doctor/re-examination/create";
         }
 
-        appointment.setPatient(patient);
-        appointment.setStatus(AppointmentStatus.CONFIRMED);
+        // create new appointment
+        Appointment newAppointment = new Appointment();
+        newAppointment.setPatient(patient);
+        newAppointment.setStatus(AppointmentStatus.CONFIRMED);
+        newAppointment.setAppointmentDate(appointment.getAppointmentDate());
+        newAppointment.setNotes(appointment.getNotes());
 
-        if (principal != null) {
+
             Staff user = userService.findUserByUsername(principal.getName());
             if (user != null && user.getDoctor() != null) {
-                appointment.setDoctor(user.getDoctor());
-            }
+                newAppointment.setDoctor(user.getDoctor());
+        }
+        DoctorDailySlot slot = slotRepository.findByDoctorAndSlotDate(user.getDoctor(), appointment.getAppointmentDate())
+                .orElseGet(() -> {
+                    DoctorDailySlot newSlot = new DoctorDailySlot();
+                    newSlot.setDoctor(user.getDoctor());
+                    newSlot.setSlotDate(appointment.getAppointmentDate());
+                    newSlot.setTotalSlots(20);
+                    newSlot.setAvailableSlots(20);
+                    return slotRepository.save(newSlot);
+                });
+
+        if (slot.getAvailableSlots() <= 0) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "You don't have any slots available for that day!");
+            return "redirect:/doctor/re-examination/create";
         }
 
+        slot.setAvailableSlots(slot.getAvailableSlots() - 1);
+        slotRepository.save(slot);
         try {
-            Appointment saved = appointmentService.saveFollowUpAppointment(appointment);
+            Appointment saved = appointmentService.saveAppointment(newAppointment);
             if (saved != null) {
                 redirectAttributes.addFlashAttribute("messageType", "success");
                 redirectAttributes.addFlashAttribute("message", "Appointment created successfully!");

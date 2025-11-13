@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Payments – HealHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/assets/css/receptionist.css}">
     <style>
@@ -48,7 +49,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="brand">
-            <div class="logo">R</div>
+            <div class="logo">CSH</div>
             <div class="title hide-when-collapsed">HealHub · Cashier</div>
         </div>
 
@@ -98,8 +99,6 @@
                    th:classappend="${activeStatus == 'PENDING'} ? 'active'">Pending</a>
                 <a th:href="@{/cashier/payment-list(status='PAID')}"
                    th:classappend="${activeStatus == 'PAID'} ? 'active'">Paid</a>
-                <a th:href="@{/cashier/payment-list(status='VOID')}"
-                   th:classappend="${activeStatus == 'VOID'} ? 'active'">Voided</a>
             </div>
 
             <table class="table table-striped">
@@ -121,14 +120,11 @@
                     <td>
                         <span th:text="${b.appointment != null ? 'Appointment' : 'Lab Request'}"></span>
                     </td>
-                    <td th:text="${#numbers.formatCurrency(b.amount)}"></td>
+                    <td th:text="${#numbers.formatDecimal(b.amount, 0, 'COMMA', 0, 'POINT')} +'VND'"></td>
                     <td>
-                        <span th:switch="${b.status}">
-                            <span th:case="0" class="badge bg-warning text-dark">Pending</span>
-                            <span th:case="1" class="badge bg-success">Paid</span>
-                            <span th:case="2" class="badge bg-danger">Void</span>
-                            <span th:case="*">Unknown</span>
-                        </span>
+                          <span class="badge"
+                                th:classappend="${b.status.name() == 'PAID'} ? 'bg-success' : 'bg-warning text-dark'"
+                                th:text="${b.status}"></span>
                     </td>
                     <td th:text="${b.paidAt != null ? #temporals.format(b.paidAt, 'dd/MM/yyyy HH:mm') : '—'}"></td>
                     <td>

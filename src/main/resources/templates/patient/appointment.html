@@ -17,12 +17,7 @@
 
 <body>
 <div th:replace="~{fragment/fragment.html :: navBar}"></div>
-
-<!-- ✅ Toast Container (Optional, used for notifications) -->
-<!-- <div class="toast-container">...</div> -->
-
-<span id="messageType" th:text="${messageType}" hidden></span>
-
+<div th:insert="~{fragment/toast/toast :: toast}"></div>
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
