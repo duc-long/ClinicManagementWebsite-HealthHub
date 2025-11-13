@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "LabImage")
+@Table(name = "lablmage")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

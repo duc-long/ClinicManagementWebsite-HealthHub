@@ -15,7 +15,7 @@ public enum Gender {
         return value;
     }
 
-    public static Gender fromInt(int value) {
+    public static Gender fromValue(int value) {
         for (Gender gender : values()) {
             if (gender.value == value) {
                 return gender;

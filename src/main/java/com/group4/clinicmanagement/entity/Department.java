@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "Department")
+@Table(name = "department")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

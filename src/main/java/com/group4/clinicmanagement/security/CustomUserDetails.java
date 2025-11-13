@@ -66,14 +66,14 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         if (user instanceof Staff staff) {
-            return staff.getStatus().getValue() == 1; // hoặc Boolean
+            return staff.getStatus().getValue() == 1; // hoặc kiểm tra Boolean
         } else if (user instanceof Patient patient) {
-            return patient.getStatus() == UserStatus.ACTIVE; // hoặc Boolean
+            return patient.getStatus() == UserStatus.ACTIVE; // hoặc kiểm tra Boolean
         }
-        return false;
+        return false; // Xử lý trường hợp user không phải Staff hay Patient
     }
 
-    // === HELPER METHODS ===
+    // === CÁC HÀM HỖ TRỢ ===
     public boolean isStaff() {
         return user instanceof Staff;
     }

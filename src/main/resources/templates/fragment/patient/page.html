@@ -15,7 +15,7 @@
         <h5 class="text-success">Your Feedback</h5>
         <div class="feedback-item-user user-feedback" th:each="feedback : ${userFeedbacks}">
             <div class="feedback-header">
-                <div class="feedback-name" th:text="'Fullname: '+ ${feedback.patient.user.fullName}"></div>
+                <div class="feedback-name" th:text="'Fullname: '+ ${feedback.patient.fullName}"></div>
                 <div class="feedback-rating">
                     <span th:text="${#numbers.formatDecimal(feedback.rating, 1, 1)} + ' / 5.0'"></span>
                     <span class="stars">
@@ -99,7 +99,7 @@
     <div class="feedback-list">
         <div class="feedback-item" th:each="feedback : ${feedbacks.content}">
             <div class="feedback-header">
-                <div class="feedback-name" th:text="'Fullname: '+ ${feedback.patient.user.fullName}">Patient Name</div>
+                <div class="feedback-name" th:text="'Fullname: '+ ${feedback.patient.fullName}">Patient Name</div>
                 <div class="feedback-rating">
                     <span th:text="${#numbers.formatDecimal(feedback.rating, 1, 1)} + ' / 5.0'"></span>
                     <span class="stars">

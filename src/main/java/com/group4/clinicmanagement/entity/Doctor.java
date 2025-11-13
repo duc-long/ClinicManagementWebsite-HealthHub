@@ -45,9 +45,6 @@ public class Doctor {
     @Column(name = "profile_visibility")
     private Boolean profileVisibility = true;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDateTime createdAt;
-
     @OneToMany(
             mappedBy = "doctor",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},

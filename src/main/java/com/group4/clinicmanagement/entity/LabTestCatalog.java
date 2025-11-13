@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "LabTestCatalog")
+@Table(name = "labtestcatalog")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

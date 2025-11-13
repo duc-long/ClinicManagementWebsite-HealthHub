@@ -63,6 +63,6 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     @Query("""
             SELECT d FROM Doctor d
             WHERE d.staff.statusValue = :#{T(com.group4.clinicmanagement.enums.UserStatus).ACTIVE.value} AND d.profileVisibility = true
-            ORDER BY d.createdAt DESC""")
+            ORDER BY d.doctorId DESC""")
     List<Doctor> findTopDoctors(Pageable pageable);
 }

@@ -31,8 +31,8 @@ public class Staff {
     @NotBlank
     private String passwordHash;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
     private Role role;
 
     @Column(name = "full_name", nullable = false, length = 200)
@@ -77,12 +77,6 @@ public class Staff {
 
     @OneToOne(mappedBy = "staff", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Doctor doctor;
-
-    @PostLoad
-    private void loadEnums() {
-        this.gender = Gender.fromInt(this.genderValue);
-        this.status = UserStatus.fromInt(this.statusValue);
-    }
 
     @PrePersist
     @PreUpdate

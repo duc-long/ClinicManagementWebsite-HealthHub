@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
-@Table(name = "DoctorDailySlot")
+@Table(name = "doctordailyslot")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

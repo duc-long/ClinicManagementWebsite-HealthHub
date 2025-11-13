@@ -70,6 +70,13 @@ public class Patient {
     @Transient
     private UserStatus status;
 
+    public UserStatus getStatus() {
+        if (this.status == null && this.statusValue != null) {
+            this.status = UserStatus.fromValue(this.statusValue);
+        }
+        return this.status != null ? this.status : UserStatus.INACTIVE;
+    }
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -125,18 +132,24 @@ public class Patient {
     private List<ConfirmAccount> confirmAccounts = new ArrayList<>();
 
     @PostLoad
-    private void loadEnum() {
-        this.gender = Gender.fromInt(this.genderValue);
+    private void initEnums() {
+        this.status = UserStatus.fromValue(this.statusValue);
+        this.gender = Gender.fromValue(this.genderValue);
     }
-
     @PrePersist
     @PreUpdate
-    private void persistEnum() {
+    private void persistEnumValues() {
         this.genderValue = (gender != null) ? gender.getValue() : 0;
+        this.statusValue = (status != null) ? status.getValue() : 1;
     }
 
     public void setGender(Gender gender) {
         this.gender = gender;
         this.genderValue = (gender != null) ? gender.getValue() : 0;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+        this.statusValue = (status != null) ? status.getValue() : 1;
     }
 }

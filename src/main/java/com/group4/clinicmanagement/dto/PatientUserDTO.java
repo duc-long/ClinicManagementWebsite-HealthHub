@@ -65,7 +65,7 @@ public class PatientUserDTO {
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
-        this.gender = Gender.fromInt(genderValue!=null ? genderValue : 0);
+        this.gender = Gender.fromValue(genderValue!=null ? genderValue : 0);
         this.address = address;
         this.avatarFilename = avatarFilename;
         this.dateOfBirth = dateOfBirth;

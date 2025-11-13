@@ -14,10 +14,11 @@ public enum UserStatus {
         return value;
     }
 
-    public static UserStatus fromInt(int value) {
-        for (UserStatus status : values()) {
-            if (status.getValue() == value) return status;
-        }
-       return INACTIVE;
+    public static UserStatus fromValue(int value) {
+        return switch (value) {
+            case 1 -> ACTIVE;
+            case 0 -> INACTIVE;
+            default -> INACTIVE;
+        };
     }
 }
