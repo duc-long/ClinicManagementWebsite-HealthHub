@@ -3,7 +3,6 @@ package com.group4.clinicmanagement.service;
 import com.group4.clinicmanagement.dto.registerpatient.PatientRegisterDTO;
 import com.group4.clinicmanagement.entity.PasswordResetToken;
 import com.group4.clinicmanagement.entity.Patient;
-import com.group4.clinicmanagement.entity.Staff;
 import com.group4.clinicmanagement.enums.Gender;
 import com.group4.clinicmanagement.enums.UserStatus;
 import com.group4.clinicmanagement.repository.PasswordResetTokenRepository;
@@ -13,6 +12,7 @@ import com.group4.clinicmanagement.repository.StaffRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.temporal.ChronoUnit;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -34,6 +34,8 @@ public class RegistrationService {
 
     private static final int MAX_ATTEMPTS = 5;
 
+    private static final int OTP_RESEND_COOLDOWN_SECONDS = 20;
+
     public  RegistrationService(StaffRepository staffRepository,
                                 PasswordResetTokenRepository tokenRepository,
                                 EmailService emailService,
@@ -50,13 +52,19 @@ public class RegistrationService {
 
     @Transactional
     public void createPendingAccount(PatientRegisterDTO dto) {
-        if (staffRepository.existsByUsername(dto.getUsername())) {
+        if (patientRepository.existsByUsername(dto.getUsername())) {
             throw new RuntimeException("Username already has an account.");
         }
-        Optional<Staff> existing = staffRepository.findByEmail(dto.getEmail());
+
+        if (patientRepository.existsByPhone(dto.getPhone())) {
+            throw new RuntimeException("Phone number already exists.");
+        }
+
+        // SỬA: Tìm trong PatientRepository
+        Optional<Patient> existing = patientRepository.findByEmail(dto.getEmail());
 
         if (existing.isPresent()) {
-            Staff user = existing.get();
+            Patient user = existing.get();
 
             // Nếu user tồn tại nhưng chưa kích hoạt, gửi lại OTP
             if (user.getStatus() == UserStatus.INACTIVE) {
@@ -68,71 +76,31 @@ public class RegistrationService {
             throw new RuntimeException("This email has already been registered and activated.");
         }
 
-        // ➕ Tạo user mới (inactive)
-        Staff user = new Staff();
+        //  Tạo user mới (inactive)
+        Patient user = new Patient();
         user.setUsername(dto.getUsername());
         user.setFullName(dto.getFullName());
         user.setEmail(dto.getEmail());
         user.setPhone(dto.getPhone());
         user.setGender(dto.getGender() != null ? dto.getGender() : Gender.UNKNOWN);
         user.setStatus(UserStatus.INACTIVE);
-        user.setPasswordHash("PENDING");
-        user.setRole(roleRepository.findByName("Patient")
-                .orElseThrow(() -> new RuntimeException("Patient role not found.")));
-        staffRepository.save(user);
+        user.setPasswordHash("PENDING_" + UUID.randomUUID().toString());
+        user.setAddress(dto.getAddress());
+        user.setDateOfBirth(dto.getDateOfBirth());
+        patientRepository.save(user);
 
-        // ➕ Tạo patient record
-        Patient patient = new Patient();
-        patient.setAddress(dto.getAddress());
-        patient.setDateOfBirth(dto.getDateOfBirth());
-        patientRepository.save(patient);
-
-        // ➕ Tạo và gửi OTP
+        // Tạo và gửi OTP
         createAndSendOtp(dto.getEmail());
     }
-
-//    @Transactional
-//    public boolean verifyOtp(String email, String otp) {
-//        PasswordResetToken token = tokenRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("OTP not found"));
-//
-//        if (token.getAttempts() >= MAX_ATTEMPTS) {
-//            tokenRepository.deleteByEmail(email);
-//            throw new RuntimeException("Too many incorrect attempts. Please request a new OTP.");
-//        }
-//
-//        if (token.isExpired()) {
-//            tokenRepository.delete(token);
-//            throw new RuntimeException("OTP expired");
-//        }
-//        // Kiểm tra OTP
-//        if (token.getOtpCode().equals(otp)) {
-//            // Reset số lần thử nếu OTP đúng
-//            token.setAttempts(0);
-//            tokenRepository.saveAndFlush(token);
-//            tokenRepository.flush();
-//            return true;
-//        } else {
-//            // Tăng số lần thử nếu OTP sai
-//            token.setAttempts(token.getAttempts() + 1);
-//            tokenRepository.saveAndFlush(token);
-//            tokenRepository.flush();
-//
-//            // Nếu đã vượt quá số lần thử, xóa OTP
-//            if (token.getAttempts() >= MAX_ATTEMPTS) {
-//                System.out.println(token.getAttempts());
-//                System.out.println(email);
-//                tokenRepository.deleteByEmail(email);  // Xóa OTP nếu sai quá 5 lần
-//                throw new RuntimeException("OTP has been deleted due to too many incorrect attempts.");
-//            }
-//            return false;
-//        }
-//    }
 
     @Transactional
     public int verifyOtp(String email, String otp) {
         PasswordResetToken token = tokenRepository.findByPatient_Email(email)
                 .orElseThrow(() -> new RuntimeException("OTP not found")); // Lỗi này OK vì nó là trường hợp ngoại lệ
+
+        if (token == null) {
+            return 0; // Trả về 0 (Invalid OTP)
+        }
 
         if (token.getAttempts() >= MAX_ATTEMPTS) {
             tokenRepository.deleteByPatientEmail(email);
@@ -176,29 +144,45 @@ public class RegistrationService {
 
     @Transactional
     public void createAccountAfterOtp(String email, String newPassword) {
-        Staff user = staffRepository.findByEmail(email)
+        Patient user = patientRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found. Please register again."));
 
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         user.setStatus(UserStatus.ACTIVE);
-        staffRepository.save(user);
+        patientRepository.save(user);
 
         tokenRepository.deleteByPatientEmail(email);
     }
 
     @Transactional
     public void resendOtp(String email) {
-        tokenRepository.deleteByPatientEmail(email);
         createAndSendOtp(email);
     }
 
 
     @Transactional
     public void createAndSendOtp(String email) {
-        var user = staffRepository.findByEmail(email)
+        var user = patientRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Email not found"));
-        tokenRepository.deleteByPatientEmail(email);
+        // SỬA: Thêm logic Spam Check
+        Optional<PasswordResetToken> existingTokenOpt = tokenRepository.findByPatient_Email(email);
 
+        if (existingTokenOpt.isPresent()) {
+            PasswordResetToken existingToken = existingTokenOpt.get();
+            // Cần đảm bảo entity PasswordResetToken có getCreatedAt()
+            LocalDateTime lastSentTime = existingToken.getCreatedAt();
+            LocalDateTime now = LocalDateTime.now();
+
+            long secondsSinceLastSent = ChronoUnit.SECONDS.between(lastSentTime, now);
+
+            if (secondsSinceLastSent < OTP_RESEND_COOLDOWN_SECONDS) {
+                long secondsToWait = OTP_RESEND_COOLDOWN_SECONDS - secondsSinceLastSent;
+                throw new RuntimeException("Please wait " + secondsToWait + " more seconds before requesting a new OTP.");
+            } else {
+                // Xóa token cũ nếu đã qua thời gian chờ
+                tokenRepository.delete(existingToken);
+            }
+        }
         String otp = String.format("%06d", new Random().nextInt(999999));
 
         PasswordResetToken token = new PasswordResetToken();
@@ -206,6 +190,7 @@ public class RegistrationService {
         token.setToken(UUID.randomUUID().toString());
         token.setExpirationDate(LocalDateTime.now().plusMinutes(15));
         token.setAttempts(0);  // Khởi tạo số lần thử là 0
+        token.setPatient(user);
         tokenRepository.save(token);
 
         String subject = "HealthHub - Verify your registration";
@@ -226,8 +211,8 @@ public class RegistrationService {
         emailService.sendEmail(email, subject, body);
     }
 
-    public Staff getUserByEmail(String email) {
-        return staffRepository.findByEmail(email)
+    public Patient getUserByEmail(String email) {
+        return patientRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found for email: " + email));
     }
 }

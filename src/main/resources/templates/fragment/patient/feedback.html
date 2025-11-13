@@ -10,7 +10,7 @@
                 <option th:each="appt : ${eligibleAppointments}"
                         th:value="${appt.appointmentId}"
                         th:text="${(appt.medicalRecord != null ? appt.medicalRecord.diagnosis : 'No diagnosis available')
-                                  + ' - ' + appt.doctor.user.fullName
+                                  + ' - ' + appt.doctor.staff.fullName
                                   + ' (' + #temporals.format(appt.appointmentDate, 'dd/MM/yyyy') + ')'}">
                 </option>
             </select>

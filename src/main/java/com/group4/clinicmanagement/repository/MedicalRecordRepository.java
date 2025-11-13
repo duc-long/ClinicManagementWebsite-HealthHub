@@ -29,25 +29,27 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, In
             "JOIN mr.doctor d " +
             "JOIN d.staff u " +  // JOIN với bảng User để lấy fullName của bác sĩ
             "JOIN mr.patient p " +
-            "WHERE p.patientId = :patientId")
+            "WHERE p.patientId = :patientId " +
+            "ORDER BY mr.createdAt DESC")  // Thêm sắp xếp theo ngày mới nhất
     List<MedicalRecordListDTO> findMedicalRecordsByPatientId(@Param("patientId") Integer patientId);
 
+
     @Query("SELECT new com.group4.clinicmanagement.dto.MedicalRecordDetailDTO(" +
-            "p.fullName, p.email, p.phone, p.genderValue, " + // UserPatient
-            "p.dateOfBirth, p.address, " + // Patient
-            "d.staff.fullName, " + // UserDoctor
-            "d.specialty, " + // Doctor
-            "vs.heightCm, vs.weightKg, vs.bloodPressure, vs.heartRate, vs.temperature, " + // VitalSign
-            "mr.diagnosis, mr.notes, mr.createdAt) " + // DrugCatalog
+            "p.fullName, p.email, p.phone, p.genderValue, " +
+            "p.dateOfBirth, p.address, " +
+            "d.staff.fullName, " +
+            "d.specialty, " +
+            "vs.heightCm, vs.weightKg, vs.bloodPressure, vs.heartRate, vs.temperature, " +
+            "mr.diagnosis, mr.notes, mr.createdAt) " +
             "FROM MedicalRecord mr " +
             "JOIN mr.patient p " +
             "JOIN mr.doctor d " +
-            "LEFT JOIN mr.vitalSigns vs " + // VitalSign
-            "LEFT JOIN mr.labRequest lrq " + // LabRequest
-            "LEFT JOIN lrq.test ltc " + // LabTestCatalog
-            "LEFT JOIN mr.prescription pr " + // Prescription
-            "WHERE p.patientId = :patientId "+
-            "and mr.recordId = :recordId")
+            "LEFT JOIN mr.vitalSigns vs " +
+            "LEFT JOIN mr.labRequest lrq " +
+            "LEFT JOIN lrq.test ltc " +
+            "LEFT JOIN mr.prescription pr " +
+            "WHERE p.patientId = :patientId " +
+            "AND mr.recordId = :recordId")
     Optional<MedicalRecordDetailDTO> findMedicalRecordDetailByPatientId(@Param("patientId") Integer patientId, @Param("recordId") Integer recordId);
 
 

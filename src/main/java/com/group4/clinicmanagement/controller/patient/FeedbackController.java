@@ -25,7 +25,6 @@ public class FeedbackController {
                                  RedirectAttributes redirectAttributes,
                                  Model model) {
 
-        // ✅ Lấy user từ Spring Security
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
             redirectAttributes.addFlashAttribute("error", "You must log in to submit feedback.");
