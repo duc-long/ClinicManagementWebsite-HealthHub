@@ -44,7 +44,7 @@ public class LabRequest {
 
     @OneToOne(
             mappedBy = "labRequest",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            cascade = {CascadeType.ALL},
             orphanRemoval = true)
     private LabResult labResult;
 

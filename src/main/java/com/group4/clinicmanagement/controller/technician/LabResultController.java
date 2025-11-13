@@ -1,18 +1,16 @@
 package com.group4.clinicmanagement.controller.technician;
 
-import com.group4.clinicmanagement.dto.LabRequestDTO;
 import com.group4.clinicmanagement.dto.LabResultDTO;
 import com.group4.clinicmanagement.entity.LabRequest;
 import com.group4.clinicmanagement.entity.LabResult;
 import com.group4.clinicmanagement.entity.LabTestCatalog;
 import com.group4.clinicmanagement.enums.LabRequestStatus;
+import com.group4.clinicmanagement.repository.StaffRepository;
 import com.group4.clinicmanagement.security.CustomUserDetails;
-import com.group4.clinicmanagement.service.CustomUserDetailsService;
 import com.group4.clinicmanagement.service.LabRequestService;
 import com.group4.clinicmanagement.service.LabResultService;
 import com.group4.clinicmanagement.service.LabTestCatalogService;
 import jakarta.validation.Valid;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,34 +21,59 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequestMapping(value = "/technician")
 public class LabResultController {
+    private final StaffRepository staffRepository;
     LabResultService labResultService;
     LabRequestService labRequestService;
     LabTestCatalogService labTestCatalogService;
 
-    public LabResultController(LabResultService labResultService, LabRequestService labRequestService, LabTestCatalogService labTestCatalogService) {
+    public LabResultController(LabResultService labResultService, LabRequestService labRequestService, LabTestCatalogService labTestCatalogService, StaffRepository staffRepository) {
         this.labResultService = labResultService;
         this.labRequestService = labRequestService;
         this.labTestCatalogService = labTestCatalogService;
+        this.staffRepository = staffRepository;
     }
 
-    @GetMapping("/create-test/{id}")
-    public String createTest(@PathVariable("id") Integer labRequestId, Authentication authentication, Model model, RedirectAttributes redirectAttributes) {
+    @GetMapping("/result-create/{requestId}")
+    public String createTest(@PathVariable("requestId") String labRequestId, Authentication authentication, Model model, RedirectAttributes redirectAttributes) {
         try {
             CustomUserDetails userDetails = authentication.getPrincipal() == null ? null : (CustomUserDetails) authentication.getPrincipal();
             int technicianId = userDetails.getUserId();
 
-            Integer resultId = labResultService.createResultForRequest(labRequestId, technicianId);
+            Integer requestId = Integer.parseInt(labRequestId);
+            LabRequest request = labRequestService.findLabRequestById(requestId);
+            if (requestId < 0) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Invalid request id");
+                return "redirect:/technician/request-list";
+            } else if (labResultService.findByLabRequestId(requestId)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Result already exists");
+                return "redirect:/technician/request-list";
+            } else if (request != null ) {
+                redirectAttributes.addFlashAttribute("errorMessage", "There ís no request for laboratory");
+                return "redirect:/technician/request-list";
+            }
+            LabResult result = new LabResult();
+            result.setLabRequest(request);
+            result.setImages(new ArrayList<>());
+            result.setTechnician(staffRepository.findByUsernameIgnoreCase(userDetails.getUsername()));
+            result.setCreatedAt(LocalDateTime.now());
+            result.setResultText("");
 
-            return "redirect:/technician/result/" + resultId;
+            model.addAttribute("result", result);
+            return "technician/result-create";
+        }catch (NumberFormatException e){
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid request id");
+            return "redirect:/technician/request-list";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Invalid request id");
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid request ID format.");
-            return "redirect:/technician/create-test";
+            return "redirect:/technician/create-list";
         }
     }
 
@@ -265,7 +288,8 @@ public class LabResultController {
     public String deleteResult(@PathVariable(name = "id") int id, RedirectAttributes redirectAttributes) {
 
         try {
-            labResultService.deleteResult(id);
+            labResultService.completeResultDeletion(id);
+//            labRequestService.updateStatusAfterDelete(result.getLabRequestId());
             redirectAttributes.addFlashAttribute("successMessage", "Delete successfully!");
             return "redirect:/technician/result-list";
         } catch (NumberFormatException e) {

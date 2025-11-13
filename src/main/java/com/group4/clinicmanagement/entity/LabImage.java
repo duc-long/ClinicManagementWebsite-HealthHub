@@ -18,7 +18,7 @@ public class LabImage {
     @Column(name = "image_id")
     private Integer imageId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "result_id", nullable = false)
     private LabResult labResult;
 

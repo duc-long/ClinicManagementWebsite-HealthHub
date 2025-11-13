@@ -21,16 +21,15 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     boolean existsByAppointment_AppointmentId(Integer appointmentId);
 
 
-    Optional<Bill> findByLabRequest_LabRequestId(Integer labRequestId);
+    Optional<Bill> findByAppointment_MedicalRecord_LabRequest_LabRequestId(Integer labRequestId);
 
 
-    boolean existsByLabRequest_LabRequestId(Integer labRequestId);
+    boolean existsByAppointment_MedicalRecord_LabRequest_LabRequestId(Integer labRequestId);
 
     @Query("SELECT b FROM Bill b " +
             "LEFT JOIN FETCH b.appointment a " +
             "LEFT JOIN FETCH a.patient p " +
-            "LEFT JOIN FETCH b.labRequest l " +
-            "LEFT JOIN FETCH l.medicalRecord mr " +
+            "LEFT JOIN FETCH a.medicalRecord mr " +
             "LEFT JOIN FETCH mr.patient mp " +
             "WHERE b.statusValue = :status")
     Page<Bill> findByStatus(@Param("status") int status, Pageable pageable);
@@ -93,4 +92,5 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
 """, nativeQuery = true)
     List<Object[]> getRevenueByYear(LocalDateTime start, LocalDateTime end);
 
+}
 }

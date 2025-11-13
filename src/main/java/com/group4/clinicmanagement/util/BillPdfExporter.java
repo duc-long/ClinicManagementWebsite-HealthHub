@@ -93,7 +93,7 @@ public class BillPdfExporter {
             appTable.addCell(createCell("Queue No: " + (bill.getAppointment().getQueueNumber() == null ? "-" : bill.getAppointment().getQueueNumber()), normalFont));
             appTable.addCell(createCell("Service: General Examination", normalFont));
             document.add(appTable);
-        } else if (bill.getLabRequest() != null) {
+        } else if (bill.getAppointment().getMedicalRecord().getLabRequest() != null) {
             Paragraph labHeader = new Paragraph("Lab Test Details", headerFont);
             labHeader.setSpacingAfter(5);
             document.add(labHeader);
@@ -102,9 +102,9 @@ public class BillPdfExporter {
             labTable.setWidthPercentage(100);
             labTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
-            labTable.addCell(createCell("Requested by: " + bill.getLabRequest().getDoctor().getStaff().getFullName(), normalFont));
-            labTable.addCell(createCell("Test: " + bill.getLabRequest().getTest().getName(), normalFont));
-            labTable.addCell(createCell("Description: " + bill.getLabRequest().getTest().getDescription(), normalFont));
+            labTable.addCell(createCell("Requested by: " + bill.getAppointment().getMedicalRecord().getLabRequest().getDoctor().getStaff().getFullName(), normalFont));
+            labTable.addCell(createCell("Test: " + bill.getAppointment().getMedicalRecord().getLabRequest().getTest().getName(), normalFont));
+            labTable.addCell(createCell("Description: " + bill.getAppointment().getMedicalRecord().getLabRequest().getTest().getDescription(), normalFont));
             document.add(labTable);
         }
 
