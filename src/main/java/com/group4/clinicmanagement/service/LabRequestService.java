@@ -159,7 +159,7 @@ public class LabRequestService {
         Page<LabRequest> labRequests = labRequestRepository.findByStatus(statusValue, pageable);
 
         return labRequests.map(lr -> {
-            Integer billId = billRepository.findByAppointment_MedicalRecord_LabRequest_LabRequestId(lr.getLabRequestId())
+            Integer billId = billRepository.findByLabRequest_LabRequestId(lr.getLabRequestId())
                     .map(Bill::getBillId)
                     .orElse(null);
 

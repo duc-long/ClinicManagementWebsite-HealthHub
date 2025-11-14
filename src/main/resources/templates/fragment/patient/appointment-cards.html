@@ -45,18 +45,21 @@
                 </div>
 
                 <span th:switch="${a.statusValue}">
-                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).PENDING.value}"
+
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).PENDING.getValue()}"
                           class="badge bg-warning text-dark">Pending</span>
-                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).CONFIRMED.value}"
-                          class="badge bg-success">Confirmed</span>
-                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).CANCELLED.value}"
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).CONFIRMED.getValue()}"
+                          class="badge bg-primary">Confirmed</span>
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).CANCELLED.getValue()}"
                           class="badge bg-danger">Cancelled</span>
-                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).EXAMINED.value}"
-                          class="badge bg-primary">Re-Examined</span>
-                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).NO_SHOW.value}"
-                          class="badge bg-dark">No Show</span>
-                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).CHECKED_IN.value}"
-                          class="badge bg-info text-dark">Checked-In</span>
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).PAID.getValue()}"
+                          class="badge bg-success">Paid</span>
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).NO_SHOW.getValue()}"
+                          class="badge bg-dark">No-show</span>
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).CHECKED_IN.getValue()}"
+                          class="badge bg-info text-dark">Checked-in</span>
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).EXAMINED.getValue()}"
+                          class="badge bg-success">Examined</span>
                     <span th:case="*" class="badge bg-secondary">Unknown</span>
                 </span>
             </div>
@@ -147,31 +150,9 @@
     </div>
 </div>
 
-<!-- 🔹 LỊCH TÁI LHASM (EXAMINED) -->
-<div th:fragment="examined">
-    <div th:if="${!#lists.isEmpty(examined)}" class="d-flex flex-column gap-3">
-        <div th:each="a : ${examined}" class="card shadow-sm p-4 border-warning-subtle">
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <div>
-                    <h6 class="fw-bold text-warning mb-1"
-                        th:text="${#temporals.format(a.appointmentDate, 'dd/MM/yyyy')}"></h6>
-                    <p class="small text-secondary mb-0">
-                        <strong th:text="${a.doctor != null ? a.doctor.user.fullName : 'No doctor assigned'}"></strong>
-                    </p>
-                </div>
-                <span class="badge bg-warning text-dark px-3 py-2">Pending</span>
-            </div>
-            <hr>
-            <p class="text-muted mb-2">Reason: <span th:text="${a.notes}"></span></p>
-            <div class="d-flex gap-2 flex-wrap">
-                <a th:href="@{/patient/appointment/detail/{id}(id=${a.appointmentId})}"
-                   class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>
-            </div>
-        </div>
-    </div>
 
-    <div th:if="${#lists.isEmpty(examined)}" class="text-center text-muted mt-5">
-        <i class="bi bi-hourglass-split fs-1 text-secondary"></i>
-        <p>No submitted appointments.</p>
-    </div>
+<div th:if="${#lists.isEmpty(examined)}" class="text-center text-muted mt-5">
+    <i class="bi bi-hourglass-split fs-1 text-secondary"></i>
+    <p>No submitted appointments.</p>
+</div>
 </div>

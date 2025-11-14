@@ -677,17 +677,21 @@
                         <tr>
                             <th>#</th>
                             <th>Drug</th>
-                            <th>Dosage</th>
                             <th>Quantity</th>
-                            <th>Notes</th>
+                            <th>Dosage</th>
+                            <th>Frequency</th>
+                            <th>Duration</th>
+                            <th>Instruction</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="d, iter : ${prescription.prescriptionDetails}">
                             <td th:text="${iter.index + 1}"></td>
                             <td th:text="${d.drugName}"></td>
-                            <td th:text="${d.dosage}"></td>
                             <td th:text="${d.quantity}"></td>
+                            <td th:text="${d.dosage}"></td>
+                            <td th:text="${d.frequency}"></td>
+                            <td th:text="${d.duration}"></td>
                             <td th:text="${d.instruction ?: '-'}"></td>
                         </tr>
                         </tbody>

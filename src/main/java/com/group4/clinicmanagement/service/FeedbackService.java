@@ -48,7 +48,7 @@ public class FeedbackService {
         List<Appointment> allAppointments = appointmentRepository.findAllByPatient_PatientId(userId);
 
         List<Appointment> filtered = allAppointments.stream()
-                .filter(app -> app.getStatus() == AppointmentStatus.EXAMINED)
+                .filter(app -> app.getStatus() == AppointmentStatus.EXAMINED ||  app.getStatus() == AppointmentStatus.DONE)
                 .filter(app -> feedbackRepository.findByAppointment_AppointmentId(app.getAppointmentId()).isEmpty())
                 .toList();
         return filtered;
@@ -61,7 +61,6 @@ public class FeedbackService {
         System.out.println("appointmentId = " + feedbackDTO.getAppointmentId());
         System.out.println("rating = " + feedbackDTO.getRating());
         System.out.println("comment = " + feedbackDTO.getComment());
-        // 1️⃣ Kiểm tra Appointment có tồn tại không
         Optional<Appointment> appointmentOpt = appointmentRepository.findById(feedbackDTO.getAppointmentId());
         if (appointmentOpt.isEmpty()) {
             return false;
@@ -69,22 +68,18 @@ public class FeedbackService {
 
         Appointment appointment = appointmentOpt.get();
 
-        // 2️⃣ Check xem appointment này thuộc về user hiện tại không
         if (appointment.getPatient() == null || !appointment.getPatient().getPatientId().equals(userId)) {
             return false;
         }
 
-        // 3️⃣ Check xem appointment đã khám chưa
-        if (appointment.getStatusValue() != AppointmentStatus.EXAMINED.getValue()) {
+        if (!(appointment.getStatusValue() == AppointmentStatus.EXAMINED.getValue() || appointment.getStatusValue() == AppointmentStatus.DONE.getValue())) {
             return false;
         }
 
-        // 4️⃣ Check xem appointment này đã có feedback chưa
         if (feedbackRepository.findByAppointment_AppointmentId(appointment.getAppointmentId()).isPresent()) {
             return false;
         }
 
-        // 5️⃣ Lấy thông tin bệnh nhân
         Patient patient = patientRepository.findById(userId).orElse(null);
         if (patient == null) {
             return false;

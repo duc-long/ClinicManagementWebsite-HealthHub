@@ -147,9 +147,6 @@
                                     <a class="btn btn-sm btn-outline-primary"
                                        th:if="${result.labRequestStatus != 'COMPLETED'}"
                                        th:href="@{/technician/result-edit/{id}(id=${result.resultId})}">Update</a>
-                                    <a class="btn btn-sm btn-outline-danger"
-                                       th:if="${result.labRequestStatus != 'COMPLETED'}"
-                                       th:href="@{/technician/result-delete/{id}(id=${result.resultId})}">Delete</a>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(labResults)}">
@@ -164,9 +161,11 @@
     </div>
 </main>
 <div id="flash-message-error" th:data-msg="${errorMessage}" style="display:none;"></div>
+<div id="flash-message-success" th:data-msg="${successMessage}" style="display:none;"></div>
 <script th:inline="javascript">
     /*<![CDATA[*/
     const errorMsg = document.getElementById('flash-message-error').dataset.msg;
+    const successMsg = document.getElementById('flash-message-success').dataset.msg;
 
 
     if (errorMsg) {
@@ -178,6 +177,17 @@
             confirmButtonColor: '#dc3545',
             customClass: {
                 popup: 'swal2-border-red'
+            }
+        });
+    }if (successMsg) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: successMsg,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#dc3545',
+            customClass: {
+                popup: 'swal2-border-green'
             }
         });
     }

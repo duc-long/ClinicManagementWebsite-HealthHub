@@ -1,7 +1,6 @@
 package com.group4.clinicmanagement.util;
 
 import com.group4.clinicmanagement.entity.Bill;
-import com.group4.clinicmanagement.entity.LabRequest;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.Rectangle;
@@ -94,30 +93,20 @@ public class BillPdfExporter {
             appTable.addCell(createCell("Queue No: " + (bill.getAppointment().getQueueNumber() == null ? "-" : bill.getAppointment().getQueueNumber()), normalFont));
             appTable.addCell(createCell("Service: General Examination", normalFont));
             document.add(appTable);
-        }else if (bill.getLabRequest() != null) {
+        } else if (bill.getAppointment().getMedicalRecord().getLabRequest() != null) {
+            Paragraph labHeader = new Paragraph("Lab Test Details", headerFont);
+            labHeader.setSpacingAfter(5);
+            document.add(labHeader);
 
-        LabRequest lr = bill.getLabRequest();
+            PdfPTable labTable = new PdfPTable(1);
+            labTable.setWidthPercentage(100);
+            labTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
-        Paragraph labHeader = new Paragraph("Lab Test Details", headerFont);
-        labHeader.setSpacingAfter(5);
-        document.add(labHeader);
-
-        PdfPTable labTable = new PdfPTable(1);
-        labTable.setWidthPercentage(100);
-        labTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
-
-        labTable.addCell(createCell("Requested by: "
-                + lr.getDoctor().getStaff().getFullName(), normalFont));
-
-        labTable.addCell(createCell("Test: "
-                + lr.getTest().getName(), normalFont));
-
-        labTable.addCell(createCell("Description: "
-                + lr.getTest().getDescription(), normalFont));
-
-        document.add(labTable);
-    }
-
+            labTable.addCell(createCell("Requested by: " + bill.getAppointment().getMedicalRecord().getLabRequest().getDoctor().getStaff().getFullName(), normalFont));
+            labTable.addCell(createCell("Test: " + bill.getAppointment().getMedicalRecord().getLabRequest().getTest().getName(), normalFont));
+            labTable.addCell(createCell("Description: " + bill.getAppointment().getMedicalRecord().getLabRequest().getTest().getDescription(), normalFont));
+            document.add(labTable);
+        }
 
         document.add(new Paragraph(" "));
 

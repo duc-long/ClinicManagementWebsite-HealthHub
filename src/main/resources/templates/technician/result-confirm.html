@@ -57,12 +57,8 @@
                th:replace="~{/fragment/technician/techinician-fragment :: sidebar}">
         </aside>
 
-        <section class="col-12 col-lg-9" th:if="${mess}">
-            <div class="alert alert-danger alert-dismissible fade show">
-                <h2 th:text="${mess}"></h2>
-            </div>
-        </section>
-        <section class="col-12 col-lg-9" th:unless="${mess}">
+
+        <section class="col-12 col-lg-9">
                 <h1 class="h4 mb-3">Confirm Result – RES-<span th:text="${result.resultId}"></span></h1>
                 <div class="card shadow-sm border-0">
                     <div class="card-body">

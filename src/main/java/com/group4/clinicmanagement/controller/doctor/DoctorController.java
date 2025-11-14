@@ -1175,6 +1175,14 @@ public class DoctorController {
             return "redirect:/doctor/re-examination/create";
         }
 
+        if (appointment.getAppointmentId() != null) {
+            Appointment old = appointmentService.findAppointmentById(appointment.getAppointmentId());
+            if (old != null) {
+                old.setStatus(AppointmentStatus.DONE);  // DONE = 7 done examinate
+                appointmentService.saveAppointment(old);
+            }
+        }
+
         // create new appointment
         Appointment newAppointment = new Appointment();
         newAppointment.setPatient(patient);

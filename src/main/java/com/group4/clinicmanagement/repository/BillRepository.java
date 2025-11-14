@@ -21,10 +21,10 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     boolean existsByAppointment_AppointmentId(Integer appointmentId);
 
 
-    Optional<Bill> findByAppointment_MedicalRecord_LabRequest_LabRequestId(Integer labRequestId);
+    Optional<Bill> findByLabRequest_LabRequestId(Integer labRequestId);
 
 
-    boolean existsByAppointment_MedicalRecord_LabRequest_LabRequestId(Integer labRequestId);
+    boolean existsByLabRequest_LabRequestId(Integer labRequestId);
 
     @Query("SELECT b FROM Bill b " +
             "LEFT JOIN FETCH b.appointment a " +

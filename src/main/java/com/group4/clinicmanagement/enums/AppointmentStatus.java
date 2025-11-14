@@ -7,8 +7,8 @@ public enum AppointmentStatus {
     PAID(3),          // bill paid
     NO_SHOW(4),       // patient did not show up
     CHECKED_IN(5),    // patient checked in at reception
-    EXAMINED(6);      // doctor finished examination
-
+    EXAMINED(6),      // doctor finished examination
+    DONE(7);
     private final int value;
 
     AppointmentStatus(int value) {

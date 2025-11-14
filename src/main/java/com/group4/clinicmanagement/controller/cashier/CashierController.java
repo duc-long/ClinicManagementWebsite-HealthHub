@@ -319,7 +319,7 @@ public class CashierController {
             }
 
             // Chỉ cashier mới được tạo bill
-            Staff cashier = staffRepository.findByUsernameAndRoleId(principal.getName(), 4);
+            Staff cashier = staffRepository.findByUsernameAndRoleId(principal.getName(), 2);
             if (cashier == null) {
                 redirectAttributes.addFlashAttribute("message", "Only cashier accounts can perform this action.");
                 redirectAttributes.addFlashAttribute("messageType", "error");

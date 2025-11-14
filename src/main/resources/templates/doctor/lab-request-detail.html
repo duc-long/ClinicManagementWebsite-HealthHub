@@ -131,25 +131,29 @@
 
         <!-- Action Buttons (Always at the bottom) -->
         <div class="card-footer d-flex justify-content-end gap-2">
-            <a th:if="${lab.status == T(com.group4.clinicmanagement.enums.LabRequestStatus).REQUESTED}"
-               th:href="@{/doctor/labs/edit/{id}(id = ${lab.labRequestId})}"
+
+            <!-- Edit -->
+            <a th:if="${lab.status.getValue() ==0}"
+               th:href="@{/doctor/labs/edit/{id}(id=${lab.labRequestId})}"
                class="btn btn-warning">
                 <i class="fa-solid fa-pen-to-square me-1"></i> Edit
             </a>
 
-            <button th:if="${lab.status == T(com.group4.clinicmanagement.enums.LabRequestStatus).REQUESTED}"
+            <!-- Cancel -->
+            <button th:if="${lab.status.getValue() == 0}"
                     type="button"
                     class="btn btn-danger"
                     data-bs-toggle="modal" data-bs-target="#cancelModal">
                 <i class="fa-solid fa-ban me-1"></i> Cancel
             </button>
 
-            <!-- view detail -->
-            <a th:if="${lab.status == T(com.group4.clinicmanagement.enums.LabRequestStatus).COMPLETED}"
+            <!-- View Details -->
+            <a th:if="${lab.status.getValue() == 2}"
                th:href="@{/doctor/labs/view/result/{id}(id=${lab.labRequestId})}"
                class="btn btn-outline-primary">
                 <i class="fa-solid fa-eye me-1"></i> View Details
             </a>
+
         </div>
     </div>
 
@@ -161,8 +165,8 @@
                 </h5></div>
                 <div class="modal-body">Are you sure you want to cancel this request?</div>
                 <div class="modal-footer">
-                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-danger">Cancel Request</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Cancel Request</button>
                 </div>
             </form>
         </div>

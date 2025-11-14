@@ -106,7 +106,7 @@
                             <div class="d-flex gap-2">
                                 <a th:if="${request.status.name() == 'PAID'}"
                                    class="btn btn-primary"
-                                   th:href="@{/technician/result-create/{requestId} (requestId = ${request.labRequestId})}">Create Lab Test</a>
+                                   th:href="@{/technician/create-test/{id}(id = ${request.labRequestId})}">Create Lab Test</a>
                             </div>
                         </div>
                     </div>

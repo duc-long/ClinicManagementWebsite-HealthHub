@@ -87,7 +87,7 @@
                 <div class="card card-kpi p-3 shadow-sm">
                     <div class="text-secondary"
                          th:text="${filter == 'today' ? 'Revenue (Today)' : (filter == 'year' ? 'Revenue (This Year)' : 'Revenue (This Month)')}"></div>
-                    <h3 class="text-hm-green" th:text="${#numbers.formatCurrency(revenue)}"></h3>
+                    <h3 class="text-hm-green" th:text="${#numbers.formatDecimal(revenue,0,'COMMA', 0, 'POINT')} + ' VND'"></h3>
                 </div>
             </div>
 
@@ -152,7 +152,7 @@
         data: {
             labels: labels,
             datasets: [{
-                label: 'Revenue ($)',
+                label: 'Revenue (VND)',
                 data: revenueData,
                 borderColor: '#008744',
                 backgroundColor: 'rgba(0, 135, 68, 0.2)',

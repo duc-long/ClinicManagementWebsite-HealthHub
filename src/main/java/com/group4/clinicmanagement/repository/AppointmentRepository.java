@@ -8,12 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AppointmentRepository extends JpaRepository<Appointment,Integer> {
+public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
     List<Appointment> findAllByPatient_PatientId(Integer patientId);
 
     // get the number of appointment in a day
@@ -30,64 +31,70 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Integer
 
     // method to get all appointment today with pagination
     @Query(value = """
-        SELECT a FROM Appointment a
-        JOIN a.patient p
-        WHERE a.doctor.doctorId = :doctorId
-          AND (:patientName IS NULL OR LOWER(p.fullName) LIKE LOWER(CONCAT('%', :patientName, '%')))
-          AND a.appointmentDate = CURRENT_DATE
-          AND a.statusValue = 3
-        ORDER BY a.appointmentDate DESC
-    """)
+                SELECT a FROM Appointment a
+                JOIN a.patient p
+                WHERE a.doctor.doctorId = :doctorId
+                  AND (:patientName IS NULL OR LOWER(p.fullName) LIKE LOWER(CONCAT('%', :patientName, '%')))
+                  AND a.appointmentDate = CURRENT_DATE
+                  AND a.statusValue = 3
+                ORDER BY a.appointmentDate DESC
+            """)
     List<Appointment> findTodayAppointments(@Param("doctorId") Integer doctorId,
                                             @Param("patientName") String patientName);
 
     @Query(
             value = """
-        SELECT DISTINCT a FROM Appointment a
-        LEFT JOIN a.patient p
-        LEFT JOIN a.doctor d
-        LEFT JOIN a.receptionist r
-        WHERE a.statusValue = :status
-        ORDER BY a.appointmentDate DESC
-    """,
+                        SELECT DISTINCT a FROM Appointment a
+                        LEFT JOIN a.patient p
+                        LEFT JOIN a.doctor d
+                        LEFT JOIN a.receptionist r
+                        WHERE a.statusValue = :status
+                        ORDER BY a.appointmentDate DESC
+                    """,
             countQuery = """
-        SELECT COUNT(DISTINCT a) FROM Appointment a
-        WHERE a.statusValue = :status
-    """
+                        SELECT COUNT(DISTINCT a) FROM Appointment a
+                        WHERE a.statusValue = :status
+                    """
     )
     Page<Appointment> findStatusValueDesc(@Param("status") int status, Pageable pageable);
 
     @Query("""
-    SELECT a FROM Appointment a
-    LEFT JOIN FETCH a.patient p
-    LEFT JOIN FETCH a.doctor d
-    LEFT JOIN FETCH a.receptionist r
-    WHERE a.appointmentId = :id
-      AND a.statusValue IN(0,1,2,4,5)
-""")
+                SELECT a FROM Appointment a
+                LEFT JOIN FETCH a.patient p
+                LEFT JOIN FETCH a.doctor d
+                LEFT JOIN FETCH a.receptionist r
+                WHERE a.appointmentId = :id
+                  AND a.statusValue IN(0,1,2,4,5)
+            """)
     Optional<Appointment> findIdWithStatusRangeforRecep(@Param("id") int id);
 
     @Query("""
-    SELECT COALESCE(MAX(a.queueNumber), 0)
-    FROM Appointment a
-    WHERE a.doctor.doctorId = :doctorId
-      AND a.appointmentDate = CURRENT_DATE
-      AND a.queueNumber IS NOT NULL
-""")
+                SELECT COALESCE(MAX(a.queueNumber), 0)
+                FROM Appointment a
+                WHERE a.doctor.doctorId = :doctorId
+                  AND a.appointmentDate = CURRENT_DATE
+                  AND a.queueNumber IS NOT NULL
+            """)
     Integer findTodayMaxQueue(@Param("doctorId") int doctorId);
 
     @Query("""
-    SELECT a FROM Appointment a
-    LEFT JOIN FETCH a.patient p
-    LEFT JOIN FETCH a.doctor d
-    LEFT JOIN FETCH a.receptionist r
-    WHERE a.appointmentId = :id
-      AND a.statusValue IN(3,5)
-""")
+                SELECT a FROM Appointment a
+                LEFT JOIN FETCH a.patient p
+                LEFT JOIN FETCH a.doctor d
+                LEFT JOIN FETCH a.receptionist r
+                WHERE a.appointmentId = :id
+                  AND a.statusValue IN(3,5)
+            """)
     Optional<Appointment> findIdWithStatusRangeforCash(@Param("id") int id);
 
     // method to get all appointment in date by doctor ID and appointment status
-    @Query("SELECT a FROM Appointment a WHERE a.doctor.doctorId = :doctorId AND a.statusValue = 6 " +
-            "AND a.appointmentDate = CURRENT_DATE ORDER BY a.appointmentDate DESC")
+    @Query("""
+            SELECT a FROM Appointment a 
+            WHERE a.doctor.doctorId = :doctorId
+              AND a.statusValue = 6
+              AND a.appointmentDate BETWEEN CURRENT_DATE AND DATEADD(DAY, 1, CURRENT_DATE)
+            ORDER BY a.appointmentDate DESC
+            """)
     List<Appointment> findTodayAppointmentsByDoctorId(@Param("doctorId") Integer doctorId);
+
 }

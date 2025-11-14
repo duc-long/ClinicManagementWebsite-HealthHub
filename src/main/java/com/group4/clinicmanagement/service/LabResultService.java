@@ -111,7 +111,7 @@ public class LabResultService {
 
 
     private String saveFile(MultipartFile file, String folder) throws IOException {
-        String contentType = file.getContentType();
+            String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new IllegalArgumentException("Invalid file type. Only image files are allowed.");
         }
