@@ -7,6 +7,7 @@ import com.group4.clinicmanagement.dto.doctor.LabResultDTO;
 import com.group4.clinicmanagement.dto.doctor.PrescriptionDetailDTO;
 import com.group4.clinicmanagement.entity.*;
 import com.group4.clinicmanagement.enums.AppointmentStatus;
+import com.group4.clinicmanagement.enums.LabRequestStatus;
 import com.group4.clinicmanagement.repository.AppointmentRepository;
 import com.group4.clinicmanagement.repository.DepartmentRepository;
 import com.group4.clinicmanagement.repository.DoctorDailySlotRepository;
@@ -947,7 +948,7 @@ public class DoctorController {
         request.setTest(testCatalog);
         request.setMedicalRecord(medicalRecord);
         request.setRequestedAt(LocalDateTime.now());
-
+        request.setStatus(LabRequestStatus.REQUESTED);
         if (labRequestService.saveLabRequest(request) != null) {
             redirectAttributes.addFlashAttribute("messageType", "success");
             redirectAttributes.addFlashAttribute("message", "Lab request saved successfully!");

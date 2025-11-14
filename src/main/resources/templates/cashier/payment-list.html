@@ -116,7 +116,7 @@
                 <tbody>
                 <tr th:each="b : ${bills}">
                     <td th:text="${b.billId}"></td>
-                    <td th:text="${b.patient.user.fullName}"></td>
+                    <td th:text="${b.patient.fullName}"></td>
                     <td>
                         <span th:text="${b.appointment != null ? 'Appointment' : 'Lab Request'}"></span>
                     </td>

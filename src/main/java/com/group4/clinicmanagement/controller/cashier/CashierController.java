@@ -225,7 +225,7 @@ public class CashierController {
 
     @GetMapping("/bill/{id}")
     public String viewBill(@PathVariable("id") Integer billId, Model model, RedirectAttributes redirectAttributes) {
-        try {
+//        try {
             Bill bill = billService.getBillById(billId);
             if (bill == null) {
                 redirectAttributes.addFlashAttribute("message", "Bill not found.");
@@ -235,7 +235,7 @@ public class CashierController {
 
             // Xác định loại bill
             boolean isAppointmentBill = bill.getAppointment() != null;
-            boolean isLabBill = bill.getAppointment().getMedicalRecord().getLabRequest() != null;
+            boolean isLabBill = bill.getLabRequest() != null;
 
             model.addAttribute("bill", bill);
             model.addAttribute("isAppointmentBill", isAppointmentBill);
@@ -243,11 +243,11 @@ public class CashierController {
 
             return "cashier/bill-details";
 
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", "Error loading bill details.");
-            redirectAttributes.addFlashAttribute("messageType", "error");
-            return "redirect:/cashier/appointment-list";
-        }
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("message", "Error loading bill details.");
+//            redirectAttributes.addFlashAttribute("messageType", "error");
+//            return "redirect:/cashier/appointment-list";
+//        }
     }
 
     @PostMapping("/appointment/{id}/create-bill")
@@ -273,7 +273,7 @@ public class CashierController {
                 redirectAttributes.addFlashAttribute("messageType", "error");
                 return "redirect:/cashier/appointment-list?status=CHECKED_IN";
             }
-            Staff cashier = staffRepository.findByUsernameAndRoleId(principal.getName(), 4); // 4 = CASHIER
+            Staff cashier = staffRepository.findByUsernameAndRoleId(principal.getName(), 2); // 4 = CASHIER
             if (cashier == null) {
                 redirectAttributes.addFlashAttribute("message", "Only cashier accounts can perform this action.");
                 redirectAttributes.addFlashAttribute("messageType", "error");

@@ -37,7 +37,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     // thong ke doanh thu theo khoang thoi gian
     // Theo NGÀY
     @Query(value = """
-        SELECT ISNULL(SUM(total_amount), 0)
+        SELECT ISNULL(SUM(amount), 0)
         FROM Bill
         WHERE status = 1
           AND CAST(paid_at AS DATE) = :date
@@ -47,7 +47,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
 
     // Theo THÁNG + NĂM
     @Query(value = """
-        SELECT ISNULL(SUM(total_amount), 0)
+        SELECT ISNULL(SUM(amount), 0)
         FROM Bill
         WHERE status = 1
           AND MONTH(paid_at) = :month
@@ -58,7 +58,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
 
     // Theo NĂM
     @Query(value = """
-        SELECT ISNULL(SUM(total_amount), 0)
+        SELECT ISNULL(SUM(amount), 0)
         FROM Bill
         WHERE status = 1
           AND YEAR(paid_at) = :year
@@ -66,7 +66,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     Double getRevenueByYear(@Param("year") int year);
 
     @Query(value = """
-    SELECT DATEPART(hour, paid_at) AS label, SUM(total_amount) AS total
+    SELECT DATEPART(hour, paid_at) AS label, SUM(amount) AS total
     FROM Bill
     WHERE paid_at >= :start AND paid_at <= :end
     GROUP BY DATEPART(hour, paid_at)
@@ -75,7 +75,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     List<Object[]> getRevenueByDay(LocalDateTime start, LocalDateTime end);
 
     @Query(value = """
-    SELECT DATEPART(day, paid_at) AS label, SUM(total_amount) AS total
+    SELECT DATEPART(day, paid_at) AS label, SUM(amount) AS total
     FROM Bill
     WHERE paid_at >= :start AND paid_at <= :end
     GROUP BY DATEPART(day, paid_at)
@@ -84,7 +84,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     List<Object[]> getRevenueByMonth(LocalDateTime start, LocalDateTime end);
 
     @Query(value = """
-    SELECT DATEPART(month, paid_at) AS label, SUM(total_amount) AS total
+    SELECT DATEPART(month, paid_at) AS label, SUM(amount) AS total
     FROM Bill
     WHERE paid_at >= :start AND paid_at <= :end
     GROUP BY DATEPART(month, paid_at)
@@ -93,4 +93,4 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     List<Object[]> getRevenueByYear(LocalDateTime start, LocalDateTime end);
 
 }
-}
+

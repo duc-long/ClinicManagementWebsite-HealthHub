@@ -61,13 +61,13 @@
         <div class="content" th:if="${!#lists.isEmpty(appointment)}">
             <div class="card-soft">
                 <p><strong>Appointment ID:</strong> <span th:text="${appointment.appointmentId}"></span></p>
-                <p><strong>Patient:</strong> <span th:text="${appointment.patient.user.fullName}"></span></p>
-                <p><strong>Phone:</strong> <span th:text="${appointment.patient.user.phone}"></span></p>
+                <p><strong>Patient:</strong> <span th:text="${appointment.patient.fullName}"></span></p>
+                <p><strong>Phone:</strong> <span th:text="${appointment.patient.phone}"></span></p>
                 <p><strong>Date:</strong> <span th:text="${appointment.appointmentDate}"></span></p>
                 <p><strong>Status:</strong> <span th:text="${appointment.status}"></span></p>
                 <p><strong>Notes:</strong> <span th:text="${appointment.notes}"></span></p>
                 <p><strong>Doctor:</strong>
-                    <span th:text="${appointment.doctor != null ? appointment.doctor.user.fullName : 'Not Assigned'}"></span>
+                    <span th:text="${appointment.doctor != null ? appointment.doctor.staff.fullName : 'Not Assigned'}"></span>
                 </p>
                 <p>Cost: 200.000 VND</p>
                 <a th:href="@{/cashier/appointment-list}" class="btn btn-secondary mt-3">Back to List</a>

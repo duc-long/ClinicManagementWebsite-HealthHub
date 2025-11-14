@@ -29,10 +29,14 @@ public class Bill {
     private Appointment appointment;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "labRequest_id", nullable = true)
+    private LabRequest labRequest;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cashier_id", nullable = false)
     private Staff cashier;
 
-    @Column(name = "total_amount", nullable = false)
+    @Column(name = "amount", nullable = false)
     private Double amount;
 
     @Column(name = "status", nullable = false)

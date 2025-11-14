@@ -85,17 +85,17 @@
                 <!-- Patient Info -->
                 <p>
                     <strong>Patient:</strong>
-                    <span th:text="${bill.patient.user.fullName}"></span>
+                    <span th:text="${bill.patient.fullName}"></span>
                 </p>
                 <p>
                     <strong>Phone:</strong>
-                    <span th:text="${bill.patient.user.phone}"></span>
+                    <span th:text="${bill.patient.phone}"></span>
                 </p>
 
                 <!-- Appointment Section -->
                 <div th:if="${bill.appointment != null}">
                     <p><strong>Doctor:</strong>
-                        <span th:text="${bill.appointment.doctor.user.fullName}"></span>
+                        <span th:text="${bill.appointment.doctor.staff.fullName}"></span>
                     </p>
                     <p><strong>Appointment Date:</strong>
                         <span th:text="${#temporals.format(bill.appointment.appointmentDate, 'dd/MM/yyyy')}"></span>
@@ -105,7 +105,7 @@
                 <!-- Lab Request Section -->
                 <div th:if="${bill.labRequest != null}">
                     <p><strong>Requested By:</strong>
-                        <span th:text="${bill.labRequest.doctor.user.fullName}"></span>
+                        <span th:text="${bill.labRequest.doctor.staff.fullName}"></span>
                     </p>
                     <p><strong>Test:</strong>
                         <span th:text="${bill.labRequest.test.name}"></span>

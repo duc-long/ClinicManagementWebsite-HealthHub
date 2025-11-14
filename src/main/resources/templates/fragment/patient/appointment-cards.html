@@ -7,7 +7,7 @@
                     <h6 class="fw-bold text-success mb-1"
                         th:text="${#temporals.format(a.appointmentDate, 'dd/MM/yyyy')}"></h6>
                     <p class="text-secondary small mb-0">
-                        Doctor: <strong th:text="${a.doctor.user.fullName}"></strong>
+                        Doctor: <strong th:text="${a.doctor.staff.fullName}"></strong>
                     </p>
                     <p class="text-muted small mb-0"> Checked at:
                         <span th:text="${#temporals.format(a.createdAt, 'HH:mm dd/MM')}"></span>
@@ -120,7 +120,7 @@
                     <h6 class="fw-bold text-info mb-1"
                         th:text="${#temporals.format(a.appointmentDate, 'dd/MM/yyyy')}"></h6>
                     <p class="small text-secondary mb-0">
-                        <strong th:text="${a.doctor.user.fullName}"></strong>
+                        <strong th:text="${a.doctor.staff.fullName}"></strong>
                     </p>
                 </div>
                 <span class="badge bg-info text-dark px-3 py-2">Checked-in</span>

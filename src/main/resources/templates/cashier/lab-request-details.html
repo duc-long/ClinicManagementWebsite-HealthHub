@@ -43,8 +43,8 @@
         <div class="content" th:if="${labRequest != null}">
             <div class="card-soft">
                 <p><strong>ID:</strong> <span th:text="${labRequest.labRequestId}"></span></p>
-                <p><strong>Patient:</strong> <span th:text="${labRequest.medicalRecord.patient.user.fullName}"></span></p>
-                <p><strong>Doctor:</strong> <span th:text="${labRequest.doctor.user.fullName}"></span></p>
+                <p><strong>Patient:</strong> <span th:text="${labRequest.medicalRecord.patient.fullName}"></span></p>
+                <p><strong>Doctor:</strong> <span th:text="${labRequest.doctor.staff.fullName}"></span></p>
                 <p><strong>Test Name:</strong> <span th:text="${labRequest.test.name}"></span></p>
                 <p><strong>Cost:</strong> <span th:text="${#numbers.formatDecimal(labRequest.test.cost, 0, 'COMMA', 0, 'POINT')} + ' VND'"></span></p>
                 <p><strong>Status:</strong> <span th:text="${labRequest.status}"></span></p>
