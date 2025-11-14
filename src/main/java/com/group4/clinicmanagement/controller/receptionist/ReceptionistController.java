@@ -11,9 +11,11 @@ import com.group4.clinicmanagement.repository.StaffRepository;
 import com.group4.clinicmanagement.service.DepartmentService;
 import com.group4.clinicmanagement.service.ReceptionistService;
 import com.group4.clinicmanagement.service.AppointmentService;
+import com.group4.clinicmanagement.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,12 +35,14 @@ public class ReceptionistController {
     private final AppointmentService appointmentService;
     private final DepartmentService departmentService;
     private final StaffRepository staffRepository;
+    private final UserService userService;
 
-    public ReceptionistController(ReceptionistService receptionistService, AppointmentService appointmentService, DepartmentService departmentService, StaffRepository staffRepository) {
+    public ReceptionistController(ReceptionistService receptionistService, UserService userService, AppointmentService appointmentService, DepartmentService departmentService, StaffRepository staffRepository) {
         this.receptionistService = receptionistService;
         this.appointmentService = appointmentService;
         this.departmentService = departmentService;
         this.staffRepository = staffRepository;
+        this.userService = userService;
     }
 
 
@@ -124,6 +128,52 @@ public class ReceptionistController {
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("activeStatus", status.toUpperCase());
         return "receptionist/appointment-list";
+    }
+
+    // method to show change password
+    @GetMapping("/change-password")
+    public String changePassword(Model model, Principal principal) {
+        Staff user = userService.findUserByUsername(principal.getName());
+
+        if (user == null) {
+            return "redirect:/receptionist/login";
+        }
+
+        model.addAttribute("active", "profile");
+        model.addAttribute("section", "change-password");
+        return "receptionist/change-password";
+    }
+
+    // method to change doctor password
+    @PostMapping("/change-password")
+    public String changePassword(RedirectAttributes redirectAttributes, Principal principal,
+                                 @RequestParam(name = "currentPassword") String currentPassword,
+                                 @RequestParam(name = "newPassword") String newPassword,
+                                 @RequestParam(name = "confirmPassword", required = false) String confirmPassword) {
+        Staff user = userService.findUserByUsername(principal.getName());
+        if (user == null) {
+            return "redirect:/receptionist/login";
+        }
+
+        // basic server-side checks
+        if (confirmPassword == null || !newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "New password and confirm password do not match!");
+            return "redirect:/receptionist/change-password";
+        }
+
+        boolean changed = userService.changePassword(user, currentPassword, newPassword);
+        if (changed) {
+            // clean login information
+            SecurityContextHolder.clearContext();
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "Password changed successfully. Please log in again.");
+            return "redirect:/receptionist/login";
+        } else {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Change password failed. Check your current password or password policy.");
+            return "redirect:/receptionist/change-password";
+        }
     }
 
     @GetMapping("/appointment/{id}")

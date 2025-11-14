@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,14 +36,16 @@ public class CashierController {
     private final StaffRepository staffRepository;
     private final BillService billService;
     private final LabRequestService labRequestService;
+    private final UserService userService;
 
-    public CashierController(CashierService cashierService, AppointmentService appointmentService, DepartmentService departmentService, StaffRepository staffRepository, BillService billService, LabRequestService labRequestService) {
+    public CashierController(CashierService cashierService,UserService userService, AppointmentService appointmentService, DepartmentService departmentService, StaffRepository staffRepository, BillService billService, LabRequestService labRequestService) {
         this.cashierService = cashierService;
         this.appointmentService = appointmentService;
         this.departmentService = departmentService;
         this.staffRepository = staffRepository;
         this.billService = billService;
         this.labRequestService = labRequestService;
+        this.userService = userService;
     }
 
 
@@ -52,6 +55,52 @@ public class CashierController {
         CashierUserDTO dto = cashierService.getCashierProfile(cashierName);
         model.addAttribute("cashier", dto);
         return "cashier/profile";
+    }
+
+    // method to show change password
+    @GetMapping("/change-password")
+    public String changePassword(Model model, Principal principal) {
+        Staff user = userService.findUserByUsername(principal.getName());
+
+        if (user == null) {
+            return "redirect:/cashier/login";
+        }
+
+        model.addAttribute("active", "profile");
+        model.addAttribute("section", "change-password");
+        return "cashier/change-password";
+    }
+
+    // method to change doctor password
+    @PostMapping("/change-password")
+    public String changePassword(RedirectAttributes redirectAttributes, Principal principal,
+                                 @RequestParam(name = "currentPassword") String currentPassword,
+                                 @RequestParam(name = "newPassword") String newPassword,
+                                 @RequestParam(name = "confirmPassword", required = false) String confirmPassword) {
+        Staff user = userService.findUserByUsername(principal.getName());
+        if (user == null) {
+            return "redirect:/cashier/login";
+        }
+
+        // basic server-side checks
+        if (confirmPassword == null || !newPassword.equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "New password and confirm password do not match!");
+            return "redirect:/cashier/change-password";
+        }
+
+        boolean changed = userService.changePassword(user, currentPassword, newPassword);
+        if (changed) {
+            // clean login information
+            SecurityContextHolder.clearContext();
+            redirectAttributes.addFlashAttribute("messageType", "success");
+            redirectAttributes.addFlashAttribute("message", "Password changed successfully. Please log in again.");
+            return "redirect:/cashier/login";
+        } else {
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            redirectAttributes.addFlashAttribute("message", "Change password failed. Check your current password or password policy.");
+            return "redirect:/cashier/change-password";
+        }
     }
 
     @GetMapping("/edit-profile")
