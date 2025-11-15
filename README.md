@@ -1,5 +1,5 @@
 # Clinic Management System – HealthHub
-
+This is a mini capstone project focuses on a comprehensive management solution for small clinics.
 A web-based clinic management platform built using Spring Boot, SQL Server, and Thymeleaf.
 The system provides a complete workflow for clinics including appointment management, medical reports, billing, laboratory operations, and administrative control.
 
