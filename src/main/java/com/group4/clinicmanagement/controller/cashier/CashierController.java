@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.OutputStream;
 import java.security.Principal;
 import java.time.LocalDate;
 
@@ -401,13 +402,17 @@ public class CashierController {
             response.setHeader("Content-Disposition",
                     "attachment; filename=bill_" + bill.getBillId() + ".pdf");
 
-            billService.exportPdfToResponse(bill, response.getOutputStream());
-            response.flushBuffer();
+            OutputStream os = response.getOutputStream();
+            billService.exportPdfToResponse(bill, os);
+            os.flush();
+            os.close();
 
         } catch (Exception e) {
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
     @GetMapping("/payment-list")
