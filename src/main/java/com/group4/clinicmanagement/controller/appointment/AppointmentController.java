@@ -65,7 +65,7 @@ public class AppointmentController {
         // view classification
         switch (type) {
             case "history": // history view
-                filterd = all.stream().filter(a -> a.getStatus() == AppointmentStatus.PAID).toList();
+                filterd = all.stream().filter(a -> a.getStatus() == AppointmentStatus.DONE || a.getStatus() == AppointmentStatus.EXAMINED).toList();
                 model.addAttribute("history", filterd);
                 return "fragment/patient/appointment-cards :: history";
             case "submitted": // submitted view

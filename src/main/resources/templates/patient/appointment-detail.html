@@ -56,8 +56,8 @@
                           class="badge bg-danger">Cancelled</span>
                     <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).EXAMINED.value}"
                           class="badge bg-primary">Re-Examined</span>
-                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).NO_SHOW.value}"
-                          class="badge bg-dark">No Show</span>
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).DONE.value}"
+                          class="badge bg-dark">DONE</span>
                     <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).CHECKED_IN.value}"
                           class="badge bg-info text-dark">Checked-In</span>
                     <span th:case="*" class="badge bg-secondary">Unknown</span>
@@ -68,7 +68,7 @@
                     <ul class="list-group list-group-flush mb-3">
                         <li class="list-group-item">
                             <strong> Doctor:</strong>
-                            <span th:text="${appointment.doctor != null ? appointment.doctor.user.fullName : 'None'}"></span>
+                            <span th:text="${appointment.doctor != null ? appointment.doctor.staff.fullName : 'None'}"></span>
                         </li>
                         <li class="list-group-item">
                             <strong> Date:</strong>

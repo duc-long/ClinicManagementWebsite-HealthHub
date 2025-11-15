@@ -24,7 +24,6 @@ public class LabResultDTO {
     private String testName;
     private String patientName;
     private String technicianName;
-    @NotBlank
     private String resultText;
 
     private List<LabImage> images;

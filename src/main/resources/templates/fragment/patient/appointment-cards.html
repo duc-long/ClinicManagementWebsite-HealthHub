@@ -13,7 +13,13 @@
                         <span th:text="${#temporals.format(a.createdAt, 'HH:mm dd/MM')}"></span>
                     </p>
                 </div>
-                <span class="badge bg-success px-3 py-2">Completed</span>
+                <span th:switch="${a.statusValue}">
+
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).DONE.getValue()}"
+                          class="badge bg-warning text-dark">DONE</span>
+                    <span th:case="${T(com.group4.clinicmanagement.enums.AppointmentStatus).EXAMINED.getValue()}"
+                          class="badge bg-primary">Examined</span>
+                </span>
             </div>
 
             <hr>

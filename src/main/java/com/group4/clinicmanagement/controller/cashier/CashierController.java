@@ -408,7 +408,6 @@ public class CashierController {
             os.close();
 
         } catch (Exception e) {
-            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
